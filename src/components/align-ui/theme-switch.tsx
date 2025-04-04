@@ -1,8 +1,8 @@
 'use client';
 
-import { useTheme } from 'next-themes';
-import * as SegmentedControl from '@/components/ui/segmented-control';
+import * as SegmentedControl from '@/components/align-ui/ui/segmented-control';
 import { RiEqualizer3Fill, RiMoonLine, RiSunLine } from '@remixicon/react';
+import { useTheme } from 'next-themes';
 
 export default function ThemeSwitch() {
   const { theme, setTheme } = useTheme();

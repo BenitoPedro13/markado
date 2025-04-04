@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 
-import * as Divider from '@/components/ui/divider';
+import * as Divider from '@/components/align-ui/ui/divider';
 import { cn } from '@/utils/cn';
 
 const Table = React.forwardRef<
@@ -126,12 +126,7 @@ const TableCaption = React.forwardRef<
 TableCaption.displayName = 'TableCaption';
 
 export {
-  Table as Root,
-  TableHeader as Header,
-  TableBody as Body,
-  TableHead as Head,
-  TableRow as Row,
-  TableRowDivider as RowDivider,
-  TableCell as Cell,
-  TableCaption as Caption,
+  TableBody as Body, TableCaption as Caption, TableCell as Cell, TableHead as Head, TableHeader as Header, Table as Root, TableRow as Row,
+  TableRowDivider as RowDivider
 };
+

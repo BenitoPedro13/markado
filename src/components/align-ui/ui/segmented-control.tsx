@@ -2,12 +2,12 @@
 
 'use client';
 
-import * as React from 'react';
+import { useTabObserver } from '@/src/hooks/use-tab-observer';
+import { cn } from '@/utils/cn';
+import { Slottable } from '@radix-ui/react-slot';
 import * as TabsPrimitive from '@radix-ui/react-tabs';
 import mergeRefs from 'merge-refs';
-import { Slottable } from '@radix-ui/react-slot';
-import { cn } from '@/utils/cn';
-import { useTabObserver } from '@/hooks/use-tab-observer';
+import * as React from 'react';
 
 const SegmentedControlRoot = TabsPrimitive.Root;
 SegmentedControlRoot.displayName = 'SegmentedControlRoot';
@@ -93,8 +93,6 @@ const SegmentedControlContent = React.forwardRef<
 SegmentedControlContent.displayName = 'SegmentedControlContent';
 
 export {
-  SegmentedControlRoot as Root,
-  SegmentedControlList as List,
-  SegmentedControlTrigger as Trigger,
-  SegmentedControlContent as Content,
+  SegmentedControlContent as Content, SegmentedControlList as List, SegmentedControlRoot as Root, SegmentedControlTrigger as Trigger
 };
+

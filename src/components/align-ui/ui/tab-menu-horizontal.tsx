@@ -2,13 +2,13 @@
 
 'use client';
 
-import * as React from 'react';
+import { useTabObserver } from '@/src/hooks/use-tab-observer';
+import { cn } from '@/utils/cn';
+import type { PolymorphicComponentProps } from '@/utils/polymorphic';
 import { Slottable } from '@radix-ui/react-slot';
 import * as TabsPrimitive from '@radix-ui/react-tabs';
 import mergeRefs from 'merge-refs';
-import { cn } from '@/utils/cn';
-import type { PolymorphicComponentProps } from '@/utils/polymorphic';
-import { useTabObserver } from '@/hooks/use-tab-observer';
+import * as React from 'react';
 
 const TabMenuHorizontalContent = TabsPrimitive.Content;
 TabMenuHorizontalContent.displayName = 'TabMenuHorizontalContent';
@@ -158,10 +158,7 @@ function TabMenuHorizontalArrowIcon<T extends React.ElementType>({
 TabMenuHorizontalArrowIcon.displayName = 'TabsHorizontalArrow';
 
 export {
-  TabMenuHorizontalRoot as Root,
-  TabMenuHorizontalList as List,
-  TabMenuHorizontalTrigger as Trigger,
-  TabMenuHorizontalIcon as Icon,
   TabMenuHorizontalArrowIcon as ArrowIcon,
-  TabMenuHorizontalContent as Content,
+  TabMenuHorizontalContent as Content, TabMenuHorizontalIcon as Icon, TabMenuHorizontalList as List, TabMenuHorizontalRoot as Root, TabMenuHorizontalTrigger as Trigger
 };
+
