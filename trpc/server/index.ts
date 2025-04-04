@@ -8,9 +8,10 @@ const appRouter = router({
     const users = await db.user.findMany();
     return users;
   }),
-  getUser: publicProcedure.input(z.object({id: z.string()})).query(async (opts) => {
-    const { input: {id} } = opts;
-    const user = await db.user.findById(id);
+  getUser: publicProcedure.input(z.string()).query(async (opts) => {
+    const { input } = opts;
+    console.log('input', input);
+    const user = await db.user.findById(input);
     return user;
   }),
   createUser: publicProcedure
