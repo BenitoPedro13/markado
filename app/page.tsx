@@ -1,10 +1,29 @@
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { useTRPC } from '../utils/trpc';
+
+
 import Link from 'next/link';
 import * as Button from '@/components/ui/button';
 import { RiGithubFill } from '@remixicon/react';
 
+export function UserList() {
+  const trpc = useTRPC(); // use `import { trpc } from './utils/trpc'` if you're using the singleton pattern
+  const userQuery = useQuery(trpc.getUser.queryOptions({ id: 'id_bilbo' }));
+  const userCreator = useMutation(trpc.createUser.mutationOptions());
+  return (
+    <div>
+      <p>{userQuery.data?.name}</p>
+      <button onClick={() => userCreator.mutate({ name: 'Frodo' })}>
+        Create Frodo
+      </button>
+    </div>
+  );
+}
+
 export default function Home() {
   return (
     <div className='container mx-auto flex-1 px-5'>
+      <UserList/>
       <div className='mt-48 flex flex-col items-center'>
         <h1 className='max-w-3xl text-balance text-center text-title-h3 text-text-strong-950'>
           Quick Starter AlignUI Template with Next.js & Typescript
@@ -62,4 +81,5 @@ export default function Home() {
       </div>
     </div>
   );
-}
+};
+
