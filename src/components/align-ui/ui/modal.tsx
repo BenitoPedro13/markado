@@ -1,10 +1,10 @@
 // AlignUI Modal v0.0.0
 
-import * as React from 'react';
-import * as DialogPrimitive from '@radix-ui/react-dialog';
-import * as CompactButton from '@/components/ui/compact-button';
+import * as CompactButton from '@/components/align-ui/ui/compact-button';
 import { cn } from '@/utils/cn';
+import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { type RemixiconComponentType, RiCloseLine } from '@remixicon/react';
+import * as React from 'react';
 
 const ModalRoot = DialogPrimitive.Root;
 const ModalTrigger = DialogPrimitive.Trigger;
@@ -177,15 +177,6 @@ function ModalFooter({
 ModalFooter.displayName = 'ModalFooter';
 
 export {
-  ModalRoot as Root,
-  ModalTrigger as Trigger,
-  ModalClose as Close,
-  ModalPortal as Portal,
-  ModalOverlay as Overlay,
-  ModalContent as Content,
-  ModalHeader as Header,
-  ModalTitle as Title,
-  ModalDescription as Description,
-  ModalBody as Body,
-  ModalFooter as Footer,
+  ModalBody as Body, ModalClose as Close, ModalContent as Content, ModalDescription as Description, ModalFooter as Footer, ModalHeader as Header, ModalOverlay as Overlay, ModalPortal as Portal, ModalRoot as Root, ModalTitle as Title, ModalTrigger as Trigger
 };
+

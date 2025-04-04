@@ -2,13 +2,13 @@
 
 'use client';
 
-import * as React from 'react';
-import { Command } from 'cmdk';
+import * as Modal from '@/components/align-ui/ui/modal';
 import { cn } from '@/utils/cn';
-import { tv, type VariantProps } from '@/utils/tv';
 import { PolymorphicComponentProps } from '@/utils/polymorphic';
-import * as Modal from '@/components/ui/modal';
+import { tv, type VariantProps } from '@/utils/tv';
 import { type DialogProps } from '@radix-ui/react-dialog';
+import { Command } from 'cmdk';
+import * as React from 'react';
 
 const CommandDialogTitle = Modal.Title;
 const CommandDialogDescription = Modal.Description;
@@ -193,14 +193,8 @@ function CommandFooterKeyBox({
 }
 
 export {
-  CommandDialog as Dialog,
-  CommandDialogTitle as DialogTitle,
-  CommandDialogDescription as DialogDescription,
-  CommandInput as Input,
-  CommandList as List,
-  CommandGroup as Group,
-  CommandItem as Item,
-  CommandItemIcon as ItemIcon,
-  CommandFooter as Footer,
-  CommandFooterKeyBox as FooterKeyBox,
+  CommandDialog as Dialog, CommandDialogDescription as DialogDescription, CommandDialogTitle as DialogTitle, CommandFooter as Footer,
+  CommandFooterKeyBox as FooterKeyBox, CommandGroup as Group, CommandInput as Input, CommandItem as Item,
+  CommandItemIcon as ItemIcon, CommandList as List
 };
+

@@ -1,7 +1,7 @@
 'use client';
 
+import type {NotificationProps} from '@/components/align-ui/ui/notification';
 import * as React from 'react';
-import type { NotificationProps } from '@/components/ui/notification';
 
 const NOTIFICATION_LIMIT = 1;
 const NOTIFICATION_REMOVE_DELAY = 1000000;
@@ -14,7 +14,7 @@ const actionTypes = {
   ADD_NOTIFICATION: 'ADD_NOTIFICATION',
   UPDATE_NOTIFICATION: 'UPDATE_NOTIFICATION',
   DISMISS_NOTIFICATION: 'DISMISS_NOTIFICATION',
-  REMOVE_NOTIFICATION: 'REMOVE_NOTIFICATION',
+  REMOVE_NOTIFICATION: 'REMOVE_NOTIFICATION'
 } as const;
 
 let count = 0;
@@ -59,7 +59,7 @@ const addToRemoveQueue = (notificationId: string) => {
     notificationTimeouts.delete(notificationId);
     dispatch({
       type: 'REMOVE_NOTIFICATION',
-      notificationId: notificationId,
+      notificationId: notificationId
     });
   }, NOTIFICATION_REMOVE_DELAY);
 
@@ -73,22 +73,20 @@ export const reducer = (state: State, action: Action): State => {
         ...state,
         notifications: [action.notification, ...state.notifications].slice(
           0,
-          NOTIFICATION_LIMIT,
-        ),
+          NOTIFICATION_LIMIT
+        )
       };
 
     case 'UPDATE_NOTIFICATION':
       return {
         ...state,
         notifications: state.notifications.map((t) =>
-          t.id === action.notification.id
-            ? { ...t, ...action.notification }
-            : t,
-        ),
+          t.id === action.notification.id ? {...t, ...action.notification} : t
+        )
       };
 
     case 'DISMISS_NOTIFICATION': {
-      const { notificationId } = action;
+      const {notificationId} = action;
 
       if (notificationId) {
         addToRemoveQueue(notificationId);
@@ -104,36 +102,36 @@ export const reducer = (state: State, action: Action): State => {
           t.id === notificationId || notificationId === undefined
             ? {
                 ...t,
-                open: false,
+                open: false
               }
-            : t,
-        ),
+            : t
+        )
       };
     }
     case 'REMOVE_NOTIFICATION':
       if (action.notificationId === undefined) {
         return {
           ...state,
-          notifications: [],
+          notifications: []
         };
       }
       return {
         ...state,
         notifications: state.notifications.filter(
-          (t) => t.id !== action.notificationId,
-        ),
+          (t) => t.id !== action.notificationId
+        )
       };
   }
 };
 
 const listeners: Array<(state: State) => void> = [];
 
-let memoryState: State = { notifications: [] };
+let memoryState: State = {notifications: []};
 
 function dispatch(action: Action) {
   if (action.type === 'ADD_NOTIFICATION') {
     const notificationExists = memoryState.notifications.some(
-      (t) => t.id === action.notification.id,
+      (t) => t.id === action.notification.id
     );
     if (notificationExists) {
       return;
@@ -147,16 +145,16 @@ function dispatch(action: Action) {
 
 type Notification = Omit<NotificationPropsWithId, 'id'>;
 
-function notification({ ...props }: Notification & { id?: string }) {
+function notification({...props}: Notification & {id?: string}) {
   const id = props?.id || genId();
 
   const update = (props: Notification) =>
     dispatch({
       type: 'UPDATE_NOTIFICATION',
-      notification: { ...props, id },
+      notification: {...props, id}
     });
   const dismiss = () =>
-    dispatch({ type: 'DISMISS_NOTIFICATION', notificationId: id });
+    dispatch({type: 'DISMISS_NOTIFICATION', notificationId: id});
 
   dispatch({
     type: 'ADD_NOTIFICATION',
@@ -166,14 +164,14 @@ function notification({ ...props }: Notification & { id?: string }) {
       open: true,
       onOpenChange: (open: boolean) => {
         if (!open) dismiss();
-      },
-    },
+      }
+    }
   });
 
   return {
     id: id,
     dismiss,
-    update,
+    update
   };
 }
 
@@ -194,8 +192,8 @@ function useNotification() {
     ...state,
     notification,
     dismiss: (notificationId?: string) =>
-      dispatch({ type: 'DISMISS_NOTIFICATION', notificationId }),
+      dispatch({type: 'DISMISS_NOTIFICATION', notificationId})
   };
 }
 
-export { notification, useNotification };
+export {notification, useNotification};

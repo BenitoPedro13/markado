@@ -1,8 +1,8 @@
 'use client';
 
-import { useNotification } from '@/hooks/use-notification';
+import { useNotification } from '@/src/hooks/use-notification';
 
-import * as Notification from '@/components/ui/notification';
+import * as Notification from '@/components/align-ui/ui/notification';
 
 const NotificationProvider = () => {
   const { notifications } = useNotification();
