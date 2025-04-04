@@ -2,6 +2,7 @@ import { createHTTPServer } from '@trpc/server/adapters/standalone';
 import { z } from 'zod';
 import { db } from './db';
 import { publicProcedure, router } from './trpc';
+import { TRPCError } from '@trpc/server';
 
 const appRouter = router({
   userList: publicProcedure.query(async () => {
@@ -9,9 +10,18 @@ const appRouter = router({
     return users;
   }),
   getUser: publicProcedure.input(z.string()).query(async (opts) => {
+    console.log('opts', opts);
+
     const { input } = opts;
-    console.log('input', input);
     const user = await db.user.findById(input);
+
+    if (!user) {
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: `No user with id '${input}'`,
+      });
+    }
+    
     return user;
   }),
   createUser: publicProcedure
@@ -29,4 +39,4 @@ const server = createHTTPServer({
   router: appRouter,
 });
 
-server.listen(3000);
+server.listen(3001);

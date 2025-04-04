@@ -10,11 +10,16 @@ import { RiGithubFill } from '@remixicon/react';
 export function UserList() {
   
   const trpc = useTRPC(); // use `import { trpc } from './utils/trpc'` if you're using the singleton pattern
-  const userQuery = useQuery(trpc.getUser.queryOptions('id_bilbo'));
+  const userQuery = useQuery(trpc.getUser.queryOptions('1'));
   const userCreator = useMutation(trpc.createUser.mutationOptions());
 
-  console.log('userQuery', userQuery);
-  
+  if(userQuery.isPending) {
+    return <div>Loading....</div>
+  }
+
+  if(userQuery.isError) {
+    return <div>Error: {userQuery.error.message}</div>
+  }
 
   return (
     <div>
