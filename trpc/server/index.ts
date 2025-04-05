@@ -4,7 +4,7 @@ import { db } from './db';
 import { publicProcedure, router } from './trpc';
 import { TRPCError } from '@trpc/server';
 
-const appRouter = router({
+export const appRouter = router({
   userList: publicProcedure.query(async () => {
     const users = await db.user.findMany();
     return users;
@@ -34,9 +34,3 @@ const appRouter = router({
 });
 
 export type AppRouter = typeof appRouter;
-
-const server = createHTTPServer({
-  router: appRouter,
-});
-
-server.listen(3001);

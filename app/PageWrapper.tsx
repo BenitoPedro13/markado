@@ -1,5 +1,6 @@
 "use client"
 
+import { trpc } from '@/trpc/client';
 import { AppRouter } from '@/trpc/server';
 import { TRPCProvider } from '@/utils/trpc';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -36,16 +37,8 @@ function getQueryClient() {
 }
 
 const PageWrapper = ({ children }: React.PropsWithChildren) => {
-      const queryClient = getQueryClient();
-  const [trpcClient] = useState(() =>
-    createTRPCClient<AppRouter>({
-      links: [
-        httpBatchLink({
-          url: 'http://localhost:3001',
-        }),
-      ],
-    }),
-  );
+  const queryClient = getQueryClient();
+  const [trpcClient] = useState(() => trpc);
 
   return (
     <QueryClientProvider client={queryClient}>
