@@ -1,8 +1,11 @@
-import { clsx } from 'clsx';
-import { NextIntlClientProvider } from 'next-intl';
-import { getMessages } from 'next-intl/server';
-import { Inter } from 'next/font/google';
-import { ReactNode } from 'react';
+import {clsx} from 'clsx';
+import {NextIntlClientProvider} from 'next-intl';
+import {getMessages} from 'next-intl/server';
+import {Inter} from 'next/font/google';
+import {ReactNode} from 'react';
+import '@/app/globals.css';
+import {TooltipProvider} from '@radix-ui/react-tooltip';
+import { ThemeProvider } from 'next-themes';
 
 // Change to a font of your preference
 const inter = Inter({subsets: ['latin']});
@@ -19,9 +22,13 @@ export default async function BaseLayout({children, locale}: Props) {
   return (
     <html className="h-full" lang={locale}>
       <body className={clsx(inter.className, 'flex h-full flex-col')}>
-        <NextIntlClientProvider messages={messages}>
-          {children}
-        </NextIntlClientProvider>
+        <ThemeProvider attribute="class">
+          <TooltipProvider>
+            <NextIntlClientProvider messages={messages}>
+              {children}
+            </NextIntlClientProvider>
+          </TooltipProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

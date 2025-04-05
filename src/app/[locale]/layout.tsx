@@ -3,6 +3,8 @@ import {getTranslations, setRequestLocale} from 'next-intl/server';
 import {ReactNode} from 'react';
 import BaseLayout from '@/components/BaseLayout';
 import {routing} from '@/i18n/routing';
+import PageWrapper from '@/app/PageWrapper';
+import Header from '@/components/align-ui/header';
 
 type Props = {
   children: ReactNode;
@@ -35,5 +37,14 @@ export default async function LocaleLayout({
   // Enable static rendering
   setRequestLocale(locale);
 
-  return <BaseLayout locale={locale}>{children}</BaseLayout>;
+  return (
+    <BaseLayout locale={locale}>
+      <PageWrapper>
+        <div className="flex min-h-screen flex-col">
+          <Header />
+          <main className="flex flex-1 flex-col">{children}</main>
+        </div>
+      </PageWrapper>
+    </BaseLayout>
+  );
 }

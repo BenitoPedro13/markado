@@ -2,7 +2,7 @@
 
 'use client';
 
-import { useTabObserver } from '@/src/hooks/use-tab-observer';
+import { useTabObserver } from '@/hooks/use-tab-observer';
 import { cn } from '@/utils/cn';
 import { Slottable } from '@radix-ui/react-slot';
 import * as TabsPrimitive from '@radix-ui/react-tabs';
