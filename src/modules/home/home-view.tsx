@@ -39,13 +39,13 @@ export function UserList() {
     <div>
       <h2>All Users:</h2>
       {userList.data?.map((user) => (
-        <p key={user.id} className="text-black">
+        <p key={user.id} className="">
           {user.name}
         </p>
       ))}
 
       <h2>Single User:</h2>
-      <p className="text-black">{singleUser.data?.name}</p>
+      <p className="">{singleUser.data?.name}</p>
 
       <button onClick={() => userCreator.mutate({name: 'Frodo'})}>
         Create Frodo
