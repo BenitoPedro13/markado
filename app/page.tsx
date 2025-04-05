@@ -1,29 +1,50 @@
-"use client"
+'use client';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useTRPC } from '../utils/trpc';
-
 
 import Link from 'next/link';
 import * as Button from '@/components/ui/button';
 import { RiGithubFill } from '@remixicon/react';
-
 export function UserList() {
-  
-  const trpc = useTRPC(); // use `import { trpc } from './utils/trpc'` if you're using the singleton pattern
-  const userQuery = useQuery(trpc.getUser.queryOptions('1'));
-  const userCreator = useMutation(trpc.createUser.mutationOptions());
+  const trpc = useTRPC();
+  // Get all users
+  const userList = useQuery(trpc.userList.queryOptions());
+  // Get single user
+  const singleUser = useQuery(trpc.getUser.queryOptions('1'));
+  const userCreator = useMutation(
+    trpc.createUser.mutationOptions({
+      onSuccess: () => {
+        // Invalidate and refetch the userList query
+        userList.refetch();
+        // Or if you want to invalidate multiple queries at once
+        // trpc.queryClient.invalidateQueries({ queryKey: ['userList'] });
+        // trpc.queryClient.invalidateQueries({ queryKey: ['getUser'] });
+      },
+    }),
+  );
 
-  if(userQuery.isPending) {
-    return <div>Loading....</div>
+  if (userList.isPending || singleUser.isPending) {
+    return <div>Loading....</div>;
   }
 
-  if(userQuery.isError) {
-    return <div>Error: {userQuery.error.message}</div>
+  if (userList.isError || singleUser.isError) {
+    return (
+      <div>Error: {userList.error?.message || singleUser.error?.message}</div>
+    );
   }
 
   return (
     <div>
-      <p className='text-black'>{userQuery.data?.name}</p>
+      <h2>All Users:</h2>
+      {userList.data?.map((user) => (
+        <p key={user.id} className='text-black'>
+          {user.name}
+        </p>
+      ))}
+
+      <h2>Single User:</h2>
+      <p className='text-black'>{singleUser.data?.name}</p>
+
       <button onClick={() => userCreator.mutate({ name: 'Frodo' })}>
         Create Frodo
       </button>
@@ -34,7 +55,7 @@ export function UserList() {
 export default function Home() {
   return (
     <div className='container mx-auto flex-1 px-5'>
-      <UserList/>
+      <UserList />
       <div className='mt-48 flex flex-col items-center'>
         <h1 className='max-w-3xl text-balance text-center text-title-h3 text-text-strong-950'>
           Quick Starter AlignUI Template with Next.js & Typescript
@@ -92,5 +113,4 @@ export default function Home() {
       </div>
     </div>
   );
-};
-
+}

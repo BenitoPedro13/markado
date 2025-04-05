@@ -9,9 +9,7 @@ export const db = {
   user: {
     findMany: async () => users,
     findById: async (id: string) => {
-      console.log('Finding user with id:', id, typeof id);
       return users.find((user) => {
-        console.log('Checking user:', user, typeof user.id);
         return user.id === id;
       });
     },

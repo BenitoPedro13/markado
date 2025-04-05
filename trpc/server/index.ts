@@ -10,8 +10,6 @@ export const appRouter = router({
     return users;
   }),
   getUser: publicProcedure.input(z.string()).query(async (opts) => {
-    console.log('opts', opts);
-
     const { input } = opts;
     const user = await db.user.findById(input);
 
