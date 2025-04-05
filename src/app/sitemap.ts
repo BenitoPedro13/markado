@@ -1,5 +1,5 @@
 import {Locale, getPathname, routing} from '@/i18n/routing';
-import {host} from '@/src/config';
+import {host} from '@/config';
 import {MetadataRoute} from 'next';
 
 /** Generate the sitemap for the website. */
