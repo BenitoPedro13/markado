@@ -1,5 +1,6 @@
 import {Icon} from '@radix-ui/react-select';
 import {
+  RemixiconComponentType,
   RiCalendarLine,
   RiDashboard3Line,
   RiHeadphoneLine,
@@ -9,42 +10,52 @@ import {
   RiSidebarFoldLine,
   RiTimeLine
 } from '@remixicon/react';
-import React, {PropsWithChildren} from 'react';
+import React, {
+  ElementType,
+  PropsWithChildren,
+  ReactElement,
+  ReactNode
+} from 'react';
 
 import * as TabMenuVertical from '@/components/align-ui/ui/tab-menu-vertical';
 import * as CompactButton from '@/components/align-ui/ui/compact-button';
 import * as Divider from '@/components/align-ui/ui/divider';
 
-const mainItems = [
+interface sidebarItem {
+  icon: ReactNode;
+  label: string;
+}
+
+const mainItems: sidebarItem[] = [
   {
-    icon: RiHomeLine,
+    icon: <RiHomeLine className="w-5 h-5" />,
     label: 'Home'
   },
   {
-    icon: RiCalendarLine,
+    icon: <RiCalendarLine className="w-5 h-5" />,
     label: 'Agendamentos'
   },
   {
-    icon: RiTimeLine,
+    icon: <RiTimeLine className="w-5 h-5" />,
     label: 'Disponibilidade'
   },
   {
-    icon: RiLinksLine,
+    icon: <RiLinksLine className="w-5 h-5" />,
     label: 'Serviços'
   },
   {
-    icon: RiDashboard3Line,
+    icon: <RiDashboard3Line className="w-5 h-5" />,
     label: 'Relatórios'
   }
 ];
 
-const settingsItems = [
+const settingsItems: sidebarItem[] = [
   {
-    icon: RiSettings2Line,
+    icon: <RiSettings2Line className="w-5 h-5" />,
     label: 'Configurações'
   },
   {
-    icon: RiHeadphoneLine,
+    icon: <RiHeadphoneLine className="w-5 h-5" />,
     label: 'Suporte'
   }
 ];
@@ -62,7 +73,6 @@ const Sidebar = ({children}: PropsWithChildren) => {
               <CompactButton.Icon as={RiSidebarFoldLine} />
             </CompactButton.Root>
           </div>
-          
         </div>
 
         <div className="w-full px-5">
@@ -80,14 +90,14 @@ const Sidebar = ({children}: PropsWithChildren) => {
                   <TabMenuVertical.List className="relative h-full">
                     {mainItems.map(({label, icon}) => (
                       <TabMenuVertical.Trigger key={label} value={label}>
-                        <TabMenuVertical.Icon as={icon} />
+                        <TabMenuVertical.Icon>{icon}</TabMenuVertical.Icon>
                         {label}
                       </TabMenuVertical.Trigger>
                     ))}
                     <div className="w-full absolute bottom-4 items-end space-y-2">
-                      {settingsItems.map(({label, icon: Icon}) => (
+                      {settingsItems.map(({label, icon}) => (
                         <TabMenuVertical.Trigger key={label} value={label}>
-                          <TabMenuVertical.Icon as={Icon} />
+                          <TabMenuVertical.Icon>{icon}</TabMenuVertical.Icon>
                           {label}
                         </TabMenuVertical.Trigger>
                       ))}
@@ -105,10 +115,7 @@ const Sidebar = ({children}: PropsWithChildren) => {
         <div className="w-68 p-3 bg-bg-white-0 inline-flex justify-start items-center gap-3 overflow-hidden">
           <div className="w-60 p-3 bg-bg-white-0 rounded-[10px] flex justify-start items-center gap-3 overflow-hidden">
             <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
-              <img
-                className="w-10 h-10"
-                src="https://placehold.co/40x40"
-              />
+              <img className="w-10 h-10" src="https://placehold.co/40x40" />
             </div>
             <div className="flex-1 h-10 inline-flex flex-col justify-start items-start gap-1">
               <div className="self-stretch inline-flex justify-start items-start gap-0.5">
