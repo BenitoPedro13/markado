@@ -2,8 +2,10 @@ import {Icon} from '@radix-ui/react-select';
 import {
   RiCalendarLine,
   RiDashboard3Line,
+  RiHeadphoneLine,
   RiHomeLine,
   RiLinksLine,
+  RiSettings2Line,
   RiSidebarFoldLine,
   RiTimeLine
 } from '@remixicon/react';
@@ -12,7 +14,7 @@ import React from 'react';
 import * as TabMenuVertical from '@/components/align-ui/ui/tab-menu-vertical';
 import * as CompactButton from '@/components/align-ui/ui/compact-button';
 
-const sidebarItems = [
+const mainItems = [
   {
     icon: RiHomeLine,
     label: 'Home'
@@ -35,6 +37,17 @@ const sidebarItems = [
   }
 ];
 
+const settingsItems = [
+  {
+    icon: RiSettings2Line,
+    label: 'Configurações'
+  },
+  {
+    icon: RiHeadphoneLine,
+    label: 'Suporte'
+  }
+];
+
 const Sidebar = () => {
   return (
     <>
@@ -42,7 +55,7 @@ const Sidebar = () => {
         <div className="w-64 p-3 relative bg-bg-white-0 inline-flex justify-center items-center gap-3 overflow-hidden">
           <div className="w-60 p-3 bg-bg-white-0 rounded-[10px] flex justify-between items-center overflow-hidden">
             <div className="h-10 flex justify-start items-center gap-2.5">
-            <img src='./images/logoMarkado.svg'/>
+              <img src="./images/logoMarkado.svg" />
             </div>
             <CompactButton.Root variant="stroke">
               <CompactButton.Icon as={RiSidebarFoldLine} />
@@ -50,45 +63,31 @@ const Sidebar = () => {
           </div>
           <div className="w-56 h-0 left-[20px] top-[88px] absolute outline outline-1 outline-offset-[-0.50px] outline-stroke-soft-200"></div>
         </div>
-        <div className="self-stretch flex-1 px-5 pt-5 pb-4 bg-bg-white-0 flex flex-col justify-start items-start gap-5 overflow-hidden">
-          <div className="self-stretch flex flex-col justify-start items-start gap-2">
-            <div className="self-stretch flex flex-col justify-start items-start gap-1">
-              <div className="w-full max-w-[258px]">
-                <TabMenuVertical.Root defaultValue="Profile Settings">
+        <div className="self-stretch h-full flex-1 px-5 pt-5 pb-4 bg-bg-white-0 flex flex-col justify-start items-start gap-5 overflow-hidden">
+          <div className="self-stretch h-full flex flex-col justify-start items-start gap-2">
+            <div className="self-stretch h-full flex flex-col justify-start items-start gap-1">
+              <div className="h-full w-full max-w-[258px]">
+                <TabMenuVertical.Root defaultValue="Main" className='h-full'>
                   <h4 className="text-subheading-xs text-text-soft-400 mb-2 px-2 py-1 uppercase">
-                    Menu
+                    Main
                   </h4>
                   <TabMenuVertical.List>
-                    {sidebarItems.map(({label, icon: Icon}) => (
+                    {mainItems.map(({label, icon: Icon}) => (
                       <TabMenuVertical.Trigger key={label} value={label}>
                         <TabMenuVertical.Icon as={Icon} />
                         {label}
                       </TabMenuVertical.Trigger>
                     ))}
+                    <div className="w-full h-full flex flex-col justify-end items-end gap-1.5">
+                      {settingsItems.map(({label, icon: Icon}) => (
+                        <TabMenuVertical.Trigger key={label} value={label}>
+                          <TabMenuVertical.Icon as={Icon} />
+                          {label}
+                        </TabMenuVertical.Trigger>
+                      ))}
+                    </div>
                   </TabMenuVertical.List>
                 </TabMenuVertical.Root>
-              </div>
-            </div>
-          </div>
-          <div className="self-stretch flex-1 flex flex-col justify-end items-start gap-1.5">
-            <div className="self-stretch px-3 py-2 bg-bg-white-0 rounded-lg inline-flex justify-start items-center gap-2">
-              <div className="w-5 h-5 relative overflow-hidden">
-                <div className="w-4 h-4 left-[1.83px] top-[1.83px] absolute bg-icon-sub-600" />
-              </div>
-              <div className="flex-1 flex justify-start items-center gap-1">
-                <div className="justify-start text-text-sub-600 text-sm font-medium font-['Plus_Jakarta_Sans'] leading-tight">
-                  Configurações
-                </div>
-              </div>
-            </div>
-            <div className="self-stretch px-3 py-2 bg-bg-white-0 rounded-lg inline-flex justify-start items-center gap-2">
-              <div className="w-5 h-5 relative overflow-hidden">
-                <div className="w-3.5 h-3.5 left-[2.50px] top-[2.50px] absolute bg-icon-sub-600" />
-              </div>
-              <div className="flex-1 flex justify-start items-center gap-1">
-                <div className="justify-start text-text-sub-600 text-sm font-medium font-['Plus_Jakarta_Sans'] leading-tight">
-                  Suporte
-                </div>
               </div>
             </div>
           </div>
