@@ -13,10 +13,7 @@ export default function PageLayout({children, title}: Props) {
 
   return (
     <PageProvider pageName={title}>
-      
-        <Sidebar />
-        {children}
-      
+      <Sidebar>{children}</Sidebar>
     </PageProvider>
   );
 }
