@@ -104,9 +104,9 @@ const Sidebar = ({children}: PropsWithChildren) => {
         </div>
         <div className="w-68 p-3 bg-bg-white-0 inline-flex justify-start items-center gap-3 overflow-hidden">
           <div className="w-60 p-3 bg-bg-white-0 rounded-[10px] flex justify-start items-center gap-3 overflow-hidden">
-            <div className="w-10 h-10 relative rounded-[999px]">
+            <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
               <img
-                className="w-10 h-10 left-0 top-0 absolute rounded-[999px]"
+                className="w-10 h-10"
                 src="https://placehold.co/40x40"
               />
             </div>
