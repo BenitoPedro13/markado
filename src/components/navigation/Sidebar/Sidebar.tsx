@@ -7,7 +7,7 @@ import {
   RiSidebarFoldLine,
   RiTimeLine
 } from '@remixicon/react';
-import React from 'react';
+import React, {PropsWithChildren} from 'react';
 
 import * as TabMenuVertical from '@/components/align-ui/ui/tab-menu-vertical';
 import * as CompactButton from '@/components/align-ui/ui/compact-button';
@@ -35,14 +35,14 @@ const sidebarItems = [
   }
 ];
 
-const Sidebar = () => {
+const Sidebar = ({children}: PropsWithChildren) => {
   return (
-    <>
-      <div className="w-64 fixed h-[900px] bg-bg-white-0 border-r border-stroke-soft-200 inline-flex flex-col justify-start items-start overflow-hidden">
+    <div className="flex">
+      <div className="w-64 h-screen bg-bg-white-0 border-r border-stroke-soft-200 inline-flex flex-col justify-start items-start overflow-hidden">
         <div className="w-64 p-3 relative bg-bg-white-0 inline-flex justify-center items-center gap-3 overflow-hidden">
           <div className="w-60 p-3 bg-bg-white-0 rounded-[10px] flex justify-between items-center overflow-hidden">
             <div className="h-10 flex justify-start items-center gap-2.5">
-            <img src='./images/logoMarkado.svg'/>
+              <img src="./images/logoMarkado.svg" />
             </div>
             <CompactButton.Root variant="stroke">
               <CompactButton.Icon as={RiSidebarFoldLine} />
@@ -93,7 +93,10 @@ const Sidebar = () => {
             </div>
           </div>
         </div>
-        <div className="w-64 p-3 relative bg-bg-white-0 inline-flex justify-start items-center gap-3 overflow-hidden">
+        <div className="w-full px-5">
+          <div className="h-[1px] w-full bg-stroke-soft-200"></div>
+        </div>
+        <div className="w-64 p-3 bg-bg-white-0 inline-flex justify-start items-center gap-3 overflow-hidden">
           <div className="w-60 p-3 bg-bg-white-0 rounded-[10px] flex justify-start items-center gap-3 overflow-hidden">
             <div className="w-10 h-10 relative rounded-[999px]">
               <img
@@ -120,10 +123,10 @@ const Sidebar = () => {
               </div>
             </div>
           </div>
-          <div className="w-56 h-0 left-[20px] top-[1px] absolute outline outline-1 outline-offset-[-0.50px] outline-stroke-soft-200"></div>
         </div>
       </div>
-    </>
+      <div className="p-4">{children}</div>
+    </div>
   );
 };
 
