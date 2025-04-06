@@ -78,9 +78,9 @@ const Sidebar = ({children}: PropsWithChildren) => {
                     Main
                   </h4>
                   <TabMenuVertical.List className="relative h-full">
-                    {mainItems.map(({label, icon: Icon}) => (
+                    {mainItems.map(({label, icon}) => (
                       <TabMenuVertical.Trigger key={label} value={label}>
-                        <TabMenuVertical.Icon as={Icon} />
+                        <TabMenuVertical.Icon as={icon} />
                         {label}
                       </TabMenuVertical.Trigger>
                     ))}
