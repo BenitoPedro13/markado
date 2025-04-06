@@ -301,6 +301,8 @@
   }
 
   .dark {
+    --primary-base: var(--neutral-0);
+
     --bg-strong-950: var(--neutral-0);
     --bg-surface-800: var(--neutral-200);
     --bg-sub-300: var(--neutral-600);
