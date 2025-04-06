@@ -1,6 +1,6 @@
-import { PageProvider } from '@/contexts/PageContext';
-import { ReactNode } from 'react';
-
+import {PageProvider} from '@/contexts/PageContext';
+import {ReactNode} from 'react';
+import Sidebar from '@/components/navigation/Sidebar/Sidebar';
 type Props = {
   children?: ReactNode;
   title: string;
@@ -13,7 +13,10 @@ export default function PageLayout({children, title}: Props) {
 
   return (
     <PageProvider pageName={title}>
-      {children}
+      
+        <Sidebar />
+        {children}
+      
     </PageProvider>
   );
 }

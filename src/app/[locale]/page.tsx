@@ -1,3 +1,4 @@
+import Sidebar from '@/components/navigation/Sidebar/Sidebar';
 import PageLayout from '@/components/PageLayout';
 import Home from '@/modules/home/home-view';
 import {useTranslations} from 'next-intl';
@@ -19,7 +20,7 @@ export default function IndexPage({params: {locale}}: Props) {
 
   return (
     <PageLayout title="Home">
-      {/** Insert here your home page code */}
+      
 
       <Home />
     </PageLayout>
