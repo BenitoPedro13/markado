@@ -1,10 +1,10 @@
 // AlignUI Button v0.0.0
 
-import * as React from 'react';
-import { tv, type VariantProps } from '@/utils/tv';
-import { recursiveCloneChildren } from '@/utils/recursive-clone-children';
 import type { PolymorphicComponentProps } from '@/utils/polymorphic';
+import { recursiveCloneChildren } from '@/utils/recursive-clone-children';
+import { tv, type VariantProps } from '@/utils/tv';
 import { Slot } from '@radix-ui/react-slot';
+import * as React from 'react';
 
 const BUTTON_ROOT_NAME = 'ButtonRoot';
 const BUTTON_ICON_NAME = 'ButtonIcon';
@@ -70,7 +70,7 @@ export const buttonVariants = tv({
       class: {
         root: [
           // base
-          'bg-primary-base text-static-white',
+          'button-background text-static-white',
           // hover
           'hover:bg-primary-darker',
           // focus
@@ -305,4 +305,5 @@ function ButtonIcon<T extends React.ElementType>({
 }
 ButtonIcon.displayName = BUTTON_ICON_NAME;
 
-export { ButtonRoot as Root, ButtonIcon as Icon };
+export { ButtonIcon as Icon, ButtonRoot as Root };
+

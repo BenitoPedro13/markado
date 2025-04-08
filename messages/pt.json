@@ -22,12 +22,28 @@
     "title": "Página não encontrada"
   },
   "PageLayout": {},
-  "SignUpHeader": {
+  "OrDivider": {
+    "or": "Ou"
+  },
+  "SignInHeader": {
     "markado": "Markado",
     "need_help": "Precisa de ajuda?",
     "speak_with_us": "Fale conosco",
     "close": "Fechar"
   },
-  "SignUpForm": {},
-  "SignUpPage": {}
+  "SignInForm": {
+    "welcome_again": "Seja bem-vindo(a) novamente",
+    "to_start": "Para começar, insira seu endereço de e-mail.",
+    "enter_with_your_google_account": "Entre com sua conta Google",
+    "email": "E-mail",
+    "password": "Senha",
+    "forgot_your_password": "Esqueceu a senha?",
+    "start": "Começar",
+    "dont_have_an_account": "Não tem uma conta?",
+    "create": "Criar"
+  },
+  "SignInPage": {
+    "markado": "Markado"
+
+  }
 }

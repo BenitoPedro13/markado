@@ -385,11 +385,29 @@
     --social-zendesk: #fff;
   }
   */
-  
 }
 
 /* custom scale for Remix Icon */
 .remixicon path {
   transform: scale(0.8996);
   transform-origin: center;
+}
+
+.rounded-icon-wrapper {
+  border-radius: 9999px;
+
+  border-image: linear-gradient(to bottom, #717784 100%, #717784 0%) 1;
+}
+
+.button-background {
+  background: linear-gradient(
+      0deg,
+      var(--primary-base, #222530),
+      var(--primary-base, #222530)
+    ),
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.16) 0%,
+      rgba(255, 255, 255, 0) 100%
+    );
 }
