@@ -55,7 +55,8 @@ const TabMenuVerticalTrigger = React.forwardRef<
         'focus:outline-none',
         // active
         'data-[state=active]:bg-bg-weak-50 data-[state=active]:text-text-strong-950',
-        className,
+        'relative data-[state=active]:before:block before:hidden before:w-1 before:h-5 before:absolute before:-left-5 before:top-2 before:rounded-r before:bg-neutral-700 dark:before:bg-bg-strong-950',
+        className
       )}
       {...rest}
     />

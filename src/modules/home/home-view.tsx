@@ -57,7 +57,7 @@ export function UserList() {
 export default function Home() {
   return (
     <div className="container mx-auto flex-1 px-5">
-      <UserList />
+      {/* <UserList /> */}
       <div className="mt-48 flex flex-col items-center">
         <h1 className="max-w-3xl text-balance text-center text-title-h3 text-text-strong-950">
           Quick Starter AlignUI Template with Next.js & Typescript

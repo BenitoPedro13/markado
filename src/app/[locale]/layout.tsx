@@ -41,7 +41,7 @@ export default async function LocaleLayout({
     <BaseLayout locale={locale}>
       <PageWrapper>
         <div className="flex min-h-screen flex-col">
-          <Header />
+          {/* <Header /> */}
           <main className="flex flex-1 flex-col">{children}</main>
         </div>
       </PageWrapper>
