@@ -21,5 +21,13 @@
     "description": "Por favor, verifique o endereço na barra do navegador ou use a navegação para ir a uma página conhecida.",
     "title": "Página não encontrada"
   },
-  "PageLayout": {}
+  "PageLayout": {},
+  "SignUpHeader": {
+    "markado": "Markado",
+    "need_help": "Precisa de ajuda?",
+    "speak_with_us": "Fale conosco",
+    "close": "Fechar"
+  },
+  "SignUpForm": {},
+  "SignUpPage": {}
 }
