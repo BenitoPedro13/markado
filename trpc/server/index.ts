@@ -1,4 +1,3 @@
-import { createHTTPServer } from '@trpc/server/adapters/standalone';
 import { z } from 'zod';
 import { db } from './db';
 import { publicProcedure, router } from './trpc';
