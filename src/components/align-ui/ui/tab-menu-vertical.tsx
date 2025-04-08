@@ -64,15 +64,19 @@ const TabMenuVerticalTrigger = React.forwardRef<
 });
 TabMenuVerticalTrigger.displayName = 'TabMenuVerticalTrigger';
 
-function TabMenuVerticalIcon<T extends React.ElementType>({
-  className,
-  as,
-  ...rest
-}: PolymorphicComponentProps<T>) {
-  const Component = as || 'div';
+interface TabMenuVerticalIconProps extends React.HTMLAttributes<HTMLDivElement> {
+  iconLine: React.ReactElement;
+  iconFill: React.ReactElement;
+}
 
+function TabMenuVerticalIcon({
+  className,
+  iconLine,
+  iconFill,
+  ...rest
+}: TabMenuVerticalIconProps) {
   return (
-    <Component
+    <div
       className={cn(
         // base
         'size-5 text-text-sub-600',
@@ -82,7 +86,18 @@ function TabMenuVerticalIcon<T extends React.ElementType>({
         className,
       )}
       {...rest}
-    />
+    >
+      <div className="hidden group-data-[state=active]/tab-item:block">
+        {React.cloneElement(iconFill, {
+          className: cn('w-full h-full', iconFill.props.className)
+        })}
+      </div>
+      <div className="block group-data-[state=active]/tab-item:hidden">
+        {React.cloneElement(iconLine, {
+          className: cn('w-full h-full', iconLine.props.className)
+        })}
+      </div>
+    </div>
   );
 }
 TabMenuVerticalIcon.displayName = 'TabsVerticalIcon';

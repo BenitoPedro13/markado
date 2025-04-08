@@ -1,16 +1,21 @@
 import {Icon} from '@radix-ui/react-select';
 import {
-  RemixiconComponentType,
-  RiArrowRightFill,
   RiArrowRightSLine,
   RiCalendarLine,
+  RiCalendarFill,
   RiDashboard3Line,
+  RiDashboard3Fill,
   RiHeadphoneLine,
+  RiHeadphoneFill,
   RiHomeLine,
+  RiHomeFill,
   RiLinksLine,
+  RiLinksFill,
   RiSettings2Line,
+  RiSettings2Fill,
   RiSidebarFoldLine,
-  RiTimeLine
+  RiTimeLine,
+  RiTimeFill
 } from '@remixicon/react';
 import React, {
   ElementType,
@@ -25,40 +30,48 @@ import * as Divider from '@/components/align-ui/ui/divider';
 import SidebarFooter from './SidebarFooter';
 
 interface sidebarItem {
-  icon: ReactNode;
+  iconLine: ReactElement;
+  iconFill: ReactElement;
   label: string;
 }
 
 const mainItems: sidebarItem[] = [
   {
-    icon: <RiHomeLine className="w-5 h-5" />,
+    iconLine: <RiHomeLine />,
+    iconFill: <RiHomeFill />,
     label: 'Home'
   },
   {
-    icon: <RiCalendarLine className="w-5 h-5" />,
+    iconLine: <RiCalendarLine />,
+    iconFill: <RiCalendarFill />,
     label: 'Agendamentos'
   },
   {
-    icon: <RiTimeLine className="w-5 h-5" />,
+    iconLine: <RiTimeLine />,
+    iconFill: <RiTimeFill />,
     label: 'Disponibilidade'
   },
   {
-    icon: <RiLinksLine className="w-5 h-5" />,
+    iconLine: <RiLinksLine />,
+    iconFill: <RiLinksFill />,
     label: 'Serviços'
   },
   {
-    icon: <RiDashboard3Line className="w-5 h-5" />,
+    iconLine: <RiDashboard3Line />,
+    iconFill: <RiDashboard3Fill />,
     label: 'Relatórios'
   }
 ];
 
 const settingsItems: sidebarItem[] = [
   {
-    icon: <RiSettings2Line className="w-5 h-5" />,
+    iconLine: <RiSettings2Line />,
+    iconFill: <RiSettings2Fill />,
     label: 'Configurações'
   },
   {
-    icon: <RiHeadphoneLine className="w-5 h-5" />,
+    iconLine: <RiHeadphoneLine />,
+    iconFill: <RiHeadphoneFill />,
     label: 'Suporte'
   }
 ];
@@ -92,16 +105,24 @@ const Sidebar = ({children}: PropsWithChildren) => {
                     Main
                   </h4>
                   <TabMenuVertical.List className="relative h-full">
-                    {mainItems.map(({label, icon}) => (
+                    {mainItems.map(({label, iconLine, iconFill}) => (
                       <TabMenuVertical.Trigger key={label} value={label}>
-                        <TabMenuVertical.Icon>{icon}</TabMenuVertical.Icon>
+                        <TabMenuVertical.Icon
+                          iconLine={iconLine}
+                          iconFill={iconFill}
+                          className="w-5 h-5"
+                        />
                         {label}
                       </TabMenuVertical.Trigger>
                     ))}
                     <div className="w-full absolute bottom-4 items-end space-y-2">
-                      {settingsItems.map(({label, icon}) => (
+                      {settingsItems.map(({label, iconLine, iconFill}) => (
                         <TabMenuVertical.Trigger key={label} value={label}>
-                          <TabMenuVertical.Icon>{icon}</TabMenuVertical.Icon>
+                          <TabMenuVertical.Icon
+                            iconLine={iconLine}
+                            iconFill={iconFill}
+                            className="w-5 h-5"
+                          />
                           {label}
                         </TabMenuVertical.Trigger>
                       ))}
