@@ -20,12 +20,12 @@ const SignUpHeader = () => {
       </Link>
 
       <div className="flex items-center gap-3">
-        <p className="text-paragraph-sm">{t("need_help")}</p>
-        <Button variant="primary">
+        <p className="text-paragraph-sm text-sub-600">{t("need_help")}</p>
+        <Button variant="neutral" mode='stroke'>
           <ButtonIcon>
-            <RiHeadphoneLine size={20} />
+            <RiHeadphoneLine size={20} color='var(--text-sub-600)' />
           </ButtonIcon>
-          <span className='text-label-sm'>{t("speak_with_us")}</span>
+          <span className='text-label-sm text-sub-600'>{t("speak_with_us")}</span>
         </Button>
 
         <button>
