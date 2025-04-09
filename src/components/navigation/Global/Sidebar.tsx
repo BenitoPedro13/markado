@@ -36,11 +36,11 @@ interface sidebarItem {
 }
 
 const mainItems: sidebarItem[] = [
-  {
-    iconLine: <RiHomeLine />,
-    iconFill: <RiHomeFill />,
-    label: 'Home'
-  },
+  // {
+  //   iconLine: <RiHomeLine />,
+  //   iconFill: <RiHomeFill />,
+  //   label: 'Home'
+  // },
   {
     iconLine: <RiCalendarLine />,
     iconFill: <RiCalendarFill />,
