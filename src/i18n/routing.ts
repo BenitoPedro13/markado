@@ -5,7 +5,13 @@ export const routing = defineRouting({
   locales: ['en', 'pt'],
   defaultLocale: 'pt',
   pathnames: {
-    '/': '/'
+    '/': '/',
+    '/sign-up': {
+      pt: '/cadastro'
+    },
+    '/sign-in': {
+      pt: '/entrar'
+    }
   }
 });
 

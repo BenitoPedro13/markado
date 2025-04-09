@@ -1,46 +1,20 @@
 'use client';
 
 import GoogleLogo from '@/../public/images/google_logo.svg';
-import Logo from '@/../public/images/logoMarkado.svg';
 import VerticalStripesPattern from '@/../public/patterns/vertical_stripes.svg';
 import {
-  Root as Button,
-  Icon as ButtonIcon
+  Root as Button
 } from '@/components/align-ui/ui/button';
 import * as Input from '@/components/align-ui/ui/input';
 import { Asterisk, Root as Label } from '@/components/align-ui/ui/label';
 import LocaleSwitcher from '@/components/LocaleSwitcher';
 import OrDivider from '@/components/OrDivider';
 import RoundedIconWrapper from '@/components/RoundedIconWrapper';
-import { RiHeadphoneLine, RiUserAddFill } from '@remixicon/react';
+import { RiUserAddFill } from '@remixicon/react';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
 import { FormEvent } from 'react';
-
-const SignInHeader = () => {
-  const t = useTranslations('SignInHeader');
-
-  return (
-    <header className="py-6 px-11 gap-6 border-b border-b-bg-soft-200 border-b-soft flex justify-between items-center">
-      <Link href={'/'}>
-        <Image src={Logo} width={141} height={40} alt={t('markado')} />
-      </Link>
-
-      <div className="flex items-center gap-3">
-        <p className="text-paragraph-sm text-sub-600">{t('need_help')}</p>
-        <Button variant="neutral" mode="stroke">
-          <ButtonIcon>
-            <RiHeadphoneLine size={20} color="var(--text-sub-600)" />
-          </ButtonIcon>
-          <span className="text-label-sm text-sub-600">
-            {t('speak_with_us')}
-          </span>
-        </Button>
-      </div>
-    </header>
-  );
-};
 
 const SignInForm = () => {
   const t = useTranslations('SignInForm');
@@ -117,7 +91,7 @@ const SignInForm = () => {
         </span>
         <Link
           className="text-label-sm text-text-strong-950 hover:border-b border-b-stroke-strong-950 transition"
-          href={'/signup'}
+          href={'/sign-up'}
         >
           {t('create')}
         </Link>
@@ -133,7 +107,6 @@ const SignInPage = () => {
 
   return (
     <div className="relative flex-1 flex flex-col overflow-hidden">
-      <SignInHeader />
       <div className="relative flex flex-col flex-grow px-6 py-4">
         <main className="flex flex-grow justify-center">
           <SignInForm />
