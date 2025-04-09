@@ -1,13 +1,9 @@
 'use client';
 
 import GoogleLogo from '@/../public/images/google_logo.svg';
-import VerticalStripesPattern from '@/../public/patterns/vertical_stripes.svg';
-import {
-  Root as Button
-} from '@/components/align-ui/ui/button';
+import { Root as Button } from '@/components/align-ui/ui/button';
 import * as Input from '@/components/align-ui/ui/input';
 import { Asterisk, Root as Label } from '@/components/align-ui/ui/label';
-import LocaleSwitcher from '@/components/LocaleSwitcher';
 import OrDivider from '@/components/OrDivider';
 import RoundedIconWrapper from '@/components/RoundedIconWrapper';
 import { RiUserAddFill } from '@remixicon/react';
@@ -105,32 +101,7 @@ const SignInPage = () => {
 
   const currentYear = new Date().getFullYear();
 
-  return (
-    <div className="relative flex-1 flex flex-col overflow-hidden">
-      <div className="relative flex flex-col flex-grow px-6 py-4">
-        <main className="flex flex-grow justify-center">
-          <SignInForm />
-        </main>
-
-        <div className="absolute bottom-0 -z-10 flex justify-center items-center min-w-full">
-          <Image
-            className=""
-            draggable={false}
-            alt=""
-            src={VerticalStripesPattern}
-            width={964}
-          />
-        </div>
-
-        <footer className="self-end w-full flex justify-between items-center">
-          <p className="text-paragraph-sm text-text-sub-600">
-            &copy;{`${currentYear} ${t('markado')}`}
-          </p>
-          <LocaleSwitcher />
-        </footer>
-      </div>
-    </div>
-  );
+  return <SignInForm />;
 };
 
 export default SignInPage;

@@ -14,7 +14,7 @@ const Header = () => {
   const t = useTranslations('SignInHeader');
 
   return (
-    <header className="py-6 px-11 gap-6 border-b border-b-bg-soft-200 border-b-soft flex justify-between items-center">
+    <header className="w-full py-6 px-11 gap-6 border-b border-b-bg-soft-200 border-b-soft flex justify-between items-center">
       <Link href={'/'}>
         <Image src={Logo} width={141} height={40} alt={t('markado')} />
       </Link>
