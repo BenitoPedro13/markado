@@ -11,7 +11,7 @@ const Footer = () => {
 
   return (
     <div className="relative w-full">
-      <div className="absolute bottom-0 -z-10 flex justify-center items-center min-w-full">
+      <div className="absolute -bottom-6 -z-10 flex justify-center items-center min-w-full">
         <Image
           
           draggable={false}

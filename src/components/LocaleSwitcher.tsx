@@ -1,3 +1,4 @@
+import * as Select from '@/components/align-ui/ui/select';
 import { routing } from '@/i18n/routing';
 import { useLocale, useTranslations } from 'next-intl';
 import LocaleSwitcherSelect from './LocaleSwitcherSelect';
@@ -10,9 +11,9 @@ export default function LocaleSwitcher() {
   return (
     <LocaleSwitcherSelect defaultValue={locale} label={t('label')}>
       {routing.locales.map((cur) => (
-        <option key={cur} value={cur}>
+        <Select.Item key={cur} value={cur} className='text-text-sub-600 text-paragraph-sm'>
           {t('locale', {locale: cur})}
-        </option>
+        </Select.Item>
       ))}
     </LocaleSwitcherSelect>
   );
