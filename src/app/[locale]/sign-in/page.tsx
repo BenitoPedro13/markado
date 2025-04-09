@@ -12,7 +12,7 @@ import { Asterisk, Root as Label } from '@/components/align-ui/ui/label';
 import LocaleSwitcher from '@/components/LocaleSwitcher';
 import OrDivider from '@/components/OrDivider';
 import RoundedIconWrapper from '@/components/RoundedIconWrapper';
-import { RiCloseLine, RiHeadphoneLine, RiUserAddFill } from '@remixicon/react';
+import { RiHeadphoneLine, RiUserAddFill } from '@remixicon/react';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -37,12 +37,6 @@ const SignInHeader = () => {
             {t('speak_with_us')}
           </span>
         </Button>
-
-        <button>
-          <ButtonIcon>
-            <RiCloseLine size={20} />
-          </ButtonIcon>
-        </button>
       </div>
     </header>
   );
