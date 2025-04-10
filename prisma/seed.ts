@@ -1,5 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
-
+const {PrismaClient} = require('./app/generated/prisma/client/index.js');
 const prisma = new PrismaClient();
 
 async function main() {
@@ -9,17 +8,17 @@ async function main() {
   // Create initial users
   const users = await Promise.all([
     prisma.user.create({
-      data: { name: 'Bilbo 0' },
+      data: {name: 'Bilbo 0'}
     }),
     prisma.user.create({
-      data: { name: 'Bilbo 1' },
+      data: {name: 'Bilbo 1'}
     }),
     prisma.user.create({
-      data: { name: 'Bilbo 2' },
-    }),
+      data: {name: 'Bilbo 2'}
+    })
   ]);
 
-  console.log('Seed data created:', { users });
+  console.log('Seed data created:', {users});
 }
 
 main()
@@ -29,4 +28,4 @@ main()
   })
   .finally(async () => {
     await prisma.$disconnect();
-  }); 
+  });
