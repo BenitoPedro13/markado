@@ -1,9 +1,9 @@
-import Sidebar from '@/components/navigation/Global/Sidebar';
+
 import PageLayout from '@/components/PageLayout';
 import Home from '@/modules/home/home-view';
 import {useTranslations} from 'next-intl';
 import {setRequestLocale} from 'next-intl/server';
-
+import Header from '@/components/navigation/Header';
 type Props = {
   params: {locale: string};
 };
@@ -20,8 +20,7 @@ export default function IndexPage({params: {locale}}: Props) {
 
   return (
     <PageLayout title="Home">
-      
-
+      <Header />
       <Home />
     </PageLayout>
   );

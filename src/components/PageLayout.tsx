@@ -1,6 +1,6 @@
 import {PageProvider} from '@/contexts/PageContext';
 import {ReactNode} from 'react';
-import Sidebar from '@/components/navigation/Global/Sidebar';
+import Sidebar from '@/components/navigation/Sidebar';
 type Props = {
   children?: ReactNode;
   title: string;
