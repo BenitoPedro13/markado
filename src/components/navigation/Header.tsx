@@ -19,6 +19,7 @@ import * as Switch from '@/components/align-ui/ui/switch';
 import {RiSunLine, RiMoonLine, RiEqualizer3Fill, RiCheckboxCircleFill} from '@remixicon/react';
 import * as CompactButton from '@/components/align-ui/ui/compact-button';
 import * as Modal from '@/components/align-ui/ui/modal';
+import { useNotification } from '@/hooks/use-notification';
 type HeaderVariant = 'scheduling' | 'availability' | 'services' | 'reports';
 type HeaderMode = 'default' | 'inside';
 
@@ -35,6 +36,7 @@ function Header({
   title,
   subtitle
 }: HeaderProps) {
+    const { notification } = useNotification();
   const [open, setOpen] = useState(false);
   if (mode === 'inside') {
     return (
@@ -110,7 +112,13 @@ function Header({
               </Modal.Content>
             </Modal.Root>
           </div>
-          <FancyButton.Root variant="primary">Salvar</FancyButton.Root>
+          <FancyButton.Root variant="primary" onClick={() =>
+        notification({
+          title: 'Salvando...',
+          description:
+            'Salvando as alterações...',
+        })
+      }>Salvar</FancyButton.Root>
         </div>
       </div>
     );
