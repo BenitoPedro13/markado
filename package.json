@@ -77,5 +77,13 @@
     "ts-node": "^10.9.2",
     "typescript": "^5"
   },
-  "prettier": "eslint-config-molindo/.prettierrc.json"
+  "prettier": "eslint-config-molindo/.prettierrc.json",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@prisma/client",
+      "@prisma/engines",
+      "esbuild",
+      "prisma"
+    ]
+  }
 }
