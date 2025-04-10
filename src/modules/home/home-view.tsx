@@ -12,7 +12,7 @@ export function UserList() {
   // Get all users
   const userList = useQuery(trpc.userList.queryOptions());
   // Get single user
-  const singleUser = useQuery(trpc.getUser.queryOptions('1'));
+  const singleUser = useQuery(trpc.getFirstUser.queryOptions());
   const userCreator = useMutation(
     trpc.createUser.mutationOptions({
       onSuccess: () => {
