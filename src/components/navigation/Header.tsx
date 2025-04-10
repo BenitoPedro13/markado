@@ -8,18 +8,20 @@ import {
   RiDashboard3Line,
   RiArrowLeftSLine,
   RiDeleteBinLine,
-  RiPencilFill,
-  RiBnbFill
+  RiShare2Line,
+  RiCopyleftFill,
+  RiFileCopyFill,
+  RiCodeLine
 } from '@remixicon/react';
 import React, {useState} from 'react';
 import * as Button from '@/components/align-ui/ui/button';
 import * as FancyButton from '@/components/align-ui/ui/fancy-button';
-import * as SegmentedControl from '@/components/align-ui/ui/segmented-control';
 import * as Switch from '@/components/align-ui/ui/switch';
-import {RiSunLine, RiMoonLine, RiEqualizer3Fill, RiCheckboxCircleFill} from '@remixicon/react';
-import * as CompactButton from '@/components/align-ui/ui/compact-button';
 import * as Modal from '@/components/align-ui/ui/modal';
-import { useNotification } from '@/hooks/use-notification';
+import {useNotification} from '@/hooks/use-notification';
+import * as ButtonGroup from '@/components/align-ui/ui/button-group';
+import * as Tooltip from '@/components/align-ui/ui/tooltip';
+
 type HeaderVariant = 'scheduling' | 'availability' | 'services' | 'reports';
 type HeaderMode = 'default' | 'inside';
 
@@ -36,7 +38,7 @@ function Header({
   title,
   subtitle
 }: HeaderProps) {
-    const { notification } = useNotification();
+  const {notification} = useNotification();
   const [open, setOpen] = useState(false);
   if (mode === 'inside') {
     return (
@@ -58,16 +60,48 @@ function Header({
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 text-text-sub-600 text-paragraph-xs font-normal font-sans leading-tight w-fit">
-            Definir padrão
+            {variant === 'availability' && 'Definir padrão'}
             <Switch.Root />
           </div>
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2">
             {variant === 'availability' && <></>}
             {variant === 'services' && (
               <>
-                <Button.Root variant="neutral" mode="stroke" size="small">
-                  <Button.Icon as={RiEqualizer3Fill} />
-                </Button.Root>
+                <ButtonGroup.Root>
+                  <Tooltip.Root>
+                    <Tooltip.Trigger asChild>
+                      <ButtonGroup.Item>
+                        <ButtonGroup.Icon as={RiShare2Line} />
+                      </ButtonGroup.Item>
+                    </Tooltip.Trigger>
+                    <Tooltip.Content size="small">
+                      Compartilhar serviço
+                    </Tooltip.Content>
+                  </Tooltip.Root>
+                  <Tooltip.Root>
+                    <Tooltip.Trigger asChild>
+                      <ButtonGroup.Item>
+                        <ButtonGroup.Icon as={RiFileCopyFill} />
+                      </ButtonGroup.Item>
+                    </Tooltip.Trigger>
+                    <Tooltip.Content size="small">
+                      Copiar link do serviço
+                    </Tooltip.Content>
+                  </Tooltip.Root>
+                  <Tooltip.Root>
+                    <Tooltip.Trigger asChild>
+                      <ButtonGroup.Item>
+                        <ButtonGroup.Icon as={RiCodeLine} />
+                      </ButtonGroup.Item>
+                    </Tooltip.Trigger>
+                    <Tooltip.Content size="small">
+                      Criar embed
+                    </Tooltip.Content>
+                  </Tooltip.Root>
+
+                  
+                  
+                </ButtonGroup.Root>
               </>
             )}
             <Modal.Root open={open} onOpenChange={setOpen}>
@@ -105,20 +139,26 @@ function Header({
                       Cancelar
                     </Button.Root>
                   </Modal.Close>
-                  <Button.Root variant='error'  size="small" className="w-full">
+                  <Button.Root variant="error" size="small" className="w-full">
                     Apagar
                   </Button.Root>
                 </Modal.Footer>
               </Modal.Content>
             </Modal.Root>
           </div>
-          <FancyButton.Root variant="primary" onClick={() =>
-        notification({
-          title: 'Salvando...',
-          description:
-            'Salvando as alterações...',
-        })
-      }>Salvar</FancyButton.Root>
+          <FancyButton.Root
+            variant="primary"
+            onClick={() =>
+              notification({
+                title: 'Alterações salvas!',
+                description: 'Seus updates foram salvos com sucesso.',
+                variant: 'stroke',
+                status: 'success'
+              })
+            }
+          >
+            Salvar
+          </FancyButton.Root>
         </div>
       </div>
     );

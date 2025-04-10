@@ -22,7 +22,7 @@ export default function IndexPage({params: {locale}}: Props) {
   return (
     <PageLayout title="Home">
       {/* <Header variant="scheduling"/> */}
-      <Header variant="availability" mode='inside' title='Horário de Férias' subtitle='seg. - sex., 9:00 até 17:00'/>
+      <Header variant="services" mode='inside'/>
       <div className="w-full px-5"><Divider.Root /></div>
       
       
