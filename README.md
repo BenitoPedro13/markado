@@ -8,7 +8,7 @@
 
 [Join the AlignUI Community](https://discord.gg/alignui)
 
-# AlignUI Starter Template with Next.js
+# AlignUI Next.js TypeScript Starter
 
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
@@ -36,3 +36,53 @@ pnpm dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+## Development Setup
+
+### First Time Setup
+
+```bash
+# Complete setup (installs dependencies, sets up database, and seeds data)
+pnpm setup:full
+```
+
+### Daily Development
+
+```bash
+# Starts both the database and Next.js development server
+pnpm dev:db
+```
+
+### Available Commands
+
+#### Setup Commands
+- `pnpm setup` - Install dependencies and generate Prisma client
+- `pnpm setup:db` - Start database, push schema, and seed data
+- `pnpm setup:full` - Complete project setup (dependencies + database)
+- `pnpm reset:all` - Reset everything to a clean slate
+
+#### Database Commands
+- `pnpm db:start` - Start the PostgreSQL database
+- `pnpm db:stop` - Stop the database
+- `pnpm db:generate` - Generate Prisma client
+- `pnpm db:push` - Push schema changes to database
+- `pnpm db:studio` - Open Prisma Studio
+- `pnpm db:seed` - Seed the database
+- `pnpm db:reset` - Reset and reseed the database
+
+#### Development Commands
+- `pnpm dev` - Start Next.js development server
+- `pnpm dev:db` - Start database and Next.js server
+- `pnpm build` - Build for production
+- `pnpm start` - Start production server
+- `pnpm lint` - Run linter
+- `pnpm format:write` - Format code with Prettier
+
+### Database Connection
+
+The development database is accessible at:
+- Host: localhost
+- Port: 5450
+- Database: markado
+- User: postgres
+- Password: (none, trust authentication)
