@@ -11,7 +11,9 @@ import {
   RiShare2Line,
   RiCopyleftFill,
   RiFileCopyFill,
-  RiCodeLine
+  RiCodeLine,
+  RiSaveLine,
+  RiSaveFill
 } from '@remixicon/react';
 import React, {useState} from 'react';
 import * as Button from '@/components/align-ui/ui/button';
@@ -22,6 +24,7 @@ import {useNotification} from '@/hooks/use-notification';
 import * as ButtonGroup from '@/components/align-ui/ui/button-group';
 import * as Tooltip from '@/components/align-ui/ui/tooltip';
 
+import { DatepickerRangeDemo } from '@/components/align-ui/daterange';
 type HeaderVariant = 'scheduling' | 'availability' | 'services' | 'reports';
 type HeaderMode = 'default' | 'inside';
 
@@ -32,6 +35,15 @@ type HeaderProps = {
   subtitle?: string; // Subtítulo opcional para modo inside (ex: "seg. - sex., 9:00 até 17:00")
 };
 
+type SingleDatepickerProps = {
+    defaultValue?: Date;
+    value?: Date;
+    onChange?: (date: Date | undefined) => void;
+  };
+   
+
+
+
 function Header({
   variant = 'scheduling',
   mode = 'default',
@@ -40,6 +52,9 @@ function Header({
 }: HeaderProps) {
   const {notification} = useNotification();
   const [open, setOpen] = useState(false);
+
+    
+
   if (mode === 'inside') {
     return (
       <div className="w-full h-[88px] px-8 py-5 relative bg-bg-white-0 inline-flex justify-between items-center overflow-hidden">
@@ -111,7 +126,8 @@ function Header({
                   mode="stroke"
                   onClick={() => setOpen(true)}
                 >
-                  <RiDeleteBinLine />
+                  <Button.Icon as={RiDeleteBinLine} />
+                  Apagar
                 </Button.Root>
               </Modal.Trigger>
               <Modal.Content className="max-w-[440px]">
@@ -148,6 +164,7 @@ function Header({
           </div>
           <FancyButton.Root
             variant="primary"
+            size='small'
             onClick={() =>
               notification({
                 title: 'Alterações salvas!',
@@ -157,6 +174,7 @@ function Header({
               })
             }
           >
+            <FancyButton.Icon as={RiSaveFill} />
             Salvar
           </FancyButton.Root>
         </div>
@@ -242,14 +260,7 @@ function Header({
             'Visualize estatísticas e relatórios sobre seus agendamentos.',
           buttons: (
             <div className="reports">
-              <Button.Root variant="neutral" mode="stroke">
-                <Button.Icon as={RiDashboard3Line} />
-                Relatórios
-              </Button.Root>
-              <FancyButton.Root variant="neutral">
-                <FancyButton.Icon as={RiAddLine} />
-                Gerar Relatório
-              </FancyButton.Root>
+              <DatepickerRangeDemo />
             </div>
           )
         };
