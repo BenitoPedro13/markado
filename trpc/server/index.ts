@@ -8,28 +8,40 @@ export const appRouter = router({
     return prisma.user.findMany();
   }),
   getUser: publicProcedure.input(z.string()).query(async (opts) => {
-    const { input } = opts;
+    const {input} = opts;
     const user = await prisma.user.findUnique({
-      where: { id: input },
+      where: {id: input}
     });
 
     if (!user) {
       throw new TRPCError({
         code: 'NOT_FOUND',
-        message: `No user with id '${input}'`,
+        message: `No user with id '${input}'`
       });
     }
-    
+
+    return user;
+  }),
+  getFirstUser: publicProcedure.query(async () => {
+    const user = await prisma.user.findFirst();
+
+    if (!user) {
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: `No user found`
+      });
+    }
+
     return user;
   }),
   createUser: publicProcedure
-    .input(z.object({ name: z.string() }))
+    .input(z.object({name: z.string()}))
     .mutation(async (opts) => {
-      const { input } = opts;
+      const {input} = opts;
       return prisma.user.create({
-        data: input,
+        data: input
       });
-    }),
+    })
 });
 
 export type AppRouter = typeof appRouter;
