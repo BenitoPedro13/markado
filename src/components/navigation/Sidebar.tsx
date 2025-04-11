@@ -152,8 +152,8 @@ const Sidebar = ({children}: PropsWithChildren) => {
                   </h4>
                   <TabMenuVertical.List className="relative h-full">
                     {mainItems.map(({label, iconLine, iconFill, link}) => (
-                      <Link href={`/pt/${link}`}>
-                        <TabMenuVertical.Trigger key={label} value={label}>
+                      <Link href={`/pt/${link}`} key={label}>
+                        <TabMenuVertical.Trigger value={label}>
                           <TabMenuVertical.Icon
                             iconLine={iconLine}
                             iconFill={iconFill}
@@ -164,18 +164,20 @@ const Sidebar = ({children}: PropsWithChildren) => {
                       </Link>
                     ))}
                     <div className="w-full absolute bottom-4 items-end space-y-2">
-                      {settingsItems.map(({label, iconLine, iconFill, link}) => (
-                        <Link href={`/pt/${link}`}>
-                          <TabMenuVertical.Trigger key={label} value={label}>
-                            <TabMenuVertical.Icon
-                              iconLine={iconLine}
-                              iconFill={iconFill}
-                              className="w-5 h-5"
-                            />
-                            {label}
-                          </TabMenuVertical.Trigger>
-                        </Link>
-                      ))}
+                      {settingsItems.map(
+                        ({label, iconLine, iconFill, link}) => (
+                          <Link href={`/pt/${link}`} key={label}>
+                            <TabMenuVertical.Trigger value={label}>
+                              <TabMenuVertical.Icon
+                                iconLine={iconLine}
+                                iconFill={iconFill}
+                                className="w-5 h-5"
+                              />
+                              {label}
+                            </TabMenuVertical.Trigger>
+                          </Link>
+                        )
+                      )}
                     </div>
                   </TabMenuVertical.List>
                 </TabMenuVertical.Root>
