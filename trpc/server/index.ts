@@ -36,7 +36,7 @@ export const appRouter = router({
     return user;
   }),
   createUser: publicProcedure
-    .input(z.object({name: z.string()}))
+    .input(z.object({name: z.string(), email: z.string(), image: z.string()}))
     .mutation(async (opts) => {
       const {input} = opts;
       return prisma.user.create({
