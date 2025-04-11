@@ -24,8 +24,9 @@ export default function IndexPage({params: {locale}}: Props) {
       {/* <Header variant="scheduling"/> */}
       <Header variant="availability" mode="inside" />
       <Divider.Root />
-
-      <Home />
+      {/* <Home />
+       */}
+      apsidjaoisdjoaisjdoasijdoaisjdoaisjdoijaosidjaosidjoj
     </PageLayout>
   );
 }

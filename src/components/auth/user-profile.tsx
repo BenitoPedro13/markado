@@ -23,7 +23,7 @@ export default function UserProfile() {
   }
 
   return (
-    <div className="p-4 bg-bg-weak-50 rounded shadow">
+    <div className="p-4">
       <h3 className="text-lg font-semibold mb-2">User Profile</h3>
       <div className="flex items-center gap-3">
         {session.user.image && (

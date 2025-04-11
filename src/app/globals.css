@@ -299,7 +299,7 @@
     --stable-light: var(--teal-200);
     --stable-lighter: var(--teal-50);
   }
-  /*
+  
   .dark {
     --primary-base: var(--neutral-0);
 
@@ -384,7 +384,7 @@
     --social-amazon: #fff;
     --social-zendesk: #fff;
   }
-  */
+ 
 }
 
 /* custom scale for Remix Icon */

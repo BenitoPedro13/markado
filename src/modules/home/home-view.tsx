@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import * as Button from '@/components/align-ui/ui/button';
-import {RiGithubFill} from '@remixicon/react';
+// import * as Button from '@/components/align-ui/ui/button';
+// import {RiGithubFill} from '@remixicon/react';
 import SignIn from '@/components/auth/sign-in';
 import UserProfile from '@/components/auth/user-profile';
 import { auth } from '@/auth';
@@ -14,14 +14,14 @@ export default async function Home() {
       {isAuthenticated ? (
         <UserProfile />
       ) : (
-        <div className="p-4 bg-bg-weak-50 rounded shadow">
+        <div className="p-4">
           <h3 className="text-lg font-semibold mb-4">Welcome</h3>
           <p className="mb-4">Please sign in to continue</p>
           <SignIn />
         </div>
       )}
 
-      <div className="mt-48 flex flex-col items-center">
+      {/* <div className="mt-48 flex flex-col items-center">
         <h1 className="max-w-3xl text-balance text-center text-title-h3 text-text-strong-950">
           Quick Starter AlignUI Template with Next.js & Typescript
         </h1>
@@ -75,7 +75,7 @@ export default async function Home() {
             <li>Inter font setup.</li>
           </ul>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }
