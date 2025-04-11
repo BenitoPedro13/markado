@@ -1,14 +1,23 @@
 'use client';
 
+import { useQuery } from '@tanstack/react-query';
+import { useTRPC } from '@/utils/trpc';
 import Image from 'next/image';
-import SignOut from '@/components/auth/sign-out';
-import { Session } from 'next-auth';
+import SignOut from '@/components/auth/sign-out'
 
-type UserProfileProps = {
-  session?: Session | null;
-}
 
-export default function UserProfile({ session }: UserProfileProps) {
+export default function UserProfile() {
+  const trpc = useTRPC();
+  const { data: session, isLoading, error } = useQuery(trpc.getSession.queryOptions());
+
+  if (isLoading) {
+    return <div>Loading session...</div>;
+  }
+
+  if (error) {
+    return <div>Error loading session: {error.message}</div>;
+  }
+
   if (!session || !session.user) {
     return <div>Not signed in</div>;
   }
@@ -18,9 +27,9 @@ export default function UserProfile({ session }: UserProfileProps) {
       <h3 className="text-lg font-semibold mb-2">User Profile</h3>
       <div className="flex items-center gap-3">
         {session.user.image && (
-          <Image 
-            src={session.user.image} 
-            alt={session.user.name || 'User'} 
+          <Image
+            src={session.user.image}
+            alt={session.user.name || 'User'}
             width={40}
             height={40}
             className="rounded-full"
