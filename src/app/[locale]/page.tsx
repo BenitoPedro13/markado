@@ -22,11 +22,9 @@ export default function IndexPage({params: {locale}}: Props) {
   return (
     <PageLayout title="Home">
       {/* <Header variant="scheduling"/> */}
-      <Header variant="reports"/>
-      <div className="w-full px-5"><Divider.Root /></div>
-      
-      
-      
+      <Header variant="reports" />
+      <Divider.Root />
+
       <Home />
     </PageLayout>
   );
