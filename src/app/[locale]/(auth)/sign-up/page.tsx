@@ -87,7 +87,7 @@ const SignInForm = () => {
         </span>
         <Link
           className="text-label-sm text-text-strong-950 hover:border-b border-b-stroke-strong-950 transition"
-          href={'/sign-up'}
+          href={'/pt/sign-up'}
         >
           {t('create')}
         </Link>
