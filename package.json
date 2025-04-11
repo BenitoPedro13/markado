@@ -48,7 +48,7 @@
     "bcryptjs": "^3.0.2",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.4",
-    "date-fns": "^3",
+    "date-fns": "^3.6.0",
     "eslint-config-molindo": "^8.0.0",
     "merge-refs": "^1.3.0",
     "next": "14.2.16",
@@ -81,5 +81,13 @@
     "ts-node": "^10.9.2",
     "typescript": "^5"
   },
-  "prettier": "eslint-config-molindo/.prettierrc.json"
+  "prettier": "eslint-config-molindo/.prettierrc.json",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@prisma/client",
+      "@prisma/engines",
+      "esbuild",
+      "prisma"
+    ]
+  }
 }

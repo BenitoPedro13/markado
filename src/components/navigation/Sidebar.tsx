@@ -80,8 +80,9 @@ const settingsItems: sidebarItem[] = [
 const Sidebar = ({children}: PropsWithChildren) => {
   return (
     <div className="flex">
-      {/* Header */}
+      {/* Sidebar */}
       <div className="w-[280px] h-screen bg-bg-white-0 border-r border-stroke-soft-200 inline-flex flex-col justify-start items-start overflow-hidden">
+        {/* Sidebar Header */}
         <div className="w-full p-3 relative bg-bg-white-0 inline-flex justify-center items-center gap-3 overflow-hidden">
           <div className="w-full p-3 bg-bg-white-0 rounded-[10px] flex justify-between items-center overflow-hidden">
             <div className="h-10 flex justify-start items-center gap-2.5">
@@ -180,7 +181,7 @@ const Sidebar = ({children}: PropsWithChildren) => {
           <Divider.Root variant="line" />
         </div>
 
-        {/* Footer */}
+        
         <SidebarFooter
           variant="pro"
           name="Marcus Dutra"
@@ -188,7 +189,8 @@ const Sidebar = ({children}: PropsWithChildren) => {
           avatarUrl="https://media.contra.com/image/upload/c_fill,f_avif,h_160,q_auto:good,w_160/rbaw0sc545eixfngewsw"
         />
       </div>
-      <div>{children}</div>
+      {/* Main Content */}
+      <div className='w-full'>{children}</div>
     </div>
   );
 };
