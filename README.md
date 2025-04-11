@@ -35,6 +35,22 @@ pnpm i
 pnpm dev
 ```
 
+**Environment Variables Setup**
+
+1. Copy the `.env.example` file to `.env`:
+
+```bash
+cp .env.example .env
+```
+
+2. Update the variables in `.env` with your own values
+
+3. Generate a secure `AUTH_SECRET` using:
+
+```bash
+openssl rand -base64 32
+```
+
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 ## Development Setup

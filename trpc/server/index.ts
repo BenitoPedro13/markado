@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { publicProcedure, router } from './trpc';
 import { TRPCError } from '@trpc/server';
+import { auth } from '@/auth';
 
 export const appRouter = router({
   userList: publicProcedure.query(async () => {
@@ -35,13 +36,17 @@ export const appRouter = router({
     return user;
   }),
   createUser: publicProcedure
-    .input(z.object({name: z.string()}))
+    .input(z.object({name: z.string(), email: z.string(), image: z.string()}))
     .mutation(async (opts) => {
       const {input} = opts;
       return prisma.user.create({
         data: input
       });
-    })
+    }),
+  getSession: publicProcedure.query(async () => {
+    const session = await auth();
+    return session;
+  })
 });
 
 export type AppRouter = typeof appRouter;

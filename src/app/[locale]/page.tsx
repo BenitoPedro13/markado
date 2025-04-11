@@ -4,6 +4,7 @@ import Home from '@/modules/home/home-view';
 import {useTranslations} from 'next-intl';
 import {setRequestLocale} from 'next-intl/server';
 import Header from '@/components/navigation/Header';
+import * as Divider from '@/components/align-ui/ui/divider';
 type Props = {
   params: {locale: string};
 };
@@ -20,7 +21,10 @@ export default function IndexPage({params: {locale}}: Props) {
 
   return (
     <PageLayout title="Home">
-      <Header />
+      {/* <Header variant="scheduling"/> */}
+      <Header variant="reports" />
+      <Divider.Root />
+
       <Home />
     </PageLayout>
   );
