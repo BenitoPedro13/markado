@@ -1,6 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import 'react';
-import en from './messages/en.json';
+import en from './messages/pt.json';
 
 declare module 'react' {
   interface CSSProperties {

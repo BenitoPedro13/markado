@@ -5,7 +5,6 @@ import {useTranslations} from 'next-intl';
 import {setRequestLocale} from 'next-intl/server';
 import Header from '@/components/navigation/Header';
 import * as Divider from '@/components/align-ui/ui/divider';
-import { RiSettings4Line } from '@remixicon/react';
 type Props = {
   params: {locale: string};
 };
@@ -25,8 +24,9 @@ export default function IndexPage({params: {locale}}: Props) {
       {/* <Header variant="scheduling"/> */}
       <Header variant="availability" mode="inside" />
       <Divider.Root />
-
-      <Home />
+      {/* <Home />
+       */}
+      apsidjaoisdjoaisjdoasijdoaisjdoaisjdoijaosidjaosidjoj
     </PageLayout>
   );
 }

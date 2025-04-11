@@ -12,7 +12,7 @@
   },
   "LocaleSwitcher": {
     "label": "Change language",
-    "locale": "{locale, select, pt {🇧🇷 Portuguese} en {🇺🇸 English} other {Unknown}}"
+    "locale": "{locale, select, pt {PT-BR} en {EN-US} other {Unknown}}"
   },
   "Manifest": {
     "name": "NextJS Internationalization Example"

@@ -1,10 +1,10 @@
 // AlignUI Input v0.0.0
 
-import * as React from 'react';
-import { tv, type VariantProps } from '@/utils/tv';
-import { recursiveCloneChildren } from '@/utils/recursive-clone-children';
 import type { PolymorphicComponentProps } from '@/utils/polymorphic';
+import { recursiveCloneChildren } from '@/utils/recursive-clone-children';
+import { tv, type VariantProps } from '@/utils/tv';
 import { Slot } from '@radix-ui/react-slot';
+import * as React from 'react';
 
 const INPUT_ROOT_NAME = 'InputRoot';
 const INPUT_WRAPPER_NAME = 'InputWrapper';
@@ -42,7 +42,7 @@ export const inputVariants = tv({
     ],
     input: [
       // base
-      'w-full bg-transparent bg-none text-paragraph-sm text-text-strong-950 outline-none',
+      'w-full bg-transparent bg-none text-paragraph-sm text-text-strong-950 outline-none p-2.5 pl-3',
       'transition duration-200 ease-out',
       // placeholder
       'placeholder:select-none placeholder:text-text-soft-400 placeholder:transition placeholder:duration-200 placeholder:ease-out',
@@ -306,10 +306,7 @@ function InputInlineAffix({
 InputInlineAffix.displayName = INPUT_INLINE_AFFIX_NAME;
 
 export {
-  InputRoot as Root,
-  InputWrapper as Wrapper,
-  Input,
-  InputIcon as Icon,
-  InputAffix as Affix,
-  InputInlineAffix as InlineAffix,
+  InputAffix as Affix, InputIcon as Icon, InputInlineAffix as InlineAffix, Input, InputRoot as Root,
+  InputWrapper as Wrapper
 };
+

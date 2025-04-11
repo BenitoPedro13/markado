@@ -299,7 +299,7 @@
     --stable-light: var(--teal-200);
     --stable-lighter: var(--teal-50);
   }
-
+  
   .dark {
     --primary-base: var(--neutral-0);
 
@@ -384,11 +384,30 @@
     --social-amazon: #fff;
     --social-zendesk: #fff;
   }
-  /*#endregion Colors */
+ 
 }
 
 /* custom scale for Remix Icon */
 .remixicon path {
   transform: scale(0.8996);
   transform-origin: center;
+}
+
+.rounded-icon-wrapper {
+  border-radius: 9999px;
+
+  border-image: linear-gradient(to bottom, #717784 100%, #717784 0%) 1;
+}
+
+.button-background {
+  background: linear-gradient(
+      0deg,
+      var(--primary-base, #222530),
+      var(--primary-base, #222530)
+    ),
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.16) 0%,
+      rgba(255, 255, 255, 0) 100%
+    );
 }

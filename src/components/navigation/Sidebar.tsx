@@ -1,14 +1,10 @@
-import {Icon} from '@radix-ui/react-select';
 import {
-  RiArrowRightSLine,
   RiCalendarLine,
   RiCalendarFill,
   RiDashboard3Line,
   RiDashboard3Fill,
   RiHeadphoneLine,
   RiHeadphoneFill,
-  RiHomeLine,
-  RiHomeFill,
   RiLinksLine,
   RiLinksFill,
   RiSettings2Line,
@@ -17,23 +13,20 @@ import {
   RiTimeLine,
   RiTimeFill
 } from '@remixicon/react';
-import React, {
-  ElementType,
-  PropsWithChildren,
-  ReactElement,
-  ReactNode
-} from 'react';
-import Image from 'next/image';
+import React, {PropsWithChildren, ReactElement} from 'react';
 
 import * as TabMenuVertical from '@/components/align-ui/ui/tab-menu-vertical';
 import * as CompactButton from '@/components/align-ui/ui/compact-button';
 import * as Divider from '@/components/align-ui/ui/divider';
 import SidebarFooter from './SidebarFooter';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 interface sidebarItem {
   iconLine: ReactElement;
   iconFill: ReactElement;
   label: string;
+  link: string;
 }
 
 const mainItems: sidebarItem[] = [
@@ -45,22 +38,26 @@ const mainItems: sidebarItem[] = [
   {
     iconLine: <RiCalendarLine />,
     iconFill: <RiCalendarFill />,
-    label: 'Agendamentos'
+    label: 'Agendamentos',
+    link: 'bookings'
   },
   {
     iconLine: <RiTimeLine />,
     iconFill: <RiTimeFill />,
-    label: 'Disponibilidade'
+    label: 'Disponibilidade',
+    link: 'availability'
   },
   {
     iconLine: <RiLinksLine />,
     iconFill: <RiLinksFill />,
-    label: 'Serviços'
+    label: 'Serviços',
+    link: 'services'
   },
   {
     iconLine: <RiDashboard3Line />,
     iconFill: <RiDashboard3Fill />,
-    label: 'Relatórios'
+    label: 'Relatórios',
+    link: 'reports'
   }
 ];
 
@@ -68,16 +65,22 @@ const settingsItems: sidebarItem[] = [
   {
     iconLine: <RiSettings2Line />,
     iconFill: <RiSettings2Fill />,
-    label: 'Configurações'
+    label: 'Configurações',
+    link: 'settings'
   },
   {
     iconLine: <RiHeadphoneLine />,
     iconFill: <RiHeadphoneFill />,
-    label: 'Suporte'
+    label: 'Suporte',
+    link: 'support'
   }
 ];
 
 const Sidebar = ({children}: PropsWithChildren) => {
+  // const pathname = usePathname()
+
+
+
   return (
     <div className="flex">
       {/* Sidebar */}
@@ -94,10 +97,10 @@ const Sidebar = ({children}: PropsWithChildren) => {
                 xmlns="http://www.w3.org/2000/svg"
               >
                 <path
-                  fill-rule="evenodd"
-                  clip-rule="evenodd"
+                  fillRule="evenodd"
+                  clipRule="evenodd"
                   d="M8.36465 0.0234375C9.84986 0.0234375 11.2742 0.613438 12.3245 1.66364L16.0635 5.40265C18.2504 7.58958 21.7961 7.58958 23.9831 5.40264L27.7221 1.66364C28.7723 0.613436 30.1966 0.0234375 31.6819 0.0234375H34.4232C37.516 0.0234375 40.0232 2.53064 40.0232 5.62344V10.4099L22.8545 27.6862C21.4622 29.0872 19.1949 29.0846 17.8059 27.6803L15.756 25.6079C14.4564 24.294 12.3493 24.294 11.0496 25.6079L9.88673 26.7836C8.58711 28.0975 8.58711 30.2277 9.88672 31.5416L15.4839 37.2003L15.4856 37.2021L17.974 39.7178C18.0841 39.8291 18.2 39.931 18.3207 40.0234H5.6232C2.5304 40.0234 0.0231934 37.5162 0.0231934 34.4234V5.62344C0.0231934 2.53064 2.5304 0.0234375 5.62319 0.0234375H8.36465ZM22.3337 40.0234H34.4232C37.516 40.0234 40.0232 37.5162 40.0232 34.4234V22.2497L26.2079 36.1515L26.1964 36.1631L22.6804 39.7178C22.5703 39.8291 22.4544 39.931 22.3337 40.0234Z"
-                  fill="var(--bg-strong-950"
+                  fill="var(--bg-strong-950)"
                 />
                 <path
                   d="M134.991 16.1602C138.639 16.1602 141.135 18.8482 141.135 22.3282C141.135 25.8322 138.711 28.4722 134.991 28.4722C131.295 28.4722 128.895 25.8322 128.895 22.3282C128.895 18.8482 131.319 16.1602 134.991 16.1602ZM134.991 18.4402C132.735 18.4402 131.367 20.2402 131.367 22.3282C131.367 24.4402 132.735 26.1682 134.991 26.1682C137.271 26.1682 138.639 24.4402 138.639 22.3282C138.639 20.2402 137.151 18.4402 134.991 18.4402Z"
@@ -148,18 +151,8 @@ const Sidebar = ({children}: PropsWithChildren) => {
                     Main
                   </h4>
                   <TabMenuVertical.List className="relative h-full">
-                    {mainItems.map(({label, iconLine, iconFill}) => (
-                      <TabMenuVertical.Trigger key={label} value={label}>
-                        <TabMenuVertical.Icon
-                          iconLine={iconLine}
-                          iconFill={iconFill}
-                          className="w-5 h-5"
-                        />
-                        {label}
-                      </TabMenuVertical.Trigger>
-                    ))}
-                    <div className="w-full absolute bottom-4 items-end space-y-2">
-                      {settingsItems.map(({label, iconLine, iconFill}) => (
+                    {mainItems.map(({label, iconLine, iconFill, link}) => (
+                      <Link href={`/pt/${link}`}>
                         <TabMenuVertical.Trigger key={label} value={label}>
                           <TabMenuVertical.Icon
                             iconLine={iconLine}
@@ -168,6 +161,20 @@ const Sidebar = ({children}: PropsWithChildren) => {
                           />
                           {label}
                         </TabMenuVertical.Trigger>
+                      </Link>
+                    ))}
+                    <div className="w-full absolute bottom-4 items-end space-y-2">
+                      {settingsItems.map(({label, iconLine, iconFill, link}) => (
+                        <Link href={`/pt/${link}`}>
+                          <TabMenuVertical.Trigger key={label} value={label}>
+                            <TabMenuVertical.Icon
+                              iconLine={iconLine}
+                              iconFill={iconFill}
+                              className="w-5 h-5"
+                            />
+                            {label}
+                          </TabMenuVertical.Trigger>
+                        </Link>
                       ))}
                     </div>
                   </TabMenuVertical.List>
@@ -181,7 +188,6 @@ const Sidebar = ({children}: PropsWithChildren) => {
           <Divider.Root variant="line" />
         </div>
 
-        
         <SidebarFooter
           variant="pro"
           name="Marcus Dutra"
@@ -190,7 +196,7 @@ const Sidebar = ({children}: PropsWithChildren) => {
         />
       </div>
       {/* Main Content */}
-      <div className='w-full'>{children}</div>
+      <div className="w-full">{children}</div>
     </div>
   );
 };
