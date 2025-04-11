@@ -13,7 +13,8 @@ import {
   RiFileCopyFill,
   RiCodeLine,
   RiSaveLine,
-  RiSaveFill
+  RiSaveFill,
+  RiSettings4Line
 } from '@remixicon/react';
 import React, {useState} from 'react';
 import * as Button from '@/components/align-ui/ui/button';
@@ -25,7 +26,7 @@ import * as ButtonGroup from '@/components/align-ui/ui/button-group';
 import * as Tooltip from '@/components/align-ui/ui/tooltip';
 
 import { DatepickerRangeDemo } from '@/components/align-ui/daterange';
-type HeaderVariant = 'scheduling' | 'availability' | 'services' | 'reports';
+type HeaderVariant = 'scheduling' | 'availability' | 'services' | 'reports' | 'settings';
 type HeaderMode = 'default' | 'inside';
 
 type HeaderProps = {
@@ -33,6 +34,7 @@ type HeaderProps = {
   mode?: HeaderMode;
   title?: string; // Título personalizado para modo inside
   subtitle?: string; // Subtítulo opcional para modo inside (ex: "seg. - sex., 9:00 até 17:00")
+  icon?: React.ReactNode; // Ícone personalizado para a variante settings
 };
 
 type SingleDatepickerProps = {
@@ -48,7 +50,8 @@ function Header({
   variant = 'scheduling',
   mode = 'default',
   title,
-  subtitle
+  subtitle,
+  icon
 }: HeaderProps) {
   const {notification} = useNotification();
   const [open, setOpen] = useState(false);
@@ -184,6 +187,17 @@ function Header({
 
   const getHeaderContent = () => {
     switch (variant) {
+      case 'settings':
+        return {
+          icon: icon || <RiSettings4Line className="text-bg-strong-950" />,
+          title: 'Configurações',
+          description: 'Gerencie as configurações do seu projeto.',
+          buttons: (
+            <div className="settings">
+              
+            </div>
+          )
+        };
       case 'scheduling':
         return {
           icon: <RiCalendarLine className="text-bg-strong-950" />,
@@ -286,13 +300,13 @@ function Header({
     }
   };
 
-  const {icon, title: variantTitle, description, buttons} = getHeaderContent();
+  const {icon: headerIcon, title: variantTitle, description, buttons} = getHeaderContent();
 
   return (
-    <div className="w-full px-8 py-5 relative bg-bg-white-0 inline-flex justify-start items-center gap-3 overflow-hidden">
+    <div className="w-full px-8 py-5 relative inline-flex justify-start items-center gap-3 overflow-hidden">
       <div className="flex-1 flex justify-center items-start gap-3.5">
         <div className="p-3 bg-bg-white-0 rounded-[999px] shadow-[0px_1px_2px_0px_rgba(10,13,20,0.03)] outline outline-1 outline-offset-[-1px] outline-stroke-soft-200 flex justify-center items-center overflow-hidden">
-          {icon}
+          {headerIcon}
         </div>
         <div className="flex-1 inline-flex flex-col justify-start items-start gap-1">
           <div className="self-stretch justify-start text-text-strong-950 text-lg font-medium font-sans leading-normal">
