@@ -11,6 +11,8 @@
     "db:start": "docker compose up -d",
     "db:stop": "docker compose down",
     "db:generate": "prisma generate",
+    "db:migrate:dev": "prisma migrate dev",
+    "db:migrate:reset": "prisma migrate reset",
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
     "db:seed": "ts-node prisma/seed.ts",
@@ -22,7 +24,7 @@
     "reset:all": "pnpm db:stop && docker compose down -v && pnpm setup:full"
   },
   "dependencies": {
-    "@auth/prisma-adapter": "^2.8.0",
+    "@auth/prisma-adapter": "2.7.2",
     "@prisma/client": "^6.6.0",
     "@radix-ui/react-accordion": "^1.2.1",
     "@radix-ui/react-checkbox": "^1.1.2",
