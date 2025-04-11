@@ -5,6 +5,7 @@ import {useTranslations} from 'next-intl';
 import {setRequestLocale} from 'next-intl/server';
 import Header from '@/components/navigation/Header';
 import * as Divider from '@/components/align-ui/ui/divider';
+import { RiSettings4Line } from '@remixicon/react';
 type Props = {
   params: {locale: string};
 };
@@ -22,7 +23,7 @@ export default function IndexPage({params: {locale}}: Props) {
   return (
     <PageLayout title="Home">
       {/* <Header variant="scheduling"/> */}
-      <Header variant="reports"/>
+      <Header variant="settings" title='Configurações' subtitle='Personalize e edite detalhes essenciais do perfil.' icon={<RiSettings4Line/>}/>
       <div className="w-full px-5"><Divider.Root /></div>
       
       
