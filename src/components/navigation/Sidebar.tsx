@@ -1,14 +1,10 @@
-import {Icon} from '@radix-ui/react-select';
 import {
-  RiArrowRightSLine,
   RiCalendarLine,
   RiCalendarFill,
   RiDashboard3Line,
   RiDashboard3Fill,
   RiHeadphoneLine,
   RiHeadphoneFill,
-  RiHomeLine,
-  RiHomeFill,
   RiLinksLine,
   RiLinksFill,
   RiSettings2Line,
@@ -17,13 +13,7 @@ import {
   RiTimeLine,
   RiTimeFill
 } from '@remixicon/react';
-import React, {
-  ElementType,
-  PropsWithChildren,
-  ReactElement,
-  ReactNode
-} from 'react';
-import Image from 'next/image';
+import React, {PropsWithChildren, ReactElement} from 'react';
 
 import * as TabMenuVertical from '@/components/align-ui/ui/tab-menu-vertical';
 import * as CompactButton from '@/components/align-ui/ui/compact-button';
@@ -181,7 +171,6 @@ const Sidebar = ({children}: PropsWithChildren) => {
           <Divider.Root variant="line" />
         </div>
 
-        
         <SidebarFooter
           variant="pro"
           name="Marcus Dutra"
@@ -190,7 +179,7 @@ const Sidebar = ({children}: PropsWithChildren) => {
         />
       </div>
       {/* Main Content */}
-      <div className='w-full'>{children}</div>
+      <div className="w-full">{children}</div>
     </div>
   );
 };

@@ -6,6 +6,7 @@ import {useTRPC} from '@/utils/trpc';
 import Link from 'next/link';
 import * as Button from '@/components/align-ui/ui/button';
 import {RiGithubFill} from '@remixicon/react';
+import SignIn from '@/components/auth/sign-in';
 
 export function UserList() {
   const trpc = useTRPC();
@@ -58,6 +59,7 @@ export default function Home() {
   return (
     <div className="container mx-auto flex-1 px-5">
       {/* <UserList /> */}
+      <SignIn/>
       <div className="mt-48 flex flex-col items-center">
         <h1 className="max-w-3xl text-balance text-center text-title-h3 text-text-strong-950">
           Quick Starter AlignUI Template with Next.js & Typescript
