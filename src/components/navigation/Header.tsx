@@ -166,7 +166,7 @@ function Header({
             </Modal.Root>
           </div>
           <FancyButton.Root
-            variant="primary"
+            variant="neutral"
             size='small'
             onClick={() =>
               notification({
@@ -252,9 +252,9 @@ function Header({
           icon: <RiLinksLine className="text-bg-strong-950" />,
           title: 'Serviços',
           description:
-            'Crie serviços para que as pessoas possam fazer agendamentos em seu calendário.',
+            'Crie serviços para os clientes agendarem',
           buttons: (
-            <div className="services">
+            <div className="services flex gap-2">
               <Button.Root variant="neutral" mode="stroke">
                 <Button.Icon as={RiLinksLine} />
                 Páginas de Serviços
