@@ -2,6 +2,7 @@
 
 import GoogleLogo from '@/../public/images/google_logo.svg';
 import { Root as Button } from '@/components/align-ui/ui/button';
+import { Root as Checkbox } from '@/components/align-ui/ui/checkbox';
 import * as Input from '@/components/align-ui/ui/input';
 import { Asterisk, Root as Label } from '@/components/align-ui/ui/label';
 import OrDivider from '@/components/OrDivider';
@@ -10,13 +11,20 @@ import { RiUserAddFill } from '@remixicon/react';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
-import { FormEvent } from 'react';
+import { FormEvent, ReactNode, useContext, useState } from 'react';
+import { SignUpContext, SignUpStep } from './layout';
 
-const SignInForm = () => {
-  const t = useTranslations('SignInForm');
+const EmailForm = () => {
+  const {setStep} = useContext(SignUpContext);
+
+  const t = useTranslations('SignUpPage.EmailForm');
+
+  const [agree, setAgree] = useState(false);
 
   const submit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    setStep('PASSWORD');
   };
 
   return (
@@ -32,17 +40,16 @@ const SignInForm = () => {
 
         <div className="flex flex-col gap-1 text-center">
           <h2 className="text-title-h5 text-text-strong-950">
-            {t('welcome_again')}
+            {t('lets_start')}
           </h2>
-          <p className="text-paragraph-md text-text-sub-600">{t('to_start')}</p>
+          <p className="text-paragraph-md text-text-sub-600">
+            {t('insert_your_email')}
+          </p>
         </div>
       </div>
 
       <Button className="w-full" variant="neutral" mode="stroke">
         <Image src={GoogleLogo} alt="" width={20} height={20} />
-        <span className="text-label-sm">
-          {t('enter_with_your_google_account')}
-        </span>
       </Button>
 
       <OrDivider />
@@ -57,39 +64,47 @@ const SignInForm = () => {
             <Input.Input type="email" placeholder="hello@markado.co" />
           </Input.Root>
         </div>
-        <div className="flex flex-col gap-1">
-          <div className="flex justify-between items-center">
-            <Label>
-              {t('password')}
-              <Asterisk />
-            </Label>
-            <Link
-              href={'/password-recovery'}
-              className="text-label-xs text-text-sub-600"
-            >
-              {t('forgot_your_password')}
-            </Link>
-          </div>
-
-          <Input.Root>
-            <Input.Input type="password" placeholder="• • • • • • • • • • " />
-          </Input.Root>
+        <div className="flex gap-2">
+          <Checkbox
+            checked={agree}
+            onCheckedChange={(value) => setAgree(value.valueOf() as boolean)}
+          />
+          <p className="text-label-sm text-text-sub-600">
+            {t.rich('i_agree', {
+              terms: (text) => (
+                <Link href={'/'} className="text-text-strong-950 underline">
+                  {text}
+                </Link>
+              ),
+              privacy: (text) => (
+                <Link href={'/'} className="text-text-strong-950 underline">
+                  {text}
+                </Link>
+              )
+            })}
+          </p>
         </div>
       </div>
 
-      <Button className="w-full" variant="primary" mode="filled" type="submit">
+      <Button
+        className="w-full"
+        variant={agree ? "primary" : "neutral"}
+        mode="filled"
+        type="submit"
+        disabled={!agree}
+      >
         <span className="text-label-sm">{t('start')}</span>
       </Button>
 
       <div className="flex items-center gap-1">
         <span className="text-paragraph-sm text-text-sub-600">
-          {t('dont_have_an_account')}
+          {t('already_have_an_account')}
         </span>
         <Link
           className="text-label-sm text-text-strong-950 hover:border-b border-b-stroke-strong-950 transition"
-          href={'/pt/sign-up'}
+          href={'/pt/sign-in'}
         >
-          {t('create')}
+          {t('sign_in')}
         </Link>
       </div>
     </form>
@@ -97,7 +112,17 @@ const SignInForm = () => {
 };
 
 const SignUpPage = () => {
-  return <div></div>;
+  const {step, setStep} = useContext(SignUpContext);
+
+  const steps: Record<SignUpStep, ReactNode> = {
+    EMAIL: <EmailForm />
+  };
+
+  const renderStep = () => {
+    return steps[step];
+  };
+
+  return <>{renderStep()}</>;
 };
 
 export default SignUpPage;

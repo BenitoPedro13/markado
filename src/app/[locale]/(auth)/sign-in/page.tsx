@@ -97,10 +97,6 @@ const SignInForm = () => {
 };
 
 const SignInPage = () => {
-  const t = useTranslations('SignInPage');
-
-  const currentYear = new Date().getFullYear();
-
   return <SignInForm />;
 };
 
