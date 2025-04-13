@@ -68,7 +68,7 @@ export default function AuthLayout({children}: PropsWithChildren) {
       <Header />
 
       <div className="w-full h-full px-11 py-6 flex flex-col justify-between">
-        <div className="flex justify-center">{children}</div>
+        <div className="flex justify-center relative">{children}</div>
 
         <Footer />
       </div>

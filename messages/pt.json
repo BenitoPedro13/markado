@@ -55,6 +55,17 @@
       "start": "Começar",
       "already_have_an_account": "Já tem uma conta?",
       "sign_in": "Entrar"
+    },
+    "PasswordForm": {
+      "create_password": "Criar Senha",
+      "set_a_password": "Configure uma senha segura para proteger sua conta",
+      "confirm_password": "Confirmar senha",
+      "must_have_at_least": "Precisa ter pelo menos:",
+      "one_uppercase_letter": "1 letra maíscula",
+      "at_least_one_number": "Pelo menos 1 número",
+      "at_least_eight_characters": "Pelo menos 8 caracteres",
+      "continue": "Continuar"
+
     }
   }
 }
