@@ -45,5 +45,16 @@
   "SignInPage": {
     "markado": "Markado"
 
+  },
+  "SignUpPage": {
+    "EmailForm": {
+      "lets_start": "Vamos começar?",
+      "insert_your_email": "Para começar, insira seu endereço de e-mail.",
+      "email": "E-mail",
+      "i_agree": "Eu concordo com os <terms>Termos e Condições</terms> e com a <privacy>Política de Privacidade</privacy>.",
+      "start": "Começar",
+      "already_have_an_account": "Já tem uma conta?",
+      "sign_in": "Entrar"
+    }
   }
 }
