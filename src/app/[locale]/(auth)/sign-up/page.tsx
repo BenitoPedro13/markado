@@ -8,11 +8,24 @@ import { Asterisk, Root as Label } from '@/components/align-ui/ui/label';
 import OrDivider from '@/components/OrDivider';
 import RoundedIconWrapper from '@/components/RoundedIconWrapper';
 import { cn } from '@/utils/cn';
-import { RiArrowLeftSLine, RiLockFill, RiUserAddFill } from '@remixicon/react';
+import {
+  RiArrowLeftSLine,
+  RiCheckboxCircleFill,
+  RiCloseCircleFill,
+  RiLockFill,
+  RiUserAddFill
+} from '@remixicon/react';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
-import { FormEvent, ReactNode, useContext, useState } from 'react';
+import {
+  FormEvent,
+  ReactNode,
+  useContext,
+  useEffect,
+  useRef,
+  useState
+} from 'react';
 import { SignUpContext, SignUpStep } from './layout';
 
 const EmailForm = () => {
@@ -128,17 +141,37 @@ const PasswordForm = () => {
   };
 
   const StrengthBarIndicator = () => {
-    const checkPasswordStrength = (password: string) => {
-      let strength = 0;
+    const [criteria, setCriteria] = useState({
+      length: false,
+      uppercase: false,
+      number: false
+    });
 
-      if (password.length >= 8) strength++;
-      if (/[A-Z]/.test(password)) strength++;
-      if (/[0-9]/.test(password)) strength++;
+    const previousCriteriaRef = useRef(criteria);
 
-      return strength;
-    };
+    const password = form.watch('password');
 
-    const strength = checkPasswordStrength(form.getValues('password'));
+    useEffect(() => {
+      const newCriteria = {
+        length: password?.length >= 8,
+        uppercase: /[A-Z]/.test(password),
+        number: /[0-9]/.test(password)
+      };
+
+      // Só atualiza se algum critério mudou
+      const criteriaChanged = Object.keys(newCriteria).some(
+        (key) =>
+          newCriteria[key as keyof typeof newCriteria] !==
+          previousCriteriaRef.current[key as keyof typeof newCriteria]
+      );
+
+      if (criteriaChanged) {
+        previousCriteriaRef.current = newCriteria;
+        setCriteria(newCriteria);
+      }
+    }, [password]);
+
+    const strength = Object.values(criteria).filter(Boolean).length;
 
     const colors = [
       'bg-gray-300',
@@ -147,17 +180,51 @@ const PasswordForm = () => {
       'bg-green-500'
     ];
 
+    const requirements = [
+      {
+        label: t('at_least_eight_characters'),
+        passed: criteria.length
+      },
+      {
+        label: t('one_uppercase_letter'),
+        passed: criteria.uppercase
+      },
+      {
+        label: t('at_least_one_number'),
+        passed: criteria.number
+      }
+    ];
+
     return (
-      <div className="flex gap-1 mt-2">
-        {[1, 2, 3].map((level) => (
-          <div
-            key={level}
-            className={cn(
-              'h-2 flex-1 rounded transition-all duration-300',
-              strength >= level ? colors[strength] : colors[0]
-            )}
-          />
-        ))}
+      <div className="flex flex-col gap-2">
+        <div className="flex gap-2 mt-2">
+          {[1, 2, 3].map((level) => (
+            <div
+              key={level}
+              className={cn(
+                'h-1 flex-1 rounded transition-all duration-300',
+                strength >= level ? colors[strength] : colors[0]
+              )}
+            />
+          ))}
+        </div>
+        <p className="text-paragraph-xs text-text-sub-600">
+          {t('must_have_at_least')}
+        </p>
+        <div className="flex flex-col gap-2">
+          {requirements.map((req, index) => (
+            <div key={index} className="flex items-center gap-2 text-sm">
+              {req.passed ? (
+                <RiCheckboxCircleFill className="text-green-500 w-4 h-4" />
+              ) : (
+                <RiCloseCircleFill className="text-gray-400 w-4 h-4" />
+              )}
+              <span className={'text-paragraph-xs text-text-sub-600'}>
+                {req.label}
+              </span>
+            </div>
+          ))}
+        </div>
       </div>
     );
   };
@@ -188,7 +255,7 @@ const PasswordForm = () => {
       <div className="flex flex-col gap-4 w-full">
         <div className="flex flex-col gap-1">
           <Label>
-            {t('create_password')}
+            {t('create_password_label')}
             <Asterisk />
           </Label>
           <Input.Root>
@@ -201,15 +268,24 @@ const PasswordForm = () => {
         </div>
         <div className="flex flex-col gap-1">
           <Label>
-            {t('confirm_password')}
+            {t('confirm_password_label')}
             <Asterisk />
           </Label>
           <Input.Root>
             <Input.Input type="password" placeholder="• • • • • • • • • • " />
           </Input.Root>
+          <StrengthBarIndicator />
         </div>
-        <StrengthBarIndicator />
       </div>
+
+      <Button
+        className="w-full"
+        variant={'primary'}
+        mode="filled"
+        type="submit"
+      >
+        <span className="text-label-sm">{t('continue')}</span>
+      </Button>
     </form>
   );
 };
