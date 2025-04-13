@@ -1,5 +1,6 @@
-"use client"
+'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   createContext,
   Dispatch,
@@ -7,6 +8,15 @@ import {
   SetStateAction,
   useState
 } from 'react';
+import { useForm, UseFormReturn } from 'react-hook-form';
+import { z } from 'zod';
+
+// Sign up form schema
+const signUpFormSchema = z.object({
+  email: z.string().nonempty().email()
+});
+
+type SignUpFormData = z.infer<typeof signUpFormSchema>;
 
 // Sign up context
 export type SignUpStep =
@@ -21,21 +31,27 @@ export type SignUpStep =
 type SignUpProps = {
   step: SignUpStep;
   setStep: Dispatch<SetStateAction<SignUpStep>>;
+  form: UseFormReturn<SignUpFormData>;
 };
 
-const initialState: SignUpProps = {
+export const SignUpContext = createContext<SignUpProps>({
   step: 'EMAIL',
-  setStep: () => {}
-};
-
-export const SignUpContext = createContext<SignUpProps>(initialState);
+  setStep: () => {},
+  form: {} as UseFormReturn<SignUpFormData>
+});
 
 const SignUpProvider = ({children}: PropsWithChildren) => {
   const [step, setStep] = useState<SignUpStep>('EMAIL');
 
+  const form = useForm<SignUpFormData>({
+    resolver: zodResolver(signUpFormSchema),
+    mode: 'onSubmit'
+  });
+
   const value = {
     step,
-    setStep
+    setStep,
+    form
   };
 
   return (
