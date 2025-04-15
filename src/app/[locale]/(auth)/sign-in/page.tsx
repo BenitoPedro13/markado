@@ -103,7 +103,7 @@ const SignInForm = () => {
           className="text-label-sm text-text-strong-950 hover:border-b border-b-stroke-strong-950 transition"
           href={`/pt/sign-up${redirectTo !== '/' ? `?redirect=${redirectTo}` : ''}`}
         >
-          {t('sign_up')}
+          {t('create')}
         </Link>
       </div>
     </form>
@@ -112,7 +112,7 @@ const SignInForm = () => {
 
 const SignInPage = () => {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4">
+    <div className="flex flex-col items-center justify-center p-4">
       <Suspense fallback={<div>Loading...</div>}>
         <SignInForm />
       </Suspense>
