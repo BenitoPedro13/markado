@@ -84,6 +84,7 @@ const EmailForm = () => {
             <Input.Input
               type="email"
               placeholder="hello@markado.co"
+              required
               {...form.register('email')}
             />
           </Input.Root>
@@ -91,6 +92,7 @@ const EmailForm = () => {
         <div className="flex gap-2">
           <Checkbox
             checked={agree}
+            required
             onCheckedChange={(value) => setAgree(value.valueOf() as boolean)}
           />
           <p className="text-label-sm text-text-sub-600">
@@ -112,10 +114,10 @@ const EmailForm = () => {
 
       <Button
         className="w-full"
-        variant={agree && isEmailValid ? 'primary' : 'neutral'}
+        variant={'neutral'}
         mode="filled"
         type="submit"
-        disabled={!agree || !isEmailValid}
+        // disabled={!agree}
       >
         <span className="text-label-sm">{t('start')}</span>
       </Button>
@@ -302,7 +304,7 @@ const PasswordForm = () => {
 
       <Button
         className="w-full"
-        variant="primary"
+        variant="neutral"
         mode="filled"
         type="submit"
         disabled={confirmPassword.length <= 0 || !passwordsMatch}

@@ -70,11 +70,11 @@ export const buttonVariants = tv({
       class: {
         root: [
           // base
-          'bg-primary-base opacity-85 text-bg-white-0',
+          'bg-primary-base text-bg-white-0',
           // hover
-          'hover:opacity-100',
+          'hover:bg-primary-darker',
           // focus
-          'focus-visible:shadow-button-primary-focus'
+          'focus-visible:shadow-button-primary-focus',
         ]
       }
     },
