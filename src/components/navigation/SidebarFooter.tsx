@@ -6,7 +6,7 @@ import Image from 'next/image';
 import SidebarFooterSkeleton from './SidebarFooterSkeleton';
 
 
-export default function UserProfile() {
+export default function SidebarFooter() {
   const trpc = useTRPC();
   const { data: session, isLoading, error } = useQuery(trpc.getSession.queryOptions());
 

@@ -18,6 +18,7 @@ import * as Tooltip from '@/components/align-ui/ui/tooltip';
 import * as Switch from '@/components/align-ui/ui/switch';
 import * as Dropdown from '@/components/align-ui/ui/dropdown';
 import { useServices } from '@/contexts/ServicesContext';
+import { useRouter } from 'next/navigation';
 
 type ServiceProps = {
   title: string;
@@ -30,7 +31,7 @@ type ServiceProps = {
 function Service({title, slug, duration, price, status}: ServiceProps) {
   const { updateServiceStatus } = useServices();
   const [isEnabled, setIsEnabled] = useState(status === 'active');
-
+  const router = useRouter();
   useEffect(() => {
     setIsEnabled(status === 'active');
   }, [status]);
@@ -42,7 +43,9 @@ function Service({title, slug, duration, price, status}: ServiceProps) {
   };
 
   return (
-    <div className="p-4 flex">
+    <div className="p-4 flex" onClick={() => {
+      router.push(`/services/${slug}`);
+    }}>
       {/* Leading */}
       <div className="w-full flex flex-col gap-2">
         <div className="flex gap-2  items-center">

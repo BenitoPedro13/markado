@@ -1,3 +1,5 @@
+
+
 import {
   RiCalendarLine,
   RiCalendarFill,
@@ -20,7 +22,6 @@ import * as CompactButton from '@/components/align-ui/ui/compact-button';
 import * as Divider from '@/components/align-ui/ui/divider';
 import SidebarFooter from './SidebarFooter';
 import Link from 'next/link';
-import {usePathname} from 'next/navigation';
 import { ProfileDropdown } from '@/components/navigation/ProfileDropdown';
 interface sidebarItem {
   iconLine: ReactElement;
