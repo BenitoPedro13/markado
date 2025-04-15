@@ -35,7 +35,7 @@ export default function UserProfile() {
             priority
           />
         )}
-        <div className='flex flex-col items-start'>
+        <div>
           <p className="text-text-strong-950 text-label-sm">{session.user.name}</p>
           <p className="text-text-sub-600 text-paragraph-xs">{session.user.email}</p>
         </div>
