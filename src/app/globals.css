@@ -399,8 +399,8 @@
   border-image: linear-gradient(to bottom, #717784 100%, #717784 0%) 1;
 }
 
-.button-background {
-  background: linear-gradient(
+/* .button-background {
+  background-color: linear-gradient(
       0deg,
       var(--primary-base, #222530),
       var(--primary-base, #222530)
@@ -410,4 +410,4 @@
       rgba(255, 255, 255, 0.16) 0%,
       rgba(255, 255, 255, 0) 100%
     );
-}
+} */
