@@ -18,7 +18,11 @@ const signUpFormSchema = z.object({
     .string()
     .min(8, 'A senha deve ter pelo menos 8 caracteres')
     .regex(/[A-Z]/, 'A senha deve conter pelo menos uma letra maiúscula')
-    .regex(/[0-9]/, 'A senha deve conter pelo menos um número')
+    .regex(/[0-9]/, 'A senha deve conter pelo menos um número'),
+  confirmPassword: z.string()
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "As senhas não coincidem",
+  path: ["confirmPassword"]
 });
 
 type SignUpFormData = z.infer<typeof signUpFormSchema>;

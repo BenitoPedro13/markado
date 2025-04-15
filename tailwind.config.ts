@@ -591,6 +591,10 @@ const config = {
       none: defaultTheme.boxShadow.none
     },
     extend: {
+      backgroundColor: {
+        'button-background':
+          'linear-gradient(0deg, var(--primary-base, #222530), var(--primary-base, #222530)), linear-gradient(180deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0) 100%)'
+      },
       fontFamily: {
         sans: ['var(--font-plus-jakarta-sans)'],
         mono: ['var(--font-geist-mono)']

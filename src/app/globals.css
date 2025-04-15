@@ -400,7 +400,7 @@
 }
 
 .button-background {
-  background: linear-gradient(
+  background-color: linear-gradient(
       0deg,
       var(--primary-base, #222530),
       var(--primary-base, #222530)

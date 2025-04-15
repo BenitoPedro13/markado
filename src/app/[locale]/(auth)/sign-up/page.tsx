@@ -134,9 +134,13 @@ const PasswordForm = () => {
 
   const t = useTranslations('SignUpPage.PasswordForm');
 
+  const password = form.watch('password');
+  const confirmPassword = form.watch('confirmPassword');
+  const passwordsMatch = password === confirmPassword;
+
   const submit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+    if (!passwordsMatch) return;
     setStep('FUNCTION');
   };
 
@@ -148,8 +152,6 @@ const PasswordForm = () => {
     });
 
     const previousCriteriaRef = useRef(criteria);
-
-    const password = form.watch('password');
 
     useEffect(() => {
       const newCriteria = {
@@ -272,15 +274,24 @@ const PasswordForm = () => {
             <Asterisk />
           </Label>
           <Input.Root>
-            <Input.Input type="password" placeholder="• • • • • • • • • • " />
+            <Input.Input 
+              type="password" 
+              placeholder="• • • • • • • • • • "
+              {...form.register('confirmPassword')}
+            />
           </Input.Root>
+          {confirmPassword && !passwordsMatch && (
+            <p className="text-paragraph-xs text-red-500 disabled:cursor">
+              {t('passwords_do_not_match')}
+            </p>
+          )}
           <StrengthBarIndicator />
         </div>
       </div>
 
       <Button
         className="w-full"
-        variant={'primary'}
+        variant="primary"
         mode="filled"
         type="submit"
       >
@@ -295,7 +306,12 @@ const SignUpPage = () => {
 
   const steps: Record<SignUpStep, ReactNode> = {
     EMAIL: <EmailForm />,
-    PASSWORD: <PasswordForm />
+    PASSWORD: <PasswordForm />,
+    FUNCTION: undefined,
+    PERSONAL: undefined,
+    CONNECT: undefined,
+    AVAILABILITY: undefined,
+    ENDING: undefined
   };
 
   const previousStep: Record<SignUpStep, SignUpStep> = {
