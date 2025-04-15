@@ -27,9 +27,16 @@ import {
   useState
 } from 'react';
 import {SignUpContext, SignUpStep} from './layout';
+import { signInWithGoogle } from '@/components/auth/auth-actions';
+import { IconGoogle } from '@/components/auth/sign-in';
+import * as SocialButton from '@/components/align-ui/ui/social-button';
+import { useSearchParams } from 'next/navigation';
+
 
 const EmailForm = () => {
   const {form, setStep} = useContext(SignUpContext);
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get('redirect') || '/';
 
   const t = useTranslations('SignUpPage.EmailForm');
 
@@ -45,6 +52,11 @@ const EmailForm = () => {
     e.preventDefault();
 
     setStep('PASSWORD');
+  };
+
+  const handleGoogleSignIn = async () => {
+    // Pass the redirect URL to the sign-in function
+    await signInWithGoogle(redirectTo);
   };
 
   return (
@@ -68,9 +80,16 @@ const EmailForm = () => {
         </div>
       </div>
 
-      <Button className="w-full" variant="neutral" mode="stroke" type="button">
-        <Image src={GoogleLogo} alt="" width={20} height={20} />
-      </Button>
+      <SocialButton.Root
+        brand="google"
+        mode="stroke"
+        className="w-full text-text-sub-600 hover:text-text-strong-950"
+        type="button"
+        onClick={handleGoogleSignIn}
+      >
+        <SocialButton.Icon as={IconGoogle} />
+        <span className="ml-2 ">{t('sign_up_with_google')}</span>
+      </SocialButton.Root>
 
       <OrDivider />
 
@@ -204,11 +223,6 @@ const PasswordForm = () => {
         passed: criteria.number
       }
     ];
-
-    console.log(
-      'confirmPassword.length > 0 && !passwordsMatch',
-      confirmPassword.length > 0 && !passwordsMatch
-    );
 
     return (
       <div className="flex flex-col gap-2">

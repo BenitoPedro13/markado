@@ -1,22 +1,32 @@
 'use client';
 
 import GoogleLogo from '@/../public/images/google_logo.svg';
-import { Root as Button } from '@/components/align-ui/ui/button';
+import {Root as Button} from '@/components/align-ui/ui/button';
 import * as Input from '@/components/align-ui/ui/input';
-import { Asterisk, Root as Label } from '@/components/align-ui/ui/label';
+import {Asterisk, Root as Label} from '@/components/align-ui/ui/label';
 import OrDivider from '@/components/OrDivider';
 import RoundedIconWrapper from '@/components/RoundedIconWrapper';
-import { RiUserAddFill } from '@remixicon/react';
-import { useTranslations } from 'next-intl';
+import {RiUserAddFill} from '@remixicon/react';
+import {useTranslations} from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
-import { FormEvent } from 'react';
+import {FormEvent} from 'react';
+import {signInWithGoogle} from '@/components/auth/auth-actions';
+import {IconGoogle} from '@/components/auth/sign-in';
+import * as SocialButton from '@/components/align-ui/ui/social-button';
+import { useSearchParams } from 'next/navigation';
 
 const SignInForm = () => {
   const t = useTranslations('SignInForm');
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get('redirect') || '/';
 
   const submit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+  };
+
+  const handleGoogleSignIn = async () => {
+    await signInWithGoogle(redirectTo);
   };
 
   return (
@@ -38,12 +48,16 @@ const SignInForm = () => {
         </div>
       </div>
 
-      <Button className="w-full" variant="neutral" mode="stroke" type='button'>
-        <Image src={GoogleLogo} alt="" width={20} height={20} />
-        <span className="text-label-sm">
-          {t('enter_with_your_google_account')}
-        </span>
-      </Button>
+      <SocialButton.Root
+        brand="google"
+        mode="stroke"
+        className="w-full text-text-sub-600 hover:text-text-strong-950"
+        type="button"
+        onClick={handleGoogleSignIn}
+      >
+        <SocialButton.Icon as={IconGoogle} />
+        <span className="ml-2 ">{t('enter_with_your_google_account')}</span>
+      </SocialButton.Root>
 
       <OrDivider />
 
@@ -87,9 +101,9 @@ const SignInForm = () => {
         </span>
         <Link
           className="text-label-sm text-text-strong-950 hover:border-b border-b-stroke-strong-950 transition"
-          href={'/pt/sign-up'}
+          href={`/pt/sign-up${redirectTo !== '/' ? `?redirect=${redirectTo}` : ''}`}
         >
-          {t('create')}
+          {t('sign_up')}
         </Link>
       </div>
     </form>
