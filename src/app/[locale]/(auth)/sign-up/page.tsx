@@ -32,7 +32,7 @@ import { signInWithGoogle } from '@/components/auth/auth-actions';
 import { IconGoogle } from '@/components/auth/sign-in';
 import * as SocialButton from '@/components/align-ui/ui/social-button';
 import { useSearchParams } from 'next/navigation';
-
+import AuthSkeleton from '@/components/skeletons/AuthSkeleton';
 
 const EmailForm = () => {
   const {form, setStep} = useContext(SignUpContext);
@@ -335,7 +335,7 @@ const SignUpPage = () => {
 
   const steps: Record<SignUpStep, ReactNode> = {
     EMAIL: (
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense fallback={<AuthSkeleton />}>
         <EmailForm />
       </Suspense>
     ),

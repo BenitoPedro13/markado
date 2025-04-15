@@ -15,7 +15,7 @@ import {signInWithGoogle} from '@/components/auth/auth-actions';
 import {IconGoogle} from '@/components/auth/sign-in';
 import * as SocialButton from '@/components/align-ui/ui/social-button';
 import { useSearchParams } from 'next/navigation';
-
+import AuthSkeleton from '@/components/skeletons/AuthSkeleton';
 const SignInForm = () => {
   const t = useTranslations('SignInForm');
   const searchParams = useSearchParams();
@@ -113,8 +113,11 @@ const SignInForm = () => {
 const SignInPage = () => {
   return (
     <div className="flex flex-col items-center justify-center p-4">
-      <Suspense fallback={<div>Loading...</div>}>
-        <SignInForm />
+      <Suspense fallback={<AuthSkeleton />}>
+        <div className="flex items-center justify-center gap-4">
+          <SignInForm />
+          
+        </div>
       </Suspense>
     </div>
   );
