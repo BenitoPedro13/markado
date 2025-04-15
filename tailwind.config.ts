@@ -1,6 +1,6 @@
-import type { Config } from 'tailwindcss';
-import defaultTheme from 'tailwindcss/defaultTheme';
+import type {Config} from 'tailwindcss';
 import tailwindcssAnimate from 'tailwindcss-animate';
+import defaultTheme from 'tailwindcss/defaultTheme';
 
 export const texts = {
   'title-h1': [
@@ -8,177 +8,177 @@ export const texts = {
     {
       lineHeight: '4rem',
       letterSpacing: '-0.01em',
-      fontWeight: '500',
-    },
+      fontWeight: '500'
+    }
   ],
   'title-h2': [
     '3rem',
     {
       lineHeight: '3.5rem',
       letterSpacing: '-0.01em',
-      fontWeight: '500',
-    },
+      fontWeight: '500'
+    }
   ],
   'title-h3': [
     '2.5rem',
     {
       lineHeight: '3rem',
       letterSpacing: '-0.01em',
-      fontWeight: '500',
-    },
+      fontWeight: '500'
+    }
   ],
   'title-h4': [
     '2rem',
     {
       lineHeight: '2.5rem',
       letterSpacing: '-0.005em',
-      fontWeight: '500',
-    },
+      fontWeight: '500'
+    }
   ],
   'title-h5': [
     '1.5rem',
     {
       lineHeight: '2rem',
       letterSpacing: '0em',
-      fontWeight: '500',
-    },
+      fontWeight: '500'
+    }
   ],
   'title-h6': [
     '1.25rem',
     {
       lineHeight: '1.75rem',
       letterSpacing: '0em',
-      fontWeight: '500',
-    },
+      fontWeight: '500'
+    }
   ],
   'label-xl': [
     '1.5rem',
     {
       lineHeight: '2rem',
       letterSpacing: '-0.015em',
-      fontWeight: '500',
-    },
+      fontWeight: '500'
+    }
   ],
   'label-lg': [
     '1.125rem',
     {
       lineHeight: '1.5rem',
       letterSpacing: '-0.015em',
-      fontWeight: '500',
-    },
+      fontWeight: '500'
+    }
   ],
   'label-md': [
     '1rem',
     {
       lineHeight: '1.5rem',
       letterSpacing: '-0.011em',
-      fontWeight: '500',
-    },
+      fontWeight: '500'
+    }
   ],
   'label-sm': [
     '.875rem',
     {
       lineHeight: '1.25rem',
       letterSpacing: '-0.006em',
-      fontWeight: '500',
-    },
+      fontWeight: '500'
+    }
   ],
   'label-xs': [
     '.75rem',
     {
       lineHeight: '1rem',
       letterSpacing: '0em',
-      fontWeight: '500',
-    },
+      fontWeight: '500'
+    }
   ],
   'paragraph-xl': [
     '1.5rem',
     {
       lineHeight: '2rem',
       letterSpacing: '-0.015em',
-      fontWeight: '400',
-    },
+      fontWeight: '400'
+    }
   ],
   'paragraph-lg': [
     '1.125rem',
     {
       lineHeight: '1.5rem',
       letterSpacing: '-0.015em',
-      fontWeight: '400',
-    },
+      fontWeight: '400'
+    }
   ],
   'paragraph-md': [
     '1rem',
     {
       lineHeight: '1.5rem',
       letterSpacing: '-0.011em',
-      fontWeight: '400',
-    },
+      fontWeight: '400'
+    }
   ],
   'paragraph-sm': [
     '.875rem',
     {
       lineHeight: '1.25rem',
       letterSpacing: '-0.006em',
-      fontWeight: '400',
-    },
+      fontWeight: '400'
+    }
   ],
   'paragraph-xs': [
     '.75rem',
     {
       lineHeight: '1rem',
       letterSpacing: '0em',
-      fontWeight: '400',
-    },
+      fontWeight: '400'
+    }
   ],
   'subheading-md': [
     '1rem',
     {
       lineHeight: '1.5rem',
       letterSpacing: '0.06em',
-      fontWeight: '500',
-    },
+      fontWeight: '500'
+    }
   ],
   'subheading-sm': [
     '.875rem',
     {
       lineHeight: '1.25rem',
       letterSpacing: '0.06em',
-      fontWeight: '500',
-    },
+      fontWeight: '500'
+    }
   ],
   'subheading-xs': [
     '.75rem',
     {
       lineHeight: '1rem',
       letterSpacing: '0.04em',
-      fontWeight: '500',
-    },
+      fontWeight: '500'
+    }
   ],
   'subheading-2xs': [
     '.6875rem',
     {
       lineHeight: '.75rem',
       letterSpacing: '0.02em',
-      fontWeight: '500',
-    },
+      fontWeight: '500'
+    }
   ],
   'doc-label': [
     '1.125rem',
     {
       lineHeight: '2rem',
       letterSpacing: '-0.015em',
-      fontWeight: '500',
-    },
+      fontWeight: '500'
+    }
   ],
   'doc-paragraph': [
     '1.125rem',
     {
       lineHeight: '2rem',
       letterSpacing: '-0.015em',
-      fontWeight: '400',
-    },
-  ],
+      fontWeight: '400'
+    }
+  ]
 } as unknown as Record<string, string>;
 
 export const shadows = {
@@ -187,28 +187,28 @@ export const shadows = {
   'regular-md': '0 16px 32px -12px #0e121b1a',
   'button-primary-focus': [
     '0 0 0 2px theme(colors.bg[white-0])',
-    '0 0 0 4px theme(colors.primary[alpha-10])',
+    '0 0 0 4px theme(colors.primary[alpha-10])'
   ],
   'button-important-focus': [
     '0 0 0 2px theme(colors.bg[white-0])',
-    '0 0 0 4px theme(colors.neutral[alpha-16])',
+    '0 0 0 4px theme(colors.neutral[alpha-16])'
   ],
   'button-error-focus': [
     '0 0 0 2px theme(colors.bg[white-0])',
-    '0 0 0 4px theme(colors.red[alpha-10])',
+    '0 0 0 4px theme(colors.red[alpha-10])'
   ],
   'fancy-buttons-neutral': ['0 1px 2px 0 #1b1c1d7a', '0 0 0 1px #242628'],
   'fancy-buttons-primary': [
     '0 1px 2px 0 #0e121b3d',
-    '0 0 0 1px theme(colors.primary[base])',
+    '0 0 0 1px theme(colors.primary[base])'
   ],
   'fancy-buttons-error': [
     '0 1px 2px 0 #0e121b3d',
-    '0 0 0 1px theme(colors.error[base])',
+    '0 0 0 1px theme(colors.error[base])'
   ],
   'fancy-buttons-stroke': [
     '0 1px 3px 0 #0e121b1f',
-    '0 0 0 1px theme(colors.stroke[soft-200])',
+    '0 0 0 1px theme(colors.stroke[soft-200])'
   ],
   'toggle-switch': ['0 6px 10px 0 #0e121b0f', '0 2px 4px 0 #0e121b08'],
   'switch-thumb': ['0 4px 8px 0 #1b1c1d0f', '0 2px 4px 0 #0e121b14'],
@@ -218,7 +218,7 @@ export const shadows = {
     '0 4px 8px -2px rgba(51, 51, 51, 0.06)',
     '0 2px 4px rgba(51, 51, 51, 0.04)',
     '0 1px 2px rgba(51, 51, 51, 0.04)',
-    'inset 0 -1px 1px -0.5px rgba(51, 51, 51, 0.06)',
+    'inset 0 -1px 1px -0.5px rgba(51, 51, 51, 0.06)'
   ],
   'custom-sm': [
     '0 0 0 1px rgba(51, 51, 51, 0.04)',
@@ -226,7 +226,7 @@ export const shadows = {
     '0 12px 6px -6px rgba(51, 51, 51, 0.02)',
     '0 5px 5px -2.5px rgba(51, 51, 51, 0.08)',
     '0 1px 3px -1.5px rgba(51, 51, 51, 0.16)',
-    'inset 0 -0.5px 0.5px rgba(51, 51, 51, 0.08)',
+    'inset 0 -0.5px 0.5px rgba(51, 51, 51, 0.08)'
   ],
   'custom-md': [
     '0 0 0 1px rgba(51, 51, 51, 0.04)',
@@ -236,7 +236,7 @@ export const shadows = {
     '0 12px 12px -6px rgba(51, 51, 51, 0.04)',
     '0 24px 24px -12px rgba(51, 51, 51, 0.04)',
     '0 48px 48px -24px rgba(51, 51, 51, 0.04)',
-    'inset 0 -1px 1px -0.5px rgba(51, 51, 51, 0.06)',
+    'inset 0 -1px 1px -0.5px rgba(51, 51, 51, 0.06)'
   ],
   'custom-lg': [
     '0 0 0 1px rgba(51, 51, 51, 0.04)',
@@ -247,13 +247,13 @@ export const shadows = {
     '0 24px 24px -12px rgba(51, 51, 51, 0.04)',
     '0 48px 48px -24px rgba(51, 51, 51, 0.04)',
     '0 96px 96px -32px rgba(51, 51, 51, 0.06)',
-    'inset 0 -1px 1px -0.5px rgba(51, 51, 51, 0.06)',
-  ],
+    'inset 0 -1px 1px -0.5px rgba(51, 51, 51, 0.06)'
+  ]
 } as unknown as Record<string, string>;
 
 export const borderRadii = {
   '10': '.625rem',
-  '20': '1.25rem',
+  '20': '1.25rem'
 } as unknown as Record<string, string>;
 
 const config = {
@@ -263,7 +263,7 @@ const config = {
     './src/**/*.{js,ts,jsx,tsx,mdx}',
     './app/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
-    './utils/**/*.{js,ts,jsx,tsx,mdx}',
+    './utils/**/*.{js,ts,jsx,tsx,mdx}'
   ],
   theme: {
     colors: {
@@ -282,7 +282,7 @@ const config = {
         '950': 'var(--gray-950)',
         'alpha-24': 'var(--gray-alpha-24)',
         'alpha-16': 'var(--gray-alpha-16)',
-        'alpha-10': 'var(--gray-alpha-10)',
+        'alpha-10': 'var(--gray-alpha-10)'
       },
       slate: {
         '0': 'var(--slate-0)',
@@ -299,7 +299,7 @@ const config = {
         '950': 'var(--slate-950)',
         'alpha-24': 'var(--slate-alpha-24)',
         'alpha-16': 'var(--slate-alpha-16)',
-        'alpha-10': 'var(--slate-alpha-10)',
+        'alpha-10': 'var(--slate-alpha-10)'
       },
       neutral: {
         '0': 'var(--neutral-0)',
@@ -316,7 +316,7 @@ const config = {
         '950': 'var(--neutral-950)',
         'alpha-24': 'var(--neutral-alpha-24)',
         'alpha-16': 'var(--neutral-alpha-16)',
-        'alpha-10': 'var(--neutral-alpha-10)',
+        'alpha-10': 'var(--neutral-alpha-10)'
       },
       blue: {
         '50': 'var(--blue-50)',
@@ -332,7 +332,7 @@ const config = {
         '950': 'var(--blue-950)',
         'alpha-24': 'var(--blue-alpha-24)',
         'alpha-16': 'var(--blue-alpha-16)',
-        'alpha-10': 'var(--blue-alpha-10)',
+        'alpha-10': 'var(--blue-alpha-10)'
       },
       orange: {
         '50': 'var(--orange-50)',
@@ -348,7 +348,7 @@ const config = {
         '950': 'var(--orange-950)',
         'alpha-24': 'var(--orange-alpha-24)',
         'alpha-16': 'var(--orange-alpha-16)',
-        'alpha-10': 'var(--orange-alpha-10)',
+        'alpha-10': 'var(--orange-alpha-10)'
       },
       red: {
         '50': 'var(--red-50)',
@@ -364,7 +364,7 @@ const config = {
         '950': 'var(--red-950)',
         'alpha-24': 'var(--red-alpha-24)',
         'alpha-16': 'var(--red-alpha-16)',
-        'alpha-10': 'var(--red-alpha-10)',
+        'alpha-10': 'var(--red-alpha-10)'
       },
       green: {
         '50': 'var(--green-50)',
@@ -380,7 +380,7 @@ const config = {
         '950': 'var(--green-950)',
         'alpha-24': 'var(--green-alpha-24)',
         'alpha-16': 'var(--green-alpha-16)',
-        'alpha-10': 'var(--green-alpha-10)',
+        'alpha-10': 'var(--green-alpha-10)'
       },
       yellow: {
         '50': 'var(--yellow-50)',
@@ -396,7 +396,7 @@ const config = {
         '950': 'var(--yellow-950)',
         'alpha-24': 'var(--yellow-alpha-24)',
         'alpha-16': 'var(--yellow-alpha-16)',
-        'alpha-10': 'var(--yellow-alpha-10)',
+        'alpha-10': 'var(--yellow-alpha-10)'
       },
       purple: {
         '50': 'var(--purple-50)',
@@ -412,7 +412,7 @@ const config = {
         '950': 'var(--purple-950)',
         'alpha-24': 'var(--purple-alpha-24)',
         'alpha-16': 'var(--purple-alpha-16)',
-        'alpha-10': 'var(--purple-alpha-10)',
+        'alpha-10': 'var(--purple-alpha-10)'
       },
       sky: {
         '50': 'var(--sky-50)',
@@ -428,7 +428,7 @@ const config = {
         '950': 'var(--sky-950)',
         'alpha-24': 'var(--sky-alpha-24)',
         'alpha-16': 'var(--sky-alpha-16)',
-        'alpha-10': 'var(--sky-alpha-10)',
+        'alpha-10': 'var(--sky-alpha-10)'
       },
       pink: {
         '50': 'var(--pink-50)',
@@ -444,7 +444,7 @@ const config = {
         '950': 'var(--pink-950)',
         'alpha-24': 'var(--pink-alpha-24)',
         'alpha-16': 'var(--pink-alpha-16)',
-        'alpha-10': 'var(--pink-alpha-10)',
+        'alpha-10': 'var(--pink-alpha-10)'
       },
       teal: {
         '50': 'var(--teal-50)',
@@ -460,19 +460,19 @@ const config = {
         '950': 'var(--teal-950)',
         'alpha-24': 'var(--teal-alpha-24)',
         'alpha-16': 'var(--teal-alpha-16)',
-        'alpha-10': 'var(--teal-alpha-10)',
+        'alpha-10': 'var(--teal-alpha-10)'
       },
       white: {
         DEFAULT: '#fff',
         'alpha-24': 'var(--white-alpha-24)',
         'alpha-16': 'var(--white-alpha-16)',
-        'alpha-10': 'var(--white-alpha-10)',
+        'alpha-10': 'var(--white-alpha-10)'
       },
       black: {
         DEFAULT: '#000',
         'alpha-24': 'var(--black-alpha-24)',
         'alpha-16': 'var(--black-alpha-16)',
-        'alpha-10': 'var(--black-alpha-10)',
+        'alpha-10': 'var(--black-alpha-10)'
       },
       primary: {
         dark: 'var(--primary-dark)',
@@ -480,11 +480,11 @@ const config = {
         base: 'var(--primary-base)',
         'alpha-24': 'var(--primary-alpha-24)',
         'alpha-16': 'var(--primary-alpha-16)',
-        'alpha-10': 'var(--primary-alpha-10)',
+        'alpha-10': 'var(--primary-alpha-10)'
       },
       static: {
         black: 'var(--static-black)',
-        white: 'var(--static-white)',
+        white: 'var(--static-white)'
       },
       bg: {
         'strong-950': 'var(--bg-strong-950)',
@@ -492,80 +492,80 @@ const config = {
         'sub-300': 'var(--bg-sub-300)',
         'soft-200': 'var(--bg-soft-200)',
         'weak-50': 'var(--bg-weak-50)',
-        'white-0': 'var(--bg-white-0)',
+        'white-0': 'var(--bg-white-0)'
       },
       text: {
         'strong-950': 'var(--text-strong-950)',
         'sub-600': 'var(--text-sub-600)',
         'soft-400': 'var(--text-soft-400)',
         'disabled-300': 'var(--text-disabled-300)',
-        'white-0': 'var(--text-white-0)',
+        'white-0': 'var(--text-white-0)'
       },
       stroke: {
         'strong-950': 'var(--stroke-strong-950)',
         'sub-300': 'var(--stroke-sub-300)',
         'soft-200': 'var(--stroke-soft-200)',
-        'white-0': 'var(--stroke-white-0)',
+        'white-0': 'var(--stroke-white-0)'
       },
       faded: {
         dark: 'var(--faded-dark)',
         base: 'var(--faded-base)',
         light: 'var(--faded-light)',
-        lighter: 'var(--faded-lighter)',
+        lighter: 'var(--faded-lighter)'
       },
       information: {
         dark: 'var(--information-dark)',
         base: 'var(--information-base)',
         light: 'var(--information-light)',
-        lighter: 'var(--information-lighter)',
+        lighter: 'var(--information-lighter)'
       },
       warning: {
         dark: 'var(--warning-dark)',
         base: 'var(--warning-base)',
         light: 'var(--warning-light)',
-        lighter: 'var(--warning-lighter)',
+        lighter: 'var(--warning-lighter)'
       },
       error: {
         dark: 'var(--error-dark)',
         base: 'var(--error-base)',
         light: 'var(--error-light)',
-        lighter: 'var(--error-lighter)',
+        lighter: 'var(--error-lighter)'
       },
       success: {
         dark: 'var(--success-dark)',
         base: 'var(--success-base)',
         light: 'var(--success-light)',
-        lighter: 'var(--success-lighter)',
+        lighter: 'var(--success-lighter)'
       },
       away: {
         dark: 'var(--away-dark)',
         base: 'var(--away-base)',
         light: 'var(--away-light)',
-        lighter: 'var(--away-lighter)',
+        lighter: 'var(--away-lighter)'
       },
       feature: {
         dark: 'var(--feature-dark)',
         base: 'var(--feature-base)',
         light: 'var(--feature-light)',
-        lighter: 'var(--feature-lighter)',
+        lighter: 'var(--feature-lighter)'
       },
       verified: {
         dark: 'var(--verified-dark)',
         base: 'var(--verified-base)',
         light: 'var(--verified-light)',
-        lighter: 'var(--verified-lighter)',
+        lighter: 'var(--verified-lighter)'
       },
       highlighted: {
         dark: 'var(--highlighted-dark)',
         base: 'var(--highlighted-base)',
         light: 'var(--highlighted-light)',
-        lighter: 'var(--highlighted-lighter)',
+        lighter: 'var(--highlighted-lighter)'
       },
       stable: {
         dark: 'var(--stable-dark)',
         base: 'var(--stable-base)',
         light: 'var(--stable-light)',
-        lighter: 'var(--stable-lighter)',
+        lighter: 'var(--stable-lighter)'
       },
       social: {
         apple: 'var(--social-apple)',
@@ -574,50 +574,50 @@ const config = {
         notion: 'var(--social-notion)',
         tidal: 'var(--social-tidal)',
         amazon: 'var(--social-amazon)',
-        zendesk: 'var(--social-zendesk)',
+        zendesk: 'var(--social-zendesk)'
       },
       overlay: {
-        DEFAULT: 'var(--overlay)',
+        DEFAULT: 'var(--overlay)'
       },
       transparent: 'transparent',
-      current: 'currentColor',
+      current: 'currentColor'
     },
     fontSize: {
       ...texts,
-      inherit: 'inherit',
+      inherit: 'inherit'
     },
     boxShadow: {
       ...shadows,
-      none: defaultTheme.boxShadow.none,
+      none: defaultTheme.boxShadow.none
     },
     extend: {
       fontFamily: {
         sans: ['var(--font-plus-jakarta-sans)'],
-        mono: ['var(--font-geist-mono)'],
+        mono: ['var(--font-geist-mono)']
       },
       borderRadius: {
-        ...borderRadii,
+        ...borderRadii
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
-        'accordion-up': 'accordion-up 0.2s ease-out',
+        'accordion-up': 'accordion-up 0.2s ease-out'
       },
       keyframes: {
         'accordion-down': {
-          from: { height: '0', opacity: '0' },
-          to: { height: 'var(--radix-accordion-content-height)', opacity: '1' },
+          from: {height: '0', opacity: '0'},
+          to: {height: 'var(--radix-accordion-content-height)', opacity: '1'}
         },
         'accordion-up': {
           from: {
             height: 'var(--radix-accordion-content-height)',
-            opacity: '1',
+            opacity: '1'
           },
-          to: { height: '0', opacity: '0' },
-        },
-      },
-    },
+          to: {height: '0', opacity: '0'}
+        }
+      }
+    }
   },
-  plugins: [tailwindcssAnimate],
+  plugins: [tailwindcssAnimate]
 } satisfies Config;
 
 export default config;

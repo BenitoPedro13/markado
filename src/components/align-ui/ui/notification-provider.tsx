@@ -1,6 +1,6 @@
 'use client';
 
-import { useNotification } from '@/src/hooks/use-notification';
+import { useNotification } from '@/hooks/use-notification';
 
 import * as Notification from '@/components/align-ui/ui/notification';
 

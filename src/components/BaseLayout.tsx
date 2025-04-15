@@ -6,9 +6,9 @@ import {ReactNode} from 'react';
 import '@/app/globals.css';
 import {TooltipProvider} from '@radix-ui/react-tooltip';
 import { ThemeProvider } from 'next-themes';
+import { NotificationProvider } from '@/components/align-ui/ui/notification-provider';
 
-// Change to a font of your preference
-// const inter = Inter({subsets: ['latin']});
+
 const plusJakartaSans = Plus_Jakarta_Sans({subsets: ['latin'], variable: '--font-plus-jakarta-sans'});
 
 type Props = {
@@ -23,6 +23,7 @@ export default async function BaseLayout({children, locale}: Props) {
   return (
     <html className="h-full" lang={locale}>
       <body className={clsx(plusJakartaSans.className, 'flex h-full flex-col')}>
+      <NotificationProvider/>
         <ThemeProvider attribute="class">
           <TooltipProvider>
             <NextIntlClientProvider messages={messages}>
