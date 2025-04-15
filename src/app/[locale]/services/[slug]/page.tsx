@@ -48,3 +48,4 @@ export default function ServicePage({ params: { locale, slug } }: Props) {
     </PageLayout>
   );
 } 
+

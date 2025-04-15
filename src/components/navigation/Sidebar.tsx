@@ -21,7 +21,7 @@ import * as Divider from '@/components/align-ui/ui/divider';
 import SidebarFooter from './SidebarFooter';
 import Link from 'next/link';
 import {usePathname} from 'next/navigation';
-
+import { DropdownDemo } from '@/components/navigation/profile-dropdown';
 interface sidebarItem {
   iconLine: ReactElement;
   iconFill: ReactElement;
@@ -190,7 +190,9 @@ const Sidebar = ({children}: PropsWithChildren) => {
           <Divider.Root variant="line" />
         </div>
 
-        <SidebarFooter />
+        <DropdownDemo>
+          <SidebarFooter />
+        </DropdownDemo>
       </div>
       {/* Main Content */}
       <div className="w-full">{children}</div>
