@@ -54,7 +54,20 @@
       "i_agree": "Eu concordo com os <terms>Termos e Condições</terms> e com a <privacy>Política de Privacidade</privacy>.",
       "start": "Começar",
       "already_have_an_account": "Já tem uma conta?",
-      "sign_in": "Entrar"
+      "sign_in": "Entrar",
+      "sign_up_with_google": "Cadastre-se com sua conta Google"
+    },
+    "PasswordForm": {
+      "create_password": "Criar Senha",
+      "create_password_label": "Criar senha",
+      "set_a_password": "Configure uma senha segura para proteger sua conta",
+      "confirm_password_label": "Confirmar senha",
+      "must_have_at_least": "Precisa ter pelo menos:",
+      "one_uppercase_letter": "1 letra maíscula",
+      "at_least_one_number": "Pelo menos 1 número",
+      "at_least_eight_characters": "Pelo menos 8 caracteres",
+      "continue": "Continuar",
+      "passwords_do_not_match": "As senhas não coincidem"
     }
   }
 }

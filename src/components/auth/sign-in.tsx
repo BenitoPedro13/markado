@@ -1,6 +1,6 @@
 import * as SocialButton from '@/components/align-ui/ui/social-button';
 
-function IconGoogle({...props}: React.SVGProps<SVGSVGElement>) {
+export function IconGoogle({...props}: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       width="32"
