@@ -26,7 +26,7 @@ import {
   useRef,
   useState
 } from 'react';
-import {SignUpContext, SignUpStep} from './layout';
+import {SignUpContext, SignUpStep} from './SignUpContext';
 import { signInWithGoogle } from '@/components/auth/auth-actions';
 import { IconGoogle } from '@/components/auth/sign-in';
 import * as SocialButton from '@/components/align-ui/ui/social-button';
