@@ -65,8 +65,8 @@
       "one_uppercase_letter": "1 letra maíscula",
       "at_least_one_number": "Pelo menos 1 número",
       "at_least_eight_characters": "Pelo menos 8 caracteres",
-      "continue": "Continuar"
-
+      "continue": "Continuar",
+      "passwords_do_not_match": "As senhas não coincidem"
     }
   }
 }

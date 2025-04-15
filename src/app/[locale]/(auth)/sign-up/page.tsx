@@ -331,7 +331,7 @@ const SignUpPage = () => {
   return (
     <>
       {step !== 'EMAIL' && (
-        <div className="absolute left-0 top-0">
+        <div className="absolute left-24 top-8">
           <Button
             variant="neutral"
             mode="stroke"
