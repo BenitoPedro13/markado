@@ -2,7 +2,7 @@
 
 import { createContext, useContext, ReactNode, useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { services } from '@/data/services';
+import { services as initialServices } from '@/data/services';
 
 type SearchFormData = {
   search: string;
@@ -16,16 +16,22 @@ type Service = {
   status: 'active' | 'disabled';
 };
 
+type FilterType = 'all' | 'active' | 'disabled';
+
 type ServicesContextType = {
   filteredServices: Service[];
   register: any;
   updateServiceStatus: (slug: string, status: 'active' | 'disabled') => void;
+  currentFilter: FilterType;
+  setFilter: (filter: FilterType) => void;
 };
 
 const ServicesContext = createContext<ServicesContextType | undefined>(undefined);
 
 export function ServicesProvider({ children }: { children: ReactNode }) {
-  const [filteredServices, setFilteredServices] = useState<Service[]>(services);
+  const [services, setServices] = useState<Service[]>(initialServices);
+  const [filteredServices, setFilteredServices] = useState<Service[]>(initialServices);
+  const [currentFilter, setCurrentFilter] = useState<FilterType>('all');
   const { register, watch } = useForm<SearchFormData>({
     defaultValues: {
       search: ''
@@ -35,22 +41,43 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
   const searchValue = watch('search');
 
   useEffect(() => {
-    const filtered = services.filter(service => 
-      service.title.toLowerCase().includes(searchValue.toLowerCase())
-    );
+    let filtered = services;
+
+    // Aplicar filtro de busca
+    if (searchValue) {
+      filtered = filtered.filter(service => 
+        service.title.toLowerCase().includes(searchValue.toLowerCase())
+      );
+    }
+
+    // Aplicar filtro de status
+    if (currentFilter !== 'all') {
+      filtered = filtered.filter(service => service.status === currentFilter);
+    }
+
     setFilteredServices(filtered);
-  }, [searchValue]);
+  }, [searchValue, currentFilter, services]);
 
   const updateServiceStatus = (slug: string, status: 'active' | 'disabled') => {
-    setFilteredServices(prevServices => 
+    setServices(prevServices => 
       prevServices.map(service => 
         service.slug === slug ? { ...service, status } : service
       )
     );
   };
 
+  const setFilter = (filter: FilterType) => {
+    setCurrentFilter(filter);
+  };
+
   return (
-    <ServicesContext.Provider value={{ filteredServices, register, updateServiceStatus }}>
+    <ServicesContext.Provider value={{ 
+      filteredServices, 
+      register, 
+      updateServiceStatus,
+      currentFilter,
+      setFilter
+    }}>
       {children}
     </ServicesContext.Provider>
   );

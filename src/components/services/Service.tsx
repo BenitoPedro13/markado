@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import * as Badge from '@/components/align-ui/ui/badge';
 import {
   RiCodeLine,
@@ -30,6 +30,10 @@ type ServiceProps = {
 function Service({title, slug, duration, price, status}: ServiceProps) {
   const { updateServiceStatus } = useServices();
   const [isEnabled, setIsEnabled] = useState(status === 'active');
+
+  useEffect(() => {
+    setIsEnabled(status === 'active');
+  }, [status]);
 
   const handleSwitchChange = () => {
     const newStatus = !isEnabled ? 'active' : 'disabled';

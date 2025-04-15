@@ -3,10 +3,10 @@ import {useTranslations} from 'next-intl';
 import {setRequestLocale} from 'next-intl/server';
 import Header from '@/components/navigation/Header';
 import * as Divider from '@/components/align-ui/ui/divider';
-import * as SegmentedControl from '@/components/align-ui/ui/segmented-control';
 import { ServicesProvider } from '@/contexts/ServicesContext';
 import ServicesList from '@/components/services/ServicesList';
 import ServicesSearch from '@/components/services/ServicesSearch';
+import ServicesFilter from '@/components/services/ServicesFilter';
 
 function IconCmd(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -50,19 +50,7 @@ export default function IndexPage({params: {locale}}: Props) {
       <ServicesProvider>
         <div className="gap-8 p-8 ">
           <div className="flex justify-between">
-            <SegmentedControl.Root defaultValue="system">
-              <SegmentedControl.List>
-                <SegmentedControl.Trigger value="all">
-                  Todos
-                </SegmentedControl.Trigger>
-                <SegmentedControl.Trigger value="active">
-                  Ativos
-                </SegmentedControl.Trigger>
-                <SegmentedControl.Trigger value="disabled">
-                  Desativados
-                </SegmentedControl.Trigger>
-              </SegmentedControl.List>
-            </SegmentedControl.Root>
+            <ServicesFilter />
             <ServicesSearch />
           </div>
         </div>
