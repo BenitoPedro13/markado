@@ -20,7 +20,7 @@ import * as CompactButton from '@/components/align-ui/ui/compact-button';
 import * as Divider from '@/components/align-ui/ui/divider';
 import SidebarFooter from './SidebarFooter';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import {usePathname} from 'next/navigation';
 
 interface sidebarItem {
   iconLine: ReactElement;
@@ -79,12 +79,10 @@ const settingsItems: sidebarItem[] = [
 const Sidebar = ({children}: PropsWithChildren) => {
   // const pathname = usePathname()
 
-
-
   return (
     <div className="flex">
       {/* Sidebar */}
-      <div className="w-[280px] h-screen bg-bg-white-0 border-r border-stroke-soft-200 inline-flex flex-col justify-start items-start overflow-hidden">
+      <div className="w-[320px] h-screen bg-bg-white-0 border-r border-stroke-soft-200 inline-flex flex-col justify-start items-start overflow-hidden">
         {/* Sidebar Header */}
         <div className="w-full p-3 relative bg-bg-white-0 inline-flex justify-center items-center gap-3 overflow-hidden">
           <div className="w-full p-3 bg-bg-white-0 rounded-[10px] flex justify-between items-center overflow-hidden">
@@ -192,12 +190,7 @@ const Sidebar = ({children}: PropsWithChildren) => {
           <Divider.Root variant="line" />
         </div>
 
-        <SidebarFooter
-          variant="pro"
-          name="Marcus Dutra"
-          email="marcaum@markado.co"
-          avatarUrl="https://media.contra.com/image/upload/c_fill,f_avif,h_160,q_auto:good,w_160/rbaw0sc545eixfngewsw"
-        />
+        <SidebarFooter />
       </div>
       {/* Main Content */}
       <div className="w-full">{children}</div>
