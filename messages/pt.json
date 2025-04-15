@@ -54,7 +54,8 @@
       "i_agree": "Eu concordo com os <terms>Termos e Condições</terms> e com a <privacy>Política de Privacidade</privacy>.",
       "start": "Começar",
       "already_have_an_account": "Já tem uma conta?",
-      "sign_in": "Entrar"
+      "sign_in": "Entrar",
+      "sign_up_with_google": "Cadastre-se com sua conta Google"
     },
     "PasswordForm": {
       "create_password": "Criar Senha",

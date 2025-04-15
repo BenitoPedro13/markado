@@ -34,7 +34,7 @@
   "SignInForm": {
     "welcome_again": "Welcome back",
     "to_start": "To get started, enter your email address.",
-    "enter_with_your_google_account": "Sign in with your Google account",
+    "enter_with_your_google_account": "Sign in with Google",
     "email": "Email",
     "password": "Password",
     "forgot_your_password": "Forgot your password?",
@@ -53,7 +53,8 @@
       "i_agree": "I agree with the <terms>Terms and Conditions</terms> and <privacy>Privacy Policy</privacy>.",
       "start": "Start",
       "already_have_an_account": "Already have an account?",
-      "sign_in": "Sign in"
+      "sign_in": "Sign in",
+      "sign_up_with_google": "Sign up with Google"
     },
     "PasswordForm": {
       "create_password": "Create Password",
