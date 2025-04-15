@@ -38,7 +38,7 @@ const SignInForm = () => {
         </div>
       </div>
 
-      <Button className="w-full" variant="neutral" mode="stroke">
+      <Button className="w-full" variant="neutral" mode="stroke" type='button'>
         <Image src={GoogleLogo} alt="" width={20} height={20} />
         <span className="text-label-sm">
           {t('enter_with_your_google_account')}

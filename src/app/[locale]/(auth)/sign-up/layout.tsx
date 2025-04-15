@@ -13,7 +13,12 @@ import { z } from 'zod';
 
 // Sign up form schema
 const signUpFormSchema = z.object({
-  email: z.string().nonempty().email()
+  email: z.string().nonempty('Email é obrigatório').email('Email inválido'),
+  password: z
+    .string()
+    .min(8, 'A senha deve ter pelo menos 8 caracteres')
+    .regex(/[A-Z]/, 'A senha deve conter pelo menos uma letra maiúscula')
+    .regex(/[0-9]/, 'A senha deve conter pelo menos um número')
 });
 
 type SignUpFormData = z.infer<typeof signUpFormSchema>;
