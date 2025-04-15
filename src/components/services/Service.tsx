@@ -1,6 +1,6 @@
 "use client"
 
-import React from 'react';
+import React, { useState } from 'react';
 import * as Badge from '@/components/align-ui/ui/badge';
 import {
   RiCodeLine,
@@ -17,6 +17,7 @@ import * as ButtonGroup from '@/components/align-ui/ui/button-group';
 import * as Tooltip from '@/components/align-ui/ui/tooltip';
 import * as Switch from '@/components/align-ui/ui/switch';
 import * as Dropdown from '@/components/align-ui/ui/dropdown';
+import { useServices } from '@/contexts/ServicesContext';
 
 type ServiceProps = {
   title: string;
@@ -27,8 +28,14 @@ type ServiceProps = {
 };
 
 function Service({title, slug, duration, price, status}: ServiceProps) {
+  const { updateServiceStatus } = useServices();
+  const [isEnabled, setIsEnabled] = useState(status === 'active');
 
-
+  const handleSwitchChange = () => {
+    const newStatus = !isEnabled ? 'active' : 'disabled';
+    setIsEnabled(!isEnabled);
+    updateServiceStatus(slug, newStatus);
+  };
 
   return (
     <div className="p-4 flex">
@@ -54,7 +61,7 @@ function Service({title, slug, duration, price, status}: ServiceProps) {
       </div>
       {/* Trailing */}
       <div className="flex gap-2 items-center">
-        <Switch.Root />
+        <Switch.Root checked={isEnabled} onCheckedChange={handleSwitchChange} />
         <ButtonGroup.Root>
           <Tooltip.Root>
           <Tooltip.Trigger asChild>

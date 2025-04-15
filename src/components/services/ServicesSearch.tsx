@@ -1,12 +1,9 @@
-import PageLayout from '@/components/PageLayout';
-import {useTranslations} from 'next-intl';
-import {setRequestLocale} from 'next-intl/server';
-import Header from '@/components/navigation/Header';
-import * as Divider from '@/components/align-ui/ui/divider';
-import * as SegmentedControl from '@/components/align-ui/ui/segmented-control';
-import { ServicesProvider } from '@/contexts/ServicesContext';
-import ServicesList from '@/components/services/ServicesList';
-import ServicesSearch from '@/components/services/ServicesSearch';
+'use client';
+
+import * as Input from '@/components/align-ui/ui/input';
+import * as Kbd from '@/components/align-ui/ui/kbd';
+import {RiSearch2Line} from '@remixicon/react';
+import { useServices } from '@/contexts/ServicesContext';
 
 function IconCmd(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -26,49 +23,23 @@ function IconCmd(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
-type Props = {
-  params: {locale: string};
-};
-
-/** Actual home page of the website.
- * 
-  The user is redirected to this page when them types the website URL.
-*/
-export default function IndexPage({params: {locale}}: Props) {
-  // Enable static rendering
-  setRequestLocale(locale);
-
-  const t = useTranslations('IndexPage');
+export default function ServicesSearch() {
+  const { register } = useServices();
 
   return (
-    <PageLayout title="Home">
-      <Header variant="services" />
-      <div className="px-8">
-        <Divider.Root />
-      </div>
-
-      <ServicesProvider>
-        <div className="gap-8 p-8 ">
-          <div className="flex justify-between">
-            <SegmentedControl.Root defaultValue="system">
-              <SegmentedControl.List>
-                <SegmentedControl.Trigger value="all">
-                  Todos
-                </SegmentedControl.Trigger>
-                <SegmentedControl.Trigger value="active">
-                  Ativos
-                </SegmentedControl.Trigger>
-                <SegmentedControl.Trigger value="disabled">
-                  Desativados
-                </SegmentedControl.Trigger>
-              </SegmentedControl.List>
-            </SegmentedControl.Root>
-            <ServicesSearch />
-          </div>
-        </div>
-
-        <ServicesList />
-      </ServicesProvider>
-    </PageLayout>
+    <div className="w-full max-w-[300px]">
+      <Input.Root>
+        <Input.Wrapper>
+          <Input.Icon as={RiSearch2Line} />
+          <Input.Input 
+            placeholder="Pesquisar Serviço..." 
+            {...register('search')}
+          />
+          <Kbd.Root>
+            <IconCmd className="size-2.5" />
+          </Kbd.Root>
+        </Input.Wrapper>
+      </Input.Root>
+    </div>
   );
-}
+} 
