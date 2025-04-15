@@ -20,8 +20,12 @@ import {useFormStatus} from 'react-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useTRPC } from '@/utils/trpc';
 
+import {useForm} from 'react-hook-form';
+import {useTransition} from 'react';
+
 import {PropsWithChildren} from 'react';
 import {signOut} from '../auth/auth-actions';
+
 function CustomVerifiedIconSVG(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
@@ -48,73 +52,94 @@ function CustomVerifiedIconSVG(props: React.SVGProps<SVGSVGElement>) {
 
 export function ProfileDropdown({children}: PropsWithChildren) {
   const [isDarkMode, setIsDarkMode] = React.useState(false);
-  const {pending} = useFormStatus();
-  const trpc = useTRPC();
-  const { data: session, isLoading, error } = useQuery(trpc.getSession.queryOptions());
+  const [isPending, startTransition] = useTransition();
 
-  if (isLoading) {
-    return <div>Loading session...</div>;
-  }
+  // Add react-hook-form
+  const {handleSubmit} = useForm();
 
-  if (error) {
-    return <div>Error loading session: {error.message}</div>;
-  }
+  // Create onSubmit handler that uses Server Action
+  const onSubmit = () => {
+    startTransition(async () => {
+      await signOut();
+    });
+  };
 
-  if (!session || !session.user) {
-    return <div>Not signed in</div>;
-  }
   return (
     <Dropdown.Root>
-      <Dropdown.Trigger className="w-full">
-        <div className="w-full bg-bg-white-0 transition-colors duration-200 hover:bg-bg-weak-50 cursor-pointer">
-          {children}
-        </div>
-      </Dropdown.Trigger>
-      <Dropdown.Content align="start" alignOffset={16}>
-        
-        
-        
-        <Dropdown.Group>
-          <Dropdown.Item>
-        <div className="flex items-center gap-3">
+      <Dropdown.Trigger className="w-full focus:outline-text-strong-950">{children}</Dropdown.Trigger>
+      <Dropdown.Content align="start">
+        <div className="flex items-center gap-3 p-2">
           <Avatar.Root size="40">
-            <Avatar.Image src={session.user.image} />
+            <Avatar.Image src="/images/avatar/photo/wei.jpg" />
             <Avatar.Indicator position="top">
               <CustomVerifiedIconSVG />
             </Avatar.Indicator>
           </Avatar.Root>
-          <div className="flex-1">
+          {/* <div className="flex-1">
             <div className="text-label-sm text-text-strong-950">
               {session.user.name}
             </div>
             <div className="mt-1 text-paragraph-xs text-text-sub-600">
               {session.user.email}
             </div>
-          </div>
-          <Badge.Root variant="light" color="green" size="medium">
+          </div> */}
+          {/* <Badge.Root variant="light" color="green" size="medium">
+            <div className="text-label-sm text-text-strong-950">Wei Chen</div>
+            <div className="mt-1 text-paragraph-xs text-text-sub-600">
+              wei@alignui.com
+            </div>
+          </div> */}
+          {/* <Badge.Root variant='light' color='green' size='medium'>
             PRO
-          </Badge.Root>
+          </Badge.Root> */}
         </div>
+        <Dropdown.Item
+          onSelect={(e) => {
+            e.preventDefault();
+            setIsDarkMode((p) => !p);
+          }}
+        >
+          <Dropdown.ItemIcon as={RiMoonLine} />
+          Dark Mode
+          <span className="flex-1" />
+          <Switch.Root checked={isDarkMode} />
+        </Dropdown.Item>
+        <Divider.Root variant="line-spacing" />
+        {/* <Dropdown.Group>
+          <Dropdown.Item>
+            <Dropdown.ItemIcon as={RiPulseLine} />
+            Activity
           </Dropdown.Item>
           <Dropdown.Item>
+            <Dropdown.ItemIcon as={RiLayoutGridLine} />
+            Integrations
+          </Dropdown.Item>
+          <Dropdown.Item>
+            <Dropdown.ItemIcon as={RiSettings2Line} />
+            Settings
+          </Dropdown.Item>
+        </Dropdown.Group>
+        <Divider.Root variant='line-spacing' />  */}
+        <Dropdown.Group>
+          {/* <Dropdown.Item>
+            <Dropdown.ItemIcon as={RiAddLine} />
+            Add Account
+          </Dropdown.Item> */}
+          <Dropdown.Item
+            onSelect={(e) => {
+              e.preventDefault();
+              handleSubmit(onSubmit)();
+            }}
+          >
             <Dropdown.ItemIcon as={RiLogoutBoxRLine} />
             <form action={signOut}>
-              <Button.Root
-                className=""
-                variant="neutral"
-                mode="ghost"
-                type="submit"
-                size="small"
-                disabled={pending}
-              >
-                {pending ? 'Saindo...' : 'Sair do app'}
-              </Button.Root>
+              {isPending ? 'Saindo...' : 'Sair do app'}
             </form>
           </Dropdown.Item>
         </Dropdown.Group>
-        <div className="p-2 text-paragraph-sm text-text-soft-400">
+        {/* <div className="p-2 text-paragraph-sm text-text-soft-400">
           v.1.5.69 · Terms & Conditions
-        </div>
+        </div> */}
       </Dropdown.Content>
     </Dropdown.Root>
   );

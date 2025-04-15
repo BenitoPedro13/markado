@@ -3,7 +3,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useTRPC } from '@/utils/trpc';
 import Image from 'next/image';
-
+import SidebarFooterSkeleton from './SidebarFooterSkeleton';
 
 
 export default function UserProfile() {
@@ -11,7 +11,7 @@ export default function UserProfile() {
   const { data: session, isLoading, error } = useQuery(trpc.getSession.queryOptions());
 
   if (isLoading) {
-    return <div>Loading session...</div>;
+    return <SidebarFooterSkeleton />;
   }
 
   if (error) {
@@ -23,8 +23,9 @@ export default function UserProfile() {
   }
 
   return (
-    <div className="w-full p-4">
-      <div className="flex items-center gap-1 p-2">
+    <div className="p-4 w-full">
+      
+      <div className="flex items-center gap-3">
         {session.user.image && (
           <Image
             src={session.user.image}
@@ -35,7 +36,7 @@ export default function UserProfile() {
             priority
           />
         )}
-        <div>
+        <div className='flex flex-col items-start'>
           <p className="text-text-strong-950 text-label-sm">{session.user.name}</p>
           <p className="text-text-sub-600 text-paragraph-xs">{session.user.email}</p>
         </div>
