@@ -34,6 +34,12 @@ const EmailForm = () => {
   const t = useTranslations('SignUpPage.EmailForm');
 
   const [agree, setAgree] = useState(false);
+  
+  // Get the email value from the form
+  const email = form.watch('email');
+  
+  // Check if the email is valid (not empty)
+  const isEmailValid = email && email.trim() !== '';
 
   const submit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -106,10 +112,10 @@ const EmailForm = () => {
 
       <Button
         className="w-full"
-        variant={agree ? 'primary' : 'neutral'}
+        variant={agree && isEmailValid ? 'primary' : 'neutral'}
         mode="filled"
         type="submit"
-        disabled={!agree}
+        disabled={!agree || !isEmailValid}
       >
         <span className="text-label-sm">{t('start')}</span>
       </Button>
@@ -294,6 +300,7 @@ const PasswordForm = () => {
         variant="primary"
         mode="filled"
         type="submit"
+        disabled={!passwordsMatch}
       >
         <span className="text-label-sm">{t('continue')}</span>
       </Button>

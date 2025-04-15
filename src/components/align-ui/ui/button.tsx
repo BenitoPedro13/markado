@@ -76,7 +76,7 @@ export const buttonVariants = tv({
           // focus
           'focus-visible:shadow-button-primary-focus',
           // ensure background is always applied
-          '!bg-[linear-gradient(0deg,var(--primary-base,#222530),var(--primary-base,#222530)),linear-gradient(180deg,rgba(255,255,255,0.16)0%,rgba(255,255,255,0)100%)]'
+          'bg-[linear-gradient(0deg,var(--primary-base,#222530),var(--primary-base,#222530)),linear-gradient(180deg,rgba(255,255,255,0.16)0%,rgba(255,255,255,0)100%)]'
         ]
       }
     },
