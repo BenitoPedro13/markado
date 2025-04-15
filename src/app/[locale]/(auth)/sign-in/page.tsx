@@ -91,7 +91,7 @@ const SignInForm = () => {
         </div>
       </div>
 
-      <Button className="w-full" variant="primary" mode="filled" type="submit">
+      <Button className="w-full" variant="neutral" mode="filled" type="submit">
         <span className="text-label-sm">{t('start')}</span>
       </Button>
 

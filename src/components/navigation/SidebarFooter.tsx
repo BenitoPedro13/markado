@@ -42,9 +42,9 @@ export default function UserProfile() {
           
         </div>
       </div>
-      <div className="mt-4">
+      {/* <div className="mt-4">
         <SignOut />
-      </div>
+      </div> */}
     </div>
   );
 } 
