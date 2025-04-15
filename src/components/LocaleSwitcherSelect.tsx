@@ -75,7 +75,7 @@ export default function LocaleSwitcherSelect({
         </Select.Trigger>
         <Select.Content>{children}</Select.Content>
       </Select.Root>
-      <span className="pointer-events-none absolute right-2 top-[8px]">⌄</span>
+      {/* <span className="pointer-events-none absolute right-2 top-[8px]">⌄</span> */}
     </label>
   );
 }
