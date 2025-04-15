@@ -1,10 +1,8 @@
 "use client"
 
-import { trpc } from '@/../trpc/client';
-// import { AppRouter } from '@/../trpc/server';
+import { trpc } from '~/trpc/client';
 import { TRPCProvider } from '@/utils/trpc';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-// import { createTRPCClient, httpBatchLink } from '@trpc/client';
 import React, { useState } from 'react';
 import { SessionProvider } from 'next-auth/react';
 
