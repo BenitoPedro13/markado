@@ -10,7 +10,7 @@ import {RiUserAddFill} from '@remixicon/react';
 import {useTranslations} from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
-import {FormEvent} from 'react';
+import {FormEvent, Suspense} from 'react';
 import {signInWithGoogle} from '@/components/auth/auth-actions';
 import {IconGoogle} from '@/components/auth/sign-in';
 import * as SocialButton from '@/components/align-ui/ui/social-button';
@@ -111,7 +111,13 @@ const SignInForm = () => {
 };
 
 const SignInPage = () => {
-  return <SignInForm />;
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen p-4">
+      <Suspense fallback={<div>Loading...</div>}>
+        <SignInForm />
+      </Suspense>
+    </div>
+  );
 };
 
 export default SignInPage;

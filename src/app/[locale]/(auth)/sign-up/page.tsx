@@ -21,6 +21,7 @@ import Link from 'next/link';
 import {
   FormEvent,
   ReactNode,
+  Suspense,
   useContext,
   useEffect,
   useRef,
@@ -333,7 +334,11 @@ const SignUpPage = () => {
   const {step, setStep} = useContext(SignUpContext);
 
   const steps: Record<SignUpStep, ReactNode> = {
-    EMAIL: <EmailForm />,
+    EMAIL: (
+      <Suspense fallback={<div>Loading...</div>}>
+        <EmailForm />
+      </Suspense>
+    ),
     PASSWORD: <PasswordForm />,
     FUNCTION: undefined,
     PERSONAL: undefined,
