@@ -70,13 +70,11 @@ export const buttonVariants = tv({
       class: {
         root: [
           // base
-          'bg-button-background text-bg-white-0',
+          'bg-primary-base opacity-85 text-bg-white-0',
           // hover
-          'hover:bg-primary-darker',
+          'hover:opacity-100',
           // focus
-          'focus-visible:shadow-button-primary-focus',
-          // ensure background is always applied
-          'bg-[linear-gradient(0deg,var(--primary-base,#222530),var(--primary-base,#222530)),linear-gradient(180deg,rgba(255,255,255,0.16)0%,rgba(255,255,255,0)100%)]'
+          'focus-visible:shadow-button-primary-focus'
         ]
       }
     },
