@@ -1,13 +1,13 @@
 'use client';
 
 import GoogleLogo from '@/../public/images/google_logo.svg';
-import { Root as Button } from '@/components/align-ui/ui/button';
-import { Root as Checkbox } from '@/components/align-ui/ui/checkbox';
+import {Root as Button} from '@/components/align-ui/ui/button';
+import {Root as Checkbox} from '@/components/align-ui/ui/checkbox';
 import * as Input from '@/components/align-ui/ui/input';
-import { Asterisk, Root as Label } from '@/components/align-ui/ui/label';
+import {Asterisk, Root as Label} from '@/components/align-ui/ui/label';
 import OrDivider from '@/components/OrDivider';
 import RoundedIconWrapper from '@/components/RoundedIconWrapper';
-import { cn } from '@/utils/cn';
+import {cn} from '@/utils/cn';
 import {
   RiArrowLeftSLine,
   RiCheckboxCircleFill,
@@ -15,7 +15,7 @@ import {
   RiLockFill,
   RiUserAddFill
 } from '@remixicon/react';
-import { useTranslations } from 'next-intl';
+import {useTranslations} from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
@@ -26,7 +26,7 @@ import {
   useRef,
   useState
 } from 'react';
-import { SignUpContext, SignUpStep } from './layout';
+import {SignUpContext, SignUpStep} from './layout';
 
 const EmailForm = () => {
   const {form, setStep} = useContext(SignUpContext);
@@ -34,10 +34,10 @@ const EmailForm = () => {
   const t = useTranslations('SignUpPage.EmailForm');
 
   const [agree, setAgree] = useState(false);
-  
+
   // Get the email value from the form
   const email = form.watch('email');
-  
+
   // Check if the email is valid (not empty)
   const isEmailValid = email && email.trim() !== '';
 
@@ -203,6 +203,11 @@ const PasswordForm = () => {
       }
     ];
 
+    console.log(
+      'confirmPassword.length > 0 && !passwordsMatch',
+      confirmPassword.length > 0 && !passwordsMatch
+    );
+
     return (
       <div className="flex flex-col gap-2">
         <div className="flex gap-2 mt-2">
@@ -280,17 +285,17 @@ const PasswordForm = () => {
             <Asterisk />
           </Label>
           <Input.Root>
-            <Input.Input 
-              type="password" 
+            <Input.Input
+              type="password"
               placeholder="• • • • • • • • • • "
               {...form.register('confirmPassword')}
             />
           </Input.Root>
-          {confirmPassword && !passwordsMatch && (
-            <p className="text-paragraph-xs text-red-500 disabled:cursor">
-              {t('passwords_do_not_match')}
-            </p>
-          )}
+          <p
+            className={`${confirmPassword.length <= 0 || !passwordsMatch ? 'opacity-100 h-auto' : 'opacity-0 h-0'} text-paragraph-xs text-red-500 disabled:cursor transition-all duration-300`}
+          >
+            {t('passwords_do_not_match')}
+          </p>
           <StrengthBarIndicator />
         </div>
       </div>
@@ -300,7 +305,7 @@ const PasswordForm = () => {
         variant="primary"
         mode="filled"
         type="submit"
-        disabled={!passwordsMatch}
+        disabled={confirmPassword.length <= 0 || !passwordsMatch}
       >
         <span className="text-label-sm">{t('continue')}</span>
       </Button>

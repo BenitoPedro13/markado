@@ -12,18 +12,24 @@ import { useForm, UseFormReturn } from 'react-hook-form';
 import { z } from 'zod';
 
 // Sign up form schema
-const signUpFormSchema = z.object({
-  email: z.string().nonempty('Email é obrigatório').email('Email inválido'),
-  password: z
-    .string()
-    .min(8, 'A senha deve ter pelo menos 8 caracteres')
-    .regex(/[A-Z]/, 'A senha deve conter pelo menos uma letra maiúscula')
-    .regex(/[0-9]/, 'A senha deve conter pelo menos um número'),
-  confirmPassword: z.string()
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "As senhas não coincidem",
-  path: ["confirmPassword"]
-});
+const signUpFormSchema = z
+  .object({
+    email: z.string().nonempty('Email é obrigatório').email('Email inválido'),
+    password: z
+      .string()
+      .min(8, 'A senha deve ter pelo menos 8 caracteres')
+      .regex(/[A-Z]/, 'A senha deve conter pelo menos uma letra maiúscula')
+      .regex(/[0-9]/, 'A senha deve conter pelo menos um número'),
+    confirmPassword: z
+      .string()
+      .min(8, 'A senha deve ter pelo menos 8 caracteres')
+      .regex(/[A-Z]/, 'A senha deve conter pelo menos uma letra maiúscula')
+      .regex(/[0-9]/, 'A senha deve conter pelo menos um número')
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'As senhas não coincidem',
+    path: ['confirmPassword']
+  });
 
 type SignUpFormData = z.infer<typeof signUpFormSchema>;
 
@@ -54,7 +60,12 @@ const SignUpProvider = ({children}: PropsWithChildren) => {
 
   const form = useForm<SignUpFormData>({
     resolver: zodResolver(signUpFormSchema),
-    mode: 'onSubmit'
+    mode: 'onSubmit',
+    defaultValues: {
+      email: '',
+      password: '',
+      confirmPassword: ''
+    }
   });
 
   const value = {
