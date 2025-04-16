@@ -18,4 +18,7 @@ items:
   - name: Scan your web application for vulnerabilities
     uses: >-
       jitsecurity-controls/jit-plans/items/runtime/item-web-app-scanner.yml@latest
+  - name: Scan infrastructure for runtime misconfigurations
+    uses: >-
+      jitsecurity-controls/jit-plans/items/infrastructure/item-runtime-misconfiguration-detection.yml@latest
 
