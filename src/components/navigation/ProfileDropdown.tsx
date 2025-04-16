@@ -25,6 +25,7 @@ import {useTransition} from 'react';
 
 import {PropsWithChildren} from 'react';
 import {signOut} from '../auth/auth-actions';
+import { useSessionStore } from '@/providers/session-store-provider';
 
 function CustomVerifiedIconSVG(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -57,6 +58,17 @@ export function ProfileDropdown({children}: PropsWithChildren) {
   // Add react-hook-form
   const {handleSubmit} = useForm();
 
+  const user = useSessionStore((state) => state.user);
+  const isLoading = useSessionStore((state) => state.isLoading);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!user) {
+    return <div>Not signed in</div>;
+  }
+
   // Create onSubmit handler that uses Server Action
   const onSubmit = () => {
     startTransition(async () => {
@@ -70,19 +82,19 @@ export function ProfileDropdown({children}: PropsWithChildren) {
       <Dropdown.Content align="start">
         <div className="flex items-center gap-3 p-2">
           <Avatar.Root size="40">
-            <Avatar.Image src="/images/avatar/photo/wei.jpg" />
+            <Avatar.Image src={user?.image || ''} />
             <Avatar.Indicator position="top">
               <CustomVerifiedIconSVG />
             </Avatar.Indicator>
           </Avatar.Root>
-          {/* <div className="flex-1">
+          <div className="flex-1">
             <div className="text-label-sm text-text-strong-950">
-              {session.user.name}
+              {user?.name}
             </div>
             <div className="mt-1 text-paragraph-xs text-text-sub-600">
-              {session.user.email}
+              {user?.email}
             </div>
-          </div> */}
+          </div>
           {/* <Badge.Root variant="light" color="green" size="medium">
             <div className="text-label-sm text-text-strong-950">Wei Chen</div>
             <div className="mt-1 text-paragraph-xs text-text-sub-600">
