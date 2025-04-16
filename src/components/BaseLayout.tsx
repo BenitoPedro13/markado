@@ -7,7 +7,7 @@ import '@/app/globals.css';
 import {TooltipProvider} from '@radix-ui/react-tooltip';
 import { ThemeProvider } from 'next-themes';
 import { NotificationProvider } from '@/components/align-ui/ui/notification-provider';
-
+import PageWrapper from '@/app/PageWrapper';
 
 const plusJakartaSans = Plus_Jakarta_Sans({subsets: ['latin'], variable: '--font-plus-jakarta-sans'});
 
@@ -27,7 +27,9 @@ export default async function BaseLayout({children, locale}: Props) {
         <ThemeProvider attribute="class">
           <TooltipProvider>
             <NextIntlClientProvider messages={messages}>
-              {children}
+              <PageWrapper>
+                {children}
+              </PageWrapper>
             </NextIntlClientProvider>
           </TooltipProvider>
         </ThemeProvider>

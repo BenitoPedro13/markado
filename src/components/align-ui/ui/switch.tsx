@@ -29,11 +29,11 @@ const Switch = React.forwardRef<
             // pressed
             'group-active/switch:bg-bg-soft-200',
             // checked
-            'group-data-[state=checked]/switch:bg-primary-base',
+            'group-data-[state=checked]/switch:bg-primary-darker',
             // checked hover
             'group-hover:data-[state=checked]/switch:bg-primary-darker',
             // checked pressed
-            'group-active:data-[state=checked]/switch:bg-primary-base',
+            'group-active:data-[state=checked]/switch:bg-static-white',
             // focus
             'group-focus/switch:outline-none',
           ],

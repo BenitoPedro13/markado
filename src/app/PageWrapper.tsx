@@ -5,6 +5,7 @@ import { TRPCProvider } from '@/utils/trpc';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React, { useState } from 'react';
 import { SessionProvider } from 'next-auth/react';
+import {SessionStoreProvider} from '@/providers/session-store-provider';
 
 
 function makeQueryClient() {
@@ -42,7 +43,9 @@ const PageWrapper = ({ children }: React.PropsWithChildren) => {
     <SessionProvider>
       <QueryClientProvider client={queryClient}>
         <TRPCProvider trpcClient={trpcClient} queryClient={queryClient}>
-          {children}
+          <SessionStoreProvider>
+            {children}
+          </SessionStoreProvider>
         </TRPCProvider>
       </QueryClientProvider>
     </SessionProvider>

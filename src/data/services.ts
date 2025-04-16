@@ -9,35 +9,35 @@ export type ServicesProps = {
 export const services: ServicesProps[] = [
   {
     title: 'Aula de Figma',
-    slug: 'marcaum/figma',
+    slug: 'figma',
     duration: 60,
     price: 150.00,
     status: 'active'
   },
   {
     title: 'Aula de Framer',
-    slug: 'marcaum/framer',
+    slug: 'framer',
     duration: 60,
     price: 150.00,
     status: 'active'
   },
   {
     title: 'Aula de Photoshop',
-    slug: 'marcaum/ps',
+    slug: 'ps',
     duration: 60,
     price: 100.00,
     status: 'active'
   },
   {
     title: 'Consultoria',
-    slug: 'marcaum/consult',
+    slug: 'consult',
     duration: 60,
     price: 200.00,
     status: 'active'
   },
   {
     title: 'Conversa de Design',
-    slug: 'marcaum/talk',
+    slug: 'talk',
     duration: 30,
     price: 50.00,
     status: 'active'

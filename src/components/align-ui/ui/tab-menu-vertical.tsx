@@ -39,8 +39,8 @@ TabMenuVerticalList.displayName = 'TabMenuVerticalList';
 
 const TabMenuVerticalTrigger = React.forwardRef<
   React.ComponentRef<typeof TabsPrimitive.Trigger>,
-  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>
->(({ className, ...rest }, forwardedRef) => {
+  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger> & { indicator?: boolean }
+>(({ className, indicator = true, ...rest }, forwardedRef) => {
   return (
     <TabsPrimitive.Trigger
       ref={forwardedRef}
@@ -55,7 +55,7 @@ const TabMenuVerticalTrigger = React.forwardRef<
         'focus:outline-none',
         // active
         'data-[state=active]:bg-bg-weak-50 data-[state=active]:text-text-strong-950',
-        'relative data-[state=active]:before:block before:hidden before:w-1 before:h-5 before:absolute before:-left-5 before:top-2 before:rounded-r before:bg-neutral-700 dark:before:bg-bg-strong-950',
+        indicator &&'relative data-[state=active]:before:block before:hidden before:w-1 before:h-5 before:absolute before:-left-5 before:top-2 before:rounded-r before:bg-neutral-700 dark:before:bg-bg-strong-950',
         className
       )}
       {...rest}
@@ -102,26 +102,27 @@ function TabMenuVerticalIcon({
 }
 TabMenuVerticalIcon.displayName = 'TabsVerticalIcon';
 
-function TabMenuVerticalArrowIcon<T extends React.ElementType>({
+function TabMenuVerticalArrowIcon({
   className,
-  as,
+  children,
   ...rest
-}: PolymorphicComponentProps<T>) {
-  const Component = as || 'div';
-
+}: React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <Component
+    <div
       className={cn(
         // base
         'size-5 p-px text-text-sub-600',
         'rounded-full bg-bg-white-0 opacity-0 shadow-regular-xs',
         'scale-75 transition ease-out',
+        'flex justify-center items-center',
         // active
         'group-data-[state=active]/tab-item:scale-100 group-data-[state=active]/tab-item:opacity-100',
         className,
       )}
       {...rest}
-    />
+    >
+      {children}
+    </div>
   );
 }
 TabMenuVerticalArrowIcon.displayName = 'TabMenuVerticalArrowIcon';
