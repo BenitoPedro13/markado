@@ -51,6 +51,7 @@ export default function ServiceDetails({ slug }: Props) {
             Link do Serviço
           </label>
           <Input.Root>
+          <Input.Affix>app.markado.co/marcaum/</Input.Affix>
             <Input.Input {...register('slug')} placeholder="consulta-marketing" />
           </Input.Root>
           <span className="text-paragraph-xs text-text-sub-600">
