@@ -7,7 +7,7 @@ import ServiceDetails from '@/components/services/service-details/ServiceDetails
 import ServiceAvailability from '@/components/services/service-details/ServiceAvailability';
 import ServiceForm from '@/components/services/service-details/ServiceForm';
 import ServiceAdvanced from '@/components/services/service-details/ServiceAdvanced';
-
+import {  RiCalendarLine, RiFileCopyFill, RiLinksLine, RiMore2Fill } from '@remixicon/react';
 type Props = {
   params: {
     locale: string;
@@ -20,16 +20,18 @@ export default function ServicePage({ params: { locale, slug } }: Props) {
 
   return (
     <PageLayout title="Detalhes do Serviço">
-      <Header variant="services" />
-      <div className="p-8">
-        <TabMenuVertical.Root defaultValue="service">
-          <TabMenuVertical.List>
-            <TabMenuVertical.Trigger value="service">Serviço</TabMenuVertical.Trigger>
-            <TabMenuVertical.Trigger value="availability">Disponibilidade</TabMenuVertical.Trigger>
-            <TabMenuVertical.Trigger value="form">Formulário</TabMenuVertical.Trigger>
-            <TabMenuVertical.Trigger value="advanced">Avançado</TabMenuVertical.Trigger>
+      <Header variant="services" mode="inside" />
+      <div className="p-8 flex w-full justify-center">
+        <TabMenuVertical.Root defaultValue="service" className='max-w-[1200px] items-start justify-center flex gap-4'>
+          
+          <TabMenuVertical.List className='w-[300px] p-4 border rounded-lg border-border-stroke-200 h-fit'>
+          <div className='text-subheading-xs uppercase text-text-sub-600'>Menu</div>
+            <TabMenuVertical.Trigger value="service"> <TabMenuVertical.Icon iconLine={<RiLinksLine />} iconFill={<RiLinksLine />} />  Serviço</TabMenuVertical.Trigger>
+            <TabMenuVertical.Trigger value="availability"> <TabMenuVertical.Icon iconLine={<RiCalendarLine />} iconFill={<RiCalendarLine />} /> Disponibilidade</TabMenuVertical.Trigger>
+            <TabMenuVertical.Trigger value="form"> <TabMenuVertical.Icon iconLine={<RiFileCopyFill />} iconFill={<RiFileCopyFill />} /> Formulário</TabMenuVertical.Trigger>
+            <TabMenuVertical.Trigger value="advanced"> <TabMenuVertical.Icon iconLine={<RiMore2Fill />} iconFill={<RiMore2Fill />} /> Avançado</TabMenuVertical.Trigger>
           </TabMenuVertical.List>
-          <div className="mt-6">
+          <div className="w-full">
             <TabMenuVertical.Content value="service">
               <ServiceDetails slug={slug} />
             </TabMenuVertical.Content>

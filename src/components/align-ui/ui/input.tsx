@@ -25,7 +25,7 @@ export const inputVariants = tv({
       'before:pointer-events-none before:rounded-[inherit]',
       'before:transition before:duration-200 before:ease-out',
       // hover
-      'hover:shadow-none',
+      'hover:shadow-none hover:[&:not(:has(input:focus))]:bg-bg-weak-50',
       // focus
       'has-[input:focus]:shadow-button-important-focus has-[input:focus]:before:ring-stroke-strong-950',
       // disabled
@@ -35,8 +35,6 @@ export const inputVariants = tv({
       // base
       'group/input-wrapper flex w-full cursor-text items-center bg-bg-white-0',
       'transition duration-200 ease-out',
-      // hover
-      'hover:[&:not(&:has(input:focus))]:bg-bg-weak-50',
       // disabled
       'has-[input:disabled]:pointer-events-none has-[input:disabled]:bg-bg-weak-50',
     ],

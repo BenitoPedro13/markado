@@ -24,7 +24,7 @@ import * as Modal from '@/components/align-ui/ui/modal';
 import {useNotification} from '@/hooks/use-notification';
 import * as ButtonGroup from '@/components/align-ui/ui/button-group';
 import * as Tooltip from '@/components/align-ui/ui/tooltip';
-
+import { useRouter } from 'next/navigation';
 import { DatepickerRangeDemo } from '@/components/align-ui/daterange';
 type HeaderVariant = 'scheduling' | 'availability' | 'services' | 'reports' | 'settings';
 type HeaderMode = 'default' | 'inside';
@@ -55,14 +55,14 @@ function Header({
 }: HeaderProps) {
   const {notification} = useNotification();
   const [open, setOpen] = useState(false);
-
+  const router = useRouter();
     
 
   if (mode === 'inside') {
     return (
       <div className="w-full h-[88px] px-8 py-5 relative bg-bg-white-0 inline-flex justify-between items-center overflow-hidden">
         <div className="flex items-center gap-3">
-          <Button.Root variant="neutral" mode="stroke" size="small">
+          <Button.Root variant="neutral" mode="stroke" size="small" onClick={() => router.back()}>
             <Button.Icon as={RiArrowLeftSLine} />
           </Button.Root>
           <div className="flex flex-col">

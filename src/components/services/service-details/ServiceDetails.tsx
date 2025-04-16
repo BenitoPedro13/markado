@@ -5,7 +5,7 @@ import * as Input from '@/components/align-ui/ui/input';
 import * as Textarea from '@/components/align-ui/ui/textarea';
 import * as Button from '@/components/align-ui/ui/button';
 import { Service } from '@/types/service';
-
+import * as Divider from '@/components/align-ui/ui/divider';
 type ServiceDetailsFormData = Pick<Service, 'title' | 'description' | 'slug' | 'duration' | 'price' | 'location'>;
 
 type Props = {
@@ -22,9 +22,10 @@ export default function ServiceDetails({ slug }: Props) {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-2xl">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div className="space-y-4">
-        <div>
+        <div className='text-title-h6'>Geral</div>
+        <div className='flex flex-col gap-2'>
           <label className="text-sm font-medium text-text-strong-950">
             Título do Serviço
           </label>
@@ -33,7 +34,7 @@ export default function ServiceDetails({ slug }: Props) {
           </Input.Root>
         </div>
 
-        <div>
+        <div className='flex flex-col gap-2'>
           <label className="text-sm font-medium text-text-strong-950">
             Descrição
           </label>
@@ -45,20 +46,21 @@ export default function ServiceDetails({ slug }: Props) {
           </Textarea.Root>
         </div>
 
-        <div>
+        <div className='flex flex-col gap-2'>
           <label className="text-sm font-medium text-text-strong-950">
             Link do Serviço
           </label>
           <Input.Root>
             <Input.Input {...register('slug')} placeholder="consulta-marketing" />
           </Input.Root>
-          <span className="text-xs text-text-sub-600">
+          <span className="text-paragraph-xs text-text-sub-600">
             Este será o link usado para compartilhar seu serviço
           </span>
         </div>
-
+        <Divider.Root />
+        <div className='text-title-h6'>Dados do Serviço</div>
         <div className="grid grid-cols-2 gap-4">
-          <div>
+          <div className='flex flex-col gap-2'>
             <label className="text-sm font-medium text-text-strong-950">
               Duração (minutos)
             </label>
@@ -71,7 +73,7 @@ export default function ServiceDetails({ slug }: Props) {
             </Input.Root>
           </div>
 
-          <div>
+          <div className='flex flex-col gap-2'>
             <label className="text-sm font-medium text-text-strong-950">
               Preço (R$)
             </label>
@@ -86,7 +88,7 @@ export default function ServiceDetails({ slug }: Props) {
           </div>
         </div>
 
-        <div>
+        <div className='flex flex-col gap-2'>
           <label className="text-sm font-medium text-text-strong-950">
             Localização
           </label>
@@ -99,9 +101,7 @@ export default function ServiceDetails({ slug }: Props) {
         </div>
       </div>
 
-      <Button.Root type="submit">
-        Salvar Alterações
-      </Button.Root>
+
     </form>
   );
 } 
