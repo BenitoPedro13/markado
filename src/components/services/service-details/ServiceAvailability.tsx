@@ -35,10 +35,12 @@ export default function ServiceAvailability({ slug }: Props) {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-2xl">
       <div className="space-y-4">
+      <div className="text-title-h6">Disponibilidade</div>
         <div className="grid grid-cols-[1fr,auto,auto] gap-4 items-end">
+          
           <div>
             <label className="text-sm font-medium text-text-strong-950">
-              Dias da Semana
+              Disponibilidade
             </label>
             <Select.Root>
               <Select.Trigger>
