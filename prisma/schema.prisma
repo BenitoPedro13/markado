@@ -11,21 +11,89 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum IndustryType {
+  HEALTHCARE
+  BEAUTY
+  WELLNESS
+  SPORTS
+  CULINARY
+  BARBERSHOPS
+  EDUCATION
+  OTHERS
+}
+
+enum Locale {
+  EN
+  PT
+}
+
+enum IdentityProvider {
+  MARKADO
+  GOOGLE
+}
+
+enum BusinessLocationType {
+  ONLINE
+  IN_PERSON
+}
+
+enum BrazilianStatesAcronyms {
+  AC // Acre
+  AL // Alagoas
+  AP // Amapá
+  AM // Amazonas
+  BA // Bahia
+  CE // Ceará
+  DF // Distrito Federal
+  ES // Espírito Santo
+  GO // Goiás
+  MA // Maranhão
+  MT // Mato Grosso
+  MS // Mato Grosso do Sul
+  MG // Minas Gerais
+  PA // Pará
+  PB // Paraíba
+  PR // Paraná
+  PE // Pernambuco
+  PI // Piauí
+  RJ // Rio de Janeiro
+  RN // Rio Grande do Norte
+  RS // Rio Grande do Sul
+  RO // Rondônia
+  RR // Roraima
+  SC // Santa Catarina
+  SP // São Paulo
+  SE // Sergipe
+  TO // Tocantins
+}
+
 model User {
-  id            String          @id @default(cuid())
-  name          String?
-  email         String          @unique
-  emailVerified DateTime?
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
+  id                  String            @id @default(cuid())
+  name                String?
+  username            String?
+  email               String
+  emailVerified       DateTime?
+  biography           String?
+  image               String?
+  timeZone            String            @default("America/Sao_Paulo")
+  completedOnboarding Boolean           @default(false)
+  locale              Locale?           @default(PT)
+  identityProvider    IdentityProvider? @default(MARKADO)
+  password            UserPassword?
+  accounts            Account[]
+  sessions            Session[]
   // Optional for WebAuthn support
-  Authenticator Authenticator[]
- 
+  Authenticator       Authenticator[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@unique([email])
+  @@unique([email, username])
+  @@index([username])
+  @@index([emailVerified])
 }
- 
+
 model Account {
   userId            String
   type              String
@@ -38,33 +106,66 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
- 
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
- 
+
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
- 
+
   @@id([provider, providerAccountId])
 }
- 
+
+model UserPassword {
+  hash   String
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
 model Session {
   sessionToken String   @unique
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
- 
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
- 
+
 model VerificationToken {
   identifier String
   token      String
   expires    DateTime
- 
+
   @@id([identifier, token])
 }
- 
+
+model BusinessLocation {
+  id           Int                     @id @default(autoincrement())
+  cep          String
+  state        BrazilianStatesAcronyms
+  city         String
+  neighborhood String
+  street       String
+  number       String
+  complement   String
+
+  team Team[]
+}
+
+model Team {
+  id                 Int              @id @default(autoincrement())
+  name               String
+  industryType       IndustryType?
+  slug               String?
+  linkedinUrl        String?
+  twitterUrl         String?
+  instagramUrl       String?
+  businessLocation   BusinessLocation @relation(fields: [businessLocationId], references: [id])
+  businessLocationId Int
+
+  @@unique([slug])
+}
+
 // Optional for WebAuthn support
 model Authenticator {
   credentialID         String  @unique
@@ -75,8 +176,8 @@ model Authenticator {
   credentialDeviceType String
   credentialBackedUp   Boolean
   transports           String?
- 
+
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
- 
+
   @@id([userId, credentialID])
 }
