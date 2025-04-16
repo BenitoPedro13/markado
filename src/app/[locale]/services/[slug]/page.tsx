@@ -1,5 +1,5 @@
-import { useTranslations } from 'next-intl';
-import { setRequestLocale } from 'next-intl/server';
+import {useTranslations} from 'next-intl';
+import {setRequestLocale} from 'next-intl/server';
 import PageLayout from '@/components/PageLayout';
 import Header from '@/components/navigation/Header';
 import * as TabMenuVertical from '@/components/align-ui/ui/tab-menu-vertical';
@@ -7,7 +7,16 @@ import ServiceDetails from '@/components/services/service-details/ServiceDetails
 import ServiceAvailability from '@/components/services/service-details/ServiceAvailability';
 import ServiceForm from '@/components/services/service-details/ServiceForm';
 import ServiceAdvanced from '@/components/services/service-details/ServiceAdvanced';
-import {  RiCalendarLine, RiFileCopyFill, RiLinksLine, RiMore2Fill } from '@remixicon/react';
+import {
+  RiArrowRightSLine,
+  RiCalendarLine,
+  RiDraftLine,
+  RiFileCopyFill,
+  RiLinksFill,
+  RiLinksLine,
+  RiMore2Fill
+} from '@remixicon/react';
+
 type Props = {
   params: {
     locale: string;
@@ -15,39 +24,74 @@ type Props = {
   };
 };
 
-export default function ServicePage({ params: { locale, slug } }: Props) {
+const menuItems = [
+  {
+    value: 'service',
+    label: 'Serviço',
+    iconLine: RiLinksLine,
+    iconFill: RiLinksFill,
+    component: ServiceDetails,
+  },
+  {
+    value: 'availability',
+    label: 'Disponibilidade',
+    iconLine: RiCalendarLine,
+    iconFill: RiCalendarLine,
+    component: ServiceAvailability,
+  },
+  {
+    value: 'form',
+    label: 'Formulário',
+    iconLine: RiDraftLine,
+    iconFill: RiFileCopyFill,
+    component: ServiceForm,
+  },
+  {
+    value: 'advanced',
+    label: 'Avançado',
+    iconLine: RiMore2Fill,
+    iconFill: RiMore2Fill,
+    component: ServiceAdvanced,
+  },
+];
+
+export default function ServicePage({params: {locale, slug}}: Props) {
   setRequestLocale(locale);
 
   return (
     <PageLayout title="Detalhes do Serviço">
       <Header variant="services" mode="inside" />
       <div className="p-8 flex w-full justify-center">
-        <TabMenuVertical.Root defaultValue="service" className='max-w-[1200px] items-start justify-center flex gap-4'>
-          
-          <TabMenuVertical.List className='w-[300px] p-4 border rounded-lg border-border-stroke-200 h-fit'>
-          <div className='text-subheading-xs uppercase text-text-sub-600'>Menu</div>
-            <TabMenuVertical.Trigger value="service"> <TabMenuVertical.Icon iconLine={<RiLinksLine />} iconFill={<RiLinksLine />} />  Serviço</TabMenuVertical.Trigger>
-            <TabMenuVertical.Trigger value="availability"> <TabMenuVertical.Icon iconLine={<RiCalendarLine />} iconFill={<RiCalendarLine />} /> Disponibilidade</TabMenuVertical.Trigger>
-            <TabMenuVertical.Trigger value="form"> <TabMenuVertical.Icon iconLine={<RiFileCopyFill />} iconFill={<RiFileCopyFill />} /> Formulário</TabMenuVertical.Trigger>
-            <TabMenuVertical.Trigger value="advanced"> <TabMenuVertical.Icon iconLine={<RiMore2Fill />} iconFill={<RiMore2Fill />} /> Avançado</TabMenuVertical.Trigger>
+        <TabMenuVertical.Root
+          defaultValue="service"
+          className="max-w-[900px] w-full items-start justify-center flex gap-4"
+        >
+          <TabMenuVertical.List className="w-[300px] p-4 border rounded-lg border-border-stroke-200 h-fit">
+            <div className="text-subheading-xs uppercase text-text-sub-600">
+              Menu
+            </div>
+            {menuItems.map(({value, label, iconLine: IconLine, iconFill: IconFill}) => (
+              <TabMenuVertical.Trigger key={value} value={value} indicator={false}>
+                <TabMenuVertical.Icon
+                  iconLine={<IconLine />}
+                  iconFill={<IconFill />}
+                />
+                {label}
+                <TabMenuVertical.ArrowIcon>
+                  <RiArrowRightSLine />
+                </TabMenuVertical.ArrowIcon>
+              </TabMenuVertical.Trigger>
+            ))}
           </TabMenuVertical.List>
           <div className="w-full">
-            <TabMenuVertical.Content value="service">
-              <ServiceDetails slug={slug} />
-            </TabMenuVertical.Content>
-            <TabMenuVertical.Content value="availability">
-              <ServiceAvailability slug={slug} />
-            </TabMenuVertical.Content>
-            <TabMenuVertical.Content value="form">
-              <ServiceForm slug={slug} />
-            </TabMenuVertical.Content>
-            <TabMenuVertical.Content value="advanced">
-              <ServiceAdvanced slug={slug} />
-            </TabMenuVertical.Content>
+            {menuItems.map(({value, component: Component}) => (
+              <TabMenuVertical.Content key={value} value={value}>
+                <Component slug={slug} />
+              </TabMenuVertical.Content>
+            ))}
           </div>
         </TabMenuVertical.Root>
       </div>
     </PageLayout>
   );
-} 
-
+}
