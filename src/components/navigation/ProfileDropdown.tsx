@@ -1,14 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import {
-  RiAddLine,
-  RiLayoutGridLine,
-  RiLogoutBoxRLine,
-  RiMoonLine,
-  RiPulseLine,
-  RiSettings2Line
-} from '@remixicon/react';
+import {RiLogoutBoxRLine, RiMoonLine} from '@remixicon/react';
 
 import * as Avatar from '@/components/align-ui/ui/avatar';
 import * as Badge from '@/components/align-ui/ui/badge';
@@ -16,17 +9,14 @@ import * as Button from '@/components/align-ui/ui/button';
 import * as Divider from '@/components/align-ui/ui/divider';
 import * as Dropdown from '@/components/align-ui/ui/dropdown';
 import * as Switch from '@/components/align-ui/ui/switch';
-import {useFormStatus} from 'react-dom';
-import { useQuery } from '@tanstack/react-query';
-import { useTRPC } from '@/utils/trpc';
 
 import {useForm} from 'react-hook-form';
 import {useTransition} from 'react';
 
 import {PropsWithChildren} from 'react';
 import {signOut} from '../auth/auth-actions';
-import { useSessionStore } from '@/providers/session-store-provider';
-
+import {useSessionStore} from '@/providers/session-store-provider';
+import SidebarFooterSkeleton from '@/components/navigation/SidebarFooterSkeleton';
 function CustomVerifiedIconSVG(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
@@ -62,7 +52,7 @@ export function ProfileDropdown({children}: PropsWithChildren) {
   const isLoading = useSessionStore((state) => state.isLoading);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <SidebarFooterSkeleton />;
   }
 
   if (!user) {
@@ -78,7 +68,9 @@ export function ProfileDropdown({children}: PropsWithChildren) {
 
   return (
     <Dropdown.Root>
-      <Dropdown.Trigger className="w-full focus:outline-text-strong-950">{children}</Dropdown.Trigger>
+      <Dropdown.Trigger className="w-full focus:outline-text-strong-950">
+        {children}
+      </Dropdown.Trigger>
       <Dropdown.Content align="start">
         <div className="flex items-center gap-3 p-2">
           <Avatar.Root size="40">
