@@ -21,17 +21,18 @@ import Link from 'next/link';
 import {
   FormEvent,
   ReactNode,
+  Suspense,
   useContext,
   useEffect,
   useRef,
   useState
 } from 'react';
-import {SignUpContext, SignUpStep} from './layout';
+import {SignUpContext, SignUpStep} from './SignUpContext';
 import { signInWithGoogle } from '@/components/auth/auth-actions';
 import { IconGoogle } from '@/components/auth/sign-in';
 import * as SocialButton from '@/components/align-ui/ui/social-button';
 import { useSearchParams } from 'next/navigation';
-
+import AuthSkeleton from '@/components/skeletons/AuthSkeleton';
 
 const EmailForm = () => {
   const {form, setStep} = useContext(SignUpContext);
@@ -333,7 +334,11 @@ const SignUpPage = () => {
   const {step, setStep} = useContext(SignUpContext);
 
   const steps: Record<SignUpStep, ReactNode> = {
-    EMAIL: <EmailForm />,
+    EMAIL: (
+      <Suspense fallback={<AuthSkeleton />}>
+        <EmailForm />
+      </Suspense>
+    ),
     PASSWORD: <PasswordForm />,
     FUNCTION: undefined,
     PERSONAL: undefined,

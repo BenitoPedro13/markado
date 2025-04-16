@@ -1,4 +1,8 @@
+'use client';
+
 import * as SocialButton from '@/components/align-ui/ui/social-button';
+import { signInWithGoogle } from './auth-actions';
+import { useSearchParams } from 'next/navigation';
 
 export function IconGoogle({...props}: React.SVGProps<SVGSVGElement>) {
   return (
@@ -30,17 +34,25 @@ export function IconGoogle({...props}: React.SVGProps<SVGSVGElement>) {
   );
 }
 
-
-import { signInWithGoogle } from './auth-actions';
-
 export default function SignIn() {
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get('redirect') || '/';
+
+  const handleGoogleSignIn = async () => {
+    await signInWithGoogle(redirectTo);
+  };
+
   return (
-    <form action={signInWithGoogle}>
-      {/* <button type="submit">Signin with Google</button> */}
-      <SocialButton.Root brand="google" mode="stroke">
+    <div>
+      <SocialButton.Root 
+        brand="google" 
+        mode="stroke" 
+        onClick={handleGoogleSignIn}
+        type="button"
+      >
         <SocialButton.Icon as={IconGoogle} />
         Login with Google
       </SocialButton.Root>
-    </form>
+    </div>
   );
 }

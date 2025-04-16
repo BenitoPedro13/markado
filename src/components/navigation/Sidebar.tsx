@@ -1,3 +1,5 @@
+
+
 import {
   RiCalendarLine,
   RiCalendarFill,
@@ -20,8 +22,7 @@ import * as CompactButton from '@/components/align-ui/ui/compact-button';
 import * as Divider from '@/components/align-ui/ui/divider';
 import SidebarFooter from './SidebarFooter';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-
+import { ProfileDropdown } from '@/components/navigation/ProfileDropdown';
 interface sidebarItem {
   iconLine: ReactElement;
   iconFill: ReactElement;
@@ -79,12 +80,10 @@ const settingsItems: sidebarItem[] = [
 const Sidebar = ({children}: PropsWithChildren) => {
   // const pathname = usePathname()
 
-
-
   return (
     <div className="flex">
       {/* Sidebar */}
-      <div className="w-[280px] h-screen bg-bg-white-0 border-r border-stroke-soft-200 inline-flex flex-col justify-start items-start overflow-hidden">
+      <div className="w-[340px] h-screen bg-bg-white-0 border-r border-stroke-soft-200 inline-flex flex-col justify-start items-start overflow-hidden">
         {/* Sidebar Header */}
         <div className="w-full p-3 relative bg-bg-white-0 inline-flex justify-center items-center gap-3 overflow-hidden">
           <div className="w-full p-3 bg-bg-white-0 rounded-[10px] flex justify-between items-center overflow-hidden">
@@ -144,7 +143,7 @@ const Sidebar = ({children}: PropsWithChildren) => {
           <Divider.Root variant="line" />
         </div>
 
-        <div className="self-stretch h-full flex-1 px-5 pt-5 pb-4 bg-bg-white-0 flex flex-col justify-start items-start gap-5 overflow-hidden">
+        <div className="self-stretch h-full flex-1 p-4 bg-bg-white-0 flex flex-col justify-start items-start gap-5 overflow-hidden">
           <div className="self-stretch h-full flex flex-col justify-start items-start gap-2">
             <div className="self-stretch h-full flex flex-col justify-start items-start gap-1">
               <div className="h-full w-full max-w-[258px]">
@@ -192,12 +191,9 @@ const Sidebar = ({children}: PropsWithChildren) => {
           <Divider.Root variant="line" />
         </div>
 
-        <SidebarFooter
-          variant="pro"
-          name="Marcus Dutra"
-          email="marcaum@markado.co"
-          avatarUrl="https://media.contra.com/image/upload/c_fill,f_avif,h_160,q_auto:good,w_160/rbaw0sc545eixfngewsw"
-        />
+        <ProfileDropdown>
+          <SidebarFooter />
+        </ProfileDropdown>
       </div>
       {/* Main Content */}
       <div className="w-full">{children}</div>

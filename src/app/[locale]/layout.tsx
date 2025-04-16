@@ -39,12 +39,12 @@ export default async function LocaleLayout({
 
   return (
     <BaseLayout locale={locale}>
-      <PageWrapper>
+
         <div className="flex min-h-screen flex-col">
           {/* <Header /> */}
           <main className="flex flex-1 flex-col">{children}</main>
         </div>
-      </PageWrapper>
+
     </BaseLayout>
   );
 }

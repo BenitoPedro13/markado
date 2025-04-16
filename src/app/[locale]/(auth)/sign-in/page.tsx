@@ -10,12 +10,12 @@ import {RiUserAddFill} from '@remixicon/react';
 import {useTranslations} from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
-import {FormEvent} from 'react';
+import {FormEvent, Suspense} from 'react';
 import {signInWithGoogle} from '@/components/auth/auth-actions';
 import {IconGoogle} from '@/components/auth/sign-in';
 import * as SocialButton from '@/components/align-ui/ui/social-button';
 import { useSearchParams } from 'next/navigation';
-
+import AuthSkeleton from '@/components/skeletons/AuthSkeleton';
 const SignInForm = () => {
   const t = useTranslations('SignInForm');
   const searchParams = useSearchParams();
@@ -91,7 +91,7 @@ const SignInForm = () => {
         </div>
       </div>
 
-      <Button className="w-full" variant="primary" mode="filled" type="submit">
+      <Button className="w-full" variant="neutral" mode="filled" type="submit">
         <span className="text-label-sm">{t('start')}</span>
       </Button>
 
@@ -103,7 +103,7 @@ const SignInForm = () => {
           className="text-label-sm text-text-strong-950 hover:border-b border-b-stroke-strong-950 transition"
           href={`/pt/sign-up${redirectTo !== '/' ? `?redirect=${redirectTo}` : ''}`}
         >
-          {t('sign_up')}
+          {t('create')}
         </Link>
       </div>
     </form>
@@ -111,7 +111,16 @@ const SignInForm = () => {
 };
 
 const SignInPage = () => {
-  return <SignInForm />;
+  return (
+    <div className="flex flex-col items-center justify-center p-4">
+      <Suspense fallback={<AuthSkeleton />}>
+        <div className="flex items-center justify-center gap-4">
+          <SignInForm />
+          
+        </div>
+      </Suspense>
+    </div>
+  );
 };
 
 export default SignInPage;
