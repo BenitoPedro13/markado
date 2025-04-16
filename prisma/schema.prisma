@@ -77,6 +77,7 @@ model User {
   image               String?
   timeZone            String            @default("America/Sao_Paulo")
   completedOnboarding Boolean           @default(false)
+    availability        Availability[]
   locale              Locale?           @default(PT)
   identityProvider    IdentityProvider? @default(MARKADO)
   password            UserPassword?
@@ -137,6 +138,18 @@ model VerificationToken {
   expires    DateTime
 
   @@id([identifier, token])
+}
+
+model Availability {
+  id          Int        @id @default(autoincrement())
+  user        User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String?
+  days        Int[]
+  startTime   DateTime   @db.Time
+  endTime     DateTime   @db.Time
+  date        DateTime?  @db.Date
+
+  @@index([userId])
 }
 
 model BusinessLocation {
