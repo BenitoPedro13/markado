@@ -28,11 +28,17 @@ import {
   useState
 } from 'react';
 import {SignUpContext, SignUpStep} from './SignUpContext';
-import { signInWithGoogle } from '@/components/auth/auth-actions';
-import { IconGoogle } from '@/components/auth/sign-in';
+import {
+  signInWithGoogle,
+  signUpWithEmailPassword,
+  signInWithEmailPassword
+} from '@/components/auth/auth-actions';
+import {IconGoogle} from '@/components/auth/sign-in';
 import * as SocialButton from '@/components/align-ui/ui/social-button';
-import { useSearchParams } from 'next/navigation';
+import {useSearchParams, useRouter} from 'next/navigation';
 import AuthSkeleton from '@/components/skeletons/AuthSkeleton';
+import { useTRPC } from '@/utils/trpc';
+import { useMutation } from '@tanstack/react-query';
 
 const EmailForm = () => {
   const {form, setStep} = useContext(SignUpContext);
@@ -45,9 +51,6 @@ const EmailForm = () => {
 
   // Get the email value from the form
   const email = form.watch('email');
-
-  // Check if the email is valid (not empty)
-  const isEmailValid = email && email.trim() !== '';
 
   const submit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -159,17 +162,51 @@ const EmailForm = () => {
 
 const PasswordForm = () => {
   const {form, setStep} = useContext(SignUpContext);
-
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get('redirect') || '/';
   const t = useTranslations('SignUpPage.PasswordForm');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const router = useRouter();
+  const trpc = useTRPC();
 
   const password = form.watch('password');
   const confirmPassword = form.watch('confirmPassword');
+  const email = form.watch('email');
   const passwordsMatch = password === confirmPassword;
 
-  const submit = (e: FormEvent<HTMLFormElement>) => {
+  const sendVerificationEmailMutation = useMutation(trpc.sendVerificationEmail.mutationOptions({
+    onSuccess: () => {
+      // Redirect to check-email page
+      router.push(`/pt/check-email?email=${encodeURIComponent(email)}`);
+    },
+    onError: () => {
+      setError('Failed to send verification email. Please try again.');
+      setIsLoading(false);
+    }
+  }));
+
+  const submit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!passwordsMatch) return;
-    setStep('FUNCTION');
+
+    setIsLoading(true);
+    setError('');
+
+    try {
+      // Complete the registration process
+      await signUpWithEmailPassword(email, password);
+
+      // Send verification email
+      sendVerificationEmailMutation.mutate({ email });
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError('Failed to create account. Please try again.');
+      }
+      setIsLoading(false);
+    }
   };
 
   const StrengthBarIndicator = () => {
@@ -296,6 +333,7 @@ const PasswordForm = () => {
             />
           </Input.Root>
         </div>
+
         <div className="flex flex-col gap-1">
           <Label>
             {t('confirm_password_label')}
@@ -308,11 +346,20 @@ const PasswordForm = () => {
               {...form.register('confirmPassword')}
             />
           </Input.Root>
-          <p
-            className={`${confirmPassword.length <= 0 || !passwordsMatch ? 'opacity-100 h-auto' : 'opacity-0 h-0'} text-paragraph-xs text-red-500 disabled:cursor transition-all duration-300`}
-          >
+          {(!error || confirmPassword.length > 0) && !passwordsMatch && (
+            <p
+              className={`${confirmPassword.length <= 0 || !passwordsMatch ? 'opacity-100' : 'opacity-0'} text-paragraph-xs text-red-500 disabled:cursor transition-all duration-300`}
+            >
             {t('passwords_do_not_match')}
-          </p>
+            </p>
+          )}
+
+          <div
+            className={`${error ? 'opacity-100' : 'opacity-0'} text-paragraph-xs text-red-500 disabled:cursor transition-all duration-300`}
+          >
+            {error}
+          </div>
+
           <StrengthBarIndicator />
         </div>
       </div>
@@ -322,9 +369,11 @@ const PasswordForm = () => {
         variant="neutral"
         mode="filled"
         type="submit"
-        disabled={confirmPassword.length <= 0 || !passwordsMatch}
+        disabled={isLoading || confirmPassword.length <= 0 || !passwordsMatch}
       >
-        <span className="text-label-sm">{t('continue')}</span>
+        <span className="text-label-sm">
+          {isLoading ? t('creating_account') : t('continue')}
+        </span>
       </Button>
     </form>
   );
