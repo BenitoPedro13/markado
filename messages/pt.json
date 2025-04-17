@@ -44,7 +44,6 @@
   },
   "SignInPage": {
     "markado": "Markado"
-
   },
   "SignUpPage": {
     "EmailForm": {
@@ -70,5 +69,11 @@
       "passwords_do_not_match": "As senhas não coincidem",
       "creating_account": "Criando conta..."
     }
+  },
+  "VerifyEmailPage": {
+    "error": "Erro",
+    "verifying": "Verificando Email",
+    "please_wait": "Por favor, aguarde enquanto verificamos seu email...",
+    "missing_params": "Link de verificação inválido ou expirado"
   }
 }
