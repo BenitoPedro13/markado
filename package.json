@@ -23,7 +23,7 @@
     "setup:full": "pnpm setup && pnpm setup:db",
     "dev:db": "pnpm db:start && pnpm dev",
     "reset:all": "pnpm db:stop && docker compose down -v && pnpm setup:full",
-    "postinstall": "pnpm db:start && pnpm db:push"
+    "postinstall": "if [ \"$NODE_ENV\" = \"production\" ]; then pnpm db:push; else pnpm db:start && pnpm db:push; fi"
   },
   "dependencies": {
     "@auth/prisma-adapter": "2.7.2",
