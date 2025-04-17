@@ -37,7 +37,7 @@ const CheckEmailContent = () => {
         mode="filled"
         asChild
       >
-        <Link href="/pt/sign-in">
+        <Link href="/sign-in">
           {t('back_to_sign_in')}
         </Link>
       </Button>

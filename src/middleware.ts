@@ -1,27 +1,40 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { NextRequest } from 'next/server';
+import { routing } from '@/i18n/routing';
+import { match } from '@formatjs/intl-localematcher';
+import Negotiator from 'negotiator';
 
 // Define public routes that don't require authentication
 const publicRoutes = [
-  '/pt/sign-in',
-  '/pt/sign-up',
-  '/pt/verify-email',
-  '/pt/check-email',
-  '/pt/password-recovery',
-  '/pt/reset-password',
-  '/pt/logout',
-  '/en/sign-in',
-  '/en/sign-up',
-  '/en/verify-email',
-  '/en/check-email',
-  '/en/password-recovery',
-  '/en/reset-password',
-  '/en/logout',
+  '/sign-in',
+  '/sign-up',
+  '/verify-email',
+  '/check-email',
+  '/password-recovery',
+  '/reset-password',
+  '/logout',
   '/api',
   '/_next',
   '/favicon.ico',
 ];
+
+function getLocale(request: NextRequest): string {
+  // Check cookie first
+  const cookieLocale = request.cookies.get('NEXT_LOCALE')?.value;
+  if (cookieLocale && routing.locales.includes(cookieLocale as any)) {
+    return cookieLocale;
+  }
+
+  // Then check Accept-Language header
+  const negotiatorHeaders: Record<string, string> = {};
+  request.headers.forEach((value, key) => (negotiatorHeaders[key] = value));
+
+  const languages = new Negotiator({ headers: negotiatorHeaders }).languages();
+  const locales = routing.locales;
+  
+  return match(languages, locales, routing.defaultLocale);
+}
 
 export async function middleware(request: NextRequest) {
   const session = await auth();
@@ -39,18 +52,13 @@ export async function middleware(request: NextRequest) {
   if (!session) {
     // Special handling for root path
     if (pathname === '/') {
-      const signUpUrl = new URL('/pt/sign-up', request.url);
+      const signUpUrl = new URL('/sign-up', request.url);
       signUpUrl.searchParams.set('redirect', '/');
       return NextResponse.redirect(signUpUrl);
     }
     
-    // Get the locale from the pathname (e.g., /pt/something -> pt)
-    // If it's the root path, default to 'pt'
-    const pathParts = pathname.split('/').filter(Boolean);
-    const locale = pathParts.length > 0 ? pathParts[0] : 'pt';
-    
-    // Create the sign-up URL with the correct locale
-    const signUpUrl = new URL(`/${locale}/sign-up`, request.url);
+    // Create the sign-up URL
+    const signUpUrl = new URL('/sign-up', request.url);
     
     // Add the original URL as a redirect parameter, but only if it's not already a redirect
     if (!pathname.includes('redirect=')) {

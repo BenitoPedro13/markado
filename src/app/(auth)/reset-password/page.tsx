@@ -55,11 +55,11 @@ function ResetPasswordContent() {
         } catch (error) {
           console.error('Failed to auto-login:', error);
           // If auto-login fails, redirect to sign in page
-          router.push('/pt/sign-in?message=password_reset_success');
+          router.push('/sign-in?message=password_reset_success');
         }
       } else {
         // If no login token, redirect to sign in page
-        router.push('/pt/sign-in?message=password_reset_success');
+        router.push('/sign-in?message=password_reset_success');
       }
     },
     onError: (error) => {

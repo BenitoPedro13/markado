@@ -11,7 +11,11 @@ export default function LocaleSwitcher() {
   return (
     <LocaleSwitcherSelect defaultValue={locale} label={t('label')}>
       {routing.locales.map((cur) => (
-        <Select.Item key={cur} value={cur} className='text-text-sub-600 text-paragraph-sm'>
+        <Select.Item
+          key={cur}
+          value={cur}
+          className="text-text-sub-600 text-paragraph-sm"
+        >
           {t('locale', {locale: cur})}
         </Select.Item>
       ))}

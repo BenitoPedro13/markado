@@ -2,7 +2,6 @@
 
 import PageLayout from '@/components/PageLayout';
 import {useTranslations} from 'next-intl';
-import {setRequestLocale} from 'next-intl/server';
 import Header from '@/components/navigation/Header';
 import * as Divider from '@/components/align-ui/ui/divider';
 import { ServicesProvider } from '@/contexts/ServicesContext';
@@ -28,16 +27,8 @@ function IconCmd(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
-type Props = {
-  params: {locale: string};
-};
-
-/** Actual home page of the website.
- * 
-  The user is redirected to this page when them types the website URL.
-*/
-export default function IndexPage() {
-
+/** Services page of the website. */
+export default function ServicesPage() {
   return (
     <PageLayout title="Home">
       <Header variant="services" />
@@ -57,4 +48,4 @@ export default function IndexPage() {
       </ServicesProvider>
     </PageLayout>
   );
-}
+} 

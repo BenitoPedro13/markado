@@ -63,6 +63,6 @@ export async function signOut() {
   
   return nextAuthSignOut({ 
     redirect: true,
-    redirectTo: `/${locale}/logout`
+    redirectTo: `/logout`
   });
 }
