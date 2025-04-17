@@ -18,7 +18,7 @@ export function useRequireAuth() {
   useEffect(() => {
     // Only redirect if we're sure there's no session (not loading)
     if (!isLoading && !session) {
-      router.push('/pt/sign-up');
+      router.push('/sign-up');
     }
   }, [isLoading, session, router]);
 

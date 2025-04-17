@@ -106,7 +106,7 @@ const SignInForm = () => {
               <Asterisk />
             </Label>
             <Link
-              href={'/pt/password-recovery'}
+              href={'/password-recovery'}
               className="text-label-xs text-text-sub-600"
             >
               {t('forgot_your_password')}
@@ -147,7 +147,7 @@ const SignInForm = () => {
         </span>
         <Link
           className="text-label-sm text-text-strong-950 hover:border-b border-b-stroke-strong-950 transition"
-          href={`/pt/sign-up${redirectTo !== '/' ? `?redirect=${redirectTo}` : ''}`}
+          href={`/sign-up${redirectTo !== '/' ? `?redirect=${redirectTo}` : ''}`}
         >
           {t('create')}
         </Link>

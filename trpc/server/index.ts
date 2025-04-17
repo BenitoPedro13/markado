@@ -50,6 +50,25 @@ export const appRouter = router({
     const session = await auth();
     return session;
   }),
+  updateLocale: publicProcedure
+    .input(z.object({
+      locale: z.enum(['PT', 'EN'])
+    }))
+    .mutation(async (opts) => {
+      const session = await auth();
+      if (!session?.user) {
+        throw new TRPCError({
+          code: 'UNAUTHORIZED',
+          message: 'Not authenticated'
+        });
+      }
+
+      const {input} = opts;
+      return prisma.user.update({
+        where: { id: session.user.id },
+        data: { locale: input.locale }
+      });
+    }),
   verifyEmail: publicProcedure
     .input(z.object({
       token: z.string(),

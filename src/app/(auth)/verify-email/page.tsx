@@ -90,7 +90,7 @@ const VerifyEmailContent = () => {
           mode="filled"
           asChild
         >
-          <Link href="/pt/sign-in">
+          <Link href="/sign-in">
             {verificationStatus === 'success' ? t('continue_to_sign_in') : t('try_again')}
           </Link>
         </Button>

@@ -18,7 +18,9 @@ type Props = {
 
 export default async function BaseLayout({children, locale}: Props) {
   // This will provide all the messages to the client side of your application
-  const messages = await getMessages();
+  const messages = await getMessages({ locale });
+
+  console.log('messages', messages);
 
   return (
     <html className="h-full" lang={locale}>
@@ -26,7 +28,7 @@ export default async function BaseLayout({children, locale}: Props) {
       <NotificationProvider/>
         <ThemeProvider attribute="class">
           <TooltipProvider>
-            <NextIntlClientProvider messages={messages}>
+            <NextIntlClientProvider messages={messages} locale={locale}>
               <PageWrapper>
                 {children}
               </PageWrapper>

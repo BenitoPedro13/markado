@@ -78,8 +78,8 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
     })
   ],
   pages: {
-    signIn: '/pt/sign-in',
-    signOut: '/pt/sign-in',
+    signIn: '/sign-in',
+    signOut: '/logout',
   },
   callbacks: {
     jwt({token, user}) {
@@ -95,12 +95,12 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
     },
     redirect({ url, baseUrl }) {
       // If the url is the sign-out page, redirect to sign-in
-      if (url.includes('/pt/sign-in') && url !== `${baseUrl}/pt/sign-in`) {
-        return `${baseUrl}/pt/sign-in`;
+      if (url.includes('/sign-in') && url !== `${baseUrl}/sign-in`) {
+        return `${baseUrl}/sign-in`;
       }
 
       // If signing in, redirect to home
-      if (url === `${baseUrl}/pt/sign-in`) {
+      if (url === `${baseUrl}/sign-in`) {
         return baseUrl;
       }
 
