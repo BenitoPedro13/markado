@@ -17,8 +17,14 @@ export default function ServiceForm({ slug }: Props) {
   return (
     <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
       <div className="space-y-4">
-        <div className="border rounded-lg divide-y">
-          <div className="p-4 flex items-center justify-between">
+        <div className="flex flex-col">
+          <div className="text-title-h6">Formulário da Reserva</div>
+          <div className="text-paragraph-sm text-text-sub-600">
+            Personalize as perguntas feitas na página de reservas
+          </div>
+        </div>
+        <div className="rounded-lg flex flex-col gap-4">
+          <div className="flex items-center justify-between">
             <div>
               <h3 className="font-medium">Nome</h3>
               <p className="text-sm text-text-sub-600">
@@ -28,7 +34,7 @@ export default function ServiceForm({ slug }: Props) {
             <Switch.Root defaultChecked />
           </div>
 
-          <div className="p-4 flex items-center justify-between">
+          <div className="flex items-center justify-between">
             <div>
               <h3 className="font-medium">E-mail</h3>
               <p className="text-sm text-text-sub-600">
@@ -38,7 +44,7 @@ export default function ServiceForm({ slug }: Props) {
             <Switch.Root defaultChecked />
           </div>
 
-          <div className="p-4 flex items-center justify-between">
+          <div className="flex items-center justify-between">
             <div>
               <h3 className="font-medium">Telefone</h3>
               <p className="text-sm text-text-sub-600">
@@ -48,7 +54,7 @@ export default function ServiceForm({ slug }: Props) {
             <Switch.Root defaultChecked />
           </div>
 
-          <div className="p-4 flex items-center justify-between">
+          <div className="flex items-center justify-between">
             <div>
               <h3 className="font-medium">Participantes Adicionais</h3>
               <p className="text-sm text-text-sub-600">
@@ -60,9 +66,7 @@ export default function ServiceForm({ slug }: Props) {
         </div>
       </div>
 
-      <Button.Root type="submit">
-        Salvar Alterações
-      </Button.Root>
+     
     </form>
   );
 } 
