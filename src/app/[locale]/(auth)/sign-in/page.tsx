@@ -106,7 +106,7 @@ const SignInForm = () => {
               <Asterisk />
             </Label>
             <Link
-              href={'/password-recovery'}
+              href={'/pt/password-recovery'}
               className="text-label-xs text-text-sub-600"
             >
               {t('forgot_your_password')}
