@@ -1,7 +1,7 @@
 'use client';
 
-import Logo from '@/../public/images/logoMarkado.svg';
-import VerticalStripesPattern from '@/../public/patterns/vertical_stripes.svg';
+import Logo from '/images/logoMarkado.svg';
+import VerticalStripesPattern from '/patterns/vertical_stripes.svg';
 import {
   Root as Button,
   Icon as ButtonIcon
