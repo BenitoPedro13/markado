@@ -151,7 +151,7 @@ const EmailForm = () => {
         </span>
         <Link
           className="text-label-sm text-text-strong-950 hover:border-b border-b-stroke-strong-950 transition"
-          href={'/pt/sign-in'}
+          href={'/sign-in'}
         >
           {t('sign_in')}
         </Link>
@@ -178,7 +178,7 @@ const PasswordForm = () => {
   const sendVerificationEmailMutation = useMutation(trpc.sendVerificationEmail.mutationOptions({
     onSuccess: () => {
       // Redirect to check-email page
-      router.push(`/pt/check-email?email=${encodeURIComponent(email)}`);
+      router.push(`/check-email?email=${encodeURIComponent(email)}`);
     },
     onError: () => {
       setError('Failed to send verification email. Please try again.');

@@ -147,7 +147,7 @@ const Sidebar = ({children}: PropsWithChildren) => {
                   </h4>
                   <TabMenuVertical.List className="relative h-full">
                     {mainItems.map(({label, iconLine, iconFill, link}) => (
-                      <Link href={`/pt/${link}`} key={label}>
+                      <Link href={`/${link}`} key={label}>
                         <TabMenuVertical.Trigger
                           value={label}
                           className={
@@ -170,7 +170,7 @@ const Sidebar = ({children}: PropsWithChildren) => {
                     >
                       {settingsItems.map(
                         ({label, iconLine, iconFill, link}) => (
-                          <Link href={`/pt/${link}`} key={label}>
+                          <Link href={`/${link}`} key={label}>
                             <TabMenuVertical.Trigger
                               value={label}
                               className={

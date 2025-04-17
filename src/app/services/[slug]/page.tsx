@@ -1,5 +1,4 @@
 import {useTranslations} from 'next-intl';
-import {setRequestLocale} from 'next-intl/server';
 import PageLayout from '@/components/PageLayout';
 import Header from '@/components/navigation/Header';
 import * as TabMenuVertical from '@/components/align-ui/ui/tab-menu-vertical';
@@ -19,7 +18,6 @@ import {
 
 type Props = {
   params: {
-    locale: string;
     slug: string;
   };
 };
@@ -55,9 +53,7 @@ const menuItems = [
   },
 ];
 
-export default function ServicePage({params: {locale, slug}}: Props) {
-  setRequestLocale(locale);
-
+export default function ServicePage({params: {slug}}: Props) {
   return (
     <PageLayout title="Detalhes do Serviço">
       <Header variant="services" mode="inside" />
@@ -94,4 +90,4 @@ export default function ServicePage({params: {locale, slug}}: Props) {
       </div>
     </PageLayout>
   );
-}
+} 
