@@ -26,8 +26,6 @@ export default async function RootLayout({
 }: Props) {
   const locale = cookies().get('NEXT_LOCALE')?.value || routing.defaultLocale;
 
-  console.log('locale', locale);
-
   return (
     <BaseLayout locale={locale}>
       <div className="flex min-h-screen flex-col">

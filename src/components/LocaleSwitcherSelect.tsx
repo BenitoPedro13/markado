@@ -58,10 +58,8 @@ export default function LocaleSwitcherSelect({
   }));
 
   const setLocaleCookie = (locale: string) => {
-    console.log('setLocaleCookie', locale);
     // Set the NEXT_LOCALE cookie with the new locale
     Cookies.set('NEXT_LOCALE', locale.toLowerCase());
-    console.log('Cookies.get("NEXT_LOCALE")', Cookies.get("NEXT_LOCALE"));
     // Refresh the page to apply the new locale
     window.location.reload();
   };
