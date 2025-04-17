@@ -43,6 +43,7 @@ import { useTRPC } from '@/utils/trpc';
 import { useMutation } from '@tanstack/react-query';
 import * as Select from '@/components/align-ui/ui/select';
 import { ITimezoneOption, useTimezoneSelect } from 'react-timezone-select';
+import { MARKADO_URL } from '@/app/constants';
 const EmailForm = () => {
   const {form, setStep} = useSignUp();
   const searchParams = useSearchParams();
@@ -184,7 +185,8 @@ const PasswordForm = () => {
   const sendVerificationEmailMutation = useMutation(trpc.sendVerificationEmail.mutationOptions({
     onSuccess: () => {
       // Redirect to check-email page
-      router.push(`/check-email?email=${encodeURIComponent(email)}`);
+      // router.push(`/check-email?email=${encodeURIComponent(email)}`);
+      setStep('PERSONAL');
     },
     onError: () => {
       setError('Failed to send verification email. Please try again.');
