@@ -289,7 +289,46 @@ export const appRouter = router({
       });
 
       return { success: true, loginToken };
-    })
+    }),
+  me: publicProcedure.query(async () => {
+    const session = await auth();
+    
+    if (!session?.user) {
+      throw new TRPCError({
+        code: 'UNAUTHORIZED',
+        message: 'Not authenticated'
+      });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      include: {
+        password: true,
+        accounts: {
+          select: {
+            provider: true,
+            providerAccountId: true,
+          }
+        }
+      }
+    });
+
+    if (!user) {
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'User not found'
+      });
+    }
+
+    // Remove sensitive information
+    const { password, ...userWithoutPassword } = user;
+
+    return {
+      ...userWithoutPassword,
+      hasPassword: !!password,
+      emailMd5: crypto.createHash('md5').update(user.email).digest('hex')
+    };
+  })
 });
 
 export type AppRouter = typeof appRouter;

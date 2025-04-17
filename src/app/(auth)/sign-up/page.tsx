@@ -27,7 +27,7 @@ import {
   useRef,
   useState
 } from 'react';
-import {SignUpContext, SignUpStep} from './SignUpContext';
+import {SignUpContext, SignUpProvider, SignUpStep, useSignUp} from './SignUpContext';
 import {
   signInWithGoogle,
   signUpWithEmailPassword,
@@ -161,7 +161,10 @@ const EmailForm = () => {
 };
 
 const PasswordForm = () => {
-  const {form, setStep} = useContext(SignUpContext);
+    const {
+      form,
+      setStep,
+    } = useSignUp();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get('redirect') || '/';
   const t = useTranslations('SignUpPage.PasswordForm');
@@ -379,8 +382,13 @@ const PasswordForm = () => {
   );
 };
 
-const SignUpPage = () => {
-  const {step, setStep} = useContext(SignUpContext);
+const SignUpSteps = () => {
+    const {
+      step,
+      setStep,
+      queries: {user},
+      isAnyQueryLoading
+    } = useSignUp();
 
   const steps: Record<SignUpStep, ReactNode> = {
     EMAIL: (
@@ -429,5 +437,13 @@ const SignUpPage = () => {
     </>
   );
 };
+
+function SignUpPage() {
+  return (
+    <SignUpProvider>
+      <SignUpSteps />
+    </SignUpProvider>
+  );
+}
 
 export default SignUpPage;
