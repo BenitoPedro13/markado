@@ -207,7 +207,7 @@ const Sidebar = ({children}: PropsWithChildren) => {
       </div>
       {/* Main Content */}
       <div
-        className={`${isCollapsed ? 'w-[calc(100vw-140px)] left-[80px]' : 'w-[calc(100vw-340px)] left-[280px]'} relative transition-all duration-300`}
+        className={`${isCollapsed ? 'w-[calc(100vw-80px)] left-[80px]' : 'w-[calc(100vw-280px)] left-[280px]'} relative transition-all duration-300`}
       >
         {children}
       </div>
