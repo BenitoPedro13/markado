@@ -9,11 +9,9 @@ set -x
 # Navigate to project directory
 cd /opt/bitnami/apache/htdocs/markado
 
-# Stash any local changes
-git stash
-
-# Pull latest changes
-git pull origin main
+# Force reset to remote state
+git fetch origin main
+git reset --hard origin/main
 
 # Clean install
 rm -rf node_modules .next
