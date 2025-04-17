@@ -105,7 +105,7 @@ The development database is accessible at:
 
 ## CI/CD Setup
 
-The project uses a GitHub webhook-based deployment system. When changes are pushed to the main branch, the webhook automatically triggers a deployment on the VPS.
+The project uses a GitHub webhook-based deployment system. When changes are pushed to the main branch, the webhook automatically triggers a deployment on the VPS
 
 ### Setting Up Deployment
 
