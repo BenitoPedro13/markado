@@ -86,5 +86,21 @@
     "verification_email_sent": "Enviamos um email de verificação para {email}",
     "click_link_in_email": "Clique no link no email para verificar sua conta e fazer login.",
     "back_to_sign_in": "Voltar para login"
+  },
+  "PasswordRecoveryPage": {
+    "recover_password": "Recuperar Senha",
+    "enter_email_for_reset": "Digite seu endereço de e-mail e enviaremos um link para redefinir sua senha",
+    "email": "E-mail",
+    "sending": "Enviando...",
+    "send_reset_link": "Enviar Link de Redefinição"
+  },
+  "ResetPasswordPage": {
+    "reset_password": "Redefinir Senha",
+    "enter_new_password": "Digite sua nova senha",
+    "new_password": "Nova Senha",
+    "confirm_password": "Confirmar Senha",
+    "resetting": "Redefinindo...",
+    "invalid_link": "Link de Redefinição Inválido",
+    "invalid_link_description": "Este link de redefinição de senha é inválido ou expirou. Por favor, solicite um novo."
   }
 }
