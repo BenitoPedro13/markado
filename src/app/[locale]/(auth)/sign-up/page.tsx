@@ -52,9 +52,6 @@ const EmailForm = () => {
   // Get the email value from the form
   const email = form.watch('email');
 
-  // Check if the email is valid (not empty)
-  const isEmailValid = email && email.trim() !== '';
-
   const submit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -170,8 +167,8 @@ const PasswordForm = () => {
   const t = useTranslations('SignUpPage.PasswordForm');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const trpc = useTRPC();
   const router = useRouter();
+  const trpc = useTRPC();
 
   const password = form.watch('password');
   const confirmPassword = form.watch('confirmPassword');

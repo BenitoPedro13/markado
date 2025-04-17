@@ -16,27 +16,34 @@ import {IconGoogle} from '@/components/auth/sign-in';
 import * as SocialButton from '@/components/align-ui/ui/social-button';
 import { useSearchParams } from 'next/navigation';
 import AuthSkeleton from '@/components/skeletons/AuthSkeleton';
+import { useAuthStore } from '@/stores/auth-store';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+
+const signInSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8),
+});
+
+type SignInFormData = z.infer<typeof signInSchema>;
 
 const SignInForm = () => {
   const t = useTranslations('SignInForm');
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get('redirect') || '/';
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const { signInWithEmail, signInWithGoogle, isLoading, error } = useAuthStore();
 
-  const submit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setError('');
-    setIsLoading(true);
+  const form = useForm<SignInFormData>({
+    resolver: zodResolver(signInSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  });
 
-    try {
-      await signInWithEmailPassword(email, password, redirectTo);
-    } catch (error) {
-      setError('Invalid email or password');
-      setIsLoading(false);
-    }
+  const onSubmit = async (data: SignInFormData) => {
+    await signInWithEmail(data.email, data.password, redirectTo);
   };
 
   const handleGoogleSignIn = async () => {
@@ -45,8 +52,7 @@ const SignInForm = () => {
 
   return (
     <form
-      action=""
-      onSubmit={submit}
+      onSubmit={form.handleSubmit(onSubmit)}
       className="flex flex-col gap-8 justify-center items-center max-w-[392px] w-full"
     >
       <div className="flex flex-col items-center">
@@ -85,11 +91,13 @@ const SignInForm = () => {
             <Input.Input 
               type="email" 
               placeholder="hello@markado.co" 
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              {...form.register('email')}
               required
             />
           </Input.Root>
+          {form.formState.errors.email && (
+            <span className="text-red-500 text-sm">{form.formState.errors.email.message}</span>
+          )}
         </div>
         <div className="flex flex-col gap-1">
           <div className="flex justify-between items-center">
@@ -109,11 +117,13 @@ const SignInForm = () => {
             <Input.Input 
               type="password" 
               placeholder="• • • • • • • • • • " 
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              {...form.register('password')}
               required
             />
           </Input.Root>
+          {form.formState.errors.password && (
+            <span className="text-red-500 text-sm">{form.formState.errors.password.message}</span>
+          )}
         </div>
         
         {error && (
@@ -128,7 +138,7 @@ const SignInForm = () => {
         type="submit"
         disabled={isLoading}
       >
-        <span className="text-label-sm">{isLoading ? 'Loading...' : t('start')}</span>
+        <span className="text-label-sm">{isLoading ? t('loading') : t('start')}</span>
       </Button>
 
       <div className="flex items-center gap-1">
@@ -152,7 +162,6 @@ const SignInPage = () => {
       <Suspense fallback={<AuthSkeleton />}>
         <div className="flex items-center justify-center gap-4">
           <SignInForm />
-          
         </div>
       </Suspense>
     </div>
