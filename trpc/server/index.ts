@@ -5,7 +5,7 @@ import { TRPCError } from '@trpc/server';
 import { auth } from '@/auth';
 import { sendVerificationEmail, sendPasswordResetEmail } from '@/lib/email';
 import crypto from 'crypto';
-import { hash } from '@node-rs/argon2';
+import bcrypt from 'bcryptjs';
 
 export const appRouter = router({
   userList: publicProcedure.query(async () => {
@@ -239,7 +239,7 @@ export const appRouter = router({
       }
 
       // Hash the new password
-      const hashedPassword = await hash(input.newPassword);
+      const hashedPassword = await bcrypt.hash(input.newPassword, 10);
 
       // Update user's password
       const updatedUser = await prisma.user.update({

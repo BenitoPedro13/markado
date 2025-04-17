@@ -2,7 +2,7 @@ import NextAuth from 'next-auth';
 import {PrismaAdapter} from '@auth/prisma-adapter';
 import Google from 'next-auth/providers/google';
 import Credentials from 'next-auth/providers/credentials';
-import { verify } from '@node-rs/argon2';
+import bcrypt from 'bcryptjs';
 
 import { prisma } from '@/lib/prisma';
 
@@ -64,9 +64,9 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
           return null;
         }
 
-        const isPasswordValid = await verify(
-          user.password.hash,
-          credentials.password as string
+        const isPasswordValid = await bcrypt.compare(
+          credentials.password as string,
+          user.password.hash
         );
 
         if (!isPasswordValid) {
