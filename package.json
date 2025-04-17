@@ -11,10 +11,10 @@
     "format:write": "prettier --write \"**/*.{ts,tsx,mdx}\" --cache",
     "db:start": "docker compose up -d",
     "db:stop": "docker compose down",
-    "db:generate": "pnpm prisma generate",
-    "db:migrate:dev": "pnpm prisma migrate dev",
-    "db:migrate:reset": "pnpm prisma migrate reset",
-    "db:push": "pnpm prisma db push",
+    "db:generate": "prisma generate",
+    "db:migrate:dev": "prisma migrate dev",
+    "db:migrate:reset": "prisma migrate reset",
+    "db:push": "prisma db push",
     "db:studio": "pnpm prisma studio",
     "db:seed": "ts-node prisma/seed.ts",
     "db:reset": "pnpm prisma db push --force-reset",
@@ -23,7 +23,7 @@
     "setup:full": "pnpm setup && pnpm setup:db",
     "dev:db": "pnpm db:start && pnpm dev",
     "reset:all": "pnpm db:stop && docker compose down -v && pnpm setup:full",
-    "postinstall": "if [ \"$NODE_ENV\" = \"production\" ]; then pnpm db:push; else pnpm db:start && pnpm db:push; fi"
+    "postinstall": "if [ \"$NODE_ENV\" != \"production\" ]; then pnpm db:start && pnpm db:push; fi"
   },
   "dependencies": {
     "@auth/prisma-adapter": "2.7.2",
