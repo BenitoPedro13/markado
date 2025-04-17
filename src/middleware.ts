@@ -7,6 +7,7 @@ const publicRoutes = [
   '/pt/sign-in',
   '/pt/sign-up',
   '/pt/verify-email',
+  '/pt/check-email',
   '/api',
   '/_next',
   '/favicon.ico',

@@ -180,8 +180,8 @@ const PasswordForm = () => {
 
   const sendVerificationEmailMutation = useMutation(trpc.sendVerificationEmail.mutationOptions({
     onSuccess: () => {
-      // Redirect to verify-email page
-      router.push(`/pt/verify-email?email=${encodeURIComponent(email)}`);
+      // Redirect to check-email page
+      router.push(`/pt/check-email?email=${encodeURIComponent(email)}`);
     },
     onError: () => {
       setError('Failed to send verification email. Please try again.');

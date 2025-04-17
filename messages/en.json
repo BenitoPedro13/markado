@@ -80,5 +80,11 @@
     "missing_params": "The verification link is invalid or has expired. Please try again.",
     "continue_to_sign_in": "Continue to sign in",
     "try_again": "Try again"
+  },
+  "CheckEmailPage": {
+    "check_your_email": "Check your email",
+    "verification_email_sent": "We've sent a verification email to {email}",
+    "click_link_in_email": "Click the link in the email to verify your account and sign in.",
+    "back_to_sign_in": "Back to sign in"
   }
 }
