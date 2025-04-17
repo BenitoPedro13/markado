@@ -10,19 +10,33 @@ import {RiUserAddFill} from '@remixicon/react';
 import {useTranslations} from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
-import {FormEvent, Suspense} from 'react';
-import {signInWithGoogle} from '@/components/auth/auth-actions';
+import {FormEvent, Suspense, useState} from 'react';
+import {signInWithGoogle, signInWithEmailPassword} from '@/components/auth/auth-actions';
 import {IconGoogle} from '@/components/auth/sign-in';
 import * as SocialButton from '@/components/align-ui/ui/social-button';
 import { useSearchParams } from 'next/navigation';
 import AuthSkeleton from '@/components/skeletons/AuthSkeleton';
+
 const SignInForm = () => {
   const t = useTranslations('SignInForm');
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get('redirect') || '/';
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const submit = (e: FormEvent<HTMLFormElement>) => {
+  const submit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setError('');
+    setIsLoading(true);
+
+    try {
+      await signInWithEmailPassword(email, password, redirectTo);
+    } catch (error) {
+      setError('Invalid email or password');
+      setIsLoading(false);
+    }
   };
 
   const handleGoogleSignIn = async () => {
@@ -68,7 +82,13 @@ const SignInForm = () => {
             <Asterisk />
           </Label>
           <Input.Root>
-            <Input.Input type="email" placeholder="hello@markado.co" />
+            <Input.Input 
+              type="email" 
+              placeholder="hello@markado.co" 
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
           </Input.Root>
         </div>
         <div className="flex flex-col gap-1">
@@ -86,13 +106,29 @@ const SignInForm = () => {
           </div>
 
           <Input.Root>
-            <Input.Input type="password" placeholder="• • • • • • • • • • " />
+            <Input.Input 
+              type="password" 
+              placeholder="• • • • • • • • • • " 
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
           </Input.Root>
         </div>
+        
+        {error && (
+          <div className="text-red-500 text-sm">{error}</div>
+        )}
       </div>
 
-      <Button className="w-full" variant="neutral" mode="filled" type="submit">
-        <span className="text-label-sm">{t('start')}</span>
+      <Button 
+        className="w-full" 
+        variant="neutral" 
+        mode="filled" 
+        type="submit"
+        disabled={isLoading}
+      >
+        <span className="text-label-sm">{isLoading ? 'Loading...' : t('start')}</span>
       </Button>
 
       <div className="flex items-center gap-1">
