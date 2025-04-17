@@ -81,9 +81,9 @@ const Sidebar = ({children}: PropsWithChildren) => {
   // const pathname = usePathname()
 
   return (
-    <div className="flex">
+    <div className="flex relative">
       {/* Sidebar */}
-      <div className="w-[340px] h-screen bg-bg-white-0 border-r border-stroke-soft-200 inline-flex flex-col justify-start items-start overflow-hidden">
+      <div className="w-[280px] fixed h-screen bg-bg-white-0 border-r border-stroke-soft-200 inline-flex flex-col justify-start items-start overflow-hidden">
         {/* Sidebar Header */}
         <div className="w-full p-3 relative bg-bg-white-0 inline-flex justify-center items-center gap-3 overflow-hidden">
           <div className="w-full p-3 bg-bg-white-0 rounded-[10px] flex justify-between items-center overflow-hidden">
@@ -196,7 +196,7 @@ const Sidebar = ({children}: PropsWithChildren) => {
         </ProfileDropdown>
       </div>
       {/* Main Content */}
-      <div className="w-full">{children}</div>
+      <div className="w-[calc(100vw-340px)] h-[150vh] relative left-[340px]">{children}</div>
     </div>
   );
 };
