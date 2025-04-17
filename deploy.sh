@@ -9,6 +9,9 @@ set -x
 # Navigate to project directory
 cd /opt/bitnami/apache/htdocs/markado
 
+# Stash any local changes
+git stash
+
 # Pull latest changes
 git pull origin main
 
