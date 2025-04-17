@@ -12,7 +12,7 @@ import * as Input from '@/components/align-ui/ui/input';
 import { Asterisk, Root as Label } from '@/components/align-ui/ui/label';
 import RoundedIconWrapper from '@/components/RoundedIconWrapper';
 import { RiLockFill } from '@remixicon/react';
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { signInWithEmailPassword } from '@/components/auth/auth-actions';
 
 const resetPasswordSchema = z.object({
@@ -25,7 +25,7 @@ const resetPasswordSchema = z.object({
 
 type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
 
-export default function ResetPasswordPage() {
+function ResetPasswordContent() {
   const t = useTranslations('ResetPasswordPage');
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -177,5 +177,13 @@ export default function ResetPasswordPage() {
         </span>
       </Button>
     </form>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ResetPasswordContent />
+    </Suspense>
   );
 } 
