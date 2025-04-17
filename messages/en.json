@@ -86,5 +86,21 @@
     "verification_email_sent": "We've sent a verification email to {email}",
     "click_link_in_email": "Click the link in the email to verify your account and sign in.",
     "back_to_sign_in": "Back to sign in"
+  },
+  "PasswordRecoveryPage": {
+    "recover_password": "Recover Password",
+    "enter_email_for_reset": "Enter your email address and we'll send you a link to reset your password",
+    "email": "Email",
+    "sending": "Sending...",
+    "send_reset_link": "Send Reset Link"
+  },
+  "ResetPasswordPage": {
+    "reset_password": "Reset Password",
+    "enter_new_password": "Enter your new password",
+    "new_password": "New Password",
+    "confirm_password": "Confirm Password",
+    "resetting": "Resetting...",
+    "invalid_link": "Invalid Reset Link",
+    "invalid_link_description": "This password reset link is invalid or has expired. Please request a new one."
   }
 }

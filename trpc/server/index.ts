@@ -3,8 +3,9 @@ import { prisma } from '@/lib/prisma';
 import { publicProcedure, router } from './trpc';
 import { TRPCError } from '@trpc/server';
 import { auth } from '@/auth';
-import { sendVerificationEmail } from '@/lib/email';
+import { sendVerificationEmail, sendPasswordResetEmail } from '@/lib/email';
 import crypto from 'crypto';
+import bcrypt from 'bcryptjs';
 
 export const appRouter = router({
   userList: publicProcedure.query(async () => {
@@ -165,6 +166,118 @@ export const appRouter = router({
       await sendVerificationEmail(input.email, token);
 
       return { success: true };
+    }),
+  requestPasswordReset: publicProcedure
+    .input(z.object({
+      email: z.string().email()
+    }))
+    .mutation(async (opts) => {
+      const { input } = opts;
+      
+      // Check if user exists
+      const user = await prisma.user.findUnique({
+        where: { email: input.email }
+      });
+
+      if (!user) {
+        // Return success even if user doesn't exist to prevent email enumeration
+        return { success: true };
+      }
+      
+      // Generate a random token
+      const token = crypto.randomBytes(32).toString('hex');
+      
+      // Set token expiration to 1 hour from now
+      const expires = new Date(Date.now() + 60 * 60 * 1000);
+      
+      // Create password reset token
+      await prisma.verificationToken.create({
+        data: {
+          identifier: input.email,
+          token,
+          expires
+        }
+      });
+
+      // Send password reset email
+      await sendPasswordResetEmail(input.email, token);
+
+      return { success: true };
+    }),
+  resetPassword: publicProcedure
+    .input(z.object({
+      token: z.string(),
+      email: z.string().email(),
+      newPassword: z.string().min(8)
+    }))
+    .mutation(async (opts) => {
+      const { input } = opts;
+      
+      // Find the reset token
+      const resetToken = await prisma.verificationToken.findUnique({
+        where: {
+          identifier_token: {
+            identifier: input.email,
+            token: input.token
+          }
+        }
+      });
+
+      if (!resetToken) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Invalid reset token'
+        });
+      }
+
+      // Check if token is expired
+      if (resetToken.expires < new Date()) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'Reset token has expired'
+        });
+      }
+
+      // Hash the new password
+      const hashedPassword = await bcrypt.hash(input.newPassword, 10);
+
+      // Update user's password
+      const updatedUser = await prisma.user.update({
+        where: { email: input.email },
+        data: {
+          password: {
+            upsert: {
+              create: { hash: hashedPassword },
+              update: { hash: hashedPassword }
+            }
+          }
+        }
+      });
+
+      // Delete the used token
+      await prisma.verificationToken.delete({
+        where: {
+          identifier_token: {
+            identifier: input.email,
+            token: input.token
+          }
+        }
+      });
+
+      // Generate a one-time login token
+      const loginToken = crypto.randomBytes(32).toString('hex');
+      const loginTokenExpires = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
+
+      // Store the login token
+      await prisma.verificationToken.create({
+        data: {
+          identifier: input.email,
+          token: loginToken,
+          expires: loginTokenExpires
+        }
+      });
+
+      return { success: true, loginToken };
     })
 });
 
