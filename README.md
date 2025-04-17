@@ -102,3 +102,61 @@ The development database is accessible at:
 - Database: markado
 - User: postgres
 - Password: (none, trust authentication)
+
+## CI/CD Setup
+
+The project uses a GitHub webhook-based deployment system. When changes are pushed to the main branch, the webhook automatically triggers a deployment on the VPS.
+
+### Setting Up Deployment
+
+1. **Generate Webhook Secret**
+   ```bash
+   node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+   ```
+
+2. **Create Webhook Environment File**
+   Create `.env.webhook` on your VPS with:
+   ```
+   PORT=9000
+   WEBHOOK_SECRET=your-generated-secret
+   ```
+
+3. **Install Dependencies**
+   ```bash
+   pnpm add express dotenv
+   ```
+
+4. **Configure GitHub Webhook**
+   - Go to repository Settings > Webhooks
+   - Add new webhook
+   - Set Payload URL to: `http://your-vps-ip:9000/deploy`
+   - Content type: `application/json`
+   - Secret: (same as WEBHOOK_SECRET)
+   - Events: Select "Just the push event"
+
+5. **Start Webhook Server**
+   ```bash
+   pm2 start ecosystem.config.js
+   ```
+
+### Deployment Process
+
+When changes are pushed to the main branch:
+1. GitHub sends a webhook to your VPS
+2. The webhook server verifies the request
+3. The server pulls the latest changes
+4. Dependencies are installed
+5. The application is rebuilt
+6. PM2 restarts the application
+
+### Files
+
+- `deploy-webhook.js`: Webhook server that handles deployment
+- `ecosystem.config.js`: PM2 configuration
+- `.env.webhook`: Environment variables for the webhook server
+
+### Security Notes
+
+- Keep `.env.webhook` secure and never commit it to the repository
+- The webhook secret should be kept private
+- Consider using HTTPS for the webhook endpoint in production

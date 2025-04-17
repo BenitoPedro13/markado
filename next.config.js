@@ -1,4 +1,5 @@
 const createNextIntlPlugin = require('next-intl/plugin');
+const path = require('path');
 
 const withNextIntl = createNextIntlPlugin();
 
@@ -6,6 +7,14 @@ const withNextIntl = createNextIntlPlugin();
 const nextConfig = {
   images: {
     domains: ['lh3.googleusercontent.com'],
+  },
+  webpack: (config) => {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@': path.join(__dirname, 'src'),
+      '~': path.join(__dirname),
+    };
+    return config;
   },
 };
 
