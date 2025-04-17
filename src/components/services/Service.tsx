@@ -54,7 +54,7 @@ function Service({title, slug, duration, price, status}: ServiceProps) {
             <span className="text-paragraph-lg text-text-strong-950">
               {title}
             </span>
-            <span className="text-paragraph-sm text-text-sub-600">{slug}</span>
+            {/* <span className="text-paragraph-sm text-text-sub-600">{slug}</span> */}
           </div>
           <div className="flex gap-2 items-center">
             <Badge.Root variant="light" color="blue" size="medium">
