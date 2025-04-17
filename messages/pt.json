@@ -14,6 +14,11 @@
     "label": "Mudar idioma",
     "locale": "{locale, select, pt {PT-BR} en {EN-US} other {Desconhecido}}"
   },
+  "LogoutPage": {
+    "logged_out": "Você foi desconectado",
+    "logged_out_description": "Obrigado por usar nosso serviço. Você foi desconectado com sucesso.",
+    "go_to_sign_in": "Ir para o login"
+  },
   "Manifest": {
     "name": "Exemplo de Internacionalização do NextJS"
   },
