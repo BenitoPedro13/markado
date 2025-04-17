@@ -2,6 +2,7 @@ require('dotenv').config({ path: '.env.webhook' });
 const express = require('express');
 const crypto = require('crypto');
 const { exec } = require('child_process');
+const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 9000;
@@ -28,10 +29,12 @@ app.post('/deploy', (req, res) => {
   if (req.body.ref === 'refs/heads/main') {
     console.log('Deploying...');
     
-    // Run deployment commands
-    exec('cd /opt/bitnami/apache/htdocs/markado && git pull origin main && pnpm install && pnpm build && pm2 restart all', (error, stdout, stderr) => {
+    // Make the script executable and run it
+    const scriptPath = path.join(__dirname, 'deploy.sh');
+    exec(`chmod +x ${scriptPath} && ${scriptPath}`, (error, stdout, stderr) => {
       if (error) {
         console.error(`Deployment error: ${error}`);
+        console.error(`stderr: ${stderr}`);
         return res.status(500).send('Deployment failed');
       }
       console.log(`Deployment output: ${stdout}`);
