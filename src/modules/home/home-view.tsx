@@ -2,9 +2,10 @@ import Link from 'next/link';
 // import * as Button from '@/components/align-ui/ui/button';
 // import {RiGithubFill} from '@remixicon/react';
 import SignIn from '@/components/auth/sign-in';
-import UserProfile from '@/components/auth/user-profile';
-import { auth } from '@/auth';
-
+// import UserProfile from '@/components/auth/user-profile';
+import {auth} from '@/auth';
+import SidebarFooter from '@/components/navigation/SidebarFooter';
+import {ProfileDropdown} from '@/components/navigation/ProfileDropdown';
 export default async function Home() {
   const session = await auth();
   const isAuthenticated = session?.user;
@@ -12,7 +13,9 @@ export default async function Home() {
   return (
     <div className="container mx-auto flex-1 px-5">
       {isAuthenticated ? (
-        <UserProfile />
+        <ProfileDropdown>
+          <SidebarFooter />
+        </ProfileDropdown>
       ) : (
         <div className="p-4">
           <h3 className="text-lg font-semibold mb-4">Welcome</h3>

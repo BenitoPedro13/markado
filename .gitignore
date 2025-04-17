@@ -39,6 +39,8 @@ yarn-error.log*
 .env
 .env.production
 .env.local
+.env.production
+.env.webhook
 
 # vercel
 .vercel

@@ -8,7 +8,7 @@ export default {
     ...presets.rules,
     // Adicione aqui as regras que você deseja ajustar
     // Exemplo: 'no-console': 'off' para desativar a regra de console.log
-    'no-console': 'off',
+    'no-console': 'true',
     'no-unused-vars': 'warn', // Mudar para 'warn' para não exibir como erro
     // Adicione outras regras conforme necessário
   },

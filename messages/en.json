@@ -1,10 +1,10 @@
 {
   "Error": {
-    "description": "<p>We've unfortunately encountered an error.</p><p>You can try to <retry>reload the page</retry> you were visiting.</p>",
+    "description": "<p>Unfortunately we encountered an error.</p><p>You can try to <retry>reload the page</retry> you were trying to visit.</p>",
     "title": "Something went wrong!"
   },
   "IndexPage": {
-    "description": "This is a basic example that demonstrates the usage of <code>next-intl</code> with the Next.js App Router. Try changing the locale in the top right corner and see how the content changes.",
+    "description": "This is a basic example that demonstrates the use of <code>next-intl</code> with the Next.js App Router. Try changing the language in the top right corner and see how the content changes.",
     "title": "NextJS Internationalization Example"
   },
   "LocaleLayout": {
@@ -14,11 +14,16 @@
     "label": "Change language",
     "locale": "{locale, select, pt {PT-BR} en {EN-US} other {Unknown}}"
   },
+  "LogoutPage": {
+    "logged_out": "You have been logged out",
+    "logged_out_description": "Thank you for using our service. You have been successfully logged out.",
+    "go_to_sign_in": "Go to sign in"
+  },
   "Manifest": {
     "name": "NextJS Internationalization Example"
   },
   "NotFoundPage": {
-    "description": "Please double-check the browser address bar or use the navigation to go to a known page.",
+    "description": "Please check the address in your browser's address bar or use the navigation to go to a known page.",
     "title": "Page not found"
   },
   "PageLayout": {},
@@ -34,27 +39,28 @@
   "SignInForm": {
     "welcome_again": "Welcome back",
     "to_start": "To get started, enter your email address.",
-    "enter_with_your_google_account": "Sign in with Google",
+    "enter_with_your_google_account": "Sign in with your Google account",
     "email": "Email",
     "password": "Password",
     "forgot_your_password": "Forgot your password?",
     "start": "Start",
     "dont_have_an_account": "Don't have an account?",
-    "create": "Create"
+    "create": "Create",
+    "loading": "Loading..."
   },
   "SignInPage": {
     "markado": "Markado"
   },
   "SignUpPage": {
     "EmailForm": {
-      "lets_start": "Shall we start?",
+      "lets_start": "Let's get started?",
       "insert_your_email": "To get started, enter your email address.",
       "email": "Email",
-      "i_agree": "I agree with the <terms>Terms and Conditions</terms> and <privacy>Privacy Policy</privacy>.",
+      "i_agree": "I agree to the <terms>Terms and Conditions</terms> and <privacy>Privacy Policy</privacy>.",
       "start": "Start",
       "already_have_an_account": "Already have an account?",
       "sign_in": "Sign in",
-      "sign_up_with_google": "Sign up with Google"
+      "sign_up_with_google": "Sign up with your Google account"
     },
     "PasswordForm": {
       "create_password": "Create Password",
@@ -66,7 +72,40 @@
       "at_least_one_number": "At least 1 number",
       "at_least_eight_characters": "At least 8 characters",
       "continue": "Continue",
-      "passwords_do_not_match": "Passwords do not match"
+      "passwords_do_not_match": "Passwords do not match",
+      "creating_account": "Creating account..."
     }
+  },
+  "VerifyEmailPage": {
+    "verifying": "Verifying your email",
+    "success": "Email verified successfully",
+    "error": "Verification failed",
+    "please_wait": "Please wait while we verify your email address...",
+    "success_message": "Your email has been verified successfully. You can now sign in to your account.",
+    "missing_params": "The verification link is invalid or has expired. Please try again.",
+    "continue_to_sign_in": "Continue to sign in",
+    "try_again": "Try again"
+  },
+  "CheckEmailPage": {
+    "check_your_email": "Check your email",
+    "verification_email_sent": "We've sent a verification email to {email}",
+    "click_link_in_email": "Click the link in the email to verify your account and sign in.",
+    "back_to_sign_in": "Back to sign in"
+  },
+  "PasswordRecoveryPage": {
+    "recover_password": "Recover Password",
+    "enter_email_for_reset": "Enter your email address and we'll send you a link to reset your password",
+    "email": "Email",
+    "sending": "Sending...",
+    "send_reset_link": "Send Reset Link"
+  },
+  "ResetPasswordPage": {
+    "reset_password": "Reset Password",
+    "enter_new_password": "Enter your new password",
+    "new_password": "New Password",
+    "confirm_password": "Confirm Password",
+    "resetting": "Resetting...",
+    "invalid_link": "Invalid Reset Link",
+    "invalid_link_description": "This password reset link is invalid or has expired. Please request a new one."
   }
 }

@@ -14,6 +14,11 @@
     "label": "Mudar idioma",
     "locale": "{locale, select, pt {PT-BR} en {EN-US} other {Desconhecido}}"
   },
+  "LogoutPage": {
+    "logged_out": "Você foi desconectado",
+    "logged_out_description": "Obrigado por usar nosso serviço. Você foi desconectado com sucesso.",
+    "go_to_sign_in": "Ir para o login"
+  },
   "Manifest": {
     "name": "Exemplo de Internacionalização do NextJS"
   },
@@ -40,11 +45,11 @@
     "forgot_your_password": "Esqueceu a senha?",
     "start": "Começar",
     "dont_have_an_account": "Não tem uma conta?",
-    "create": "Criar"
+    "create": "Criar",
+    "loading": "Carregando..."
   },
   "SignInPage": {
     "markado": "Markado"
-
   },
   "SignUpPage": {
     "EmailForm": {
@@ -67,7 +72,40 @@
       "at_least_one_number": "Pelo menos 1 número",
       "at_least_eight_characters": "Pelo menos 8 caracteres",
       "continue": "Continuar",
-      "passwords_do_not_match": "As senhas não coincidem"
+      "passwords_do_not_match": "As senhas não coincidem",
+      "creating_account": "Criando conta..."
     }
+  },
+  "VerifyEmailPage": {
+    "verifying": "Verificando seu email",
+    "success": "Email verificado com sucesso",
+    "error": "Falha na verificação",
+    "please_wait": "Por favor, aguarde enquanto verificamos seu endereço de email...",
+    "success_message": "Seu email foi verificado com sucesso. Você já pode fazer login na sua conta.",
+    "missing_params": "O link de verificação é inválido ou expirou. Por favor, tente novamente.",
+    "continue_to_sign_in": "Continuar para login",
+    "try_again": "Tentar novamente"
+  },
+  "CheckEmailPage": {
+    "check_your_email": "Verifique seu email",
+    "verification_email_sent": "Enviamos um email de verificação para {email}",
+    "click_link_in_email": "Clique no link no email para verificar sua conta e fazer login.",
+    "back_to_sign_in": "Voltar para login"
+  },
+  "PasswordRecoveryPage": {
+    "recover_password": "Recuperar Senha",
+    "enter_email_for_reset": "Digite seu endereço de e-mail e enviaremos um link para redefinir sua senha",
+    "email": "E-mail",
+    "sending": "Enviando...",
+    "send_reset_link": "Enviar Link de Redefinição"
+  },
+  "ResetPasswordPage": {
+    "reset_password": "Redefinir Senha",
+    "enter_new_password": "Digite sua nova senha",
+    "new_password": "Nova Senha",
+    "confirm_password": "Confirmar Senha",
+    "resetting": "Redefinindo...",
+    "invalid_link": "Link de Redefinição Inválido",
+    "invalid_link_description": "Este link de redefinição de senha é inválido ou expirou. Por favor, solicite um novo."
   }
 }
