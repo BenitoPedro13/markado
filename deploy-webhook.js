@@ -29,7 +29,7 @@ app.post('/deploy', (req, res) => {
     console.log('Deploying...');
     
     // Run deployment commands
-    exec('cd /htcocs/markado && git pull origin main && pnpm install && pnpm build && pm2 restart all', (error, stdout, stderr) => {
+    exec('cd /opt/bitnami/apache/htdocs/markado && git pull origin main && pnpm install && pnpm build && pm2 restart all', (error, stdout, stderr) => {
       if (error) {
         console.error(`Deployment error: ${error}`);
         return res.status(500).send('Deployment failed');
