@@ -2,7 +2,7 @@
 
 import { signIn as nextAuthSignIn, signOut as nextAuthSignOut } from '@/auth';
 import { prisma } from '@/lib/prisma';
-import bcrypt from 'bcryptjs';
+import { hash } from '@node-rs/argon2';
 import { z } from 'zod';
 import { cookies } from 'next/headers';
 
@@ -36,7 +36,7 @@ export async function signUpWithEmailPassword(email: string, password: string, n
   }
 
   // Hash the password
-  const hashedPassword = await bcrypt.hash(password, 10);
+  const hashedPassword = await hash(password);
 
   // Create the user
   const user = await prisma.user.create({
