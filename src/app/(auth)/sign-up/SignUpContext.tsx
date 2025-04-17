@@ -31,7 +31,10 @@ const signUpFormSchema = z
       .string()
       .min(8, 'A senha deve ter pelo menos 8 caracteres')
       .regex(/[A-Z]/, 'A senha deve conter pelo menos uma letra maiúscula')
-      .regex(/[0-9]/, 'A senha deve conter pelo menos um número')
+      .regex(/[0-9]/, 'A senha deve conter pelo menos um número'),
+    username: z.string().min(1, 'O nome de usuário é obrigatório'),
+    name: z.string().min(1, 'O nome é obrigatório'),
+    timeZone: z.string().min(1, 'O fuso horário é obrigatório'),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: 'As senhas não coincidem',
@@ -93,7 +96,10 @@ export function SignUpProvider({ children }: { children: React.ReactNode }) {
     defaultValues: {
       email: '',
       password: '',
-      confirmPassword: ''
+      confirmPassword: '',
+      username: '',
+      name: '',
+      timeZone: ''
     }
   });
 

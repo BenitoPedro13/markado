@@ -9,9 +9,11 @@ import OrDivider from '@/components/OrDivider';
 import RoundedIconWrapper from '@/components/RoundedIconWrapper';
 import {cn} from '@/utils/cn';
 import {
+  RiAccountPinBoxFill,
   RiArrowLeftSLine,
   RiCheckboxCircleFill,
   RiCloseCircleFill,
+  RiGlobalLine,
   RiLockFill,
   RiUserAddFill
 } from '@remixicon/react';
@@ -27,7 +29,7 @@ import {
   useRef,
   useState
 } from 'react';
-import {SignUpContext, SignUpProvider, SignUpStep, useSignUp} from './SignUpContext';
+import {SignUpProvider, SignUpStep, useSignUp} from './SignUpContext';
 import {
   signInWithGoogle,
   signUpWithEmailPassword,
@@ -39,9 +41,10 @@ import {useSearchParams, useRouter} from 'next/navigation';
 import AuthSkeleton from '@/components/skeletons/AuthSkeleton';
 import { useTRPC } from '@/utils/trpc';
 import { useMutation } from '@tanstack/react-query';
-
+import * as Select from '@/components/align-ui/ui/select';
+import { ITimezoneOption, useTimezoneSelect } from 'react-timezone-select';
 const EmailForm = () => {
-  const {form, setStep} = useContext(SignUpContext);
+  const {form, setStep} = useSignUp();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get('redirect') || '/';
 
@@ -382,6 +385,109 @@ const PasswordForm = () => {
   );
 };
 
+const PersonalForm = () => {
+  const {form, setStep} = useSignUp();
+
+  const t = useTranslations('SignUpPage.PersonalForm');
+
+  const submit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    setStep('CONNECT');
+  };
+
+  const TimeZoneSelect = () => {
+    const labelStyle = 'original';
+
+    const {options, parseTimezone} = useTimezoneSelect({labelStyle});
+
+    const onChange = (timezone: ITimezoneOption) => {
+      form.setValue('timeZone', timezone.value);
+    };
+
+    return (
+      <Select.Root onValueChange={(e) => onChange(parseTimezone(e))}>
+        <Select.Trigger className="flex items-center gap-1 border-none">
+          <RiGlobalLine size={20} color="var(--text-soft-400)" />
+          <span className="text-text-sub-600 text-paragraph-sm">
+            {form.getValues().timeZone}
+          </span>
+        </Select.Trigger>
+        <Select.Content>
+          {options.map((option) => (
+            <Select.Item value={option.value}>{option.label}</Select.Item>
+          ))}
+        </Select.Content>
+      </Select.Root>
+    );
+  };
+
+  return (
+    <form
+      action=""
+      onSubmit={submit}
+      className="flex flex-col gap-8 justify-center items-center max-w-[392px] w-full"
+    >
+      <div className="flex flex-col items-center">
+        <RoundedIconWrapper>
+          <RiAccountPinBoxFill size={32} color="var(--text-sub-600)" />
+        </RoundedIconWrapper>
+
+        <div className="flex flex-col gap-1 text-center">
+          <h2 className="text-title-h5 text-text-strong-950">
+            {t('personal_information')}
+          </h2>
+          <p className="text-paragraph-md text-text-sub-600">
+            {t('provide_the_essential_informations')}
+          </p>
+        </div>
+      </div>
+
+      <div className="w-full h-[1px] bg-bg-soft-200" />
+
+      <div className="flex flex-col gap-4 w-full">
+        <div className="flex flex-col gap-1">
+          <Label>
+            {t('full_name')}
+            <Asterisk />
+          </Label>
+          <Input.Root>
+            <Input.Input
+              type="text"
+              placeholder="Marcus Dutra"
+              {...form.register('name')}
+            />
+          </Input.Root>
+        </div>
+        <div className="flex flex-col gap-1">
+          <Label>{t('username')}</Label>
+          <Input.Root>
+            <span>{MARKADO_URL}</span>
+            <Input.Input
+              type="text"
+              placeholder="Marcus Dutra"
+              {...form.register('username')}
+            />
+          </Input.Root>
+        </div>
+        <div className="flex flex-col gap-1">
+          <Label>{t('time_zone')}</Label>
+          <TimeZoneSelect />
+        </div>
+      </div>
+
+      <Button
+        className="w-full"
+        variant={'primary'}
+        mode="filled"
+        type="submit"
+      >
+        <span className="text-label-sm">{t('continue')}</span>
+      </Button>
+    </form>
+  );
+};
+
 const SignUpSteps = () => {
     const {
       step,
@@ -398,7 +504,7 @@ const SignUpSteps = () => {
     ),
     PASSWORD: <PasswordForm />,
     FUNCTION: undefined,
-    PERSONAL: undefined,
+    PERSONAL: <PersonalForm />,
     CONNECT: undefined,
     AVAILABILITY: undefined,
     ENDING: undefined
