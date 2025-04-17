@@ -10,17 +10,15 @@ jobs:
     runs-on: self-hosted
     steps:
       - name: Install SSH key
-        uses: webfactory/ssh-agent@v0.8.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-      - name: Add host key
         run: |
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          eval "$(ssh-agent -s)"
+          ssh-add ~/.ssh/deploy_key
           ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
           chmod 644 ~/.ssh/known_hosts
-          cat ~/.ssh/id_ed25519.pub >> ~/.ssh/authorized_keys
 
       - name: Deploy to VPS
         env:
