@@ -40,7 +40,8 @@
     "forgot_your_password": "Esqueceu a senha?",
     "start": "Começar",
     "dont_have_an_account": "Não tem uma conta?",
-    "create": "Criar"
+    "create": "Criar",
+    "loading": "Carregando..."
   },
   "SignInPage": {
     "markado": "Markado"
@@ -71,9 +72,13 @@
     }
   },
   "VerifyEmailPage": {
-    "error": "Erro",
-    "verifying": "Verificando Email",
-    "please_wait": "Por favor, aguarde enquanto verificamos seu email...",
-    "missing_params": "Link de verificação inválido ou expirado"
+    "verifying": "Verificando seu email",
+    "success": "Email verificado com sucesso",
+    "error": "Falha na verificação",
+    "please_wait": "Por favor, aguarde enquanto verificamos seu endereço de email...",
+    "success_message": "Seu email foi verificado com sucesso. Você já pode fazer login na sua conta.",
+    "missing_params": "O link de verificação é inválido ou expirou. Por favor, tente novamente.",
+    "continue_to_sign_in": "Continuar para login",
+    "try_again": "Tentar novamente"
   }
 }
