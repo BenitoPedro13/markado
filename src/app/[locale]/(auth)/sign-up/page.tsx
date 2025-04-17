@@ -35,8 +35,10 @@ import {
 } from '@/components/auth/auth-actions';
 import {IconGoogle} from '@/components/auth/sign-in';
 import * as SocialButton from '@/components/align-ui/ui/social-button';
-import {useSearchParams} from 'next/navigation';
+import {useSearchParams, useRouter} from 'next/navigation';
 import AuthSkeleton from '@/components/skeletons/AuthSkeleton';
+import { useTRPC } from '@/utils/trpc';
+import { useMutation } from '@tanstack/react-query';
 
 const EmailForm = () => {
   const {form, setStep} = useContext(SignUpContext);
@@ -168,11 +170,24 @@ const PasswordForm = () => {
   const t = useTranslations('SignUpPage.PasswordForm');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const trpc = useTRPC();
+  const router = useRouter();
 
   const password = form.watch('password');
   const confirmPassword = form.watch('confirmPassword');
   const email = form.watch('email');
   const passwordsMatch = password === confirmPassword;
+
+  const sendVerificationEmailMutation = useMutation(trpc.sendVerificationEmail.mutationOptions({
+    onSuccess: () => {
+      // Redirect to verify-email page
+      router.push(`/pt/verify-email?email=${encodeURIComponent(email)}`);
+    },
+    onError: () => {
+      setError('Failed to send verification email. Please try again.');
+      setIsLoading(false);
+    }
+  }));
 
   const submit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -185,10 +200,14 @@ const PasswordForm = () => {
       // Complete the registration process
       await signUpWithEmailPassword(email, password);
 
-      // Sign in the user
-      await signInWithEmailPassword(email, password, redirectTo);
+      // Send verification email
+      sendVerificationEmailMutation.mutate({ email });
     } catch (error) {
-      setError('Failed to create account. Please try again.');
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError('Failed to create account. Please try again.');
+      }
       setIsLoading(false);
     }
   };

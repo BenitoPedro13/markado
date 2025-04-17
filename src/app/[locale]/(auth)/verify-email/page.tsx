@@ -1,27 +1,42 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { useEffect, useState, useRef } from 'react';
 import { useTRPC } from '@/utils/trpc';
 import RoundedIconWrapper from '@/components/RoundedIconWrapper';
 import { RiCheckboxCircleFill, RiCloseCircleFill } from '@remixicon/react';
 import { Root as Button } from '@/components/align-ui/ui/button';
 import Link from 'next/link';
 import { useMutation } from '@tanstack/react-query';
+import { signInWithEmailPassword } from '@/components/auth/auth-actions';
 
 const VerifyEmailPage = () => {
   const trpc = useTRPC();
   const t = useTranslations('VerifyEmailPage');
   const searchParams = useSearchParams();
+  const router = useRouter();
   const [verificationStatus, setVerificationStatus] = useState<'verifying' | 'success' | 'error'>('verifying');
+  const verificationAttempted = useRef(false);
 
   const token = searchParams.get('token');
   const email = searchParams.get('email');
+  const redirectTo = searchParams.get('redirect') || '/';
 
   const verifyEmail = useMutation(trpc.verifyEmail.mutationOptions({
-    onSuccess: () => {
-      setVerificationStatus('success');
+    onSuccess: async (data) => {
+      if (data.loginToken) {
+        try {
+          // Use the login token to sign in
+          await signInWithEmailPassword(email!, data.loginToken, redirectTo);
+          setVerificationStatus('success');
+        } catch (error) {
+          console.error('Failed to auto-login:', error);
+          setVerificationStatus('success'); // Still show success for verification
+        }
+      } else {
+        setVerificationStatus('success');
+      }
     },
     onError: () => {
       setVerificationStatus('error');
@@ -29,9 +44,10 @@ const VerifyEmailPage = () => {
   }));
 
   useEffect(() => {
-    if (token && email) {
+    if (token && email && !verificationAttempted.current) {
+      verificationAttempted.current = true;
       verifyEmail.mutate({ token, identifier: email });
-    } else {
+    } else if (!token || !email) {
       setVerificationStatus('error');
     }
   }, [token, email]);
@@ -75,7 +91,7 @@ const VerifyEmailPage = () => {
             mode="filled"
             asChild
           >
-            <Link href="/sign-in">
+            <Link href="/pt/sign-in">
               {verificationStatus === 'success' ? t('continue_to_sign_in') : t('try_again')}
             </Link>
           </Button>

@@ -6,6 +6,7 @@ import { NextRequest } from 'next/server';
 const publicRoutes = [
   '/pt/sign-in',
   '/pt/sign-up',
+  '/pt/verify-email',
   '/api',
   '/_next',
   '/favicon.ico',
@@ -40,8 +41,10 @@ export async function middleware(request: NextRequest) {
     // Create the sign-up URL with the correct locale
     const signUpUrl = new URL(`/${locale}/sign-up`, request.url);
     
-    // Add the original URL as a redirect parameter
-    signUpUrl.searchParams.set('redirect', pathname);
+    // Add the original URL as a redirect parameter, but only if it's not already a redirect
+    if (!pathname.includes('redirect=')) {
+      signUpUrl.searchParams.set('redirect', pathname);
+    }
     
     return NextResponse.redirect(signUpUrl);
   }

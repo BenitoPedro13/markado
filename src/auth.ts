@@ -4,7 +4,6 @@ import Google from 'next-auth/providers/google';
 import Credentials from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
 
-
 import { prisma } from '@/lib/prisma';
 
 export const {handlers, signIn, signOut, auth} = NextAuth({
@@ -28,7 +27,40 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
           include: { password: true }
         });
 
-        if (!user || !user.password) {
+        if (!user) {
+          return null;
+        }
+
+        // Check if email is verified
+        if (!user.emailVerified) {
+          throw new Error('Please verify your email before signing in');
+        }
+
+        // Check if this is a one-time login token
+        const verificationToken = await prisma.verificationToken.findUnique({
+          where: {
+            identifier_token: {
+              identifier: credentials.email as string,
+              token: credentials.password as string
+            }
+          }
+        });
+
+        if (verificationToken) {
+          // This is a one-time login token, delete it and allow login
+          await prisma.verificationToken.delete({
+            where: {
+              identifier_token: {
+                identifier: credentials.email as string,
+                token: credentials.password as string
+              }
+            }
+          });
+          return user;
+        }
+
+        // Regular password check
+        if (!user.password) {
           return null;
         }
 

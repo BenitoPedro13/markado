@@ -57,6 +57,18 @@ export const appRouter = router({
     .mutation(async (opts) => {
       const { input } = opts;
       
+      console.log('Verifying email with:', { token: input.token, identifier: input.identifier });
+      
+      // First check if the user is already verified
+      const user = await prisma.user.findUnique({
+        where: { email: input.identifier }
+      });
+
+      if (user?.emailVerified) {
+        console.log('User already verified');
+        return { user, loginToken: null };
+      }
+      
       // Find the verification token
       const verificationToken = await prisma.verificationToken.findUnique({
         where: {
@@ -67,7 +79,10 @@ export const appRouter = router({
         }
       });
 
+      console.log('Found verification token:', verificationToken);
+
       if (!verificationToken) {
+        console.log('No verification token found');
         throw new TRPCError({
           code: 'NOT_FOUND',
           message: 'Invalid verification token'
@@ -76,6 +91,7 @@ export const appRouter = router({
 
       // Check if token is expired
       if (verificationToken.expires < new Date()) {
+        console.log('Token expired:', { expires: verificationToken.expires, now: new Date() });
         throw new TRPCError({
           code: 'BAD_REQUEST',
           message: 'Verification token has expired'
@@ -83,7 +99,7 @@ export const appRouter = router({
       }
 
       // Update user's email verification status
-      const user = await prisma.user.update({
+      const updatedUser = await prisma.user.update({
         where: {
           email: input.identifier
         },
@@ -92,17 +108,36 @@ export const appRouter = router({
         }
       });
 
-      // Delete the used token
-      await prisma.verificationToken.delete({
-        where: {
-          identifier_token: {
-            identifier: input.identifier,
-            token: input.token
+      console.log('Updated user:', updatedUser);
+
+      // Delete the used token - ignore if it doesn't exist (might have been deleted by another request)
+      try {
+        await prisma.verificationToken.delete({
+          where: {
+            identifier_token: {
+              identifier: input.identifier,
+              token: input.token
+            }
           }
+        });
+      } catch (error) {
+        console.log('Token already deleted or not found');
+      }
+
+      // Generate a one-time login token
+      const loginToken = crypto.randomBytes(32).toString('hex');
+      const loginTokenExpires = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
+
+      // Store the login token
+      await prisma.verificationToken.create({
+        data: {
+          identifier: input.identifier,
+          token: loginToken,
+          expires: loginTokenExpires
         }
       });
 
-      return user;
+      return { user: updatedUser, loginToken };
     }),
   sendVerificationEmail: publicProcedure
     .input(z.object({
