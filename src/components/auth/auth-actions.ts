@@ -4,6 +4,7 @@ import { signIn as nextAuthSignIn, signOut as nextAuthSignOut } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 import { z } from 'zod';
+import { cookies } from 'next/headers';
 
 // Sign in with Google
 export async function signInWithGoogle(redirectTo: string = '/') {
@@ -56,8 +57,12 @@ export async function signUpWithEmailPassword(email: string, password: string, n
 
 // Sign out
 export async function signOut() {
+  // Get the locale from the cookie or default to 'pt'
+  const cookieStore = cookies();
+  const locale = cookieStore.get('NEXT_LOCALE')?.value || 'pt';
+  
   return nextAuthSignOut({ 
     redirect: true,
-    redirectTo: '/pt/sign-in'
+    redirectTo: `/${locale}/logout`
   });
 }

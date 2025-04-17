@@ -14,6 +14,11 @@
     "label": "Change language",
     "locale": "{locale, select, pt {PT-BR} en {EN-US} other {Unknown}}"
   },
+  "LogoutPage": {
+    "logged_out": "You have been logged out",
+    "logged_out_description": "Thank you for using our service. You have been successfully logged out.",
+    "go_to_sign_in": "Go to sign in"
+  },
   "Manifest": {
     "name": "NextJS Internationalization Example"
   },
