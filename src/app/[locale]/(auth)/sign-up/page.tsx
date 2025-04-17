@@ -31,8 +31,10 @@ import {SignUpContext, SignUpStep} from './SignUpContext';
 import { signInWithGoogle } from '@/components/auth/auth-actions';
 import { IconGoogle } from '@/components/auth/sign-in';
 import * as SocialButton from '@/components/align-ui/ui/social-button';
-import { useSearchParams } from 'next/navigation';
+import {useSearchParams, useRouter} from 'next/navigation';
 import AuthSkeleton from '@/components/skeletons/AuthSkeleton';
+import { useTRPC } from '@/utils/trpc';
+import { useMutation } from '@tanstack/react-query';
 
 const EmailForm = () => {
   const {form, setStep} = useContext(SignUpContext);
@@ -45,9 +47,6 @@ const EmailForm = () => {
 
   // Get the email value from the form
   const email = form.watch('email');
-
-  // Check if the email is valid (not empty)
-  const isEmailValid = email && email.trim() !== '';
 
   const submit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -161,15 +160,37 @@ const PasswordForm = () => {
   const {form, setStep} = useContext(SignUpContext);
 
   const t = useTranslations('SignUpPage.PasswordForm');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const router = useRouter();
+  const trpc = useTRPC();
 
   const password = form.watch('password');
   const confirmPassword = form.watch('confirmPassword');
   const passwordsMatch = password === confirmPassword;
 
-  const submit = (e: FormEvent<HTMLFormElement>) => {
+  const sendVerificationEmail = useMutation(trpc.sendVerificationEmail.mutationOptions());
+
+  const submit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!passwordsMatch) return;
-    setStep('FUNCTION');
+
+    setIsLoading(true);
+    setError('');
+
+    try {
+      // Complete the registration process
+      await signUpWithEmailPassword(email, password);
+
+      // Send verification email
+      sendVerificationEmail.mutate({ email });
+
+      // Redirect to verify-email page
+      router.push('/verify-email');
+    } catch (error) {
+      setError('Failed to create account. Please try again.');
+      setIsLoading(false);
+    }
   };
 
   const StrengthBarIndicator = () => {
