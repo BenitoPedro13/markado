@@ -7,8 +7,9 @@ import * as Button from '@/components/align-ui/ui/button';
 import {Service, ServiceBadgeColor} from '@/types/service';
 import * as Divider from '@/components/align-ui/ui/divider';
 import {services} from '@/data/services';
-import {useEffect} from 'react';
+import {useEffect, useRef} from 'react';
 import * as Select from '@/components/align-ui/ui/select';
+import {useService} from '@/hooks/use-service';
 
 type ServiceDetailsFormData = Pick<
   Service,
@@ -40,9 +41,11 @@ type Props = {
 };
 
 export default function ServiceDetails({slug}: Props) {
+  const formRef = useRef<HTMLFormElement>(null);
   const {register, handleSubmit, watch, setValue} =
     useForm<ServiceDetailsFormData>();
   const description = watch('description', '');
+  const {service: currentService} = useService(slug);
 
   // Carrega os dados do serviço atual
   useEffect(() => {
@@ -81,8 +84,22 @@ export default function ServiceDetails({slug}: Props) {
     }
   };
 
+  // Expõe a função de submit para o componente pai
+  useEffect(() => {
+    const submitForm = () => {
+      formRef.current?.requestSubmit();
+    };
+
+    // Adiciona ao objeto window para que o Header possa acessar
+    (window as any).submitServiceForm = submitForm;
+
+    return () => {
+      delete (window as any).submitServiceForm;
+    };
+  }, []);
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form ref={formRef} onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div className="space-y-4">
         <div className="text-title-h6">Geral</div>
         <div className="flex flex-col gap-2">
@@ -131,6 +148,7 @@ export default function ServiceDetails({slug}: Props) {
               Cor do Serviço
             </label>
             <Select.Root
+              defaultValue={currentService?.badgeColor}
               onValueChange={(value) =>
                 setValue('badgeColor', value as ServiceBadgeColor)
               }
@@ -195,10 +213,6 @@ export default function ServiceDetails({slug}: Props) {
           </Input.Root>
         </div>
       </div>
-
-      <Button.Root type="submit" className="w-full">
-        Salvar Alterações
-      </Button.Root>
     </form>
   );
 }
