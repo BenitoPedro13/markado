@@ -332,6 +332,21 @@ export const appRouter = router({
   }),
   cityTimezones: publicProcedure.query(async () => {
     return cityTimezonesHandler();
+  }),
+  completeOnboarding: publicProcedure.mutation(async () => {
+    const session = await auth();
+    
+    if (!session?.user) {
+      throw new TRPCError({
+        code: 'UNAUTHORIZED',
+        message: 'Not authenticated'
+      });
+    }
+
+    return prisma.user.update({
+      where: { id: session.user.id },
+      data: { completedOnboarding: true }
+    });
   })
 });
 
