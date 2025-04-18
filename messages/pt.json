@@ -82,6 +82,11 @@
       "username": "Nome de Usuário",
       "time_zone": "Fuso Horário",
       "continue": "Continuar"
+    },
+    "EndingPage": {
+      "all_set": "Tudo Pronto!",
+      "your_account_is_ready": "Sua conta está pronta para uso",
+      "get_started": "Começar"
     }
   },
   "VerifyEmailPage": {

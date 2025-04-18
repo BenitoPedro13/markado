@@ -82,6 +82,11 @@
       "username": "Username",
       "time_zone": "Time Zone",
       "continue": "Continue"
+    },
+    "EndingPage": {
+      "all_set": "All Set!",
+      "your_account_is_ready": "Your account is ready to use",
+      "get_started": "Get Started"
     }
   },
   "VerifyEmailPage": {
