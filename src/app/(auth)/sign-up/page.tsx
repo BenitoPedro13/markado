@@ -71,7 +71,7 @@ const EmailForm = () => {
     <form
       action=""
       onSubmit={submit}
-      className="flex flex-col gap-8 justify-center items-center max-w-[392px] w-full"
+      className="flex flex-col gap-6 justify-center items-center max-w-[392px] w-full"
     >
       <div className="flex flex-col items-center">
         <RoundedIconWrapper>
@@ -307,7 +307,7 @@ const PasswordForm = () => {
     <form
       action=""
       onSubmit={submit}
-      className="flex flex-col gap-8 justify-center items-center max-w-[392px] w-full"
+      className="flex flex-col gap-6 justify-center items-center max-w-[392px] w-full"
     >
       <div className="flex flex-col items-center">
         <RoundedIconWrapper>
@@ -432,7 +432,7 @@ const PersonalForm = () => {
     <form
       action=""
       onSubmit={submit}
-      className="flex flex-col gap-8 justify-center items-center max-w-[392px] w-full"
+      className="flex flex-col gap-6 justify-center items-center max-w-[392px] w-full"
     >
       <div className="flex flex-col items-center">
         <RoundedIconWrapper>
