@@ -55,7 +55,7 @@ export default function PasswordRecoveryPage() {
   return (
     <form
       onSubmit={form.handleSubmit(onSubmit)}
-      className="flex flex-col gap-8 justify-center items-center max-w-[392px] w-full"
+      className="flex flex-col gap-6 justify-center items-center max-w-[392px] w-full"
     >
       <div className="flex flex-col items-center">
         <RoundedIconWrapper>

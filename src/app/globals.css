@@ -395,8 +395,27 @@
 
 .rounded-icon-wrapper {
   border-radius: 9999px;
+  background: linear-gradient(180deg, #7177841a 0%, #71778400 100%);
+  position: relative;
+}
 
-  border-image: linear-gradient(to bottom, #717784 100%, #717784 0%) 1;
+.rounded-icon-wrapper::before {
+  content: '';
+  position: absolute;
+  backdrop-filter: blur(12px);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 9999px;
+  padding: .7px; /* Border width */
+  background: linear-gradient(180deg, #717784 0%, #71778400 100%);
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
 }
 
 /* .button-background {

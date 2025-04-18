@@ -1,6 +1,5 @@
 'use client';
 
-import GoogleLogo from '@/../public/images/google_logo.svg';
 import {Root as Button} from '@/components/align-ui/ui/button';
 import {Root as Checkbox} from '@/components/align-ui/ui/checkbox';
 import * as Input from '@/components/align-ui/ui/input';
@@ -9,9 +8,11 @@ import OrDivider from '@/components/OrDivider';
 import RoundedIconWrapper from '@/components/RoundedIconWrapper';
 import {cn} from '@/utils/cn';
 import {
+  RiAccountPinBoxFill,
   RiArrowLeftSLine,
   RiCheckboxCircleFill,
   RiCloseCircleFill,
+  RiGlobalLine,
   RiLockFill,
   RiUserAddFill
 } from '@remixicon/react';
@@ -22,26 +23,29 @@ import {
   FormEvent,
   ReactNode,
   Suspense,
-  useContext,
   useEffect,
   useRef,
   useState
 } from 'react';
-import {SignUpContext, SignUpStep} from './SignUpContext';
+import {SignUpProvider, SignUpStep, useSignUp} from './SignUpContext';
 import {
   signInWithGoogle,
-  signUpWithEmailPassword,
-  signInWithEmailPassword
+  signUpWithEmailPassword
 } from '@/components/auth/auth-actions';
 import {IconGoogle} from '@/components/auth/sign-in';
 import * as SocialButton from '@/components/align-ui/ui/social-button';
 import {useSearchParams, useRouter} from 'next/navigation';
 import AuthSkeleton from '@/components/skeletons/AuthSkeleton';
-import { useTRPC } from '@/utils/trpc';
-import { useMutation } from '@tanstack/react-query';
+import {useTRPC} from '@/utils/trpc';
+import {useMutation} from '@tanstack/react-query';
+import * as Select from '@/components/align-ui/ui/select';
+import {ITimezoneOption, useTimezoneSelect} from 'react-timezone-select';
+import {MARKADO_DOMAIN} from '@/app/constants';
+import { TimezoneSelect } from '@/components/TimezoneSelect';
+import { TimezoneSelectWithStyle } from '@/components/TimezoneSelectWithStyle';
 
 const EmailForm = () => {
-  const {form, setStep} = useContext(SignUpContext);
+  const {form, setStep} = useSignUp();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get('redirect') || '/';
 
@@ -67,7 +71,7 @@ const EmailForm = () => {
     <form
       action=""
       onSubmit={submit}
-      className="flex flex-col gap-8 justify-center items-center max-w-[392px] w-full"
+      className="flex flex-col gap-6 justify-center items-center max-w-[392px] w-full"
     >
       <div className="flex flex-col items-center">
         <RoundedIconWrapper>
@@ -161,7 +165,7 @@ const EmailForm = () => {
 };
 
 const PasswordForm = () => {
-  const {form, setStep} = useContext(SignUpContext);
+  const {form, setStep} = useSignUp();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get('redirect') || '/';
   const t = useTranslations('SignUpPage.PasswordForm');
@@ -175,16 +179,19 @@ const PasswordForm = () => {
   const email = form.watch('email');
   const passwordsMatch = password === confirmPassword;
 
-  const sendVerificationEmailMutation = useMutation(trpc.sendVerificationEmail.mutationOptions({
-    onSuccess: () => {
-      // Redirect to check-email page
-      router.push(`/check-email?email=${encodeURIComponent(email)}`);
-    },
-    onError: () => {
-      setError('Failed to send verification email. Please try again.');
-      setIsLoading(false);
-    }
-  }));
+  const sendVerificationEmailMutation = useMutation(
+    trpc.sendVerificationEmail.mutationOptions({
+      onSuccess: () => {
+        // Redirect to check-email page
+        // router.push(`/check-email?email=${encodeURIComponent(email)}`);
+        setStep('PERSONAL');
+      },
+      onError: () => {
+        setError('Failed to send verification email. Please try again.');
+        setIsLoading(false);
+      }
+    })
+  );
 
   const submit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -198,7 +205,7 @@ const PasswordForm = () => {
       await signUpWithEmailPassword(email, password);
 
       // Send verification email
-      sendVerificationEmailMutation.mutate({ email });
+      sendVerificationEmailMutation.mutate({email});
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);
@@ -300,7 +307,7 @@ const PasswordForm = () => {
     <form
       action=""
       onSubmit={submit}
-      className="flex flex-col gap-8 justify-center items-center max-w-[392px] w-full"
+      className="flex flex-col gap-6 justify-center items-center max-w-[392px] w-full"
     >
       <div className="flex flex-col items-center">
         <RoundedIconWrapper>
@@ -350,7 +357,7 @@ const PasswordForm = () => {
             <p
               className={`${confirmPassword.length <= 0 || !passwordsMatch ? 'opacity-100' : 'opacity-0'} text-paragraph-xs text-red-500 disabled:cursor transition-all duration-300`}
             >
-            {t('passwords_do_not_match')}
+              {t('passwords_do_not_match')}
             </p>
           )}
 
@@ -379,8 +386,97 @@ const PasswordForm = () => {
   );
 };
 
-const SignUpPage = () => {
-  const {step, setStep} = useContext(SignUpContext);
+const PersonalForm = () => {
+  const {form, setStep} = useSignUp();
+
+  const t = useTranslations('SignUpPage.PersonalForm');
+
+  const submit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    setStep('CONNECT');
+  };
+
+  const timeZone = form.watch('timeZone');
+
+  return (
+    <form
+      action=""
+      onSubmit={submit}
+      className="flex flex-col gap-6 justify-center items-center max-w-[392px] w-full"
+    >
+      <div className="flex flex-col items-center">
+        <RoundedIconWrapper>
+          <RiAccountPinBoxFill size={32} color="var(--text-sub-600)" />
+        </RoundedIconWrapper>
+
+        <div className="flex flex-col gap-1 text-center">
+          <h2 className="text-title-h5 text-text-strong-950">
+            {t('personal_information')}
+          </h2>
+          <p className="text-paragraph-md text-text-sub-600">
+            {t('provide_the_essential_informations')}
+          </p>
+        </div>
+      </div>
+
+      <div className="w-full h-[1px] bg-bg-soft-200" />
+
+      <div className="flex flex-col gap-4 w-full">
+        <div className="flex flex-col gap-1">
+          <Label>
+            {t('full_name')}
+            <Asterisk />
+          </Label>
+          <Input.Root>
+            <Input.Input
+              type="text"
+              placeholder="Marcus Dutra"
+              {...form.register('name')}
+            />
+          </Input.Root>
+        </div>
+        <div className="flex flex-col gap-1">
+          <Label>{t('username')}</Label>
+          <Input.Root>
+            <Input.Affix>{MARKADO_DOMAIN}/</Input.Affix>
+            <Input.Input
+              type="text"
+              placeholder="marcusdutra"
+              {...form.register('username')}
+            />
+          </Input.Root>
+        </div>
+        <div className="flex flex-col gap-1">
+          <Label>{t('time_zone')}</Label>
+          {/* <TimeZoneSelectComponent /> */}
+          <TimezoneSelectWithStyle
+            value={timeZone}
+            onChange={(value) => form.setValue('timeZone', value)}
+            placeholder="Choose your timezone"
+          />
+        </div>
+      </div>
+
+      <Button
+        className="w-full"
+        variant={'primary'}
+        mode="filled"
+        type="submit"
+      >
+        <span className="text-label-sm">{t('continue')}</span>
+      </Button>
+    </form>
+  );
+};
+
+const SignUpSteps = () => {
+  const {
+    step,
+    setStep,
+    queries: {user},
+    isAnyQueryLoading
+  } = useSignUp();
 
   const steps: Record<SignUpStep, ReactNode> = {
     EMAIL: (
@@ -390,7 +486,7 @@ const SignUpPage = () => {
     ),
     PASSWORD: <PasswordForm />,
     FUNCTION: undefined,
-    PERSONAL: undefined,
+    PERSONAL: <PersonalForm />,
     CONNECT: undefined,
     AVAILABILITY: undefined,
     ENDING: undefined
@@ -429,5 +525,13 @@ const SignUpPage = () => {
     </>
   );
 };
+
+function SignUpPage() {
+  return (
+    <SignUpProvider>
+      <SignUpSteps />
+    </SignUpProvider>
+  );
+}
 
 export default SignUpPage;
