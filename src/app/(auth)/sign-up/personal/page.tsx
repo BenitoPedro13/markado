@@ -12,7 +12,7 @@ import { useTranslations } from 'next-intl';
 import { FormEvent } from 'react';
 
 const PersonalForm = () => {
-  const {form, nextStep} = useSignUp();
+  const {forms, nextStep} = useSignUp();
 
   const t = useTranslations('SignUpPage.PersonalForm');
 
@@ -22,7 +22,7 @@ const PersonalForm = () => {
     nextStep();
   };
 
-  const timeZone = form.watch('timeZone');
+  const timeZone = forms.personal.watch('timeZone');
 
   return (
     <form
@@ -57,7 +57,7 @@ const PersonalForm = () => {
             <Input.Input
               type="text"
               placeholder="Marcus Dutra"
-              {...form.register('name')}
+              {...forms.personal.register('name')}
             />
           </Input.Root>
         </div>
@@ -68,7 +68,7 @@ const PersonalForm = () => {
             <Input.Input
               type="text"
               placeholder="marcusdutra"
-              {...form.register('username')}
+              {...forms.personal.register('username')}
             />
           </Input.Root>
         </div>
@@ -77,7 +77,7 @@ const PersonalForm = () => {
           {/* <TimeZoneSelectComponent /> */}
           <TimezoneSelectWithStyle
             value={timeZone}
-            onChange={(value) => form.setValue('timeZone', value)}
+            onChange={(value) => forms.personal.setValue('timeZone', value)}
             placeholder="Choose your timezone"
           />
         </div>

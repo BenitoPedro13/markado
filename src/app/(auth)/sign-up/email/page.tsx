@@ -17,7 +17,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { FormEvent, useState } from 'react';
 
 const EmailForm = () => {
-  const {form, nextStep} = useSignUp();
+  const {forms, nextStep} = useSignUp();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get('redirect') || '/';
 
@@ -26,7 +26,7 @@ const EmailForm = () => {
   const [agree, setAgree] = useState(false);
 
   // Get the email value from the form
-  const email = form.watch('email');
+  const email = forms.email.watch('email');
 
   const router = useRouter();
 
@@ -86,7 +86,7 @@ const EmailForm = () => {
               type="email"
               placeholder="hello@markado.co"
               required
-              {...form.register('email')}
+              {...forms.email.register('email')}
             />
           </Input.Root>
         </div>
