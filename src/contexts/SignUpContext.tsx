@@ -18,10 +18,14 @@ import { useForm, UseFormReturn } from 'react-hook-form';
 import { z } from 'zod';
 import { type AppRouter } from '~/trpc/server';
 
-// Sign up form schema
-const signUpFormSchema = z
+// Sign up email form schema
+const signUpEmailFormSchema = z.object({
+  email: z.string().nonempty('Email é obrigatório').email('Email inválido'),
+});
+
+// Sign up password form schema
+const signUpPasswordFormSchema = z
   .object({
-    email: z.string().nonempty('Email é obrigatório').email('Email inválido'),
     password: z
       .string()
       .min(8, 'A senha deve ter pelo menos 8 caracteres')
@@ -31,17 +35,25 @@ const signUpFormSchema = z
       .string()
       .min(8, 'A senha deve ter pelo menos 8 caracteres')
       .regex(/[A-Z]/, 'A senha deve conter pelo menos uma letra maiúscula')
-      .regex(/[0-9]/, 'A senha deve conter pelo menos um número'),
-    username: z.string().min(1, 'O nome de usuário é obrigatório'),
-    name: z.string().min(1, 'O nome é obrigatório'),
-    timeZone: z.string().min(1, 'O fuso horário é obrigatório'),
+      .regex(/[0-9]/, 'A senha deve conter pelo menos um número')
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: 'As senhas não coincidem',
     path: ['confirmPassword']
   });
 
-export type SignUpFormData = z.infer<typeof signUpFormSchema>;
+
+// Sign up personal form schema
+const signUpPersonalFormSchema = z.object({
+  name: z.string().min(1, 'O nome é obrigatório'),
+  username: z.string().min(1, 'O nome de usuário é obrigatório'),
+  timeZone: z.string().min(1, 'O fuso horário é obrigatório'),
+});
+
+
+export type SignUpEmailFormData = z.infer<typeof signUpEmailFormSchema>;
+export type SignUpPasswordFormData = z.infer<typeof signUpPasswordFormSchema>;
+export type SignUpPersonalFormData = z.infer<typeof signUpPersonalFormSchema>;
 
 // Sign up context
 export type SignUpStep =
@@ -74,7 +86,12 @@ type SignUpContextType = {
   setStep: Dispatch<SetStateAction<SignUpStep>>;
   backStep: () => void;
   nextStep: () => void;
-  form: UseFormReturn<SignUpFormData>;
+  forms: {
+    email: UseFormReturn<SignUpEmailFormData>;
+    password: UseFormReturn<SignUpPasswordFormData>;
+    personal: UseFormReturn<SignUpPersonalFormData>;
+  };
+
   // Helper functions
   isAnyQueryLoading: () => boolean;
   hasAnyQueryError: () => boolean;
@@ -92,16 +109,30 @@ export function SignUpProvider({ children }: { children: React.ReactNode }) {
 
   const [step, setStep] = useState<SignUpStep>('/sign-up/email');
 
-  const form = useForm<SignUpFormData>({
-    resolver: zodResolver(signUpFormSchema),
+  const emailForm = useForm<SignUpEmailFormData>({
+    resolver: zodResolver(signUpEmailFormSchema),
     mode: 'onSubmit',
     defaultValues: {
       email: '',
+    }
+  });
+
+  const passwordForm = useForm<SignUpPasswordFormData>({
+    resolver: zodResolver(signUpPasswordFormSchema),
+    mode: 'onSubmit',
+    defaultValues: {
       password: '',
       confirmPassword: '',
-      username: '',
+    }
+  });
+
+  const personalForm = useForm<SignUpPersonalFormData>({
+    resolver: zodResolver(signUpPersonalFormSchema),
+    mode: 'onSubmit',
+    defaultValues: {
       name: '',
-      timeZone: ''
+      username: '',
+      timeZone: '',
     }
   });
 
@@ -145,11 +176,15 @@ export function SignUpProvider({ children }: { children: React.ReactNode }) {
       //   error: profileQuery.error
       // }
     },
+    forms: {
+      email: emailForm,
+      password: passwordForm,
+      personal: personalForm
+    },
     step,
     setStep,
     backStep,
     nextStep,
-    form,
     // Helper functions
     isAnyQueryLoading: () => Object.values(value.queries).some(q => q.isLoading),
     hasAnyQueryError: () => Object.values(value.queries).some(q => q.error !== null)
