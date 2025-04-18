@@ -7,6 +7,7 @@ import { sendVerificationEmail, sendPasswordResetEmail } from '@/lib/email';
 import crypto from 'crypto';
 import bcrypt from 'bcryptjs';
 import { cityTimezonesHandler } from './cityTimezones';
+import { ZUpdateProfileInputSchema } from './updateProfile.schema';
 
 export const appRouter = router({
   userList: publicProcedure.query(async () => {
@@ -347,7 +348,71 @@ export const appRouter = router({
       where: { id: session.user.id },
       data: { completedOnboarding: true }
     });
-  })
+  }),
+  updateProfile: publicProcedure
+    .input(ZUpdateProfileInputSchema)
+    .mutation(async (opts) => {
+      const session = await auth();
+      
+      if (!session?.user) {
+        throw new TRPCError({
+          code: 'UNAUTHORIZED',
+          message: 'Not authenticated'
+        });
+      }
+
+      const { input } = opts;
+
+      // Check if username is being changed and if it's already taken
+      if (input.username && input.username !== session.user.username) {
+        const existingUser = await prisma.user.findFirst({
+          where: { 
+            username: input.username,
+            NOT: { id: session.user.id }
+          }
+        });
+
+        if (existingUser) {
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: 'Username already taken'
+          });
+        }
+      }
+
+      // Check if email is being changed and if it's already taken
+      if (input.email && input.email !== session.user.email) {
+        const existingUser = await prisma.user.findFirst({
+          where: { 
+            email: input.email,
+            NOT: { id: session.user.id }
+          }
+        });
+
+        if (existingUser) {
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: 'Email already in use'
+          });
+        }
+      }
+
+      const updateData = {
+        ...(input.name && { name: input.name }),
+        ...(input.username && { username: input.username }),
+        ...(input.email && { email: input.email }),
+        ...(input.biography && { biography: input.biography }),
+        ...(input.image && { image: input.image }),
+        ...(input.timeZone && { timeZone: input.timeZone }),
+        ...(input.locale && { locale: input.locale }),
+        ...(typeof input.completedOnboarding === 'boolean' && { completedOnboarding: input.completedOnboarding })
+      };
+
+      return prisma.user.update({
+        where: { id: session.user.id },
+        data: updateData
+      });
+    })
 });
 
 export type AppRouter = typeof appRouter;
