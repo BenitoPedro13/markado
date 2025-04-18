@@ -26,12 +26,30 @@ const EmailForm = () => {
   const agree = forms.email.watch('agree');
   const setAgree = (value: boolean) => forms.email.setValue('agree', value);
 
-  const submit = (e: FormEvent<HTMLFormElement>) => {
+  const submit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    // Validate the form using react-hook-form's handleSubmit
+    const isValid = await forms.email.trigger();
+    
+    if (!isValid) {
+      return;
+    }
+
+    // Get the current email value
+    const emailValue = forms.email.getValues('email');
+    
+    // Check if email is empty
+    if (!emailValue) {
+      forms.email.setError('email', {
+        message: 'SignUpPage.EmailForm.email_required'
+      });
+      return;
+    }
 
     if (!agree) {
       forms.email.setError('agree', {
-        message: t('must_agree_to_terms')
+        message: 'SignUpPage.EmailForm.must_agree_to_terms'
       });
       return;
     }
@@ -46,8 +64,14 @@ const EmailForm = () => {
 
   // Translate validation messages
   const getTranslatedError = (error: any) => {
-    if (error?.message === 'must_agree_to_terms') {
+    if (error?.message === 'SignUpPage.EmailForm.must_agree_to_terms') {
       return t('must_agree_to_terms');
+    }
+    if (error?.message === 'SignUpPage.EmailForm.email_required') {
+      return t('email_required');
+    }
+    if (error?.message === 'SignUpPage.EmailForm.invalid_email') {
+      return t('invalid_email');
     }
     return error?.message;
   };
@@ -100,11 +124,16 @@ const EmailForm = () => {
               {...forms.email.register('email')}
             />
           </Input.Root>
+          {forms.email.formState.errors.email && (
+            <span className="text-paragraph-xs text-red-500">
+              {getTranslatedError(forms.email.formState.errors.email)}
+            </span>
+          )}
         </div>
         <div className="flex gap-2">
           <Checkbox
             checked={agree}
-            // required
+            required
             onCheckedChange={(value) => setAgree(value.valueOf() as boolean)}
           />
           <p className="text-label-sm text-text-sub-600">
