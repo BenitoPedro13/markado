@@ -9,11 +9,16 @@ import ServiceAdvanced from '@/components/services/service-details/ServiceAdvanc
 import {
   RiArrowRightSLine,
   RiCalendarLine,
+  RiDraftFill,
   RiDraftLine,
   RiFileCopyFill,
   RiLinksFill,
   RiLinksLine,
-  RiMore2Fill
+  RiMore2Fill,
+  RiSettingsFill,
+  RiSettingsLine,
+  RiTimeFill,
+  RiTimeLine
 } from '@remixicon/react';
 
 type Props = {
@@ -33,22 +38,22 @@ const menuItems = [
   {
     value: 'availability',
     label: 'Disponibilidade',
-    iconLine: RiCalendarLine,
-    iconFill: RiCalendarLine,
+    iconLine: RiTimeLine,
+    iconFill: RiTimeFill,
     component: ServiceAvailability,
   },
   {
     value: 'form',
     label: 'Formulário',
     iconLine: RiDraftLine,
-    iconFill: RiFileCopyFill,
+    iconFill: RiDraftFill,
     component: ServiceForm,
   },
   {
     value: 'advanced',
     label: 'Avançado',
-    iconLine: RiMore2Fill,
-    iconFill: RiMore2Fill,
+    iconLine: RiSettingsLine,
+    iconFill: RiSettingsFill,
     component: ServiceAdvanced,
   },
 ];
@@ -60,9 +65,9 @@ export default function ServicePage({params: {slug}}: Props) {
       <div className="p-8 flex w-full justify-center">
         <TabMenuVertical.Root
           defaultValue="service"
-          className="max-w-[900px] w-full items-start justify-center flex gap-4"
+          className="max-w-[900px] w-full items-start justify-center flex gap-8"
         >
-          <TabMenuVertical.List className="w-[300px] p-4 border rounded-lg border-border-stroke-200 h-fit">
+          <TabMenuVertical.List className="w-[300px] p-4 border border-stroke-soft-200 rounded-lg h-fit">
             <div className="text-subheading-xs uppercase text-text-sub-600">
               Menu
             </div>
@@ -88,6 +93,9 @@ export default function ServicePage({params: {slug}}: Props) {
           </div>
         </TabMenuVertical.Root>
       </div>
+      
+
+      
     </PageLayout>
   );
 } 

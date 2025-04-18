@@ -10,9 +10,11 @@ import { Root as Button } from '@/components/align-ui/ui/button';
 import Link from 'next/link';
 import { useMutation } from '@tanstack/react-query';
 import { signInWithEmailPassword } from '@/components/auth/auth-actions';
+import { useSignUp } from '@/app/(auth)/sign-up/SignUpContext';
 
 const VerifyEmailContent = () => {
   const trpc = useTRPC();
+      const {setStep} = useSignUp();
   const t = useTranslations('VerifyEmailPage');
   const searchParams = useSearchParams();
   const router = useRouter();

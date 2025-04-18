@@ -74,6 +74,14 @@
       "continue": "Continue",
       "passwords_do_not_match": "Passwords do not match",
       "creating_account": "Creating account..."
+    },
+    "PersonalForm": {
+      "personal_information": "Personal Information",
+      "provide_the_essential_informations": "Provide the essential information to complete your profile",
+      "full_name": "Full Name",
+      "username": "Username",
+      "time_zone": "Time Zone",
+      "continue": "Continue"
     }
   },
   "VerifyEmailPage": {
