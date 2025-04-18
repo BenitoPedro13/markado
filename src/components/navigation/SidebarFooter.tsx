@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import SidebarFooterSkeleton from './SidebarFooterSkeleton';
 import { useSessionStore } from '@/providers/session-store-provider';
-import { useSidebarStore } from '@/store/useSidebarStore';
+import { useSidebarStore } from '@/stores/sidebar-store';
 
 export default function SidebarFooter() {
   const user = useSessionStore((state) => state.user);

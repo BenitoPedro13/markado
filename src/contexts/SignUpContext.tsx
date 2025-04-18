@@ -46,14 +46,12 @@ const signUpPasswordFormSchema = z
     path: ['confirmPassword']
   });
 
-
 // Sign up personal form schema
 const signUpPersonalFormSchema = z.object({
   name: z.string().min(1, 'SignUpPage.PersonalForm.name_required'),
   username: z.string().min(1, 'SignUpPage.PersonalForm.username_required'),
   timeZone: z.string().min(1, 'SignUpPage.PersonalForm.timezone_required'),
 });
-
 
 export type SignUpEmailFormData = z.infer<typeof signUpEmailFormSchema>;
 export type SignUpPasswordFormData = z.infer<typeof signUpPasswordFormSchema>;
@@ -68,8 +66,8 @@ export type SignUpStep =
   | '/sign-up/availability'
   | '/sign-up/ending';
 
-// Infer the output type of the me procedure
-type MeResponse = inferRouterOutputs<AppRouter>['me'];
+// Infer the output type of the user.me procedure
+type MeResponse = inferRouterOutputs<AppRouter>['user']['me'];
 
 type QueryState<T> = {
   data: T | null;
@@ -106,11 +104,8 @@ const SignUpContext = createContext<SignUpContextType | null>(null);
 
 export function SignUpProvider({ children }: { children: React.ReactNode }) {
   const trpc = useTRPC();   
-  const userQuery = useQuery(trpc.me.queryOptions());
+  const userQuery = useQuery(trpc.user.me.queryOptions());
   const router = useRouter();
-
-  // You can add more queries here
-  // const profileQuery = useQuery(trpc.profile.queryOptions());
 
   const [step, setStep] = useState<SignUpStep>('/sign-up/email');
   const [agree, setAgree] = useState(false);
@@ -169,19 +164,13 @@ export function SignUpProvider({ children }: { children: React.ReactNode }) {
     router.push(nextStepMap[step]!);
   };
 
-  const value = {
+  const value: SignUpContextType = {
     queries: {
       user: {
         data: userQuery.data ?? null,
         isLoading: userQuery.isLoading,
         error: userQuery.error
-      },
-      // Add other query states here
-      // profile: {
-      //   data: profileQuery.data ?? null,
-      //   isLoading: profileQuery.isLoading,
-      //   error: profileQuery.error
-      // }
+      }
     },
     forms: {
       email: emailForm,
@@ -194,10 +183,10 @@ export function SignUpProvider({ children }: { children: React.ReactNode }) {
     nextStep,
     agree,
     setAgree,
-    // Helper functions
     isAnyQueryLoading: () => Object.values(value.queries).some(q => q.isLoading),
     hasAnyQueryError: () => Object.values(value.queries).some(q => q.error !== null)
   };
+
   return (
     <SignUpContext.Provider value={value}>
       {children}
