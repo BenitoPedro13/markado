@@ -9,7 +9,6 @@ import * as Divider from '@/components/align-ui/ui/divider';
 import {services} from '@/data/services';
 import {useEffect, useRef} from 'react';
 import * as Select from '@/components/align-ui/ui/select';
-import {useService} from '@/hooks/use-service';
 
 type ServiceDetailsFormData = Pick<
   Service,
@@ -44,22 +43,21 @@ export default function ServiceDetails({slug}: Props) {
   const formRef = useRef<HTMLFormElement>(null);
   const {register, handleSubmit, watch, setValue} =
     useForm<ServiceDetailsFormData>();
-  const description = watch('description', '');
-  const {service: currentService} = useService(slug);
+  const description = watch('description') || '';
+  const service = services.find(s => s.slug === slug);
 
   // Carrega os dados do serviço atual
   useEffect(() => {
-    const currentService = services.find((service) => service.slug === slug);
-    if (currentService) {
-      setValue('title', currentService.title);
-      setValue('slug', currentService.slug);
-      setValue('duration', currentService.duration);
-      setValue('price', currentService.price);
-      setValue('badgeColor', currentService.badgeColor);
-      setValue('description', currentService.description || '');
-      setValue('location', currentService.location || '');
+    if (service) {
+      setValue('title', service.title);
+      setValue('slug', service.slug);
+      setValue('duration', service.duration);
+      setValue('price', service.price);
+      setValue('badgeColor', service.badgeColor);
+      setValue('description', service.description || '');
+      setValue('location', service.location || '');
     }
-  }, [slug, setValue]);
+  }, [slug, setValue, service]);
 
   const onSubmit = async (data: ServiceDetailsFormData) => {
     try {
@@ -148,7 +146,7 @@ export default function ServiceDetails({slug}: Props) {
               Cor do Serviço
             </label>
             <Select.Root
-              defaultValue={currentService?.badgeColor}
+              value={service?.badgeColor}
               onValueChange={(value) =>
                 setValue('badgeColor', value as ServiceBadgeColor)
               }
