@@ -3,7 +3,6 @@
 import { Root as Button } from '@/components/align-ui/ui/button';
 import { signInWithEmailPassword } from '@/components/auth/auth-actions';
 import RoundedIconWrapper from '@/components/RoundedIconWrapper';
-import { useSignUp } from '@/contexts/SignUpContext';
 import { useTRPC } from '@/utils/trpc';
 import { RiCheckboxCircleFill, RiCloseCircleFill } from '@remixicon/react';
 import { useMutation } from '@tanstack/react-query';
@@ -14,7 +13,6 @@ import { Suspense, useEffect, useRef, useState } from 'react';
 
 const VerifyEmailContent = () => {
   const trpc = useTRPC();
-      const {setStep} = useSignUp();
   const t = useTranslations('VerifyEmailPage');
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -25,7 +23,7 @@ const VerifyEmailContent = () => {
   const email = searchParams.get('email');
   const redirectTo = searchParams.get('redirect') || '/';
 
-  const verifyEmail = useMutation(trpc.verifyEmail.mutationOptions({
+  const verifyEmail = useMutation(trpc.auth.verifyEmail.mutationOptions({
     onSuccess: async (data) => {
       if (data.loginToken) {
         try {

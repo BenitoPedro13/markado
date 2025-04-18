@@ -26,7 +26,7 @@ import {
 } from 'react';
 
 const PasswordForm = () => {
-  const {form, setStep, nextStep} = useSignUp();
+  const {forms, setStep, nextStep} = useSignUp();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get('redirect') || '/';
   const t = useTranslations('SignUpPage.PasswordForm');
@@ -35,17 +35,17 @@ const PasswordForm = () => {
   const router = useRouter();
   const trpc = useTRPC();
 
-  const password = form.watch('password');
-  const confirmPassword = form.watch('confirmPassword');
-  const email = form.watch('email');
+  const password = forms.password.watch('password');
+  const confirmPassword = forms.password.watch('confirmPassword');
+  const email = forms.email.watch('email');
   const passwordsMatch = password === confirmPassword;
 
   const sendVerificationEmailMutation = useMutation(
-    trpc.sendVerificationEmail.mutationOptions({
+    trpc.auth.sendVerificationEmail.mutationOptions({
       onSuccess: () => {
         // Redirect to check-email page
         // router.push(`/check-email?email=${encodeURIComponent(email)}`);
-        nextStep();
+        // nextStep();
       },
       onError: () => {
         setError('Failed to send verification email. Please try again.');
@@ -66,7 +66,8 @@ const PasswordForm = () => {
       await signUpWithEmailPassword(email, password);
 
       // Send verification email
-      sendVerificationEmailMutation.mutate({email});
+      // sendVerificationEmailMutation.mutate({email});
+        nextStep();
 
      
     } catch (error) {
@@ -199,7 +200,7 @@ const PasswordForm = () => {
             <Input.Input
               type="password"
               placeholder="• • • • • • • • • • "
-              {...form.register('password')}
+              {...forms.password.register('password')}
             />
           </Input.Root>
         </div>
@@ -213,7 +214,7 @@ const PasswordForm = () => {
             <Input.Input
               type="password"
               placeholder="• • • • • • • • • • "
-              {...form.register('confirmPassword')}
+              {...forms.password.register('confirmPassword')}
             />
           </Input.Root>
           {(!error || confirmPassword.length > 0) && !passwordsMatch && (

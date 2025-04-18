@@ -1,8 +1,9 @@
+import { Context } from '../context';
 import { cityMapping as allCities } from "city-timezones";
 
 export type CityTimezones = Awaited<ReturnType<typeof cityTimezonesHandler>>;
 
-export const cityTimezonesHandler = async () => {
+export async function cityTimezonesHandler(ctx: Context) {
   /**
    * Filter out all cities that have the same "city" key and only use the one with the highest population.
    * This way we return a new array of cities without running the risk of having more than one city
@@ -26,6 +27,4 @@ export const cityTimezonesHandler = async () => {
   });
 
   return uniqueCities;
-};
-
-export default cityTimezonesHandler; 
+} 

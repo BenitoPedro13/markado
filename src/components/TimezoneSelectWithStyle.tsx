@@ -6,8 +6,7 @@ import {RiGlobalLine, RiInformationFill} from '@remixicon/react';
 import * as Select from '@/components/align-ui/ui/select';
 import * as Hint from '@/components/align-ui/ui/hint';
 import {cn} from '@/utils/cn';
-import {useTRPC} from '@/utils/trpc';
-import {useQuery} from '@tanstack/react-query';
+
 import type {Timezones} from '@/lib/timezone';
 
 const SELECT_SEARCH_DATA: Timezones = [
@@ -53,16 +52,9 @@ export function TimezoneSelectWithStyle({
   isLoading = false,
   autoDetect = true
 }: TimezoneSelectWithStyleProps) {
-  const trpc = useTRPC();
-  const {data = [], isPending} = useQuery(
-    trpc.cityTimezones.queryOptions(undefined, {
-      trpc: {
-        context: {
-          skipBatch: true
-        }
-      }
-    })
-  );
+  // Use the predefined timezone data instead of fetching from the server
+  const data = SELECT_SEARCH_DATA;
+  const isPending = false;
 
   const {options, parseTimezone} = useTimezoneSelect({labelStyle});
   const [currentTime, setCurrentTime] = useState<string>('');
@@ -122,7 +114,6 @@ export function TimezoneSelectWithStyle({
         try {
           // Get the user's timezone
           const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-          console.log('Detected timezone:', userTimezone);
           
           // Set the detected timezone
           setSelectedTimezone(userTimezone);
@@ -172,15 +163,6 @@ export function TimezoneSelectWithStyle({
     return () => clearInterval(intervalId);
   }, [selectedTimezone]);
 
-  // Debug logs
-  useEffect(() => {
-    console.log('Component state:', {
-      isDetecting,
-      selectedTimezone,
-      value
-    });
-  }, [isDetecting, selectedTimezone, value]);
-
   return (
     <div className="flex flex-col gap-1">
       <Select.Root
@@ -213,15 +195,14 @@ export function TimezoneSelectWithStyle({
           )}
         </Select.Content>
       </Select.Root>
-      
       {selectedTimezone && currentTime && (
-        <Hint.Root>
-          <Hint.Icon as={RiInformationFill} />
-          Hora atual: {currentTime}
-        </Hint.Root>
+        <div className="text-xs text-text-sub-600">
+          Current time: {currentTime}
+        </div>
       )}
     </div>
   );
 }
 
 export default TimezoneSelectWithStyle;
+

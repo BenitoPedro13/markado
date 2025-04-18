@@ -8,7 +8,7 @@ import SignOut from '@/components/auth/sign-out'
 
 export default function UserProfile() {
   const trpc = useTRPC();
-  const { data: session, isLoading, error } = useQuery(trpc.getSession.queryOptions());
+  const { data: session, isLoading, error } = useQuery(trpc.auth.getSession.queryOptions());
 
   if (isLoading) {
     return <div>Loading session...</div>;
