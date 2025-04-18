@@ -44,7 +44,7 @@ export default function ServiceDetails({slug}: Props) {
   const {register, handleSubmit, watch, setValue} =
     useForm<ServiceDetailsFormData>();
   const description = watch('description') || '';
-  const service = services.find(s => s.slug === slug);
+  const service = services.find((s) => s.slug === slug);
 
   // Carrega os dados do serviço atual
   useEffect(() => {

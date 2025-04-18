@@ -27,7 +27,7 @@ import { ServicesProps } from '@/data/services';
 type ServiceProps = Pick<ServicesProps, 'title' | 'slug' | 'duration' | 'price' | 'status' | 'badgeColor'>;
 
 function Service({title, slug, duration, price, status, badgeColor}: ServiceProps) {
-  const {updateServiceStatus, deleteService} = useServices();
+  const {updateServiceStatus} = useServices();
   const [isEnabled, setIsEnabled] = useState(status === 'active');
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const router = useRouter();
@@ -43,7 +43,8 @@ function Service({title, slug, duration, price, status, badgeColor}: ServiceProp
   };
 
   const handleDeleteService = () => {
-    deleteService(slug);
+    // Implementar a lógica de exclusão aqui
+    console.log('Deletando serviço:', slug);
     setIsDeleteModalOpen(false);
   };
 
@@ -71,14 +72,14 @@ function Service({title, slug, duration, price, status, badgeColor}: ServiceProp
         {/* Leading */}
         <Link
           href={`services/${slug}`}
-          className="w-full"
+          className="w-full cursor-pointer"
         >
           <div className="w-full flex flex-col gap-2">
             <div className="flex gap-2  items-center">
               <span className="text-paragraph-lg text-text-strong-950">
                 {title}
               </span>
-              <span className="text-paragraph-sm text-text-sub-600">{slug}</span>
+              <span className="text-paragraph-sm text-text-sub-600">/{slug}</span>
             </div>
             <div className="flex gap-2 items-center">
               <Badge.Root variant="light" color={getBadgeColor()} size="medium">
@@ -93,8 +94,9 @@ function Service({title, slug, duration, price, status, badgeColor}: ServiceProp
             </div>
           </div>
         </Link>
+
         {/* Trailing */}
-        <div className="flex gap-2 items-center">
+        <div className="flex gap-2 items-center" onClick={(e) => e.stopPropagation()}>
           <Switch.Root
             checked={isEnabled}
             onCheckedChange={handleSwitchChange}
