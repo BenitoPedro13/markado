@@ -168,14 +168,17 @@ function Header({
           <FancyButton.Root
             variant="neutral"
             size='small'
-            onClick={() =>
+            onClick={() => {
+              if ((window as any).submitServiceForm) {
+                (window as any).submitServiceForm();
+              }
               notification({
                 title: 'Alterações salvas!',
                 description: 'Seus updates foram salvos com sucesso.',
                 variant: 'stroke',
                 status: 'success'
-              })
-            }
+              });
+            }}
           >
             <FancyButton.Icon as={RiSaveFill} />
             Salvar

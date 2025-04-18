@@ -1,16 +1,16 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
-import { useSearchParams, useRouter } from 'next/navigation';
-import { useEffect, useState, useRef, Suspense } from 'react';
-import { useTRPC } from '@/utils/trpc';
-import RoundedIconWrapper from '@/components/RoundedIconWrapper';
-import { RiCheckboxCircleFill, RiCloseCircleFill } from '@remixicon/react';
 import { Root as Button } from '@/components/align-ui/ui/button';
-import Link from 'next/link';
-import { useMutation } from '@tanstack/react-query';
 import { signInWithEmailPassword } from '@/components/auth/auth-actions';
-import { useSignUp } from '@/app/(auth)/sign-up/SignUpContext';
+import RoundedIconWrapper from '@/components/RoundedIconWrapper';
+import { useSignUp } from '@/contexts/SignUpContext';
+import { useTRPC } from '@/utils/trpc';
+import { RiCheckboxCircleFill, RiCloseCircleFill } from '@remixicon/react';
+import { useMutation } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
+import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense, useEffect, useRef, useState } from 'react';
 
 const VerifyEmailContent = () => {
   const trpc = useTRPC();
