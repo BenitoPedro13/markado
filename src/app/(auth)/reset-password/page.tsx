@@ -16,10 +16,10 @@ import { useState, Suspense } from 'react';
 import { signInWithEmailPassword } from '@/components/auth/auth-actions';
 
 const resetPasswordSchema = z.object({
-  password: z.string().min(8),
-  confirmPassword: z.string().min(8)
+  password: z.string().min(8, 'ResetPasswordPage.min_password_length'),
+  confirmPassword: z.string().min(8, 'ResetPasswordPage.min_password_length')
 }).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
+  message: 'ResetPasswordPage.passwords_do_not_match',
   path: ["confirmPassword"],
 });
 
@@ -67,6 +67,14 @@ function ResetPasswordContent() {
       setIsLoading(false);
     }
   }));
+
+  // Translate validation messages
+  const getTranslatedError = (error: any) => {
+    if (error?.message) {
+      return t(error.message);
+    }
+    return error?.message;
+  };
 
   const onSubmit = async (data: ResetPasswordFormData) => {
     if (!token || !email) {
@@ -138,7 +146,7 @@ function ResetPasswordContent() {
             />
           </Input.Root>
           {form.formState.errors.password && (
-            <span className="text-red-500 text-sm">{form.formState.errors.password.message}</span>
+            <span className="text-red-500 text-sm">{getTranslatedError(form.formState.errors.password)}</span>
           )}
         </div>
 
@@ -156,7 +164,7 @@ function ResetPasswordContent() {
             />
           </Input.Root>
           {form.formState.errors.confirmPassword && (
-            <span className="text-red-500 text-sm">{form.formState.errors.confirmPassword.message}</span>
+            <span className="text-red-500 text-sm">{getTranslatedError(form.formState.errors.confirmPassword)}</span>
           )}
         </div>
         

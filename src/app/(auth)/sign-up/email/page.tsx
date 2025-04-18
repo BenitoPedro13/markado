@@ -13,8 +13,8 @@ import { useSignUp } from '@/contexts/SignUpContext';
 import { RiUserAddFill } from '@remixicon/react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { FormEvent, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { FormEvent } from 'react';
 
 const EmailForm = () => {
   const {forms, nextStep} = useSignUp();
@@ -23,15 +23,18 @@ const EmailForm = () => {
 
   const t = useTranslations('SignUpPage.EmailForm');
 
-  const [agree, setAgree] = useState(false);
-
-  // Get the email value from the form
-  const email = forms.email.watch('email');
-
-  const router = useRouter();
+  const agree = forms.email.watch('agree');
+  const setAgree = (value: boolean) => forms.email.setValue('agree', value);
 
   const submit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (!agree) {
+      forms.email.setError('agree', {
+        message: t('must_agree_to_terms')
+      });
+      return;
+    }
 
     nextStep();
   };
@@ -39,6 +42,14 @@ const EmailForm = () => {
   const handleGoogleSignIn = async () => {
     // Pass the redirect URL to the sign-in function
     await signInWithGoogle(redirectTo);
+  };
+
+  // Translate validation messages
+  const getTranslatedError = (error: any) => {
+    if (error?.message === 'must_agree_to_terms') {
+      return t('must_agree_to_terms');
+    }
+    return error?.message;
   };
 
   return (
@@ -93,7 +104,7 @@ const EmailForm = () => {
         <div className="flex gap-2">
           <Checkbox
             checked={agree}
-            required
+            // required
             onCheckedChange={(value) => setAgree(value.valueOf() as boolean)}
           />
           <p className="text-label-sm text-text-sub-600">
@@ -111,6 +122,11 @@ const EmailForm = () => {
             })}
           </p>
         </div>
+        {forms.email.formState.errors.agree && (
+          <span className="text-paragraph-xs text-red-500">
+            {getTranslatedError(forms.email.formState.errors.agree)}
+          </span>
+        )}
       </div>
 
       <Button
@@ -118,7 +134,6 @@ const EmailForm = () => {
         variant={'neutral'}
         mode="filled"
         type="submit"
-        // disabled={!agree}
       >
         <span className="text-label-sm">{t('start')}</span>
       </Button>

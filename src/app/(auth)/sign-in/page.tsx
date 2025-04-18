@@ -22,8 +22,8 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 const signInSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(8),
+  email: z.string().email('SignInForm.invalid_email'),
+  password: z.string().min(8, 'SignInForm.min_password_length'),
 });
 
 type SignInFormData = z.infer<typeof signInSchema>;
@@ -41,6 +41,14 @@ const SignInForm = () => {
       password: '',
     },
   });
+
+  // Translate validation messages
+  const getTranslatedError = (error: any) => {
+    if (error?.message) {
+      return t(error.message);
+    }
+    return error?.message;
+  };
 
   const onSubmit = async (data: SignInFormData) => {
     await signInWithEmail(data.email, data.password, redirectTo);
@@ -96,7 +104,7 @@ const SignInForm = () => {
             />
           </Input.Root>
           {form.formState.errors.email && (
-            <span className="text-red-500 text-sm">{form.formState.errors.email.message}</span>
+            <span className="text-red-500 text-sm">{getTranslatedError(form.formState.errors.email)}</span>
           )}
         </div>
         <div className="flex flex-col gap-1">
@@ -122,7 +130,7 @@ const SignInForm = () => {
             />
           </Input.Root>
           {form.formState.errors.password && (
-            <span className="text-red-500 text-sm">{form.formState.errors.password.message}</span>
+            <span className="text-red-500 text-sm">{getTranslatedError(form.formState.errors.password)}</span>
           )}
         </div>
         
