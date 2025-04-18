@@ -2,7 +2,7 @@
 
 export default function AuthSkeleton() {
   return (
-    <div className="flex justify-center my-auto">
+    <div className="flex justify-center my-auto w-full">
       <div className="flex flex-col gap-6 justify-center items-center max-w-[392px] w-full">
         <div className="flex flex-col justify-center items-center">
           <div className="rounded-icon-wrapper w-16 h-16 flex justify-center items-center mb-8">

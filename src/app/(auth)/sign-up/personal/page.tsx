@@ -9,16 +9,25 @@ import { TimezoneSelectWithStyle } from '@/components/TimezoneSelectWithStyle';
 import { useSignUp } from '@/contexts/SignUpContext';
 import { RiAccountPinBoxFill } from '@remixicon/react';
 import { useTranslations } from 'next-intl';
-import { FormEvent } from 'react';
+import { FormEvent, useEffect } from 'react';
 
 const PersonalForm = () => {
-  const {forms, nextStep} = useSignUp();
+  const { forms, nextStep, queries } = useSignUp();
+  const { user } = queries;
 
   const t = useTranslations('SignUpPage.PersonalForm');
 
+  useEffect(() => {
+    if (user.data) {
+      // Prefill form with user data if available
+      forms.personal.setValue('name', user.data.name || '');
+      forms.personal.setValue('username', user.data.username || '');
+      forms.personal.setValue('timeZone', user.data.timeZone || '');
+    }
+  }, [user.data, forms.personal]);
+
   const submit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     nextStep();
   };
 
@@ -74,7 +83,6 @@ const PersonalForm = () => {
         </div>
         <div className="flex flex-col gap-1">
           <Label>{t('time_zone')}</Label>
-          {/* <TimeZoneSelectComponent /> */}
           <TimezoneSelectWithStyle
             value={timeZone}
             onChange={(value) => forms.personal.setValue('timeZone', value)}
