@@ -9,7 +9,7 @@ import {cn} from '@/utils/cn';
 import {useTRPC} from '@/utils/trpc';
 import {useQuery} from '@tanstack/react-query';
 import {
-  filterBySearchText,
+  // filterBySearchText,
   addTimezonesToDropdown,
   handleOptionLabel
 } from '@/lib/timezone';
@@ -68,8 +68,9 @@ export function TimezoneSelectWithStyle({
   );
 
   const {options, parseTimezone} = useTimezoneSelect({labelStyle});
-  const [searchText, setSearchText] = useState('');
-  const [additionalTimezones, setAdditionalTimezones] = useState<Timezones>([]);
+  // Comment out search-related state
+  // const [searchText, setSearchText] = useState('');
+  // const [additionalTimezones, setAdditionalTimezones] = useState<Timezones>([]);
 
   // Combine data from API with predefined options - memoize to prevent recalculation
   const allData = useMemo(() => [
@@ -97,6 +98,18 @@ export function TimezoneSelectWithStyle({
     }
   }, [onChange]);
 
+  // Create a map to track unique timezone values to prevent duplicates
+  const uniqueOptions = useMemo(() => {
+    const seen = new Set<string>();
+    return options.filter(option => {
+      if (seen.has(option.value)) {
+        return false;
+      }
+      seen.add(option.value);
+      return true;
+    });
+  }, [options]);
+
   return (
     <>
       <Select.Root
@@ -121,7 +134,7 @@ export function TimezoneSelectWithStyle({
               Loading timezones...
             </div>
           ) : (
-            options.map((option) => (
+            uniqueOptions.map((option) => (
               <Select.Item key={option.value} value={option.value}>
                 {option.label}
               </Select.Item>
