@@ -16,6 +16,7 @@ import {useTransition} from 'react';
 import {PropsWithChildren} from 'react';
 import {signOut} from '../auth/auth-actions';
 import {useSessionStore} from '@/providers/session-store-provider';
+import {useThemeStore} from '@/providers/theme-store-provider';
 import SidebarFooterSkeleton from '@/components/navigation/SidebarFooterSkeleton';
 function CustomVerifiedIconSVG(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -42,7 +43,6 @@ function CustomVerifiedIconSVG(props: React.SVGProps<SVGSVGElement>) {
 }
 
 export function ProfileDropdown({children}: PropsWithChildren) {
-  const [isDarkMode, setIsDarkMode] = React.useState(false);
   const [isPending, startTransition] = useTransition();
 
   // Add react-hook-form
@@ -50,6 +50,10 @@ export function ProfileDropdown({children}: PropsWithChildren) {
 
   const user = useSessionStore((state) => state.user);
   const isLoading = useSessionStore((state) => state.isLoading);
+  
+  // Use the theme store instead of local state
+  const isDarkMode = useThemeStore((state) => state.isDarkMode);
+  const toggleDarkMode = useThemeStore((state) => state.toggleDarkMode);
 
   if (isLoading) {
     return <SidebarFooterSkeleton />;
@@ -100,7 +104,7 @@ export function ProfileDropdown({children}: PropsWithChildren) {
         <Dropdown.Item
           onSelect={(e) => {
             e.preventDefault();
-            setIsDarkMode((p) => !p);
+            toggleDarkMode();
           }}
         >
           <Dropdown.ItemIcon as={RiMoonLine} />

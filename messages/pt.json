@@ -74,6 +74,14 @@
       "continue": "Continuar",
       "passwords_do_not_match": "As senhas não coincidem",
       "creating_account": "Criando conta..."
+    },
+    "PersonalForm": {
+      "personal_information": "Informações Pessoais",
+      "provide_the_essential_informations": "Forneça as informações essenciais para continuar.",
+      "full_name": "Nome Completo",
+      "username": "Nome de Usuário",
+      "time_zone": "Fuso Horário",
+      "continue": "Continuar"
     }
   },
   "VerifyEmailPage": {
