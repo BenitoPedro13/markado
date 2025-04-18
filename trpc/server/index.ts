@@ -6,6 +6,7 @@ import { auth } from '@/auth';
 import { sendVerificationEmail, sendPasswordResetEmail } from '@/lib/email';
 import crypto from 'crypto';
 import bcrypt from 'bcryptjs';
+import { cityTimezonesHandler } from './cityTimezones';
 
 export const appRouter = router({
   userList: publicProcedure.query(async () => {
@@ -328,6 +329,9 @@ export const appRouter = router({
       hasPassword: !!password,
       emailMd5: crypto.createHash('md5').update(user.email).digest('hex')
     };
+  }),
+  cityTimezones: publicProcedure.query(async () => {
+    return cityTimezonesHandler();
   })
 });
 
