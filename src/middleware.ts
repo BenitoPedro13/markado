@@ -19,6 +19,20 @@ const publicRoutes = [
   '/favicon.ico',
 ];
 
+// Define routes that don't require onboarding
+const noOnboardingRoutes = [
+  '/sign-up',
+  '/sign-in',
+  '/verify-email',
+  '/check-email',
+  '/password-recovery',
+  '/reset-password',
+  '/logout',
+  '/api',
+  '/_next',
+  '/favicon.ico',
+];
+
 function getLocale(request: NextRequest): string {
   // Check cookie first
   const cookieLocale = request.cookies.get('NEXT_LOCALE')?.value;
@@ -68,7 +82,17 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(signUpUrl);
   }
 
-  // User is authenticated, allow access
+  // Check if the route requires onboarding
+  const requiresOnboarding = !noOnboardingRoutes.some(route => pathname.startsWith(route));
+
+  // If the route requires onboarding and the user hasn't completed it, redirect to personal info
+  if (requiresOnboarding && !session.user.completedOnboarding) {
+    const personalUrl = new URL('/sign-up/personal', request.url);
+    personalUrl.searchParams.set('redirect', pathname);
+    return NextResponse.redirect(personalUrl);
+  }
+
+  // User is authenticated and has completed onboarding (or route doesn't require it), allow access
   return NextResponse.next();
 }
 
