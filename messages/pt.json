@@ -37,16 +37,18 @@
     "close": "Fechar"
   },
   "SignInForm": {
-    "welcome_again": "Seja bem-vindo(a) novamente",
-    "to_start": "Para começar, insira seu endereço de e-mail.",
-    "enter_with_your_google_account": "Entre com sua conta Google",
+    "welcome_again": "Bem-vindo de volta",
+    "to_start": "Para começar, digite seu endereço de e-mail.",
+    "enter_with_your_google_account": "Entrar com sua conta Google",
     "email": "E-mail",
     "password": "Senha",
-    "forgot_your_password": "Esqueceu a senha?",
+    "forgot_your_password": "Esqueceu sua senha?",
     "start": "Começar",
     "dont_have_an_account": "Não tem uma conta?",
     "create": "Criar",
-    "loading": "Carregando..."
+    "loading": "Carregando...",
+    "invalid_email": "Por favor, insira um endereço de e-mail válido",
+    "min_password_length": "A senha deve ter pelo menos 8 caracteres"
   },
   "SignInPage": {
     "markado": "Markado"
@@ -60,7 +62,10 @@
       "start": "Começar",
       "already_have_an_account": "Já tem uma conta?",
       "sign_in": "Entrar",
-      "sign_up_with_google": "Cadastre-se com sua conta Google"
+      "sign_up_with_google": "Cadastre-se com sua conta Google",
+      "must_agree_to_terms": "Você deve concordar com os Termos e Condições e Política de Privacidade para continuar",
+      "email_required": "E-mail é obrigatório",
+      "invalid_email": "Por favor, insira um endereço de e-mail válido"
     },
     "PasswordForm": {
       "create_password": "Criar Senha",
@@ -73,7 +78,8 @@
       "at_least_eight_characters": "Pelo menos 8 caracteres",
       "continue": "Continuar",
       "passwords_do_not_match": "As senhas não coincidem",
-      "creating_account": "Criando conta..."
+      "creating_account": "Criando conta...",
+      "min_length": "A senha deve ter pelo menos 8 caracteres"
     },
     "PersonalForm": {
       "personal_information": "Informações Pessoais",
@@ -81,7 +87,10 @@
       "full_name": "Nome Completo",
       "username": "Nome de Usuário",
       "time_zone": "Fuso Horário",
-      "continue": "Continuar"
+      "continue": "Continuar",
+      "name_required": "Nome é obrigatório",
+      "username_required": "Nome de usuário é obrigatório",
+      "timezone_required": "Fuso horário é obrigatório"
     },
     "EndingPage": {
       "all_set": "Tudo Pronto!",
@@ -110,7 +119,8 @@
     "enter_email_for_reset": "Digite seu endereço de e-mail e enviaremos um link para redefinir sua senha",
     "email": "E-mail",
     "sending": "Enviando...",
-    "send_reset_link": "Enviar Link de Redefinição"
+    "send_reset_link": "Enviar Link de Redefinição",
+    "invalid_email": "Por favor, insira um endereço de e-mail válido"
   },
   "ResetPasswordPage": {
     "reset_password": "Redefinir Senha",
@@ -119,6 +129,8 @@
     "confirm_password": "Confirmar Senha",
     "resetting": "Redefinindo...",
     "invalid_link": "Link de Redefinição Inválido",
-    "invalid_link_description": "Este link de redefinição de senha é inválido ou expirou. Por favor, solicite um novo."
+    "invalid_link_description": "Este link de redefinição de senha é inválido ou expirou. Por favor, solicite um novo.",
+    "min_password_length": "A senha deve ter pelo menos 8 caracteres",
+    "passwords_do_not_match": "As senhas não coincidem"
   }
 }
