@@ -20,7 +20,11 @@ import { type AppRouter } from '~/trpc/server';
 
 // Sign up email form schema
 const signUpEmailFormSchema = z.object({
-  email: z.string().nonempty('Email é obrigatório').email('Email inválido'),
+  email: z.string().nonempty('SignUpPage.EmailForm.email_required').email('SignUpPage.EmailForm.invalid_email'),
+  agree: z.boolean().refine((data) => data, {
+    message: 'SignUpPage.EmailForm.must_agree_to_terms',
+    path: ['agree']
+  })
 });
 
 // Sign up password form schema
@@ -28,26 +32,26 @@ const signUpPasswordFormSchema = z
   .object({
     password: z
       .string()
-      .min(8, 'A senha deve ter pelo menos 8 caracteres')
-      .regex(/[A-Z]/, 'A senha deve conter pelo menos uma letra maiúscula')
-      .regex(/[0-9]/, 'A senha deve conter pelo menos um número'),
+      .min(8, 'SignUpPage.PasswordForm.min_length')
+      .regex(/[A-Z]/, 'SignUpPage.PasswordForm.one_uppercase_letter')
+      .regex(/[0-9]/, 'SignUpPage.PasswordForm.at_least_one_number'),
     confirmPassword: z
       .string()
-      .min(8, 'A senha deve ter pelo menos 8 caracteres')
-      .regex(/[A-Z]/, 'A senha deve conter pelo menos uma letra maiúscula')
-      .regex(/[0-9]/, 'A senha deve conter pelo menos um número')
+      .min(8, 'SignUpPage.PasswordForm.min_length')
+      .regex(/[A-Z]/, 'SignUpPage.PasswordForm.one_uppercase_letter')
+      .regex(/[0-9]/, 'SignUpPage.PasswordForm.at_least_one_number')
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: 'As senhas não coincidem',
+    message: 'SignUpPage.PasswordForm.passwords_do_not_match',
     path: ['confirmPassword']
   });
 
 
 // Sign up personal form schema
 const signUpPersonalFormSchema = z.object({
-  name: z.string().min(1, 'O nome é obrigatório'),
-  username: z.string().min(1, 'O nome de usuário é obrigatório'),
-  timeZone: z.string().min(1, 'O fuso horário é obrigatório'),
+  name: z.string().min(1, 'SignUpPage.PersonalForm.name_required'),
+  username: z.string().min(1, 'SignUpPage.PersonalForm.username_required'),
+  timeZone: z.string().min(1, 'SignUpPage.PersonalForm.timezone_required'),
 });
 
 
@@ -91,7 +95,8 @@ type SignUpContextType = {
     password: UseFormReturn<SignUpPasswordFormData>;
     personal: UseFormReturn<SignUpPersonalFormData>;
   };
-
+  agree: boolean;
+  setAgree: Dispatch<SetStateAction<boolean>>;
   // Helper functions
   isAnyQueryLoading: () => boolean;
   hasAnyQueryError: () => boolean;
@@ -108,6 +113,7 @@ export function SignUpProvider({ children }: { children: React.ReactNode }) {
   // const profileQuery = useQuery(trpc.profile.queryOptions());
 
   const [step, setStep] = useState<SignUpStep>('/sign-up/email');
+  const [agree, setAgree] = useState(false);
 
   const emailForm = useForm<SignUpEmailFormData>({
     resolver: zodResolver(signUpEmailFormSchema),
@@ -185,6 +191,8 @@ export function SignUpProvider({ children }: { children: React.ReactNode }) {
     setStep,
     backStep,
     nextStep,
+    agree,
+    setAgree,
     // Helper functions
     isAnyQueryLoading: () => Object.values(value.queries).some(q => q.isLoading),
     hasAnyQueryError: () => Object.values(value.queries).some(q => q.error !== null)
