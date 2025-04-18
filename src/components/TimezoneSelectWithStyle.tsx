@@ -1,21 +1,14 @@
 'use client';
 
-import {useState, useMemo, useCallback, useEffect} from 'react';
-import type {ITimezoneOption, ITimezone} from 'react-timezone-select';
+import {useState, useMemo, useCallback, useEffect, useRef} from 'react';
 import {useTimezoneSelect} from 'react-timezone-select';
 import {RiGlobalLine, RiInformationFill} from '@remixicon/react';
 import * as Select from '@/components/align-ui/ui/select';
+import * as Hint from '@/components/align-ui/ui/hint';
 import {cn} from '@/utils/cn';
 import {useTRPC} from '@/utils/trpc';
 import {useQuery} from '@tanstack/react-query';
-import {
-  // filterBySearchText,
-  addTimezonesToDropdown,
-  handleOptionLabel
-} from '@/lib/timezone';
 import type {Timezones} from '@/lib/timezone';
-
-import * as Hint from '@/components/align-ui/ui/hint';
 
 const SELECT_SEARCH_DATA: Timezones = [
   {label: 'San Francisco', timezone: 'America/Los_Angeles'},
@@ -72,39 +65,29 @@ export function TimezoneSelectWithStyle({
   );
 
   const {options, parseTimezone} = useTimezoneSelect({labelStyle});
-  // Comment out search-related state
-  // const [searchText, setSearchText] = useState('');
-  // const [additionalTimezones, setAdditionalTimezones] = useState<Timezones>([]);
   const [currentTime, setCurrentTime] = useState<string>('');
-  const [detectedTimezone, setDetectedTimezone] = useState<string>('');
+  const [isDetecting, setIsDetecting] = useState(false);
+  const [selectedTimezone, setSelectedTimezone] = useState<string | undefined>(value);
 
-  // Combine data from API with predefined options - memoize to prevent recalculation
-  const allData = useMemo(
-    () => [
-      ...data.map(({city, timezone}) => ({label: city, timezone})),
-      ...SELECT_SEARCH_DATA
-    ],
-    [data]
-  );
 
   // Memoize the formatted timezone value to prevent recalculation on every render
   const formattedValue = useMemo(() => {
-    if (!value) return placeholder;
-
+    if (!selectedTimezone) return placeholder;
+    
     // Try to find a matching option from the predefined list
-    const matchingOption = options.find((opt) => opt.value === value);
+    const matchingOption = options.find((opt) => opt.value === selectedTimezone);
     if (matchingOption) return matchingOption.label;
-
+    
     // If not found in predefined list, format it manually
-    return value.replace(/_/g, ' ');
-  }, [value, options, placeholder]);
+    return selectedTimezone.replace(/_/g, ' ');
+  }, [selectedTimezone, options, placeholder]);
 
-  // Optimize the onChange handler with useCallback
+  // Handle value changes from the Select component
   const handleValueChange = useCallback(
-    (selectedValue: string) => {
+    (newValue: string) => {
+      setSelectedTimezone(newValue);
       if (onChange) {
-        // Directly use the selected value instead of parsing it again
-        onChange(selectedValue);
+        onChange(newValue);
       }
     },
     [onChange]
@@ -122,42 +105,60 @@ export function TimezoneSelectWithStyle({
     });
   }, [options]);
 
-  // Detect user's timezone on component mount
+  // Initialize with the provided value
   useEffect(() => {
-    if (autoDetect && !value) {
-      try {
-        // Get the user's timezone
-        const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        console.log('Detected timezone:', userTimezone);
-        setDetectedTimezone(userTimezone);
-
-        // If no value is provided, set the detected timezone
-        if (onChange) {
-          onChange(userTimezone);
-        }
-      } catch (error) {
-        console.error('Error detecting timezone:', error);
-      }
+    if (value) {
+      setSelectedTimezone(value);
     }
-  }, [autoDetect, value, onChange]);
+  }, [value]);
+
+  // Detect user's timezone on component mount - only once
+  useEffect(() => {
+    if (autoDetect && !selectedTimezone) {
+      setIsDetecting(true);
+      
+      // Simulate a brief loading state
+      const timer = setTimeout(() => {
+        try {
+          // Get the user's timezone
+          const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+          console.log('Detected timezone:', userTimezone);
+          
+          // Set the detected timezone
+          setSelectedTimezone(userTimezone);
+          
+          // Notify parent component
+          if (onChange) {
+            onChange(userTimezone);
+          }
+        } catch (error) {
+          console.error('Error detecting timezone:', error);
+        } finally {
+          setIsDetecting(false);
+        }
+      }, 1000); // 1 second delay
+      
+      return () => clearTimeout(timer);
+    }
+  }, [autoDetect, selectedTimezone, onChange]);
 
   // Update the current time every second
   useEffect(() => {
+    if (!selectedTimezone) return;
+    
     const updateTime = () => {
-      if (value) {
-        try {
-          const now = new Date();
-          const timeString = now.toLocaleTimeString('en-US', {
-            timeZone: value,
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: true
-          });
-          setCurrentTime(timeString);
-        } catch (error) {
-          console.error('Error formatting time:', error);
-          setCurrentTime('');
-        }
+      try {
+        const now = new Date();
+        const timeString = now.toLocaleTimeString('en-US', {
+          timeZone: selectedTimezone,
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: true
+        });
+        setCurrentTime(timeString);
+      } catch (error) {
+        console.error('Error formatting time:', error);
+        setCurrentTime('');
       }
     };
 
@@ -169,30 +170,39 @@ export function TimezoneSelectWithStyle({
 
     // Clean up interval on unmount
     return () => clearInterval(intervalId);
-  }, [value]);
+  }, [selectedTimezone]);
+
+  // Debug logs
+  useEffect(() => {
+    console.log('Component state:', {
+      isDetecting,
+      selectedTimezone,
+      value
+    });
+  }, [isDetecting, selectedTimezone, value]);
 
   return (
     <div className="flex flex-col gap-1">
       <Select.Root
         onValueChange={handleValueChange}
-        disabled={disabled || isLoading}
-        value={value}
+        disabled={disabled || isLoading || isDetecting}
+        value={selectedTimezone}
       >
         <Select.Trigger
           className={cn(
             'flex items-center gap-1 border-none w-full',
-            disabled && 'opacity-50 cursor-not-allowed'
+            (disabled || isDetecting) && 'opacity-50 cursor-not-allowed'
           )}
         >
           <RiGlobalLine size={20} color="var(--text-soft-400)" />
           <span className="text-text-sub-600 text-paragraph-sm">
-            {formattedValue}
+            {isDetecting ? 'Detecting timezone...' : formattedValue}
           </span>
         </Select.Trigger>
         <Select.Content>
-          {isLoading || isPending ? (
+          {isLoading || isPending || isDetecting ? (
             <div className="p-2 text-center text-text-sub-600">
-              Loading timezones...
+              {isDetecting ? 'Detecting your timezone...' : 'Loading timezones...'}
             </div>
           ) : (
             uniqueOptions.map((option) => (
@@ -203,8 +213,8 @@ export function TimezoneSelectWithStyle({
           )}
         </Select.Content>
       </Select.Root>
-
-      {value && currentTime && (
+      
+      {selectedTimezone && currentTime && (
         <Hint.Root>
           <Hint.Icon as={RiInformationFill} />
           Hora atual: {currentTime}
