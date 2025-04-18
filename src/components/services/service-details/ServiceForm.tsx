@@ -1,8 +1,9 @@
 'use client';
 
-import * as Switch from '@/components/align-ui/ui/switch';
 import * as Button from '@/components/align-ui/ui/button';
 import { ServiceFormFields } from '@/types/service';
+import RequiredFormItem from './RequiredFormItem';
+import OptionalFormItem from './OptionalFormItem';
 
 type Props = {
   slug: string;
@@ -23,50 +24,28 @@ export default function ServiceForm({ slug }: Props) {
             Personalize as perguntas feitas na página de reservas
           </div>
         </div>
-        <div className="rounded-lg flex flex-col gap-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="font-medium">Nome</h3>
-              <p className="text-sm text-text-sub-600">
-                Solicitar o nome do cliente
-              </p>
-            </div>
-            <Switch.Root defaultChecked />
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="font-medium">E-mail</h3>
-              <p className="text-sm text-text-sub-600">
-                Solicitar o e-mail do cliente
-              </p>
-            </div>
-            <Switch.Root defaultChecked />
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="font-medium">Telefone</h3>
-              <p className="text-sm text-text-sub-600">
-                Solicitar o telefone do cliente
-              </p>
-            </div>
-            <Switch.Root defaultChecked />
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="font-medium">Participantes Adicionais</h3>
-              <p className="text-sm text-text-sub-600">
-                Permitir adicionar e-mails de participantes adicionais
-              </p>
-            </div>
-            <Switch.Root />
-          </div>
+        <div className="rounded-lg flex flex-col border border-stroke-soft-200">
+          <RequiredFormItem 
+            title="Nome"
+            description="Digite o seu nome"
+          />
+          <RequiredFormItem 
+            title="E-mail"
+            description="Solicitar o e-mail do cliente"
+          />
+          <OptionalFormItem 
+            title="Telefone"
+            description="Solicitar o telefone do cliente"
+            defaultChecked={true}
+          />
+          <OptionalFormItem 
+            title="Participantes Adicionais"
+            description="Permitir adicionar e-mails de participantes adicionais"
+            defaultChecked={false}
+            showDivider={false}
+          />
         </div>
       </div>
-
-     
     </form>
   );
 } 
