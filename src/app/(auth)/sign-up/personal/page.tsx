@@ -15,7 +15,7 @@ import { useMutation } from '@tanstack/react-query';
 
 const PersonalForm = () => {
   const trpc = useTRPC();
-  const updateProfileMutation = useMutation(trpc.updateProfile.mutationOptions());
+  const updateProfileMutation = useMutation(trpc.profile.update.mutationOptions());
   const { forms, nextStep, queries } = useSignUp();
   const { user } = queries;
   const [hasUserTimezone, setHasUserTimezone] = useState(false);

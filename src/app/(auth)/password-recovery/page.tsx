@@ -35,7 +35,7 @@ export default function PasswordRecoveryPage() {
     }
   });
 
-  const requestPasswordReset = useMutation(trpc.requestPasswordReset.mutationOptions({
+  const requestPasswordReset = useMutation(trpc.auth.requestPasswordReset.mutationOptions({
     onSuccess: () => {
       // Redirect to check-email page
       router.push(`/check-email?email=${encodeURIComponent(form.getValues('email'))}`);

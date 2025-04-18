@@ -7,12 +7,17 @@ import { ReactNode, useTransition, useEffect, useState } from 'react';
 import { useTRPC } from '@/utils/trpc';
 import { useMutation } from '@tanstack/react-query';
 import Cookies from 'js-cookie';
+import { type inferRouterInputs } from '@trpc/server';
+import { type AppRouter } from '~/trpc/server';
+import { TRPCClientErrorLike } from '@trpc/client';
 
 type Props = {
   children: ReactNode;
   defaultValue: string;
   label: string;
 };
+
+type UpdateLocaleInput = inferRouterInputs<AppRouter>['auth']['updateLocale'];
 
 const localeNames: Record<string, string> = {
   pt: 'PT-BR',
@@ -44,11 +49,11 @@ export default function LocaleSwitcherSelect({
     }
   }, []);
 
-  const { mutate: updateLocale } = useMutation(trpc.updateLocale.mutationOptions({
-    onSuccess: (_, variables) => {
+  const { mutate: updateLocale } = useMutation(trpc.auth.updateLocale.mutationOptions({
+    onSuccess: (_result, variables: UpdateLocaleInput) => {
       setLocaleCookie(variables.locale);
     },
-    onError: (error, variables) => {
+    onError: (error: TRPCClientErrorLike<AppRouter>, variables: UpdateLocaleInput) => {
       console.log('updateLocale error', error);
       // If the error is "Not authenticated", still set the cookie with the attempted locale
       if (error.message === 'Not authenticated') {
@@ -66,8 +71,9 @@ export default function LocaleSwitcherSelect({
 
   const handleLocaleChange = (newLocale: string) => {
     startTransition(() => {
-      setCurrentLocale(newLocale.toUpperCase());
-      updateLocale({ locale: newLocale.toUpperCase() as 'PT' | 'EN' });
+      const locale = newLocale.toUpperCase() as UpdateLocaleInput['locale'];
+      setCurrentLocale(locale);
+      updateLocale({ locale });
     });
   };
 

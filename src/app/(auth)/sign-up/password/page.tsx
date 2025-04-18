@@ -41,7 +41,7 @@ const PasswordForm = () => {
   const passwordsMatch = password === confirmPassword;
 
   const sendVerificationEmailMutation = useMutation(
-    trpc.sendVerificationEmail.mutationOptions({
+    trpc.auth.sendVerificationEmail.mutationOptions({
       onSuccess: () => {
         // Redirect to check-email page
         // router.push(`/check-email?email=${encodeURIComponent(email)}`);

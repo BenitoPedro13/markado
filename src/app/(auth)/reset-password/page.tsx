@@ -14,7 +14,8 @@ import RoundedIconWrapper from '@/components/RoundedIconWrapper';
 import { RiLockFill } from '@remixicon/react';
 import { useState, Suspense } from 'react';
 import { signInWithEmailPassword } from '@/components/auth/auth-actions';
-
+import { AppRouter } from '~/trpc/server';
+import { TRPCClientErrorLike } from '@trpc/client';
 const resetPasswordSchema = z.object({
   password: z.string().min(8, 'ResetPasswordPage.min_password_length'),
   confirmPassword: z.string().min(8, 'ResetPasswordPage.min_password_length')
@@ -46,7 +47,7 @@ function ResetPasswordContent() {
     }
   });
 
-  const resetPassword = useMutation(trpc.resetPassword.mutationOptions({
+  const resetPassword = useMutation(trpc.auth.resetPassword.mutationOptions({
     onSuccess: async (data) => {
       if (data.loginToken) {
         try {
@@ -62,7 +63,7 @@ function ResetPasswordContent() {
         router.push('/sign-in?message=password_reset_success');
       }
     },
-    onError: (error) => {
+    onError: (error: TRPCClientErrorLike<AppRouter>) => {
       setError(error.message);
       setIsLoading(false);
     }

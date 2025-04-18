@@ -11,14 +11,14 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
 
 const EndingPage = () => {
-  const { form } = useSignUp();
+  // const { forms, nextStep, queries } = useSignUp();
   const t = useTranslations('SignUpPage.EndingPage');
   const searchParams = useSearchParams();
   const router = useRouter();
   const trpc = useTRPC();
   const redirectTo = searchParams.get('redirect') || '/';
 
-  const completeOnboardingMutation = useMutation(trpc.completeOnboarding.mutationOptions({
+  const completeOnboardingMutation = useMutation(trpc.profile.completeOnboarding.mutationOptions({
     onSuccess: () => {
       // Redirect to the original destination or home
       router.push(redirectTo);
