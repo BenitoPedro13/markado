@@ -399,35 +399,6 @@ const PersonalForm = () => {
 
   const timeZone = form.watch('timeZone');
 
-  const TimeZoneSelectComponent = () => {
-    const labelStyle = 'original';
-
-    const {options, parseTimezone} = useTimezoneSelect({labelStyle});
-
-    const onChange = (timezone: ITimezoneOption) => {
-      form.setValue('timeZone', timezone.value);
-    };
-
-    return (
-      <>
-        <Select.Root onValueChange={(e) => onChange(parseTimezone(e))}>
-          <Select.Trigger className="flex items-center gap-1 border-none">
-            <RiGlobalLine size={20} color="var(--text-soft-400)" />
-            <span className="text-text-sub-600 text-paragraph-sm">
-              {form.getValues().timeZone}
-            </span>
-          </Select.Trigger>
-          <Select.Content>
-            {options.map((option) => (
-              <Select.Item value={option.value}>{option.label}</Select.Item>
-            ))}
-          </Select.Content>
-        </Select.Root>
-
-      </>
-    );
-  };
-
   return (
     <form
       action=""
