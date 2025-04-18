@@ -120,6 +120,7 @@ export function SignUpProvider({ children }: { children: React.ReactNode }) {
     mode: 'onSubmit',
     defaultValues: {
       email: '',
+      agree: false,
     }
   });
 
