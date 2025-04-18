@@ -18,6 +18,7 @@ export default function ServicesList() {
               duration={service.duration}
               price={service.price}
               status={service.status}
+              badgeColor={service.badgeColor}
             />
             <Divider.Root />
           </div>

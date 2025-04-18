@@ -20,19 +20,15 @@ import * as Dropdown from '@/components/align-ui/ui/dropdown';
 import {useServices} from '@/contexts/ServicesContext';
 import {useRouter} from 'next/navigation';
 import Link from 'next/link';
+import { ServicesProps } from '@/data/services';
 
-type ServiceProps = {
-  title: string;
-  slug: string;
-  duration: number;
-  price: number;
-  status: 'active' | 'disabled';
-};
+type ServiceProps = Pick<ServicesProps, 'title' | 'slug' | 'duration' | 'price' | 'status' | 'badgeColor'>;
 
-function Service({title, slug, duration, price, status}: ServiceProps) {
+function Service({title, slug, duration, price, status, badgeColor}: ServiceProps) {
   const {updateServiceStatus} = useServices();
   const [isEnabled, setIsEnabled] = useState(status === 'active');
   const router = useRouter();
+  
   useEffect(() => {
     setIsEnabled(status === 'active');
   }, [status]);
@@ -42,6 +38,25 @@ function Service({title, slug, duration, price, status}: ServiceProps) {
     setIsEnabled(!isEnabled);
     updateServiceStatus(slug, newStatus);
   };
+
+  // Mapeia as cores do tema para as cores aceitas pelo Badge
+  const getBadgeColor = () => {
+    const colorMap = {
+      faded: 'gray',
+      information: 'blue',
+      warning: 'yellow',
+      error: 'red',
+      success: 'green',
+      away: 'orange',
+      feature: 'purple',
+      verified: 'sky',
+      highlighted: 'pink',
+      stable: 'teal'
+    } as const;
+
+    return colorMap[badgeColor];
+  };
+
   return (
     <Link
       href={`services/${slug}`}
@@ -57,7 +72,7 @@ function Service({title, slug, duration, price, status}: ServiceProps) {
             <span className="text-paragraph-sm text-text-sub-600">{slug}</span>
           </div>
           <div className="flex gap-2 items-center">
-            <Badge.Root variant="light" color="blue" size="medium">
+            <Badge.Root variant="light" color={getBadgeColor()} size="medium">
               <Badge.Icon as={RiTimeLine} />
               {duration > 60
                 ? `${Math.floor(duration / 60)}h ${duration % 60}m`

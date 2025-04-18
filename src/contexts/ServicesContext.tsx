@@ -2,19 +2,13 @@
 
 import { createContext, useContext, ReactNode, useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { services as initialServices } from '@/data/services';
+import { services as initialServices, ServicesProps } from '@/data/services';
 
 type SearchFormData = {
   search: string;
 };
 
-type Service = {
-  title: string;
-  slug: string;
-  duration: number;
-  price: number;
-  status: 'active' | 'disabled';
-};
+type Service = ServicesProps;
 
 type FilterType = 'all' | 'active' | 'disabled';
 

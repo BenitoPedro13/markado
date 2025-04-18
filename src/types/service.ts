@@ -18,6 +18,8 @@ export type ServiceAdvancedSettings = {
   collectPaymentUpfront: boolean;
 };
 
+export type ServiceBadgeColor = 'faded' | 'information' | 'warning' | 'error' | 'success' | 'away' | 'feature' | 'verified' | 'highlighted' | 'stable';
+
 export type Service = {
   title: string;
   description: string;
@@ -26,6 +28,7 @@ export type Service = {
   price: number;
   location: string;
   status: 'active' | 'disabled';
+  badgeColor: ServiceBadgeColor;
   availability: ServiceAvailability[];
   formFields: ServiceFormFields;
   advancedSettings: ServiceAdvancedSettings;
