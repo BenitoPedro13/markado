@@ -18,15 +18,28 @@ export type ServiceAdvancedSettings = {
   collectPaymentUpfront: boolean;
 };
 
-export type Service = {
+export type ServiceBadgeColor =
+  | 'faded'
+  | 'information'
+  | 'warning'
+  | 'error'
+  | 'success'
+  | 'away'
+  | 'feature'
+  | 'verified'
+  | 'highlighted'
+  | 'stable';
+
+export interface Service {
   title: string;
-  description: string;
+  description?: string;
   slug: string;
   duration: number;
   price: number;
-  location: string;
-  status: 'active' | 'disabled';
-  availability: ServiceAvailability[];
-  formFields: ServiceFormFields;
-  advancedSettings: ServiceAdvancedSettings;
-}; 
+  location?: string;
+  badgeColor: ServiceBadgeColor;
+  status?: 'active' | 'disabled';
+  availability?: ServiceAvailability[];
+  formFields?: ServiceFormFields;
+  advancedSettings?: ServiceAdvancedSettings;
+} 
