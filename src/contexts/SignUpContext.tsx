@@ -1,22 +1,22 @@
 'use client';
 
 import { useTRPC } from '@/utils/trpc';
-import {zodResolver} from '@hookform/resolvers/zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery } from '@tanstack/react-query';
 import { TRPCClientErrorLike } from '@trpc/client';
+import { type inferRouterOutputs } from '@trpc/server';
 import { DefaultErrorShape } from '@trpc/server/unstable-core-do-not-import';
+import { useRouter } from 'next/navigation';
 import {
   createContext,
   Dispatch,
   SetStateAction,
-  useState,
-  useContext
+  useContext,
+  useState
 } from 'react';
-import {useForm, UseFormReturn} from 'react-hook-form';
-import {z} from 'zod';
-import type {User} from '~/prisma/app/generated/prisma/client';
+import { useForm, UseFormReturn } from 'react-hook-form';
+import { z } from 'zod';
 import { type AppRouter } from '~/trpc/server';
-import { type inferRouterOutputs } from '@trpc/server';
 
 // Sign up form schema
 const signUpFormSchema = z
@@ -45,13 +45,12 @@ export type SignUpFormData = z.infer<typeof signUpFormSchema>;
 
 // Sign up context
 export type SignUpStep =
-  | 'EMAIL'
-  | 'PASSWORD'
-  | 'FUNCTION'
-  | 'PERSONAL'
-  | 'CONNECT'
-  | 'AVAILABILITY'
-  | 'ENDING';
+  | '/sign-up/email'
+  | '/sign-up/password'
+  | '/sign-up/personal'
+  | '/sign-up/connect'
+  | '/sign-up/availability'
+  | '/sign-up/ending';
 
 // Infer the output type of the me procedure
 type MeResponse = inferRouterOutputs<AppRouter>['me'];
@@ -73,6 +72,8 @@ type SignUpContextType = {
   };
   step: SignUpStep;
   setStep: Dispatch<SetStateAction<SignUpStep>>;
+  backStep: () => void;
+  nextStep: () => void;
   form: UseFormReturn<SignUpFormData>;
   // Helper functions
   isAnyQueryLoading: () => boolean;
@@ -84,11 +85,12 @@ const SignUpContext = createContext<SignUpContextType | null>(null);
 export function SignUpProvider({ children }: { children: React.ReactNode }) {
   const trpc = useTRPC();   
   const userQuery = useQuery(trpc.me.queryOptions());
-  
+  const router = useRouter();
+
   // You can add more queries here
   // const profileQuery = useQuery(trpc.profile.queryOptions());
 
-  const [step, setStep] = useState<SignUpStep>('EMAIL');
+  const [step, setStep] = useState<SignUpStep>('/sign-up/email');
 
   const form = useForm<SignUpFormData>({
     resolver: zodResolver(signUpFormSchema),
@@ -102,6 +104,32 @@ export function SignUpProvider({ children }: { children: React.ReactNode }) {
       timeZone: ''
     }
   });
+
+  const previousStepMap: Partial<Record<SignUpStep, SignUpStep>> = {
+    '/sign-up/password': '/sign-up/email',
+    '/sign-up/personal': '/sign-up/password',
+    '/sign-up/connect': '/sign-up/personal',
+    '/sign-up/availability': '/sign-up/connect',
+    '/sign-up/ending': '/sign-up/availability'
+  };
+
+  const nextStepMap: Partial<Record<SignUpStep, SignUpStep>> = {
+    '/sign-up/email': '/sign-up/password',
+    '/sign-up/password': '/sign-up/personal',
+    '/sign-up/personal': '/sign-up/connect',
+    '/sign-up/connect': '/sign-up/availability',
+    '/sign-up/availability': '/sign-up/ending',
+  };
+
+  const backStep = () => {
+    setStep(previousStepMap[step]!);
+    router.push(previousStepMap[step]!);
+  };
+
+  const nextStep = () => {
+    setStep(nextStepMap[step]!);
+    router.push(nextStepMap[step]!);
+  };
 
   const value = {
     queries: {
@@ -119,6 +147,8 @@ export function SignUpProvider({ children }: { children: React.ReactNode }) {
     },
     step,
     setStep,
+    backStep,
+    nextStep,
     form,
     // Helper functions
     isAnyQueryLoading: () => Object.values(value.queries).some(q => q.isLoading),
