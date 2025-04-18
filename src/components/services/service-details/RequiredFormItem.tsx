@@ -19,7 +19,7 @@ export default function RequiredFormItem({
             {title}
             <span className="text-red-500">*</span>
           </h3>
-          <p className="text-sm text-text-sub-600">{description}</p>
+          <p className="text-paragraph-sm text-text-sub-600">{description}</p>
         </div>
       </div>
       {showDivider && <Divider.Root />}
