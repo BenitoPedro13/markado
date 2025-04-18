@@ -397,6 +397,8 @@ const PersonalForm = () => {
     setStep('CONNECT');
   };
 
+  const timeZone = form.watch('timeZone');
+
   const TimeZoneSelectComponent = () => {
     const labelStyle = 'original';
 
@@ -478,7 +480,7 @@ const PersonalForm = () => {
           <Label>{t('time_zone')}</Label>
           {/* <TimeZoneSelectComponent /> */}
           <TimezoneSelectWithStyle
-            value={form.getValues().timeZone}
+            value={timeZone}
             onChange={(value) => form.setValue('timeZone', value)}
             placeholder="Choose your timezone"
           />
