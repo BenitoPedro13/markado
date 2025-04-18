@@ -15,7 +15,7 @@ import { RiLockFill } from '@remixicon/react';
 import { useState } from 'react';
 
 const passwordRecoverySchema = z.object({
-  email: z.string().email(),
+  email: z.string().email('PasswordRecoveryPage.invalid_email'),
 });
 
 type PasswordRecoveryFormData = z.infer<typeof passwordRecoverySchema>;
@@ -35,7 +35,7 @@ export default function PasswordRecoveryPage() {
     }
   });
 
-  const requestPasswordReset = useMutation(trpc.requestPasswordReset.mutationOptions({
+  const requestPasswordReset = useMutation(trpc.auth.requestPasswordReset.mutationOptions({
     onSuccess: () => {
       // Redirect to check-email page
       router.push(`/check-email?email=${encodeURIComponent(form.getValues('email'))}`);
@@ -45,6 +45,14 @@ export default function PasswordRecoveryPage() {
       setIsLoading(false);
     }
   }));
+
+  // Translate validation messages
+  const getTranslatedError = (error: any) => {
+    if (error?.message) {
+      return t(error.message);
+    }
+    return error?.message;
+  };
 
   const onSubmit = async (data: PasswordRecoveryFormData) => {
     setIsLoading(true);
@@ -89,7 +97,7 @@ export default function PasswordRecoveryPage() {
             />
           </Input.Root>
           {form.formState.errors.email && (
-            <span className="text-red-500 text-sm">{form.formState.errors.email.message}</span>
+            <span className="text-red-500 text-sm">{getTranslatedError(form.formState.errors.email)}</span>
           )}
         </div>
         

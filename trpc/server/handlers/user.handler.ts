@@ -1,0 +1,110 @@
+import { TRPCError } from '@trpc/server';
+import { Context } from '../context';
+import { ZUserInputSchema } from '../schemas/user.schema';
+import { hash } from 'bcryptjs';
+import crypto from 'crypto';
+
+export async function getUserHandler(ctx: Context) {
+  if (!ctx.session?.user) {
+    throw new TRPCError({
+      code: 'UNAUTHORIZED',
+      message: 'Not authenticated'
+    });
+  }
+
+  return ctx.prisma.user.findUnique({
+    where: { id: ctx.session.user.id },
+    include: {
+      password: true,
+      accounts: true,
+      sessions: true
+    }
+  });
+}
+
+export async function getFirstUserHandler(ctx: Context) {
+  const user = await ctx.prisma.user.findFirst();
+
+  if (!user) {
+    throw new TRPCError({
+      code: 'NOT_FOUND',
+      message: `No user found`
+    });
+  }
+
+  return user;
+}
+
+export async function createUserHandler(ctx: Context, input: typeof ZUserInputSchema._type) {
+  // Check if user already exists
+  const existingUser = await ctx.prisma.user.findUnique({
+    where: { email: input.email }
+  });
+
+  if (existingUser) {
+    throw new TRPCError({
+      code: 'CONFLICT',
+      message: 'User already exists'
+    });
+  }
+
+  // Hash the password
+  const hashedPassword = await hash(input.password, 10);
+
+  // Create the user
+  const user = await ctx.prisma.user.create({
+    data: {
+      email: input.email,
+      name: input.name,
+      password: {
+        create: {
+          hash: hashedPassword
+        }
+      }
+    }
+  });
+
+  return user;
+}
+
+export async function getUserListHandler(ctx: Context) {
+  return ctx.prisma.user.findMany();
+}
+
+export async function getMeHandler(ctx: Context) {
+  if (!ctx.session?.user) {
+    throw new TRPCError({
+      code: 'UNAUTHORIZED',
+      message: 'Not authenticated'
+    });
+  }
+
+  const user = await ctx.prisma.user.findUnique({
+    where: { id: ctx.session.user.id },
+    include: {
+      password: true,
+      accounts: {
+        select: {
+          provider: true,
+          providerAccountId: true,
+        }
+      }
+    }
+  });
+
+  if (!user) {
+    throw new TRPCError({
+      code: 'NOT_FOUND',
+      message: 'User not found'
+    });
+  }
+
+  // Remove sensitive information
+  const { password, ...userWithoutPassword } = user;
+
+  return {
+    ...userWithoutPassword,
+    hasPassword: !!password,
+    emailMd5: crypto.createHash('md5').update(user.email).digest('hex')
+  };
+} 

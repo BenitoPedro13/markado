@@ -13,7 +13,7 @@ import {useTRPC} from '@/utils/trpc';
 export function useRequireAuth() {
   const router = useRouter();
   const trpc = useTRPC();
-  const { data: session, isLoading, error } = useQuery(trpc.getSession.queryOptions());
+  const { data: session, isLoading, error } = useQuery(trpc.auth.getSession.queryOptions());
 
   useEffect(() => {
     // Only redirect if we're sure there's no session (not loading)

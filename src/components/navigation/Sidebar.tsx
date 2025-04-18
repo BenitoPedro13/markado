@@ -23,11 +23,8 @@ import * as CompactButton from '@/components/align-ui/ui/compact-button';
 import * as Divider from '@/components/align-ui/ui/divider';
 import SidebarFooter from './SidebarFooter';
 import Link from 'next/link';
-import Image from 'next/image';
-import logoMarkado from '~/public/images/logoMarkado.svg';
-import logo from '~/public/images/logo.svg';
 import {ProfileDropdown} from '@/components/navigation/ProfileDropdown';
-import {useSidebarStore} from '@/store/useSidebarStore';
+import {useSidebarStore} from '@/stores/sidebar-store';
 import Logo from './Logo';
 
 interface sidebarItem {

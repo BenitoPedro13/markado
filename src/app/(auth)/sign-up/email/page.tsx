@@ -13,25 +13,46 @@ import { useSignUp } from '@/contexts/SignUpContext';
 import { RiUserAddFill } from '@remixicon/react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { FormEvent, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { FormEvent } from 'react';
 
 const EmailForm = () => {
-  const {form, nextStep} = useSignUp();
+  const {forms, nextStep} = useSignUp();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get('redirect') || '/';
 
   const t = useTranslations('SignUpPage.EmailForm');
 
-  const [agree, setAgree] = useState(false);
+  const agree = forms.email.watch('agree');
+  const setAgree = (value: boolean) => forms.email.setValue('agree', value);
 
-  // Get the email value from the form
-  const email = form.watch('email');
-
-  const router = useRouter();
-
-  const submit = (e: FormEvent<HTMLFormElement>) => {
+  const submit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    // Validate the form using react-hook-form's handleSubmit
+    const isValid = await forms.email.trigger();
+    
+    if (!isValid) {
+      return;
+    }
+
+    // Get the current email value
+    const emailValue = forms.email.getValues('email');
+    
+    // Check if email is empty
+    if (!emailValue) {
+      forms.email.setError('email', {
+        message: 'SignUpPage.EmailForm.email_required'
+      });
+      return;
+    }
+
+    if (!agree) {
+      forms.email.setError('agree', {
+        message: 'SignUpPage.EmailForm.must_agree_to_terms'
+      });
+      return;
+    }
 
     nextStep();
   };
@@ -39,6 +60,20 @@ const EmailForm = () => {
   const handleGoogleSignIn = async () => {
     // Pass the redirect URL to the sign-in function
     await signInWithGoogle(redirectTo);
+  };
+
+  // Translate validation messages
+  const getTranslatedError = (error: any) => {
+    if (error?.message === 'SignUpPage.EmailForm.must_agree_to_terms') {
+      return t('must_agree_to_terms');
+    }
+    if (error?.message === 'SignUpPage.EmailForm.email_required') {
+      return t('email_required');
+    }
+    if (error?.message === 'SignUpPage.EmailForm.invalid_email') {
+      return t('invalid_email');
+    }
+    return error?.message;
   };
 
   return (
@@ -86,9 +121,14 @@ const EmailForm = () => {
               type="email"
               placeholder="hello@markado.co"
               required
-              {...form.register('email')}
+              {...forms.email.register('email')}
             />
           </Input.Root>
+          {forms.email.formState.errors.email && (
+            <span className="text-paragraph-xs text-red-500">
+              {getTranslatedError(forms.email.formState.errors.email)}
+            </span>
+          )}
         </div>
         <div className="flex gap-2">
           <Checkbox
@@ -111,6 +151,11 @@ const EmailForm = () => {
             })}
           </p>
         </div>
+        {forms.email.formState.errors.agree && (
+          <span className="text-paragraph-xs text-red-500">
+            {getTranslatedError(forms.email.formState.errors.agree)}
+          </span>
+        )}
       </div>
 
       <Button
@@ -118,7 +163,6 @@ const EmailForm = () => {
         variant={'neutral'}
         mode="filled"
         type="submit"
-        // disabled={!agree}
       >
         <span className="text-label-sm">{t('start')}</span>
       </Button>
