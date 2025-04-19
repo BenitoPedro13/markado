@@ -40,6 +40,7 @@ const PersonalForm = () => {
       forms.personal.setValue('name', user.data.name || '');
       forms.personal.setValue('username', user.data.username || '');
 
+      console.log(user.data);
       // Set timezone if available
       if (user.data.timeZone) {
         forms.personal.setValue('timeZone', user.data.timeZone);

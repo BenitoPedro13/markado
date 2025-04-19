@@ -45,7 +45,7 @@ const PasswordForm = () => {
     trpc.auth.sendVerificationEmail.mutationOptions({
       onSuccess: () => {
         // Redirect to check-email page
-        // router.push(`/check-email?email=${encodeURIComponent(email)}`);
+        router.push(`/check-email?email=${encodeURIComponent(email)}`);
         // nextStep();
       },
       onError: () => {
@@ -68,8 +68,8 @@ const PasswordForm = () => {
       // await signInWithEmailPassword(email, password);
 
       // Send verification email
-      // sendVerificationEmailMutation.mutate({email});
-        nextStep();
+      sendVerificationEmailMutation.mutate({email});
+        // nextStep();
         // router.push('/');
 
      

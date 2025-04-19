@@ -6,7 +6,6 @@ import {ReactNode} from 'react';
 import '@/app/globals.css';
 import {TooltipProvider} from '@radix-ui/react-tooltip';
 import {ThemeProvider} from 'next-themes';
-import {NotificationProvider} from '@/components/align-ui/ui/notification-provider';
 import PageWrapper from '@/app/PageWrapper';
 
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -26,7 +25,6 @@ export default async function BaseLayout({children, locale}: Props) {
   return (
     <html className="h-full" lang={locale}>
       <body className={clsx(plusJakartaSans.className, 'flex h-full flex-col')}>
-        <NotificationProvider />
         <ThemeProvider attribute="class">
           <TooltipProvider>
             <NextIntlClientProvider messages={messages} locale={locale}>
