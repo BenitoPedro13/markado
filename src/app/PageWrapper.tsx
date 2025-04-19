@@ -7,6 +7,7 @@ import React, { useState } from 'react';
 import { SessionProvider } from 'next-auth/react';
 import {SessionStoreProvider} from '@/providers/session-store-provider';
 import {ThemeStoreProvider} from '@/providers/theme-store-provider';
+import {NotificationProvider} from '@/components/align-ui/ui/notification-provider';
 
 
 function makeQueryClient() {
@@ -46,6 +47,7 @@ const PageWrapper = ({ children }: React.PropsWithChildren) => {
         <TRPCProvider trpcClient={trpcClient} queryClient={queryClient}>
           <SessionStoreProvider>
             <ThemeStoreProvider>
+              <NotificationProvider />
               {children}
             </ThemeStoreProvider>
           </SessionStoreProvider>

@@ -4,24 +4,30 @@ import { NextRequest } from 'next/server';
 import { routing } from '@/i18n/routing';
 import { match } from '@formatjs/intl-localematcher';
 import Negotiator from 'negotiator';
+import { prisma } from '@/lib/prisma';
 
 // Define public routes that don't require authentication
 const publicRoutes = [
   '/sign-in',
-  '/sign-up',
   '/verify-email',
   '/check-email',
   '/password-recovery',
   '/reset-password',
   '/logout',
   '/api',
+  '/sign-up',
+  '/api/trpc',
+  '/api/auth',
   '/_next',
   '/favicon.ico',
+  '/images',
+  '/fonts',
+  '/locales',
+
 ];
 
 // Define routes that don't require onboarding
 const noOnboardingRoutes = [
-  '/sign-up',
   '/sign-in',
   '/verify-email',
   '/check-email',
@@ -29,8 +35,14 @@ const noOnboardingRoutes = [
   '/reset-password',
   '/logout',
   '/api',
+  '/sign-up',
+  '/api/trpc',
+  '/api/auth',
   '/_next',
   '/favicon.ico',
+  '/images',
+  '/fonts',
+  '/locales'
 ];
 
 function getLocale(request: NextRequest): string {
@@ -53,6 +65,8 @@ function getLocale(request: NextRequest): string {
 export async function middleware(request: NextRequest) {
   const session = await auth();
   const { pathname } = request.nextUrl;
+
+
 
   // Check if the route is public
   const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route));
@@ -85,11 +99,25 @@ export async function middleware(request: NextRequest) {
   // Check if the route requires onboarding
   const requiresOnboarding = !noOnboardingRoutes.some(route => pathname.startsWith(route));
 
-  // If the route requires onboarding and the user hasn't completed it, redirect to personal info
-  if (requiresOnboarding && !session.user.completedOnboarding) {
-    const personalUrl = new URL('/sign-up/personal', request.url);
-    personalUrl.searchParams.set('redirect', pathname);
-    return NextResponse.redirect(personalUrl);
+  // If the route requires onboarding, check the user's onboarding status in the database
+  if (requiresOnboarding) {
+    try {
+      // Get the user from the database to check onboarding status
+      const user = await prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: { completedOnboarding: true }
+      });
+
+      // If the user hasn't completed onboarding, redirect to personal info
+      if (!user?.completedOnboarding) {
+        const personalUrl = new URL('/sign-up/personal', request.url);
+        personalUrl.searchParams.set('redirect', pathname);
+        return NextResponse.redirect(personalUrl);
+      }
+    } catch (error) {
+      console.error('Error checking user onboarding status:', error);
+      // In case of error, allow access to avoid blocking the user
+    }
   }
 
   // User is authenticated and has completed onboarding (or route doesn't require it), allow access

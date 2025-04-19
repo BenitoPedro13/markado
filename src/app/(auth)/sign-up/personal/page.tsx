@@ -12,10 +12,22 @@ import { RiAccountPinBoxFill } from '@remixicon/react';
 import { useTranslations } from 'next-intl';
 import { FormEvent, useEffect, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 
 const PersonalForm = () => {
   const trpc = useTRPC();
-  const updateProfileMutation = useMutation(trpc.profile.update.mutationOptions());
+  const router = useRouter();
+  const updateProfileMutation = useMutation(trpc.profile.update.mutationOptions({
+    onSuccess: () => {
+      nextStep();
+      completeOnboardingMutation.mutate();
+    },
+  }));
+  const completeOnboardingMutation = useMutation(trpc.profile.completeOnboarding.mutationOptions({
+    onSuccess: () => {
+      router.push('/');
+    },
+  }));
   const { forms, nextStep, queries } = useSignUp();
   const { user } = queries;
   const [hasUserTimezone, setHasUserTimezone] = useState(false);
@@ -27,7 +39,8 @@ const PersonalForm = () => {
       // Prefill form with user data if available
       forms.personal.setValue('name', user.data.name || '');
       forms.personal.setValue('username', user.data.username || '');
-      
+
+      console.log(user.data);
       // Set timezone if available
       if (user.data.timeZone) {
         forms.personal.setValue('timeZone', user.data.timeZone);
@@ -56,9 +69,6 @@ const PersonalForm = () => {
         username: formData.username,
         timeZone: formData.timeZone,
       });
-
-      // Move to the next step
-      nextStep();
     } catch (error) {
       // Handle any errors from the mutation
       console.error('Error updating profile:', error);

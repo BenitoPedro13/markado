@@ -8,6 +8,8 @@ import * as Hint from '@/components/align-ui/ui/hint';
 import {cn} from '@/utils/cn';
 
 import type {Timezones} from '@/lib/timezone';
+import { useTRPC } from '@/utils/trpc';
+import { useQuery } from '@tanstack/react-query';
 
 const SELECT_SEARCH_DATA: Timezones = [
   {label: 'San Francisco', timezone: 'America/Los_Angeles'},
@@ -52,9 +54,16 @@ export function TimezoneSelectWithStyle({
   isLoading = false,
   autoDetect = true
 }: TimezoneSelectWithStyleProps) {
-  // Use the predefined timezone data instead of fetching from the server
-  const data = SELECT_SEARCH_DATA;
-  const isPending = false;
+  const trpc = useTRPC();
+  const {data = [], isPending} = useQuery(
+    trpc.cityTimezones.list.queryOptions(undefined, {
+      trpc: {
+        context: {
+          skipBatch: true
+        }
+      }
+    })
+  );
 
   const {options, parseTimezone} = useTimezoneSelect({labelStyle});
   const [currentTime, setCurrentTime] = useState<string>('');
@@ -106,11 +115,15 @@ export function TimezoneSelectWithStyle({
 
   // Detect user's timezone on component mount - only once
   useEffect(() => {
+    let isMounted = true;
+    
     if (autoDetect && !selectedTimezone) {
       setIsDetecting(true);
       
       // Simulate a brief loading state
       const timer = setTimeout(() => {
+        if (!isMounted) return;
+        
         try {
           // Get the user's timezone
           const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -124,12 +137,21 @@ export function TimezoneSelectWithStyle({
           }
         } catch (error) {
           console.error('Error detecting timezone:', error);
+          // Reset detecting state even if there's an error
+          if (isMounted) {
+            setIsDetecting(false);
+          }
         } finally {
-          setIsDetecting(false);
+          if (isMounted) {
+            setIsDetecting(false);
+          }
         }
       }, 1000); // 1 second delay
       
-      return () => clearTimeout(timer);
+      return () => {
+        isMounted = false;
+        clearTimeout(timer);
+      };
     }
   }, [autoDetect, selectedTimezone, onChange]);
 
@@ -195,10 +217,12 @@ export function TimezoneSelectWithStyle({
           )}
         </Select.Content>
       </Select.Root>
+      
       {selectedTimezone && currentTime && (
-        <div className="text-xs text-text-sub-600">
-          Current time: {currentTime}
-        </div>
+        <Hint.Root>
+          <Hint.Icon as={RiInformationFill} />
+          Hora atual: {currentTime}
+        </Hint.Root>
       )}
     </div>
   );
