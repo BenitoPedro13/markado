@@ -4,6 +4,7 @@ import { Root as Button } from '@/components/align-ui/ui/button';
 import * as Input from '@/components/align-ui/ui/input';
 import { Asterisk, Root as Label } from '@/components/align-ui/ui/label';
 import {
+  signInWithEmailPassword,
   signUpWithEmailPassword
 } from '@/components/auth/auth-actions';
 import RoundedIconWrapper from '@/components/RoundedIconWrapper';
@@ -64,10 +65,12 @@ const PasswordForm = () => {
     try {
       // Complete the registration process
       await signUpWithEmailPassword(email, password);
+      // await signInWithEmailPassword(email, password);
 
       // Send verification email
       // sendVerificationEmailMutation.mutate({email});
         nextStep();
+        // router.push('/');
 
      
     } catch (error) {

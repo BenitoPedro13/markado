@@ -195,10 +195,12 @@ export function TimezoneSelectWithStyle({
           )}
         </Select.Content>
       </Select.Root>
+      
       {selectedTimezone && currentTime && (
-        <div className="text-xs text-text-sub-600">
-          Current time: {currentTime}
-        </div>
+        <Hint.Root>
+          <Hint.Icon as={RiInformationFill} />
+          Hora atual: {currentTime}
+        </Hint.Root>
       )}
     </div>
   );
