@@ -92,6 +92,23 @@
       "username_required": "Username is required",
       "timezone_required": "Time zone is required"
     },
+    "CalendarForm": {
+      "connect_calendar": "Connect Calendar",
+      "connect_calendar_description": "Connect your Google Calendar to manage your availability and appointments.",
+      "connect_google_calendar": "Connect Google Calendar",
+      "skip_for_now": "Skip for now",
+      "error": "Error",
+      "error_connecting_calendar": "There was an error connecting to your Google Calendar. Please try again."
+    },
+    "CalendarSelect": {
+      "select_calendar": "Select Calendar",
+      "select_calendar_description": "Choose which calendar you want to use for your appointments.",
+      "continue": "Continue",
+      "skip_for_now": "Skip for now",
+      "loading": "Loading calendars...",
+      "error": "Error",
+      "error_selecting_calendar": "There was an error selecting your calendar. Please try again."
+    },
     "EndingPage": {
       "all_set": "All Set!",
       "your_account_is_ready": "Your account is ready to use",

@@ -77,14 +77,19 @@ model User {
   image               String?
   timeZone            String            @default("America/Sao_Paulo")
   completedOnboarding Boolean           @default(false)
-    availability        Availability[]
+  availability        Availability[]
   locale              Locale?           @default(PT)
   identityProvider    IdentityProvider? @default(MARKADO)
   password            UserPassword?
   accounts            Account[]
   sessions            Session[]
-  // Optional for WebAuthn support
   Authenticator       Authenticator[]
+  // Google Calendar integration
+  googleAccessToken   String?
+  googleRefreshToken  String?
+  googleTokenExpiry   BigInt?
+  selectedCalendarId  String?
+  calendars           Calendar[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -193,4 +198,20 @@ model Authenticator {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, credentialID])
+}
+
+model Calendar {
+  id          String   @id @default(cuid())
+  googleId    String
+  name        String
+  description String?
+  primary     Boolean  @default(false)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([googleId, userId])
+  @@index([userId])
 }

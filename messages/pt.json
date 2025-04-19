@@ -92,6 +92,23 @@
       "username_required": "Nome de usuário é obrigatório",
       "timezone_required": "Fuso horário é obrigatório"
     },
+    "CalendarForm": {
+      "connect_calendar": "Conectar Calendário",
+      "connect_calendar_description": "Conecte seu Google Calendar para gerenciar sua disponibilidade e compromissos.",
+      "connect_google_calendar": "Conectar Google Calendar",
+      "skip_for_now": "Pular por enquanto",
+      "error": "Erro",
+      "error_connecting_calendar": "Ocorreu um erro ao conectar ao seu Google Calendar. Por favor, tente novamente."
+    },
+    "CalendarSelect": {
+      "select_calendar": "Selecionar Calendário",
+      "select_calendar_description": "Escolha qual calendário você deseja usar para seus compromissos.",
+      "continue": "Continuar",
+      "skip_for_now": "Pular por enquanto",
+      "loading": "Carregando calendários...",
+      "error": "Erro",
+      "error_selecting_calendar": "Ocorreu um erro ao selecionar seu calendário. Por favor, tente novamente."
+    },
     "EndingPage": {
       "all_set": "Tudo Pronto!",
       "your_account_is_ready": "Sua conta está pronta para uso",
