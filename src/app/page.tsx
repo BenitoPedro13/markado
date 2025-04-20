@@ -19,6 +19,6 @@ export default async function IndexPage() {
     return redirect('/sign-up/personal');
   }
   
-  // User is authenticated and has completed onboarding, redirect to dashboard or home
+  // User is authenticated and has completed onboarding, redirect to services
   return redirect('/services');
 }
