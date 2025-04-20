@@ -129,6 +129,7 @@ type SignUpContextType = {
   setStep: Dispatch<SetStateAction<SignUpStep>>;
   backStep: () => void;
   nextStep: () => void;
+  goToStep: (targetStep: SignUpStep) => void;
   forms: {
     email: UseFormReturn<SignUpEmailFormData>;
     password: UseFormReturn<SignUpPasswordFormData>;
@@ -253,6 +254,19 @@ export function SignUpProvider({
     return '/sign-up/email'; // Default fallback
   });
 
+  // Sync step with URL when component mounts or URL changes
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const path = window.location.pathname;
+      const allSteps = [...Object.keys(nextStepMap), ...Object.values(nextStepMap)];
+      
+      if (allSteps.includes(path as SignUpStep) && path !== step) {
+        console.log(`[SignUpContext] Syncing step state with URL: ${path}`);
+        setStep(path as SignUpStep);
+      }
+    }
+  }, [step]); // Listen for component's own changes, window.location.pathname updates automatically
+
   const backStep = () => {
     const prevStep = previousStepMap[step]!;
     setStep(prevStep);
@@ -261,8 +275,16 @@ export function SignUpProvider({
 
   const nextStep = () => {
     const nextStep = nextStepMap[step]!;
+    console.log(`[SignUpContext] Moving to next step: ${nextStep} from current step: ${step}`);
     setStep(nextStep);
     router.push(nextStep);
+  };
+
+  // New function to go to a specific step directly
+  const goToStep = (targetStep: SignUpStep) => {
+    console.log(`[SignUpContext] Directly navigating to step: ${targetStep} from current step: ${step}`);
+    setStep(targetStep);
+    router.push(targetStep);
   };
 
   // Remove the conditional fetching during render
@@ -293,6 +315,7 @@ export function SignUpProvider({
     setStep,
     backStep,
     nextStep,
+    goToStep,
     agree,
     setAgree,
   }), [
