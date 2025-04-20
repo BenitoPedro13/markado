@@ -30,24 +30,25 @@ const PersonalForm = () => {
   }));
   const { forms, nextStep, queries } = useSignUp();
   const { user } = queries;
+  console.log('user', user);
   const [hasUserTimezone, setHasUserTimezone] = useState(false);
 
   const t = useTranslations('SignUpPage.PersonalForm');
 
   useEffect(() => {
-    if (user.data) {
+    if (user) {
       // Prefill form with user data if available
-      forms.personal.setValue('name', user.data.name || '');
-      forms.personal.setValue('username', user.data.username || '');
+      forms.personal.setValue('name', user.name || '');
+      forms.personal.setValue('username', user.username || '');
 
-      console.log(user.data);
+      console.log(user);
       // Set timezone if available
-      if (user.data.timeZone) {
-        forms.personal.setValue('timeZone', user.data.timeZone);
+      if (user.timeZone) {
+        forms.personal.setValue('timeZone', user.timeZone);
         setHasUserTimezone(true);
       }
     }
-  }, [user.data, forms.personal]);
+  }, [user, forms.personal]);
 
   const submit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();

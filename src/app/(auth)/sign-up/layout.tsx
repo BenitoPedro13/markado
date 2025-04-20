@@ -4,13 +4,16 @@ import { Root as Button } from '@/components/align-ui/ui/button';
 import { SignUpProvider, useSignUp } from '@/contexts/SignUpContext';
 import { RiArrowLeftSLine } from '@remixicon/react';
 import { PropsWithChildren } from 'react';
+import { inferRouterOutputs } from '@trpc/server';
+import { AppRouter } from '~/trpc/server';
+
+type MeResponse = inferRouterOutputs<AppRouter>['user']['me'];
+
 
 const Layout = ({children}: PropsWithChildren) => {
   const {
     step,
     backStep,
-    queries: {user},
-    isAnyQueryLoading
   } = useSignUp();
 
   
@@ -29,9 +32,9 @@ const Layout = ({children}: PropsWithChildren) => {
   );
 };
 
-export default function SignUpLayout({children}: PropsWithChildren) {
+export default function SignUpLayout({children, initialUser}: PropsWithChildren & {initialUser: MeResponse | null}) {
   return (
-    <SignUpProvider>
+    <SignUpProvider initialUser={initialUser}>
       <Layout>{children}</Layout>
     </SignUpProvider>
   );
