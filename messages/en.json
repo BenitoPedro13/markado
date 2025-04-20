@@ -48,7 +48,13 @@
     "create": "Create",
     "loading": "Loading...",
     "invalid_email": "Please enter a valid email address",
-    "min_password_length": "Password must be at least 8 characters long"
+    "min_password_length": "Password must be at least 8 characters long",
+    "oauth_account_not_linked": "This Google account is already linked to a different user. Please sign in with your original account or use a different Google account.",
+    "account_linking_failed": "We could not link your Google account. Please try again or contact support.",
+    "invalid_credentials": "Invalid email or password.",
+    "oauth_signin_error": "There was a problem signing in with Google. Please try again.",
+    "oauth_callback_error": "There was a problem with the Google authentication. Please try again.",
+    "general_error": "An error occurred during sign in. Please try again."
   },
   "SignInPage": {
     "markado": "Markado"
@@ -92,6 +98,34 @@
       "username_required": "Username is required",
       "timezone_required": "Time zone is required"
     },
+    "CalendarForm": {
+      "connect_calendar": "Connect Calendar",
+      "connect_calendar_description": "Connect your Google Calendar to manage your availability and appointments.",
+      "connect_google_calendar": "Connect Google Calendar",
+      "skip_for_now": "Skip for now",
+      "continue": "Continue",
+      "want_to_fill_later": "Want to fill this in later?",
+      "google_calendar": "Google Calendar",
+      "default": "Default",
+      "error": "Error",
+      "error_connecting_calendar": "There was an error connecting to your Google Calendar. Please try again.",
+      "select_default_calendar": "Select default calendar",
+      "select_a_calendar": "Select a calendar",
+      "primary": "Primary",
+      "matches_email": "Matches your email",
+      "success": "Success",
+      "calendar_selected_successfully": "Calendar selected successfully",
+      "error_selecting_calendar": "There was an error selecting your calendar. Please try again."
+    },
+    "CalendarSelect": {
+      "select_calendar": "Select Calendar",
+      "select_calendar_description": "Choose which calendar you want to use for your appointments.",
+      "continue": "Continue",
+      "skip_for_now": "Skip for now",
+      "loading": "Loading calendars...",
+      "error": "Error",
+      "error_selecting_calendar": "There was an error selecting your calendar. Please try again."
+    },
     "EndingPage": {
       "all_set": "All Set!",
       "your_account_is_ready": "Your account is ready to use",
@@ -132,5 +166,13 @@
     "invalid_link_description": "This password reset link is invalid or has expired. Please request a new one.",
     "min_password_length": "Password must be at least 8 characters long",
     "passwords_do_not_match": "Passwords do not match"
+  },
+  "Components": {
+    "CalendarIntegrationCard": {
+      "default": "Default",
+      "connected": "Connected",
+      "connecting": "Connecting",
+      "connect": "Connect"
+    }
   }
 }

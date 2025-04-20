@@ -1,24 +1,24 @@
-import PageLayout from '@/components/PageLayout';
-import Home from '@/modules/home/home-view';
-import {useTranslations} from 'next-intl';
-import Header from '@/components/navigation/Header';
-import * as Divider from '@/components/align-ui/ui/divider';
+import { redirect } from 'next/navigation';
+import { auth } from '@/auth';
 import { cookies } from 'next/headers';
 
-/** Actual home page of the website.
- * 
-  The user is redirected to this page when them types the website URL.
-*/
-export default function IndexPage() {
-  const t = useTranslations('IndexPage');
-
-  return (
-    <PageLayout title="Home">
-      {/* <Header variant="scheduling"/> */}
-      <Header variant="availability" mode="inside" />
-      <Divider.Root />
-
-      <Home />
-    </PageLayout>
-  );
+export default async function IndexPage() {
+  // Check if user is already logged in
+  const session = await auth();
+  
+  // If user is not authenticated, redirect to sign-up/email
+  if (!session?.user) {
+    return redirect('/sign-up/email');
+  }
+  
+  // Check if user has completed onboarding
+  const onboardingComplete = cookies().get('onboarding_complete')?.value === 'true';
+  
+  // If onboarding is not complete, redirect to personal info page
+  if (!onboardingComplete) {
+    return redirect('/sign-up/personal');
+  }
+  
+  // User is authenticated and has completed onboarding, redirect to services
+  return redirect('/services');
 }

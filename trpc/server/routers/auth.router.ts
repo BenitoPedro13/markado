@@ -38,5 +38,30 @@ export const authRouter = router({
   
   resetPassword: publicProcedure
     .input(ZResetPasswordInputSchema)
-    .mutation(({ ctx, input }) => resetPasswordHandler(ctx, input))
+    .mutation(({ ctx, input }) => resetPasswordHandler(ctx, input)),
+
+  checkOnboardingStatus: publicProcedure
+    .query(async ({ ctx }) => {
+      const { session } = ctx;
+      
+      if (!session?.user) {
+        return { isComplete: false, error: 'Not authenticated' };
+      }
+      
+      try {
+        const user = await ctx.prisma.user.findUnique({
+          where: { id: session.user.id },
+          select: { completedOnboarding: true }
+        });
+        
+        return { 
+          isComplete: !!user?.completedOnboarding,
+          userId: session.user.id
+        };
+      } catch (error) {
+        console.error('Error checking onboarding status:', error);
+        // Default to true on error to avoid blocking users
+        return { isComplete: true, error: 'Failed to check status' };
+      }
+    })
 }); 
