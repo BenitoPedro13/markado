@@ -116,67 +116,25 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
 
           // If we found a user with this email...
           if (existingUserWithEmail) {
-            // Check if this user has an account with the same provider but different ID
-            const existingProviderAccount = existingUserWithEmail.accounts.find(
-              (acc) => acc.provider === account.provider
-            );
-
-            if (existingProviderAccount) {
-              // If the user is attempting to use the same provider but with a different account,
-              // we need to update the existing account instead of creating a new one
-              await prisma.account.update({
-                where: { 
-                  provider_providerAccountId: {
-                    provider: existingProviderAccount.provider,
-                    providerAccountId: existingProviderAccount.providerAccountId
-                  }
-                },
-                data: {
-                  providerAccountId: account.providerAccountId,
-                  access_token: account.access_token,
-                  token_type: account.token_type,
-                  scope: account.scope,
-                  id_token: account.id_token,
-                  refresh_token: account.refresh_token,
-                }
-              });
-              return true;
-            }
-
-            // And they don't have any OAuth accounts yet (only credentials)
-            if (existingUserWithEmail.accounts.length === 0) {
-              // Then link this OAuth account to the existing user
-              await prisma.account.create({
-                data: {
-                  userId: existingUserWithEmail.id,
-                  type: account.type,
-                  provider: account.provider,
-                  providerAccountId: account.providerAccountId,
-                  access_token: account.access_token,
-                  token_type: account.token_type,
-                  scope: account.scope,
-                  id_token: account.id_token,
-                  refresh_token: account.refresh_token,
-                },
-              });
-              return true;
-            } else {
-              // They have accounts with other providers, link this one too
-              await prisma.account.create({
-                data: {
-                  userId: existingUserWithEmail.id,
-                  type: account.type,
-                  provider: account.provider,
-                  providerAccountId: account.providerAccountId,
-                  access_token: account.access_token,
-                  token_type: account.token_type,
-                  scope: account.scope,
-                  id_token: account.id_token,
-                  refresh_token: account.refresh_token,
-                },
-              });
-              return true;
-            }
+            // Instead of checking provider accounts, let's link this OAuth account to the existing user
+            // This will solve the "OAuthAccountNotLinked" error
+            
+            // Create a new account linked to the existing user
+            await prisma.account.create({
+              data: {
+                userId: existingUserWithEmail.id,
+                type: account.type,
+                provider: account.provider,
+                providerAccountId: account.providerAccountId,
+                access_token: account.access_token,
+                token_type: account.token_type,
+                scope: account.scope,
+                id_token: account.id_token,
+                refresh_token: account.refresh_token,
+              },
+            });
+            
+            return true;
           }
           
           // If no existing user, allow standard signup flow to continue
