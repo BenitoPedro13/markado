@@ -9,6 +9,7 @@ import { useMutation } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
+import Cookies from 'js-cookie';
 
 const EndingPage = () => {
   // const { forms, nextStep, queries } = useSignUp();
@@ -20,6 +21,8 @@ const EndingPage = () => {
 
   const completeOnboardingMutation = useMutation(trpc.profile.completeOnboarding.mutationOptions({
     onSuccess: () => {
+      // Set the onboarding complete cookie when the DB is updated
+      Cookies.set('onboarding_complete', 'true', { expires: 7 });
       // Redirect to the original destination or home
       router.push(redirectTo);
     }
