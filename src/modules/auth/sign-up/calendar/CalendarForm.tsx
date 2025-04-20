@@ -98,7 +98,7 @@ interface CalendarFormProps {
 const CalendarForm = ({calendars, userEmail}: CalendarFormProps) => {
   const trpc = useTRPC();
   const router = useRouter();
-  const {nextStep} = useSignUp();
+  const {nextStep, goToStep} = useSignUp();
   const [isConnecting, setIsConnecting] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [selectedCalendarId, setSelectedCalendarId] = useState<string | null>(
@@ -198,17 +198,17 @@ const CalendarForm = ({calendars, userEmail}: CalendarFormProps) => {
       selectCalendarMutation.mutate(
         {calendarId: selectedCalendarId},
         {
-          onSuccess: () => nextStep(),
-          onError: () => nextStep() // Continue anyway if selection fails
+          onSuccess: () => goToStep('/sign-up/availability'),
+          onError: () => goToStep('/sign-up/availability') // Continue anyway if selection fails
         }
       );
     } else {
-      nextStep();
+      goToStep('/sign-up/availability');
     }
   };
 
   const handleSkip = () => {
-    nextStep();
+    goToStep('/sign-up/availability');
   };
 
   return (

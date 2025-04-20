@@ -24,7 +24,7 @@ interface PersonalFormProps {
 const PersonalForm = ({user}: PersonalFormProps) => {
   const trpc = useTRPC();
   const router = useRouter();
-  const {forms, nextStep} = useSignUp();
+  const {forms, goToStep} = useSignUp();
   const [hasUserTimezone, setHasUserTimezone] = useState(false);
   const t = useTranslations('SignUpPage.PersonalForm');
   const formInitializedRef = useRef(false);
@@ -52,7 +52,7 @@ const PersonalForm = ({user}: PersonalFormProps) => {
         
         // Finally, navigate to next step
         console.log('[PersonalForm] Profile and progress updated, navigating to calendar step');
-        nextStep();
+        goToStep('/sign-up/calendar');
       }
     })
   );
@@ -189,6 +189,7 @@ const PersonalForm = ({user}: PersonalFormProps) => {
               forms.personal.trigger();
             }}
             autoDetect={!hasUserTimezone}
+            defaultValue={user?.timeZone || 'America/Sao_Paulo'}
           />
           {forms.personal.formState.errors.timeZone && (
             <span className="text-paragraph-xs text-red-500">
