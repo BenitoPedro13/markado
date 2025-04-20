@@ -27,7 +27,6 @@ const CalendarForm = () => {
   const { mutateAsync: connectGoogleCalendar } = useMutation(
     trpc.calendar.connect.mutationOptions({
       onSuccess: (data) => {
-        console.log("Received data:", data);
         router.push(data.authUrl);
       },
       onError: (error) => {
