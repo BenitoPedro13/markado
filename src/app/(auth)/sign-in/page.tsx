@@ -195,7 +195,7 @@ const SignInForm = () => {
         </span>
         <Link
           className="text-label-sm text-text-strong-950 hover:border-b border-b-stroke-strong-950 transition"
-          href={`/sign-up${redirectTo !== '/' ? `?redirect=${redirectTo}` : ''}`}
+          href={`/sign-up${redirectTo !== '/' && !redirectTo.includes('/undefined/') ? `?redirect=${redirectTo}` : ''}`}
         >
           {t('create')}
         </Link>

@@ -61,23 +61,36 @@ const signUpPersonalFormSchema = z.object({
 
 // Sign up availability form schema
 const signUpAvailabilityFormSchema = z.object({
-  schedules: z.record(z.enum([
-    'sunday',
-    'monday',
-    'tuesday',
-    'wednesday',
-    'thursday',
-    'friday',
-    'saturday'
-  ]), z.object({
-    enabled: z.boolean(),
-    timeWindows: z.array(z.object({
-      startTime: z.string()
-        .regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, 'SignUpPage.AvailabilityForm.invalid_time_format'),
-      endTime: z.string()
-        .regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, 'SignUpPage.AvailabilityForm.invalid_time_format')
-    })).default([])
-  }))
+  schedules: z.record(
+    z.enum([
+      'sunday',
+      'monday',
+      'tuesday',
+      'wednesday',
+      'thursday',
+      'friday',
+      'saturday'
+    ]),
+    z.object({
+      enabled: z.boolean(),
+      timeWindows: z.array(
+        z.object({
+          startTime: z
+            .string()
+            .regex(
+              /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/,
+              'SignUpPage.AvailabilityForm.invalid_time_format'
+            ),
+          endTime: z
+            .string()
+            .regex(
+              /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/,
+              'SignUpPage.AvailabilityForm.invalid_time_format'
+            )
+        })
+      )
+    })
+  )
 });
 
 export type SignUpEmailFormData = z.infer<typeof signUpEmailFormSchema>;
@@ -120,6 +133,7 @@ type SignUpContextType = {
     email: UseFormReturn<SignUpEmailFormData>;
     password: UseFormReturn<SignUpPasswordFormData>;
     personal: UseFormReturn<SignUpPersonalFormData>;
+    availability: UseFormReturn<SignUpAvailabilityFormData>;
   };
   agree: boolean;
   setAgree: Dispatch<SetStateAction<boolean>>;
