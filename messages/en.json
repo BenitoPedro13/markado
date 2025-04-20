@@ -97,6 +97,10 @@
       "connect_calendar_description": "Connect your Google Calendar to manage your availability and appointments.",
       "connect_google_calendar": "Connect Google Calendar",
       "skip_for_now": "Skip for now",
+      "continue": "Continue",
+      "want_to_fill_later": "Want to fill this in later?",
+      "google_calendar": "Google Calendar",
+      "default": "Default",
       "error": "Error",
       "error_connecting_calendar": "There was an error connecting to your Google Calendar. Please try again."
     },
@@ -149,5 +153,13 @@
     "invalid_link_description": "This password reset link is invalid or has expired. Please request a new one.",
     "min_password_length": "Password must be at least 8 characters long",
     "passwords_do_not_match": "Passwords do not match"
+  },
+  "Components": {
+    "CalendarIntegrationCard": {
+      "default": "Default",
+      "connected": "Connected",
+      "connecting": "Connecting",
+      "connect": "Connect"
+    }
   }
 }

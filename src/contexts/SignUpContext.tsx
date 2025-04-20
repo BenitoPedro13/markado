@@ -1,26 +1,31 @@
 'use client';
 
-import { useTRPC } from '@/utils/trpc';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useQuery } from '@tanstack/react-query';
-import { TRPCClientErrorLike } from '@trpc/client';
-import { type inferRouterOutputs } from '@trpc/server';
-import { DefaultErrorShape } from '@trpc/server/unstable-core-do-not-import';
-import { useRouter } from 'next/navigation';
+import {useTRPC} from '@/utils/trpc';
+import {zodResolver} from '@hookform/resolvers/zod';
+import {useQuery} from '@tanstack/react-query';
+import {TRPCClientErrorLike} from '@trpc/client';
+import {type inferRouterOutputs} from '@trpc/server';
+import {DefaultErrorShape} from '@trpc/server/unstable-core-do-not-import';
+import {useRouter} from 'next/navigation';
 import {
   createContext,
   Dispatch,
   SetStateAction,
   useContext,
-  useState
+  useState,
+  useEffect,
+  useMemo
 } from 'react';
-import { useForm, UseFormReturn } from 'react-hook-form';
-import { z } from 'zod';
-import { type AppRouter } from '~/trpc/server';
+import {useForm, UseFormReturn} from 'react-hook-form';
+import {z} from 'zod';
+import {type AppRouter} from '~/trpc/server';
 
 // Sign up email form schema
 const signUpEmailFormSchema = z.object({
-  email: z.string().nonempty('SignUpPage.EmailForm.email_required').email('SignUpPage.EmailForm.invalid_email'),
+  email: z
+    .string()
+    .nonempty('SignUpPage.EmailForm.email_required')
+    .email('SignUpPage.EmailForm.invalid_email'),
   agree: z.boolean().refine((data) => data, {
     message: 'SignUpPage.EmailForm.must_agree_to_terms',
     path: ['agree']
@@ -50,7 +55,7 @@ const signUpPasswordFormSchema = z
 const signUpPersonalFormSchema = z.object({
   name: z.string().min(1, 'SignUpPage.PersonalForm.name_required'),
   username: z.string().min(1, 'SignUpPage.PersonalForm.username_required'),
-  timeZone: z.string().min(1, 'SignUpPage.PersonalForm.timezone_required'),
+  timeZone: z.string().min(1, 'SignUpPage.PersonalForm.timezone_required')
 });
 
 export type SignUpEmailFormData = z.infer<typeof signUpEmailFormSchema>;
@@ -62,7 +67,7 @@ export type SignUpStep =
   | '/sign-up/email'
   | '/sign-up/password'
   | '/sign-up/personal'
-  | '/sign-up/connect'
+  | '/sign-up/calendar'
   | '/sign-up/availability'
   | '/sign-up/ending';
 
@@ -80,7 +85,7 @@ type QueryState<T> = {
 
 type SignUpContextType = {
   queries: {
-    user: QueryState<MeResponse>;
+    user: MeResponse;
     // Add other query states here as needed
     // example: profile: QueryState<Profile>;
   };
@@ -96,18 +101,24 @@ type SignUpContextType = {
   agree: boolean;
   setAgree: Dispatch<SetStateAction<boolean>>;
   // Helper functions
-  isAnyQueryLoading: () => boolean;
-  hasAnyQueryError: () => boolean;
+  // isAnyQueryLoading: () => boolean;
+  // hasAnyQueryError: () => boolean;
 };
 
 const SignUpContext = createContext<SignUpContextType | null>(null);
 
-export function SignUpProvider({ children }: { children: React.ReactNode }) {
-  const trpc = useTRPC();   
-  const userQuery = useQuery(trpc.user.me.queryOptions());
+export function SignUpProvider({
+  children,
+  initialUser
+}: {
+  children: React.ReactNode;
+  initialUser: MeResponse | null;
+}) {
+  const trpc = useTRPC();
   const router = useRouter();
 
-  const [step, setStep] = useState<SignUpStep>('/sign-up/email');
+  // Replace the query with state initialized from the prop
+  const [userData, setUserData] = useState<MeResponse | null>(initialUser);
   const [agree, setAgree] = useState(false);
 
   const emailForm = useForm<SignUpEmailFormData>({
@@ -115,7 +126,7 @@ export function SignUpProvider({ children }: { children: React.ReactNode }) {
     mode: 'onSubmit',
     defaultValues: {
       email: '',
-      agree: false,
+      agree: false
     }
   });
 
@@ -124,7 +135,7 @@ export function SignUpProvider({ children }: { children: React.ReactNode }) {
     mode: 'onSubmit',
     defaultValues: {
       password: '',
-      confirmPassword: '',
+      confirmPassword: ''
     }
   });
 
@@ -134,43 +145,68 @@ export function SignUpProvider({ children }: { children: React.ReactNode }) {
     defaultValues: {
       name: '',
       username: '',
-      timeZone: '',
+      timeZone: ''
     }
   });
 
   const previousStepMap: Partial<Record<SignUpStep, SignUpStep>> = {
     '/sign-up/password': '/sign-up/email',
     '/sign-up/personal': '/sign-up/password',
-    '/sign-up/connect': '/sign-up/personal',
-    '/sign-up/availability': '/sign-up/connect',
+    '/sign-up/calendar': '/sign-up/personal',
+    '/sign-up/availability': '/sign-up/calendar',
     '/sign-up/ending': '/sign-up/availability'
   };
 
   const nextStepMap: Partial<Record<SignUpStep, SignUpStep>> = {
     '/sign-up/email': '/sign-up/password',
     '/sign-up/password': '/sign-up/personal',
-    '/sign-up/personal': '/sign-up/connect',
-    '/sign-up/connect': '/sign-up/availability',
-    '/sign-up/availability': '/sign-up/ending',
+    '/sign-up/personal': '/sign-up/calendar',
+    '/sign-up/calendar': '/sign-up/availability',
+    '/sign-up/availability': '/sign-up/ending'
   };
 
+  // Initialize step based on the current path if possible
+  const [step, setStep] = useState<SignUpStep>(() => {
+    if (typeof window !== 'undefined') {
+      const path = window.location.pathname;
+      // Check if the current path is a valid SignUpStep
+      const allSteps = [...Object.keys(nextStepMap), ...Object.values(nextStepMap)];
+      if (allSteps.includes(path as SignUpStep)) {
+        return path as SignUpStep;
+      }
+    }
+    return '/sign-up/email'; // Default fallback
+  });
+
   const backStep = () => {
-    setStep(previousStepMap[step]!);
-    router.push(previousStepMap[step]!);
+    const prevStep = previousStepMap[step]!;
+    setStep(prevStep);
+    router.push(prevStep);
   };
 
   const nextStep = () => {
-    setStep(nextStepMap[step]!);
-    router.push(nextStepMap[step]!);
+    const nextStep = nextStepMap[step]!;
+    setStep(nextStep);
+    router.push(nextStep);
   };
 
-  const value: SignUpContextType = {
+  // Remove the conditional fetching during render
+  const userQuery = useQuery({
+    ...trpc.user.me.queryOptions(),
+    staleTime: 1000 * 60 * 5 // 5 minutes
+  });
+  
+  // Move state update to useEffect
+  useEffect(() => {
+    if (!userData && userQuery.data) {
+      setUserData(userQuery.data);
+    }
+  }, [userQuery.data]);  // Remove userData from dependencies to prevent rerender loops
+
+  // Memoize the context value to prevent unnecessary re-renders of children
+  const value = useMemo<SignUpContextType>(() => ({
     queries: {
-      user: {
-        data: userQuery.data ?? null,
-        isLoading: userQuery.isLoading,
-        error: userQuery.error
-      }
+      user: userData!
     },
     forms: {
       email: emailForm,
@@ -183,14 +219,17 @@ export function SignUpProvider({ children }: { children: React.ReactNode }) {
     nextStep,
     agree,
     setAgree,
-    isAnyQueryLoading: () => Object.values(value.queries).some(q => q.isLoading),
-    hasAnyQueryError: () => Object.values(value.queries).some(q => q.error !== null)
-  };
+  }), [
+    userData,
+    emailForm,
+    passwordForm,
+    personalForm,
+    step,
+    agree
+  ]);
 
   return (
-    <SignUpContext.Provider value={value}>
-      {children}
-    </SignUpContext.Provider>
+    <SignUpContext.Provider value={value}>{children}</SignUpContext.Provider>
   );
 }
 

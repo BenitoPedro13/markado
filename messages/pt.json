@@ -93,10 +93,14 @@
       "timezone_required": "Fuso horário é obrigatório"
     },
     "CalendarForm": {
-      "connect_calendar": "Conectar Calendário",
-      "connect_calendar_description": "Conecte seu Google Calendar para gerenciar sua disponibilidade e compromissos.",
+      "connect_calendar": "Conecte seu calendário",
+      "connect_calendar_description": "Conecte seu aplicativo de calendário",
       "connect_google_calendar": "Conectar Google Calendar",
-      "skip_for_now": "Pular por enquanto",
+      "skip_for_now": "Pular etapa",
+      "continue": "Continuar",
+      "google_calendar": "Google Calendar",
+      "want_to_fill_later": "Quer preencher depois?",
+      "default": "Padrão",
       "error": "Erro",
       "error_connecting_calendar": "Ocorreu um erro ao conectar ao seu Google Calendar. Por favor, tente novamente."
     },
@@ -104,7 +108,7 @@
       "select_calendar": "Selecionar Calendário",
       "select_calendar_description": "Escolha qual calendário você deseja usar para seus compromissos.",
       "continue": "Continuar",
-      "skip_for_now": "Pular por enquanto",
+      "skip_for_now": "Pular etapa",
       "loading": "Carregando calendários...",
       "error": "Erro",
       "error_selecting_calendar": "Ocorreu um erro ao selecionar seu calendário. Por favor, tente novamente."
@@ -149,5 +153,13 @@
     "invalid_link_description": "Este link de redefinição de senha é inválido ou expirou. Por favor, solicite um novo.",
     "min_password_length": "A senha deve ter pelo menos 8 caracteres",
     "passwords_do_not_match": "As senhas não coincidem"
+  },
+  "Components": {
+    "CalendarIntegrationCard": {
+      "default": "Padrão",
+      "connected": "Conectado",
+      "connecting": "Conectando",
+      "connect": "Conectar"
+    }
   }
 }

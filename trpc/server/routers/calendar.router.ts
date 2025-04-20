@@ -29,9 +29,8 @@ export const calendarRouter = router({
       ],
       prompt: 'consent',
     });
-    const res = {authUrl};
-    console.log('res', res);
-    return res;
+    
+    return {authUrl};
   }),
 
   callback: protectedProcedure

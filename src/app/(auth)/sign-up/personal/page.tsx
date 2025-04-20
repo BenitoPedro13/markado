@@ -1,73 +1,84 @@
 'use client';
 
-import { MARKADO_DOMAIN } from '@/app/constants';
-import { Root as Button } from '@/components/align-ui/ui/button';
+import {MARKADO_DOMAIN} from '@/app/constants';
+import {Root as Button} from '@/components/align-ui/ui/button';
 import * as Input from '@/components/align-ui/ui/input';
-import { Asterisk, Root as Label } from '@/components/align-ui/ui/label';
+import {Asterisk, Root as Label} from '@/components/align-ui/ui/label';
 import RoundedIconWrapper from '@/components/RoundedIconWrapper';
-import { TimezoneSelectWithStyle } from '@/components/TimezoneSelectWithStyle';
-import { useSignUp } from '@/contexts/SignUpContext';
-import { useTRPC } from '@/utils/trpc';
-import { RiAccountPinBoxFill } from '@remixicon/react';
-import { useTranslations } from 'next-intl';
-import { FormEvent, useEffect, useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
-import { useRouter } from 'next/navigation';
+import {TimezoneSelectWithStyle} from '@/components/TimezoneSelectWithStyle';
+import {useSignUp} from '@/contexts/SignUpContext';
+import {useTRPC} from '@/utils/trpc';
+import {RiAccountPinBoxFill} from '@remixicon/react';
+import {useTranslations} from 'next-intl';
+import {FormEvent, useEffect, useState, useRef} from 'react';
+import {useMutation} from '@tanstack/react-query';
+import {useRouter} from 'next/navigation';
 
 const PersonalForm = () => {
   const trpc = useTRPC();
   const router = useRouter();
-  const updateProfileMutation = useMutation(trpc.profile.update.mutationOptions({
-    onSuccess: () => {
-      nextStep();
-      completeOnboardingMutation.mutate();
-    },
-  }));
-  const completeOnboardingMutation = useMutation(trpc.profile.completeOnboarding.mutationOptions({
-    onSuccess: () => {
-      router.push('/');
-    },
-  }));
-  const { forms, nextStep, queries } = useSignUp();
-  const { user } = queries;
+  const updateProfileMutation = useMutation(
+    trpc.profile.update.mutationOptions({
+      onSuccess: () => {
+        nextStep();
+        // completeOnboardingMutation.mutate();
+      }
+    })
+  );
+  const completeOnboardingMutation = useMutation(
+    trpc.profile.completeOnboarding.mutationOptions({
+      onSuccess: () => {
+        router.push('/');
+      },
+    })
+  );
+
+  const {forms, nextStep, queries} = useSignUp();
+  const {user} = queries;
   const [hasUserTimezone, setHasUserTimezone] = useState(false);
+  const userIdRef = useRef('');
 
   const t = useTranslations('SignUpPage.PersonalForm');
 
   useEffect(() => {
-    if (user.data) {
-      // Prefill form with user data if available
-      forms.personal.setValue('name', user.data.name || '');
-      forms.personal.setValue('username', user.data.username || '');
+    // Skip effect if user is undefined or null
+    if (!user) return;
 
-      console.log(user.data);
-      // Set timezone if available
-      if (user.data.timeZone) {
-        forms.personal.setValue('timeZone', user.data.timeZone);
-        setHasUserTimezone(true);
-      }
+    // Skip if we've already processed this user ID
+    if (userIdRef.current === user.id) return;
+
+    // Store the user ID to prevent duplicate processing
+    userIdRef.current = user.id;
+
+    // Prefill form with user data if available
+    forms.personal.setValue('name', user.name || '');
+    forms.personal.setValue('username', user.username || '');
+    // Set timezone if available
+    if (user.timeZone) {
+      forms.personal.setValue('timeZone', user.timeZone);
+      setHasUserTimezone(true);
     }
-  }, [user.data, forms.personal]);
+  }, [user]);
 
   const submit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     // Validate the form using react-hook-form's handleSubmit
     const isValid = await forms.personal.trigger();
-    
+
     if (!isValid) {
       return;
     }
 
     // Get the form values
     const formData = forms.personal.getValues();
-    
+
     try {
       // Update the user profile
       await updateProfileMutation.mutateAsync({
         name: formData.name,
         username: formData.username,
-        timeZone: formData.timeZone,
+        timeZone: formData.timeZone
       });
     } catch (error) {
       // Handle any errors from the mutation
