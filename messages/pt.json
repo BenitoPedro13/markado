@@ -48,7 +48,13 @@
     "create": "Criar",
     "loading": "Carregando...",
     "invalid_email": "Por favor, insira um endereço de e-mail válido",
-    "min_password_length": "A senha deve ter pelo menos 8 caracteres"
+    "min_password_length": "A senha deve ter pelo menos 8 caracteres",
+    "oauth_account_not_linked": "Esta conta Google já está vinculada a um usuário diferente. Por favor, faça login com sua conta original ou use uma conta Google diferente.",
+    "account_linking_failed": "Não foi possível vincular sua conta Google. Por favor, tente novamente ou entre em contato com o suporte.",
+    "invalid_credentials": "E-mail ou senha inválidos.",
+    "oauth_signin_error": "Ocorreu um problema ao fazer login com o Google. Por favor, tente novamente.",
+    "oauth_callback_error": "Ocorreu um problema com a autenticação do Google. Por favor, tente novamente.",
+    "general_error": "Ocorreu um erro durante o login. Por favor, tente novamente."
   },
   "SignInPage": {
     "markado": "Markado"
@@ -102,7 +108,14 @@
       "want_to_fill_later": "Quer preencher depois?",
       "default": "Padrão",
       "error": "Erro",
-      "error_connecting_calendar": "Ocorreu um erro ao conectar ao seu Google Calendar. Por favor, tente novamente."
+      "error_connecting_calendar": "Ocorreu um erro ao conectar ao seu Google Calendar. Por favor, tente novamente.",
+      "select_default_calendar": "Selecione o calendário padrão",
+      "select_a_calendar": "Selecione um calendário",
+      "primary": "Principal",
+      "matches_email": "Corresponde ao seu email",
+      "success": "Sucesso",
+      "calendar_selected_successfully": "Calendário selecionado com sucesso",
+      "error_selecting_calendar": "Ocorreu um erro ao selecionar seu calendário. Por favor, tente novamente."
     },
     "CalendarSelect": {
       "select_calendar": "Selecionar Calendário",

@@ -48,7 +48,13 @@
     "create": "Create",
     "loading": "Loading...",
     "invalid_email": "Please enter a valid email address",
-    "min_password_length": "Password must be at least 8 characters long"
+    "min_password_length": "Password must be at least 8 characters long",
+    "oauth_account_not_linked": "This Google account is already linked to a different user. Please sign in with your original account or use a different Google account.",
+    "account_linking_failed": "We could not link your Google account. Please try again or contact support.",
+    "invalid_credentials": "Invalid email or password.",
+    "oauth_signin_error": "There was a problem signing in with Google. Please try again.",
+    "oauth_callback_error": "There was a problem with the Google authentication. Please try again.",
+    "general_error": "An error occurred during sign in. Please try again."
   },
   "SignInPage": {
     "markado": "Markado"
@@ -102,7 +108,14 @@
       "google_calendar": "Google Calendar",
       "default": "Default",
       "error": "Error",
-      "error_connecting_calendar": "There was an error connecting to your Google Calendar. Please try again."
+      "error_connecting_calendar": "There was an error connecting to your Google Calendar. Please try again.",
+      "select_default_calendar": "Select default calendar",
+      "select_a_calendar": "Select a calendar",
+      "primary": "Primary",
+      "matches_email": "Matches your email",
+      "success": "Success",
+      "calendar_selected_successfully": "Calendar selected successfully",
+      "error_selecting_calendar": "There was an error selecting your calendar. Please try again."
     },
     "CalendarSelect": {
       "select_calendar": "Select Calendar",
