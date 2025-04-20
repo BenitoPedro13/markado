@@ -67,7 +67,7 @@ export type SignUpStep =
   | '/sign-up/email'
   | '/sign-up/password'
   | '/sign-up/personal'
-  | '/sign-up/connect'
+  | '/sign-up/calendar'
   | '/sign-up/availability'
   | '/sign-up/ending';
 
@@ -119,8 +119,6 @@ export function SignUpProvider({
 
   // Replace the query with state initialized from the prop
   const [userData, setUserData] = useState<MeResponse | null>(initialUser);
-
-  const [step, setStep] = useState<SignUpStep>('/sign-up/email');
   const [agree, setAgree] = useState(false);
 
   const emailForm = useForm<SignUpEmailFormData>({
@@ -154,27 +152,42 @@ export function SignUpProvider({
   const previousStepMap: Partial<Record<SignUpStep, SignUpStep>> = {
     '/sign-up/password': '/sign-up/email',
     '/sign-up/personal': '/sign-up/password',
-    '/sign-up/connect': '/sign-up/personal',
-    '/sign-up/availability': '/sign-up/connect',
+    '/sign-up/calendar': '/sign-up/personal',
+    '/sign-up/availability': '/sign-up/calendar',
     '/sign-up/ending': '/sign-up/availability'
   };
 
   const nextStepMap: Partial<Record<SignUpStep, SignUpStep>> = {
     '/sign-up/email': '/sign-up/password',
     '/sign-up/password': '/sign-up/personal',
-    '/sign-up/personal': '/sign-up/connect',
-    '/sign-up/connect': '/sign-up/availability',
+    '/sign-up/personal': '/sign-up/calendar',
+    '/sign-up/calendar': '/sign-up/availability',
     '/sign-up/availability': '/sign-up/ending'
   };
 
+  // Initialize step based on the current path if possible
+  const [step, setStep] = useState<SignUpStep>(() => {
+    if (typeof window !== 'undefined') {
+      const path = window.location.pathname;
+      // Check if the current path is a valid SignUpStep
+      const allSteps = [...Object.keys(nextStepMap), ...Object.values(nextStepMap)];
+      if (allSteps.includes(path as SignUpStep)) {
+        return path as SignUpStep;
+      }
+    }
+    return '/sign-up/email'; // Default fallback
+  });
+
   const backStep = () => {
-    setStep(previousStepMap[step]!);
-    router.push(previousStepMap[step]!);
+    const prevStep = previousStepMap[step]!;
+    setStep(prevStep);
+    router.push(prevStep);
   };
 
   const nextStep = () => {
-    setStep(nextStepMap[step]!);
-    router.push(nextStepMap[step]!);
+    const nextStep = nextStepMap[step]!;
+    setStep(nextStep);
+    router.push(nextStep);
   };
 
   // Remove the conditional fetching during render
