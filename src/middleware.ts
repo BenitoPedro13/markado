@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@/auth';
+// Remove the auth import from @/auth
+// import { auth } from '@/auth';
 import { NextRequest } from 'next/server';
 import { routing } from '@/i18n/routing';
 import { match } from '@formatjs/intl-localematcher';
@@ -62,9 +63,9 @@ function getLocale(request: NextRequest): string {
 
 export async function middleware(request: NextRequest) {
   try {
-    const session = await auth();
+    // Instead of using auth(), check for auth-related cookies
     const { pathname } = request.nextUrl;
-
+    
     // Check if the route is public
     const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route));
     
@@ -73,8 +74,12 @@ export async function middleware(request: NextRequest) {
       return NextResponse.next();
     }
 
+    // Check for auth-related cookies
+    const sessionCookie = request.cookies.get('next-auth.session-token')?.value;
+    const isAuthenticated = !!sessionCookie;
+
     // If the user is not authenticated and trying to access a protected route, redirect to sign-up
-    if (!session?.user) {
+    if (!isAuthenticated) {
       // Special handling for root path
       if (pathname === '/') {
         const signUpUrl = new URL('/sign-up', request.url);
