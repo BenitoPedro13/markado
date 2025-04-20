@@ -11,7 +11,7 @@ import { FormEvent } from 'react';
 
 const Availability = (props: SignUpAvailabilityFormData) => {
   const {schedules} = props;
-  const t = useTranslations();
+  const t = useTranslations("SignUpPage.AvailabilityForm");
 
   return (
     <div className="flex flex-col gap-4 w-full">
