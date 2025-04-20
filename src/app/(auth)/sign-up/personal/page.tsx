@@ -21,7 +21,7 @@ const PersonalForm = () => {
     trpc.profile.update.mutationOptions({
       onSuccess: () => {
         nextStep();
-        completeOnboardingMutation.mutate();
+        // completeOnboardingMutation.mutate();
       }
     })
   );
@@ -29,9 +29,10 @@ const PersonalForm = () => {
     trpc.profile.completeOnboarding.mutationOptions({
       onSuccess: () => {
         router.push('/');
-      }
+      },
     })
   );
+
   const {forms, nextStep, queries} = useSignUp();
   const {user} = queries;
   const [hasUserTimezone, setHasUserTimezone] = useState(false);
