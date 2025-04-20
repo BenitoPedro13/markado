@@ -69,7 +69,11 @@ export function TimezoneSelectWithStyle({
   const [currentTime, setCurrentTime] = useState<string>('');
   const [isDetecting, setIsDetecting] = useState(false);
   const [selectedTimezone, setSelectedTimezone] = useState<string | undefined>(value);
-
+  
+  // Use refs to track state without triggering renders
+  const isDetectingRef = useRef(false);
+  const detectionAttemptedRef = useRef(false);
+  const mountedRef = useRef(true);
 
   // Memoize the formatted timezone value to prevent recalculation on every render
   const formattedValue = useMemo(() => {
@@ -110,50 +114,73 @@ export function TimezoneSelectWithStyle({
   useEffect(() => {
     if (value) {
       setSelectedTimezone(value);
+      // If we have a value, don't attempt auto-detection
+      detectionAttemptedRef.current = true;
     }
   }, [value]);
-
-  // Detect user's timezone on component mount - only once
+  
+  // Handle component unmount
   useEffect(() => {
-    let isMounted = true;
-    
-    if (autoDetect && !selectedTimezone) {
-      setIsDetecting(true);
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
+
+  // One-time timezone detection
+  useEffect(() => {
+    // Only run once and only if auto-detection is enabled and no timezone is selected
+    if (detectionAttemptedRef.current || !autoDetect || selectedTimezone || isDetectingRef.current) {
+      return;
+    }
+
+    // Mark that we've attempted detection to prevent re-runs
+    detectionAttemptedRef.current = true;
+    isDetectingRef.current = true;
+    setIsDetecting(true);
+
+    // Set up the timeout first
+    const timeoutId = setTimeout(() => {
+      if (!mountedRef.current) return;
       
-      // Simulate a brief loading state
-      const timer = setTimeout(() => {
-        if (!isMounted) return;
+      // If we're still detecting, force completion
+      if (isDetectingRef.current) {
+        console.log('Timezone detection timed out');
+        isDetectingRef.current = false;
+        setIsDetecting(false);
+      }
+    }, 1500);
+
+    // Function to detect timezone - defined outside to avoid closure issues
+    const detectTimezone = () => {
+      try {
+        const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
         
-        try {
-          // Get the user's timezone
-          const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-          
-          // Set the detected timezone
+        if (mountedRef.current) {
           setSelectedTimezone(userTimezone);
           
-          // Notify parent component
           if (onChange) {
             onChange(userTimezone);
           }
-        } catch (error) {
-          console.error('Error detecting timezone:', error);
-          // Reset detecting state even if there's an error
-          if (isMounted) {
-            setIsDetecting(false);
-          }
-        } finally {
-          if (isMounted) {
-            setIsDetecting(false);
-          }
         }
-      }, 1000); // 1 second delay
-      
-      return () => {
-        isMounted = false;
-        clearTimeout(timer);
-      };
-    }
-  }, [autoDetect, selectedTimezone, onChange]);
+      } catch (error) {
+        console.error('Error detecting timezone:', error);
+      } finally {
+        // Ensure we always clean up regardless of success/failure
+        if (mountedRef.current) {
+          isDetectingRef.current = false;
+          setIsDetecting(false);
+        }
+      }
+    };
+
+    // Execute detection
+    detectTimezone();
+
+    // Clean up function
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, []); // Empty dependency array - this effect runs exactly once on mount
 
   // Update the current time every second
   useEffect(() => {
