@@ -113,12 +113,15 @@ export async function middleware(request: NextRequest) {
       const onboardingComplete =
         request.cookies.get('onboarding_complete')?.value === 'true';
 
+      console.log(`[Middleware] User: ${session.user.email}, Path: ${pathname}, Onboarding complete: ${onboardingComplete}`);
+
       if (!onboardingComplete) {
         // Redirect to personal info page
         const personalUrl = new URL('/sign-up/personal', request.url);
         if (!pathname.includes('redirect=')) {
           personalUrl.searchParams.set('redirect', pathname);
         }
+        console.log(`[Middleware] Redirecting to: ${personalUrl.toString()}`);
         return NextResponse.redirect(personalUrl);
       }
     }

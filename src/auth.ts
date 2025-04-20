@@ -164,8 +164,9 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
         return `${baseUrl}/sign-in`;
       }
 
-      // If signing in, redirect to home
-      if (url === `${baseUrl}/sign-in`) {
+      // If signing in, check if onboarding is complete
+      if (url === `${baseUrl}/sign-in` || url === baseUrl) {
+        // We'll redirect to the homepage which has logic to redirect to personal if needed
         return baseUrl;
       }
 

@@ -58,8 +58,14 @@ const EmailForm = () => {
   };
 
   const handleGoogleSignIn = async () => {
-    // Pass the redirect URL to the sign-in function
-    await signInWithGoogle(redirectTo);
+    // Always redirect to the home page after Google sign-in
+    // The home page will check onboarding status and redirect accordingly
+    console.log('[Email Sign-up] Signing in with Google, redirecting to: /');
+    try {
+      await signInWithGoogle('/');
+    } catch (error) {
+      console.error('[Email Sign-up] Error during Google sign-in:', error);
+    }
   };
 
   // Translate validation messages

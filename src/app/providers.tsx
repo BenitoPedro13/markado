@@ -14,6 +14,8 @@ import {NotificationProvider} from '@/components/align-ui/ui/notification-provid
 import {createSessionStore} from '@/stores/session-store';
 import {Session} from 'next-auth';
 import OnboardingCheck from '@/components/OnboardingCheck';
+import GoogleAuthRedirectHandler from '@/components/GoogleAuthRedirectHandler';
+import AuthStateHandler from '@/components/AuthStateHandler';
 import {TooltipProvider} from '@radix-ui/react-tooltip';
 import {ThemeProvider} from 'next-themes';
 
@@ -51,6 +53,8 @@ export default function Providers({
                   <ThemeStoreProvider>
                     <NotificationProvider />
                     <OnboardingCheck />
+                    <GoogleAuthRedirectHandler />
+                    <AuthStateHandler />
                     {children}
                   </ThemeStoreProvider>
                 </SessionStoreProvider>
