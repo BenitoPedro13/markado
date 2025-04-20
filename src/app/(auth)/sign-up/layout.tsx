@@ -1,15 +1,20 @@
-'use client';
-
 import { SignUpProvider } from '@/contexts/SignUpContext';
 import { PropsWithChildren } from 'react';
-import { inferRouterOutputs } from '@trpc/server';
-import { AppRouter } from '~/trpc/server';
+import { auth } from '@/auth';
+import { redirect } from 'next/navigation';
+import { getMeByUserId } from '~/trpc/server/handlers/user.handler';
 
-type MeResponse = inferRouterOutputs<AppRouter>['user']['me'];
+export default async function SignUpLayout({children}: PropsWithChildren ) {
+  const session = await auth();
 
-export default function SignUpLayout({children, initialUser}: PropsWithChildren & {initialUser: MeResponse | null}) {
+  if (!session?.user?.id) {
+    redirect('/sign-in');
+  }
+
+  const me = await getMeByUserId(session.user.id);
+
   return (
-    <SignUpProvider initialUser={initialUser}>
+    <SignUpProvider initialUser={me}>
       {children}
     </SignUpProvider>
   );

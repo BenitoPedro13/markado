@@ -39,6 +39,7 @@ export type TimezoneSelectWithStyleProps = {
   className?: string;
   labelStyle?: 'original' | 'altName' | 'abbrev';
   placeholder?: string;
+  defaultValue?: string;
   disabled?: boolean;
   isLoading?: boolean;
   autoDetect?: boolean;
@@ -52,7 +53,8 @@ export function TimezoneSelectWithStyle({
   placeholder = 'Select timezone',
   disabled = false,
   isLoading = false,
-  autoDetect = true
+  autoDetect = true,
+  defaultValue = ''
 }: TimezoneSelectWithStyleProps) {
   const trpc = useTRPC();
   const {data = [], isPending} = useQuery(
@@ -218,6 +220,7 @@ export function TimezoneSelectWithStyle({
         onValueChange={handleValueChange}
         disabled={disabled || isLoading || isDetecting}
         value={selectedTimezone}
+        defaultValue={defaultValue}
       >
         <Select.Trigger
           className={cn(

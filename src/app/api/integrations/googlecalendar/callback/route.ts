@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import {auth} from '@/auth';
 
+// Force dynamic rendering for this API route
+export const dynamic = 'force-dynamic';
+
 import { google } from 'googleapis';
 import { encrypt } from '@/utils/encryption';
 
@@ -93,7 +96,7 @@ export async function GET(request: NextRequest) {
 
 
     return NextResponse.redirect(
-      new URL('/sign-up/calendar/select', request.url)
+      new URL('/sign-up/calendar', request.url)
     );
   } catch (error) {
     console.error('Error in Google Calendar callback:', error);

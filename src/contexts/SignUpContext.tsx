@@ -19,6 +19,7 @@ import {
 import {useForm, UseFormReturn} from 'react-hook-form';
 import {z} from 'zod';
 import {type AppRouter} from '~/trpc/server';
+import { getMeByUserId } from '~/trpc/server/handlers/user.handler';
 
 // Sign up email form schema
 const signUpEmailFormSchema = z.object({
@@ -107,32 +108,34 @@ type SignUpContextType = {
 
 const SignUpContext = createContext<SignUpContextType | null>(null);
 
+type SignUpProviderProps = {
+  children: React.ReactNode;
+  initialUser: Awaited<ReturnType<typeof getMeByUserId>> | null;
+};
+
 export function SignUpProvider({
   children,
   initialUser
-}: {
-  children: React.ReactNode;
-  initialUser: MeResponse | null;
-}) {
+}: SignUpProviderProps) {
   const trpc = useTRPC();
   const router = useRouter();
 
   // Replace the query with state initialized from the prop
-  const [userData, setUserData] = useState<MeResponse | null>(initialUser);
-  const [agree, setAgree] = useState(false);
+  const [userData, setUserData] = useState<SignUpProviderProps['initialUser']>(initialUser);
+  const [agree, setAgree] = useState(true);
 
   const emailForm = useForm<SignUpEmailFormData>({
     resolver: zodResolver(signUpEmailFormSchema),
-    mode: 'onSubmit',
+    mode: 'onChange',
     defaultValues: {
       email: '',
-      agree: false
+      agree: true
     }
   });
 
   const passwordForm = useForm<SignUpPasswordFormData>({
     resolver: zodResolver(signUpPasswordFormSchema),
-    mode: 'onSubmit',
+    mode: 'onChange',
     defaultValues: {
       password: '',
       confirmPassword: ''
@@ -141,11 +144,11 @@ export function SignUpProvider({
 
   const personalForm = useForm<SignUpPersonalFormData>({
     resolver: zodResolver(signUpPersonalFormSchema),
-    mode: 'onSubmit',
+    mode: 'onChange',
     defaultValues: {
-      name: '',
-      username: '',
-      timeZone: ''
+      name: userData?.name ?? '',
+      username: userData?.username ?? '',
+      timeZone: userData?.timeZone ?? ''
     }
   });
 
