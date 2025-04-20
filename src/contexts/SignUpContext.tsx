@@ -1,12 +1,12 @@
 'use client';
 
-import { useTRPC } from '@/utils/trpc';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useQuery } from '@tanstack/react-query';
-import { TRPCClientErrorLike } from '@trpc/client';
-import { type inferRouterOutputs } from '@trpc/server';
-import { DefaultErrorShape } from '@trpc/server/unstable-core-do-not-import';
-import { useRouter } from 'next/navigation';
+import {useTRPC} from '@/utils/trpc';
+import {zodResolver} from '@hookform/resolvers/zod';
+import {useQuery} from '@tanstack/react-query';
+import {TRPCClientErrorLike} from '@trpc/client';
+import {type inferRouterOutputs} from '@trpc/server';
+import {DefaultErrorShape} from '@trpc/server/unstable-core-do-not-import';
+import {useRouter} from 'next/navigation';
 import {
   createContext,
   Dispatch,
@@ -14,13 +14,16 @@ import {
   useContext,
   useState
 } from 'react';
-import { useForm, UseFormReturn } from 'react-hook-form';
-import { z } from 'zod';
-import { type AppRouter } from '~/trpc/server';
+import {useForm, UseFormReturn} from 'react-hook-form';
+import {z} from 'zod';
+import {type AppRouter} from '~/trpc/server';
 
 // Sign up email form schema
 const signUpEmailFormSchema = z.object({
-  email: z.string().nonempty('SignUpPage.EmailForm.email_required').email('SignUpPage.EmailForm.invalid_email'),
+  email: z
+    .string()
+    .nonempty('SignUpPage.EmailForm.email_required')
+    .email('SignUpPage.EmailForm.invalid_email'),
   agree: z.boolean().refine((data) => data, {
     message: 'SignUpPage.EmailForm.must_agree_to_terms',
     path: ['agree']
@@ -50,7 +53,7 @@ const signUpPasswordFormSchema = z
 const signUpPersonalFormSchema = z.object({
   name: z.string().min(1, 'SignUpPage.PersonalForm.name_required'),
   username: z.string().min(1, 'SignUpPage.PersonalForm.username_required'),
-  timeZone: z.string().min(1, 'SignUpPage.PersonalForm.timezone_required'),
+  timeZone: z.string().min(1, 'SignUpPage.PersonalForm.timezone_required')
 });
 
 export type SignUpEmailFormData = z.infer<typeof signUpEmailFormSchema>;
@@ -80,7 +83,7 @@ type QueryState<T> = {
 
 type SignUpContextType = {
   queries: {
-    user: QueryState<MeResponse>;
+    user: MeResponse;
     // Add other query states here as needed
     // example: profile: QueryState<Profile>;
   };
@@ -96,16 +99,24 @@ type SignUpContextType = {
   agree: boolean;
   setAgree: Dispatch<SetStateAction<boolean>>;
   // Helper functions
-  isAnyQueryLoading: () => boolean;
-  hasAnyQueryError: () => boolean;
+  // isAnyQueryLoading: () => boolean;
+  // hasAnyQueryError: () => boolean;
 };
 
 const SignUpContext = createContext<SignUpContextType | null>(null);
 
-export function SignUpProvider({ children }: { children: React.ReactNode }) {
-  const trpc = useTRPC();   
-  const userQuery = useQuery(trpc.user.me.queryOptions());
+export function SignUpProvider({
+  children,
+  initialUser
+}: {
+  children: React.ReactNode;
+  initialUser: MeResponse | null;
+}) {
+    const trpc = useTRPC();
   const router = useRouter();
+
+  // Replace the query with state initialized from the prop
+  const [userData, setUserData] = useState<MeResponse | null>(initialUser);
 
   const [step, setStep] = useState<SignUpStep>('/sign-up/email');
   const [agree, setAgree] = useState(false);
@@ -115,7 +126,7 @@ export function SignUpProvider({ children }: { children: React.ReactNode }) {
     mode: 'onSubmit',
     defaultValues: {
       email: '',
-      agree: false,
+      agree: false
     }
   });
 
@@ -124,7 +135,7 @@ export function SignUpProvider({ children }: { children: React.ReactNode }) {
     mode: 'onSubmit',
     defaultValues: {
       password: '',
-      confirmPassword: '',
+      confirmPassword: ''
     }
   });
 
@@ -134,7 +145,7 @@ export function SignUpProvider({ children }: { children: React.ReactNode }) {
     defaultValues: {
       name: '',
       username: '',
-      timeZone: '',
+      timeZone: ''
     }
   });
 
@@ -151,7 +162,7 @@ export function SignUpProvider({ children }: { children: React.ReactNode }) {
     '/sign-up/password': '/sign-up/personal',
     '/sign-up/personal': '/sign-up/connect',
     '/sign-up/connect': '/sign-up/availability',
-    '/sign-up/availability': '/sign-up/ending',
+    '/sign-up/availability': '/sign-up/ending'
   };
 
   const backStep = () => {
@@ -164,13 +175,17 @@ export function SignUpProvider({ children }: { children: React.ReactNode }) {
     router.push(nextStepMap[step]!);
   };
 
+  if (!userData) {
+    //fetch user data from trpc and react query
+    const userQuery = useQuery(trpc.user.me.queryOptions());  
+    if (userQuery.data) {
+      setUserData(userQuery.data);
+    }
+  }
+
   const value: SignUpContextType = {
     queries: {
-      user: {
-        data: userQuery.data ?? null,
-        isLoading: userQuery.isLoading,
-        error: userQuery.error
-      }
+      user: userData!
     },
     forms: {
       email: emailForm,
@@ -183,14 +198,10 @@ export function SignUpProvider({ children }: { children: React.ReactNode }) {
     nextStep,
     agree,
     setAgree,
-    isAnyQueryLoading: () => Object.values(value.queries).some(q => q.isLoading),
-    hasAnyQueryError: () => Object.values(value.queries).some(q => q.error !== null)
   };
 
   return (
-    <SignUpContext.Provider value={value}>
-      {children}
-    </SignUpContext.Provider>
+    <SignUpContext.Provider value={value}>{children}</SignUpContext.Provider>
   );
 }
 
