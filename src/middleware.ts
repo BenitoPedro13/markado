@@ -109,6 +109,42 @@ export async function middleware(request: NextRequest) {
 
     // Only check onboarding status for routes that require it and for /sign-up/personal
     if (requiresOnboarding && !pathname.startsWith('/sign-up/personal')) {
+      // Check for a temporary next_step cookie that allows one-time navigation to a specific step
+      const nextStepCookie = request.cookies.get('next_step')?.value;
+      
+      if (nextStepCookie && pathname === nextStepCookie) {
+        console.log(`[Middleware] Found next_step cookie for: ${nextStepCookie}, allowing access`);
+        
+        // Create a response that clears the cookie (it's one-time use only)
+        const response = NextResponse.next();
+        response.cookies.set('next_step', '', { maxAge: 0, path: '/' });
+        
+        return response;
+      }
+      
+      // Check for step-specific completion cookies
+      const personalStepComplete = request.cookies.get('personal_step_complete')?.value === 'true';
+      const calendarStepComplete = request.cookies.get('calendar_step_complete')?.value === 'true';
+      const availabilityStepComplete = request.cookies.get('availability_step_complete')?.value === 'true';
+      
+      // Allow access to calendar if personal is complete
+      if (pathname === '/sign-up/calendar' && personalStepComplete) {
+        console.log(`[Middleware] Personal step is complete, allowing access to calendar`);
+        return NextResponse.next();
+      }
+      
+      // Allow access to availability if calendar is complete
+      if (pathname === '/sign-up/availability' && calendarStepComplete) {
+        console.log(`[Middleware] Calendar step is complete, allowing access to availability`);
+        return NextResponse.next();
+      }
+      
+      // Allow access to ending if availability is complete
+      if (pathname === '/sign-up/ending' && availabilityStepComplete) {
+        console.log(`[Middleware] Availability step is complete, allowing access to ending`);
+        return NextResponse.next();
+      }
+      
       // Get the onboarding status from the cookie
       const onboardingComplete =
         request.cookies.get('onboarding_complete')?.value === 'true';
