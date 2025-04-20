@@ -114,7 +114,7 @@ const Header = () => {
           <>
             {/** Help button */}
             <div className="flex items-center gap-3">
-              <p className="text-paragraph-sm text-sub-600">{t('need_help')}</p>
+              <p className="text-paragraph-sm text-text-sub-600">{t('need_help')}</p>
               <Button variant="neutral" mode="stroke">
                 <ButtonIcon>
                   <RiHeadphoneLine size={20} color="var(--text-sub-600)" />

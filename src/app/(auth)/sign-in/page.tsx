@@ -21,8 +21,8 @@ import {z} from 'zod';
 import {zodResolver} from '@hookform/resolvers/zod';
 
 const signInSchema = z.object({
-  email: z.string().email('SignInForm.invalid_email'),
-  password: z.string().min(8, 'SignInForm.min_password_length')
+  email: z.string().email('invalid_email'),
+  password: z.string().min(8, 'min_password_length')
 });
 
 type SignInFormData = z.infer<typeof signInSchema>;

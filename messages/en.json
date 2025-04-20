@@ -98,6 +98,21 @@
       "username_required": "Username is required",
       "timezone_required": "Time zone is required"
     },
+    "AvailabilityForm": {
+      "availability": "Availability",
+      "availability_description": "Set up your available hours",
+      "continue": "Continue",
+      "want_to_fill_later": "Want to fill this in later?",
+      "skip_for_now": "Skip for now",
+      "sunday": "Sunday",
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday",
+      "invalid_time_format": "Invalid time format. Use HH:MM format."
+    },
     "CalendarForm": {
       "connect_calendar": "Connect Calendar",
       "connect_calendar_description": "Connect your Google Calendar to manage your availability and appointments.",
@@ -174,5 +189,12 @@
       "connecting": "Connecting",
       "connect": "Connect"
     }
+  },
+  "Middleware": {
+    "redirect_to_personal": "You need to complete your personal information first",
+    "redirect_to_calendar": "You need to connect your calendar first", 
+    "redirect_to_availability": "You need to set your availability first",
+    "onboarding_required": "You need to complete the onboarding process",
+    "authentication_required": "You need to sign in to access this page"
   }
 }

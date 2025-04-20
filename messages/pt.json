@@ -98,9 +98,24 @@
       "username_required": "Nome de usuário é obrigatório",
       "timezone_required": "Fuso horário é obrigatório"
     },
+    "AvailabilityForm": {
+      "availability": "Disponibilidade",
+      "availability_description": "Configure seus horários disponíveis",
+      "continue": "Continuar",
+      "want_to_fill_later": "Quer preencher depois?",
+      "skip_for_now": "Pular etapa",
+      "sunday": "Domingo",
+      "monday": "Segunda-feira",
+      "tuesday": "Terça-feira",
+      "wednesday": "Quarta-feira",
+      "thursday": "Quinta-feira",
+      "friday": "Sexta-feira",
+      "saturday": "Sábado",
+      "invalid_time_format": "Formato de hora inválido. Use o formato HH:MM."
+    },
     "CalendarForm": {
       "connect_calendar": "Conecte seu calendário",
-      "connect_calendar_description": "Conecte seu aplicativo de calendário",
+      "connect_calendar_description": "Conecte seu Google Calendar para gerenciar sua disponibilidade e compromissos",
       "connect_google_calendar": "Conectar Google Calendar",
       "skip_for_now": "Pular etapa",
       "continue": "Continuar",
@@ -125,20 +140,6 @@
       "loading": "Carregando calendários...",
       "error": "Erro",
       "error_selecting_calendar": "Ocorreu um erro ao selecionar seu calendário. Por favor, tente novamente."
-    },
-    "AvailabilityForm": {
-      "availability": "Disponibilidade",
-      "availability_description": "Configure seus horários disponíveis",
-      "continue": "Continuar",
-      "want_to_fill_later": "Quer preencher depois?",
-      "skip_for_now": "Pular etapa",
-      "sunday": "Domingo",
-      "monday": "Segunda-feira",
-      "tuesday": "Terça-feira",
-      "wednesday": "Quarta-feira",
-      "thursday": "Quinta-feira",
-      "friday": "Sexta-feira",
-      "saturday": "Sábado"
     },
     "EndingPage": {
       "all_set": "Tudo Pronto!",
@@ -188,5 +189,12 @@
       "connecting": "Conectando",
       "connect": "Conectar"
     }
+  },
+  "Middleware": {
+    "redirect_to_personal": "Você precisa completar suas informações pessoais primeiro",
+    "redirect_to_calendar": "Você precisa conectar seu calendário primeiro", 
+    "redirect_to_availability": "Você precisa definir sua disponibilidade primeiro",
+    "onboarding_required": "Você precisa completar o processo de integração",
+    "authentication_required": "Você precisa fazer login para acessar esta página"
   }
 }
