@@ -126,6 +126,20 @@
       "error": "Erro",
       "error_selecting_calendar": "Ocorreu um erro ao selecionar seu calendário. Por favor, tente novamente."
     },
+    "AvailabilityForm": {
+      "availability": "Disponibilidade",
+      "availability_description": "Configure seus horários disponíveis",
+      "continue": "Continuar",
+      "want_to_fill_later": "Quer preencher depois?",
+      "skip_for_now": "Pular etapa",
+      "sunday": "Domingo",
+      "monday": "Segunda-feira",
+      "tuesday": "Terça-feira",
+      "wednesday": "Quarta-feira",
+      "thursday": "Quinta-feira",
+      "friday": "Sexta-feira",
+      "saturday": "Sábado"
+    },
     "EndingPage": {
       "all_set": "Tudo Pronto!",
       "your_account_is_ready": "Sua conta está pronta para uso",

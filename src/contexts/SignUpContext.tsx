@@ -1,24 +1,24 @@
 'use client';
 
-import {useTRPC} from '@/utils/trpc';
-import {zodResolver} from '@hookform/resolvers/zod';
-import {useQuery} from '@tanstack/react-query';
-import {TRPCClientErrorLike} from '@trpc/client';
-import {type inferRouterOutputs} from '@trpc/server';
-import {DefaultErrorShape} from '@trpc/server/unstable-core-do-not-import';
-import {useRouter} from 'next/navigation';
+import { useTRPC } from '@/utils/trpc';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useQuery } from '@tanstack/react-query';
+import { TRPCClientErrorLike } from '@trpc/client';
+import { type inferRouterOutputs } from '@trpc/server';
+import { DefaultErrorShape } from '@trpc/server/unstable-core-do-not-import';
+import { useRouter } from 'next/navigation';
 import {
   createContext,
   Dispatch,
   SetStateAction,
   useContext,
-  useState,
   useEffect,
-  useMemo
+  useMemo,
+  useState
 } from 'react';
-import {useForm, UseFormReturn} from 'react-hook-form';
-import {z} from 'zod';
-import {type AppRouter} from '~/trpc/server';
+import { useForm, UseFormReturn } from 'react-hook-form';
+import { z } from 'zod';
+import { type AppRouter } from '~/trpc/server';
 import { getMeByUserId } from '~/trpc/server/handlers/user.handler';
 
 // Sign up email form schema
@@ -59,9 +59,31 @@ const signUpPersonalFormSchema = z.object({
   timeZone: z.string().min(1, 'SignUpPage.PersonalForm.timezone_required')
 });
 
+// Sign up availability form schema
+const signUpAvailabilityFormSchema = z.object({
+  schedules: z.record(z.enum([
+    'sunday',
+    'monday',
+    'tuesday',
+    'wednesday',
+    'thursday',
+    'friday',
+    'saturday'
+  ]), z.object({
+    enabled: z.boolean(),
+    timeWindows: z.array(z.object({
+      startTime: z.string()
+        .regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, 'SignUpPage.AvailabilityForm.invalid_time_format'),
+      endTime: z.string()
+        .regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, 'SignUpPage.AvailabilityForm.invalid_time_format')
+    })).default([])
+  }))
+});
+
 export type SignUpEmailFormData = z.infer<typeof signUpEmailFormSchema>;
 export type SignUpPasswordFormData = z.infer<typeof signUpPasswordFormSchema>;
 export type SignUpPersonalFormData = z.infer<typeof signUpPersonalFormSchema>;
+export type SignUpAvailabilityFormData = z.infer<typeof signUpAvailabilityFormSchema>;
 
 // Sign up context
 export type SignUpStep =
@@ -146,10 +168,46 @@ export function SignUpProvider({
     resolver: zodResolver(signUpPersonalFormSchema),
     mode: 'onChange',
     defaultValues: {
-      name: userData?.name ?? '',
-      username: userData?.username ?? '',
-      timeZone: userData?.timeZone ?? ''
+      name: '',
+      username: '',
+      timeZone: ''
     }
+  });
+  const availabilityForm = useForm<SignUpAvailabilityFormData>({
+    resolver: zodResolver(signUpAvailabilityFormSchema),
+    mode: 'onSubmit',
+    defaultValues: {
+      schedules: {
+        'sunday': {
+          enabled: false,
+          timeWindows: []
+        },
+        'monday': {
+          enabled: false,
+          timeWindows: []
+        },
+        'tuesday': {
+          enabled: false,
+          timeWindows: []
+        },
+        'wednesday': {
+          enabled: false,
+          timeWindows: []
+        },
+        'thursday': {
+          enabled: false,
+          timeWindows: []
+        },
+        'friday': {
+          enabled: false,
+          timeWindows: []
+        },
+        'saturday': {
+          enabled: false,
+          timeWindows: []
+        }
+      }
+    }   
   });
 
   const previousStepMap: Partial<Record<SignUpStep, SignUpStep>> = {
@@ -214,7 +272,8 @@ export function SignUpProvider({
     forms: {
       email: emailForm,
       password: passwordForm,
-      personal: personalForm
+      personal: personalForm,
+      availability: availabilityForm
     },
     step,
     setStep,
@@ -227,6 +286,7 @@ export function SignUpProvider({
     emailForm,
     passwordForm,
     personalForm,
+    availabilityForm,
     step,
     agree
   ]);
