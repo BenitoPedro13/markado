@@ -13,6 +13,7 @@ import {useTranslations} from 'next-intl';
 import {FormEvent, useEffect, useState, useRef} from 'react';
 import {useMutation} from '@tanstack/react-query';
 import {useRouter} from 'next/navigation';
+import Cookies from 'js-cookie';
 
 import {getMeByUserId} from '~/trpc/server/handlers/user.handler';
 
@@ -23,14 +24,65 @@ interface PersonalFormProps {
 const PersonalForm = ({user}: PersonalFormProps) => {
   const trpc = useTRPC();
   const router = useRouter();
-  const updateProfileMutation = useMutation(
-    trpc.profile.update.mutationOptions({
+  const {forms, nextStep} = useSignUp();
+  const [hasUserTimezone, setHasUserTimezone] = useState(false);
+  const t = useTranslations('SignUpPage.PersonalForm');
+  const formInitializedRef = useRef(false);
+
+  // Initialize form values from user data if not already done
+  useEffect(() => {
+    if (user && !formInitializedRef.current) {
+      console.log('[PersonalForm] Initializing form with user data:', user.name, user.username, user.timeZone);
+      forms.personal.reset({
+        name: user.name || '',
+        username: user.username || '',
+        timeZone: user.timeZone || ''
+      });
+      formInitializedRef.current = true;
+    }
+  }, [user, forms.personal]);
+
+  // New mutation to update onboarding progress
+  const updateOnboardingProgressMutation = useMutation(
+    trpc.profile.updateOnboardingProgress.mutationOptions({
       onSuccess: () => {
+        // Set a specific cookie to bypass middleware on the next step ONLY
+        console.log('[PersonalForm] Setting temporary next_step cookie');
+        Cookies.set('next_step', '/sign-up/calendar', { path: '/' });
+        
+        // Finally, navigate to next step
+        console.log('[PersonalForm] Profile and progress updated, navigating to calendar step');
         nextStep();
-        // completeOnboardingMutation.mutate();
       }
     })
   );
+
+  const updateProfileMutation = useMutation(
+    trpc.profile.update.mutationOptions({
+      onSuccess: () => {
+        console.log('[PersonalForm] Profile updated, updating onboarding progress');
+        
+        // Set the personal step completion cookie directly
+        Cookies.set('personal_step_complete', 'true', { 
+          expires: 1, // 1 day
+          path: '/' 
+        });
+        
+        // Set a temporary one-time navigation cookie
+        Cookies.set('next_step', '/sign-up/calendar', { 
+          path: '/' 
+        });
+        
+        console.log('[PersonalForm] Cookies set, navigating to next step');
+        
+        // After setting cookies, update progress in backend (even if we've set cookies directly)
+        updateOnboardingProgressMutation.mutate({ 
+          personalComplete: true 
+        });
+      }
+    })
+  );
+  
   const completeOnboardingMutation = useMutation(
     trpc.profile.completeOnboarding.mutationOptions({
       onSuccess: () => {
@@ -38,10 +90,6 @@ const PersonalForm = ({user}: PersonalFormProps) => {
       }
     })
   );
-
-  const {forms, nextStep} = useSignUp();
-  const [hasUserTimezone, setHasUserTimezone] = useState(false);
-  const t = useTranslations('SignUpPage.PersonalForm');
 
   const submit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -57,6 +105,7 @@ const PersonalForm = ({user}: PersonalFormProps) => {
     const formData = forms.personal.getValues();
 
     try {
+      console.log('[PersonalForm] Submitting form with values:', formData);
       // Update the user profile
       await updateProfileMutation.mutateAsync({
         name: formData.name,
@@ -65,11 +114,13 @@ const PersonalForm = ({user}: PersonalFormProps) => {
       });
     } catch (error) {
       // Handle any errors from the mutation
-      console.error('Error updating profile:', error);
+      console.error('[PersonalForm] Error updating profile:', error);
     }
   };
 
   const timeZone = forms.personal.watch('timeZone');
+  const name = forms.personal.watch('name');
+  const username = forms.personal.watch('username');
 
   return (
     <form
@@ -103,7 +154,6 @@ const PersonalForm = ({user}: PersonalFormProps) => {
           <Input.Root>
             <Input.Input
               type="text"
-              defaultValue={user?.name ?? ''}
               placeholder="Marcus Dutra"
               {...forms.personal.register('name')}
             />
@@ -120,7 +170,6 @@ const PersonalForm = ({user}: PersonalFormProps) => {
             <Input.Affix>{MARKADO_DOMAIN}/</Input.Affix>
             <Input.Input
               type="text"
-              defaultValue={user?.username ?? ''}
               placeholder="marcusdutra"
               {...forms.personal.register('username')}
             />
@@ -135,7 +184,6 @@ const PersonalForm = ({user}: PersonalFormProps) => {
           <Label>{t('time_zone')}</Label>
           <TimezoneSelectWithStyle
             value={timeZone}
-            defaultValue={user?.timeZone ?? ''}
             onChange={(value) => {
               forms.personal.setValue('timeZone', value);
               forms.personal.trigger();
@@ -155,7 +203,7 @@ const PersonalForm = ({user}: PersonalFormProps) => {
         variant={'primary'}
         mode="filled"
         type="submit"
-        disabled={updateProfileMutation.isPending}
+        disabled={updateProfileMutation.isPending || updateOnboardingProgressMutation.isPending}
       >
         <span className="text-label-sm">{t('continue')}</span>
       </Button>
