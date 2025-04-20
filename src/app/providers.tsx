@@ -50,7 +50,7 @@ export default function Providers({
                 <SessionStoreProvider initialSession={sessionStore}>
                   <ThemeStoreProvider>
                     <NotificationProvider />
-                    {initialSession?.user && <OnboardingCheck />}
+                    <OnboardingCheck />
                     {children}
                   </ThemeStoreProvider>
                 </SessionStoreProvider>
