@@ -12,7 +12,9 @@ import {
   Dispatch,
   SetStateAction,
   useContext,
-  useState
+  useState,
+  useEffect,
+  useMemo
 } from 'react';
 import {useForm, UseFormReturn} from 'react-hook-form';
 import {z} from 'zod';
@@ -112,7 +114,7 @@ export function SignUpProvider({
   children: React.ReactNode;
   initialUser: MeResponse | null;
 }) {
-    const trpc = useTRPC();
+  const trpc = useTRPC();
   const router = useRouter();
 
   // Replace the query with state initialized from the prop
@@ -175,15 +177,21 @@ export function SignUpProvider({
     router.push(nextStepMap[step]!);
   };
 
-  if (!userData) {
-    //fetch user data from trpc and react query
-    const userQuery = useQuery(trpc.user.me.queryOptions());  
-    if (userQuery.data) {
+  // Remove the conditional fetching during render
+  const userQuery = useQuery({
+    ...trpc.user.me.queryOptions(),
+    staleTime: 1000 * 60 * 5 // 5 minutes
+  });
+  
+  // Move state update to useEffect
+  useEffect(() => {
+    if (!userData && userQuery.data) {
       setUserData(userQuery.data);
     }
-  }
+  }, [userQuery.data]);  // Remove userData from dependencies to prevent rerender loops
 
-  const value: SignUpContextType = {
+  // Memoize the context value to prevent unnecessary re-renders of children
+  const value = useMemo<SignUpContextType>(() => ({
     queries: {
       user: userData!
     },
@@ -198,7 +206,14 @@ export function SignUpProvider({
     nextStep,
     agree,
     setAgree,
-  };
+  }), [
+    userData,
+    emailForm,
+    passwordForm,
+    personalForm,
+    step,
+    agree
+  ]);
 
   return (
     <SignUpContext.Provider value={value}>{children}</SignUpContext.Provider>
