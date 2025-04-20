@@ -30,8 +30,13 @@ export const useAuthStore = create<AuthState>((set) => ({
     try {
       set({ isLoading: true, error: null });
       await signInWithGoogle(redirectTo);
-    } catch (error) {
-      set({ error: error instanceof Error ? error.message : 'An error occurred during Google sign in' });
+    } catch (error: any) {
+      console.error("Google sign-in error:", error);
+      if (error?.message && !error.message.includes('OAuthAccountNotLinked')) {
+        set({ error: error.message });
+      } else {
+        set({ error: 'An error occurred during Google sign in' });
+      }
     } finally {
       set({ isLoading: false });
     }
