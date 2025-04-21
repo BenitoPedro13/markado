@@ -51,9 +51,18 @@ export async function GET(request: NextRequest) {
     const calendar = google.calendar({version: 'v3', auth: oauth2Client});
     const {data: calendarList} = await calendar.calendarList.list();
 
-    // Store tokens and calendar list
-    // Then for each calendar, use upsert instead of create
+    // Check if user exists before updating
+    const userExists = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { id: true }
+    });
 
+    if (!userExists) {
+      console.error('User not found in database:', session.user.id);
+      return NextResponse.redirect(new URL('/sign-up/calendar?error=user_not_found', request.url));
+    }
+
+    // Store tokens and calendar list
     await prisma.user.update({
       where: {id: session.user.id},
       data: {
@@ -65,13 +74,12 @@ export async function GET(request: NextRequest) {
 
     if (!calendarList.items) {
       console.log('No calendars found from Google');
-      return NextResponse.redirect(new URL('/sign-up/calendar?error=no_calendars', request.url));
+      return NextResponse.redirect(new URL('/calendar?error=no_calendars', request.url));
     }
 
     for (const cal of calendarList.items) {
       await prisma.calendar.upsert({
         where: {
-          // Use a unique identifier or composite unique fields
           googleId_userId: {
             googleId: cal.id || '',
             userId: session.user.id
@@ -81,7 +89,6 @@ export async function GET(request: NextRequest) {
           name: cal.summary || '',
           description: cal.description || null,
           primary: cal.primary || false
-          // Any other fields to update
         },
         create: {
           googleId: cal.id || '',
@@ -89,15 +96,12 @@ export async function GET(request: NextRequest) {
           description: cal.description || null,
           primary: cal.primary || false,
           userId: session.user.id
-          // Any other fields to create
         }
       });
     }
 
-
-    return NextResponse.redirect(
-      new URL('/sign-up/calendar', request.url)
-    );
+    // Redirect back to the calendar page
+    return NextResponse.redirect(new URL('/calendar', request.url));
   } catch (error) {
     console.error('Error in Google Calendar callback:', error);
     // Log more details about the error

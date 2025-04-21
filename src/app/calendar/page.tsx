@@ -3,6 +3,7 @@
 import { Calendar } from '@/components/Calendar/Calendar';
 import { CalendarEvent } from '@/components/Calendar/types';
 import { addDays, addHours, startOfMonth, addMinutes } from 'date-fns';
+import { GoogleCalendarProvider } from '@/components/Calendar/GoogleCalendarProvider';
 
 // Helper function to create a random time on a given date
 const getRandomTime = (date: Date) => {
@@ -128,11 +129,13 @@ export default function CalendarPage() {
 
   return (
     <div className="h-screen p-4">
+      <GoogleCalendarProvider>
       <Calendar
         events={events}
         onEventClick={(event) => console.log('Event clicked:', event)}
         onDateSelect={(date) => console.log('Date selected:', date)}
       />
+      </GoogleCalendarProvider>
     </div>
   );
 }

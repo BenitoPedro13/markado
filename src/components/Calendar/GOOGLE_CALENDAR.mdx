@@ -355,4 +355,355 @@ const createEvent = async (eventDetails) => {
 - [Authentication Guide](https://developers.google.com/identity/protocols/oauth2)
 - [JavaScript Quickstart](https://developers.google.com/calendar/api/quickstart/js)
 - [Server-side Authentication](https://developers.google.com/identity/protocols/oauth2/service-account)
-- [Push Notifications](https://developers.google.com/calendar/api/guides/push) 
+- [Push Notifications](https://developers.google.com/calendar/api/guides/push)
+
+## Event Editor Interface Requirements
+
+### Core Event Editor Features
+1. Event Header
+   - Title input field with prominent placement
+   - Close button (X) in top-right corner
+   - "More actions" menu dropdown
+   - Primary action button (e.g., "Save") with prominent styling
+
+2. Date and Time Selection
+   - Start date picker with calendar icon
+   - End date picker with calendar icon
+   - Time selection for both start and end
+   - Time format based on user's locale (12/24 hour)
+   - Timezone indicator with ability to change
+   - "All day" event toggle
+   - Visual representation of duration between start and end
+   - Clear indication of timezone (e.g., "(GMT-03:00) Horário Padrão de Brasilia - São Paulo")
+
+3. Recurrence Options
+   - "Does not repeat" as default
+   - Dropdown for recurrence patterns:
+     - Daily
+     - Weekly
+     - Monthly
+     - Annually
+     - Custom recurrence
+   - Visual indication of recurring event status
+
+4. Event Details
+   - Video conferencing integration (e.g., "Add Google Meet video conferencing")
+   - Location field with map integration
+   - Description field with rich text editing:
+     - Bold
+     - Italic
+     - Underline
+     - Bullet points
+     - Numbered lists
+     - Link insertion
+     - Clear formatting
+
+5. Guest Management
+   - Add guests section
+   - Guest permissions settings:
+     - Modify event
+     - Invite others
+     - See guest list
+   - Guest response tracking
+   - Capacity limits
+   - Optional/Required attendance status
+
+6. Notifications
+   - Default notification settings
+   - Custom notification options:
+     - Notification type (email, popup)
+     - Timing (minutes, hours, days before)
+     - Multiple notifications per event
+   - Add/remove notification rules
+
+7. Calendar Selection
+   - Calendar dropdown for event assignment
+   - Visual color indicator
+   - Calendar visibility settings
+   - Busy/Free status selection
+
+8. Advanced Options
+   - Event color selection
+   - Attachment support
+   - Custom fields
+   - Event visibility (private/public)
+   - Room resource booking
+
+### UI/UX Requirements
+1. Modal Design
+   - Clean, organized layout
+   - Clear visual hierarchy
+   - Responsive design
+   - Keyboard navigation support
+   - Accessible form controls
+
+2. Form Validation
+   - Required field indicators
+   - Error messaging
+   - Date/time conflict detection
+   - Guest email validation
+   - Maximum character limits
+
+3. Real-time Updates
+   - Immediate feedback on changes
+   - Auto-save capability
+   - Conflict resolution
+   - Guest availability checking
+
+4. Keyboard Shortcuts
+   - Save: Ctrl/Cmd + S
+   - Close: Esc
+   - Navigation between fields: Tab
+   - Date selection: Arrow keys
+   - Time adjustment: Arrow keys with modifier
+
+5. Mobile Considerations
+   - Touch-friendly controls
+   - Simplified interface for small screens
+   - Native date/time pickers
+   - Responsive layout adjustments
+
+### Implementation Guidelines
+1. State Management
+```typescript
+interface EventEditorState {
+  title: string;
+  startDate: Date;
+  endDate: Date;
+  timeZone: string;
+  isAllDay: boolean;
+  recurrence: {
+    type: 'none' | 'daily' | 'weekly' | 'monthly' | 'yearly' | 'custom';
+    pattern?: string;
+    endCondition?: {
+      type: 'never' | 'after' | 'on';
+      value?: number | Date;
+    };
+  };
+  location?: string;
+  description?: string;
+  videoConference?: {
+    type: 'googleMeet';
+    link?: string;
+  };
+  guests: Array<{
+    email: string;
+    role: 'required' | 'optional';
+    response?: 'needsAction' | 'declined' | 'tentative' | 'accepted';
+  }>;
+  notifications: Array<{
+    type: 'email' | 'popup';
+    timing: number; // minutes before
+  }>;
+  calendar: {
+    id: string;
+    color: string;
+  };
+  visibility: 'default' | 'public' | 'private';
+  busy: boolean;
+}
+```
+
+2. Form Validation Rules
+```typescript
+interface EventValidation {
+  title: {
+    required: true;
+    maxLength: 255;
+  };
+  dates: {
+    startBeforeEnd: true;
+    minimumDuration: 1; // minute
+    maximumDuration?: number;
+  };
+  guests: {
+    maxGuests?: number;
+    validEmails: true;
+  };
+  recurrence: {
+    maxRepetitions?: number;
+    validPattern: true;
+  };
+}
+```
+
+3. Error Handling
+```typescript
+interface EventError {
+  type: 'validation' | 'conflict' | 'permission' | 'network';
+  field?: keyof EventEditorState;
+  message: string;
+  resolution?: string;
+}
+```
+
+### Integration Points
+1. Calendar Service
+   - Fetch available calendars
+   - Check calendar permissions
+   - Validate calendar access
+
+2. User Service
+   - Fetch user preferences
+   - Get user timezone
+   - Access user settings
+
+3. Resource Service
+   - Room availability
+   - Equipment booking
+   - Resource conflicts
+
+4. Notification Service
+   - Default reminders
+   - Custom notification rules
+   - Notification delivery
+
+5. Guest Service
+   - Email validation
+   - Guest availability
+   - Permission checking
+
+### Accessibility Requirements
+1. ARIA Labels
+   - Form controls
+   - Button actions
+   - Error messages
+   - Status updates
+
+2. Keyboard Navigation
+   - Logical tab order
+   - Focus management
+   - Shortcut keys
+
+3. Screen Reader Support
+   - Meaningful descriptions
+   - Status announcements
+   - Error notifications
+
+### Performance Considerations
+1. Loading States
+   - Progressive form display
+   - Placeholder content
+   - Background validation
+
+2. Optimization
+   - Debounced input handling
+   - Cached calendar data
+   - Lazy-loaded components
+
+3. Error Recovery
+   - Auto-save drafts
+   - Conflict resolution
+   - Network retry logic
+
+## Implementation Status
+
+### Core Event Editor Features Checklist
+
+#### ✅ Completed Features
+- [x] Title input field with prominent placement
+- [x] Close button (X) in drawer header
+- [x] Primary action buttons (Save, Cancel, Delete)
+- [x] Start/end date pickers with calendar icons
+- [x] Time selection for both start and end
+- [x] "All day" event toggle
+- [x] Basic event color selection
+- [x] Basic form layout and organization
+- [x] Drawer-based interface
+- [x] Event editing capability
+
+#### 🟡 Partially Implemented Features (Need Finalization)
+- [ ] Video conferencing integration (UI only)
+- [ ] Location field (basic input, needs map integration)
+- [ ] Description field (needs rich text editor)
+- [ ] Guest management section (UI only)
+- [ ] Notification settings (basic UI, needs full implementation)
+- [ ] Recurrence options (UI only)
+- [ ] Basic keyboard navigation
+- [ ] Basic form validation
+- [ ] Basic date/time conflict detection
+
+#### ❌ Missing Features
+- [ ] Timezone support and selection
+- [ ] "More actions" menu dropdown
+- [ ] Duration visualization
+- [ ] Rich text editing capabilities
+- [ ] Map integration for location
+- [ ] Guest permissions and response tracking
+- [ ] Custom notification rules
+- [ ] Calendar selection and visibility settings
+- [ ] Busy/Free status selection
+- [ ] Attachment support
+- [ ] Custom fields
+- [ ] Event visibility controls
+- [ ] Room resource booking
+- [ ] Advanced keyboard shortcuts
+
+### Implementation Priority Checklist
+
+#### 🔴 High Priority (Core Functionality)
+- [ ] Timezone support and indication
+  - [ ] Timezone selector component
+  - [ ] Proper timezone storage
+  - [ ] Timezone conversion utilities
+- [ ] Recurrence pattern implementation
+  - [ ] Basic recurrence options (daily, weekly, monthly, yearly)
+  - [ ] Custom recurrence rules
+  - [ ] Exception handling
+- [ ] Rich text editor for description
+  - [ ] Basic formatting (bold, italic, underline)
+  - [ ] Lists and indentation
+  - [ ] Link handling
+- [ ] Form validation and error handling
+  - [ ] Required field validation
+  - [ ] Date/time validation
+  - [ ] Error message display
+- [ ] Calendar selection
+  - [ ] Calendar dropdown component
+  - [ ] Calendar color integration
+  - [ ] Calendar permissions
+
+#### 🟡 Medium Priority (Enhanced Features)
+- [ ] Guest management system
+  - [ ] Email validation
+  - [ ] Permission settings
+  - [ ] Response tracking
+- [ ] Advanced notification options
+  - [ ] Multiple notification types
+  - [ ] Custom timing options
+  - [ ] Notification rules
+- [ ] Event visibility settings
+  - [ ] Private/Public toggle
+  - [ ] Custom visibility options
+- [ ] Keyboard shortcuts
+  - [ ] Save shortcuts
+  - [ ] Navigation shortcuts
+  - [ ] Date/time adjustment shortcuts
+- [ ] Duration visualization
+  - [ ] Visual timeline
+  - [ ] Duration indicators
+  - [ ] Conflict warnings
+
+#### 🟢 Lower Priority (Nice to Have)
+- [ ] Auto-save functionality
+  - [ ] Periodic saving
+  - [ ] Draft management
+  - [ ] Recovery options
+- [ ] Attachment handling
+  - [ ] File upload
+  - [ ] File preview
+  - [ ] Size limitations
+- [ ] Room resource management
+  - [ ] Resource availability
+  - [ ] Booking interface
+  - [ ] Conflict resolution
+- [ ] Custom fields
+  - [ ] Field creation
+  - [ ] Field validation
+  - [ ] Field templates
+- [ ] Guest availability checker
+  - [ ] Free/busy lookup
+  - [ ] Suggested times
+  - [ ] Conflict resolution
+
+This checklist will be updated as features are implemented or priorities change. 

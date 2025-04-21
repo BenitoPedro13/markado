@@ -9,6 +9,7 @@ export interface CalendarEvent {
   description?: string;
   isDragging?: boolean;
   allDay?: boolean;
+  timeZone?: string; // User's selected timezone for the event
 }
 
 export interface CalendarProps {

@@ -4,9 +4,9 @@ import { GoogleCalendarEndpoints, GoogleCalendarScope } from '@/types/googleCale
  * Google Calendar API configuration
  */
 export const GOOGLE_CALENDAR_CONFIG = {
-  clientId: process.env.GOOGLE_CALENDAR_CLIENT_ID || '',
-  clientSecret: process.env.GOOGLE_CALENDAR_CLIENT_SECRET || '',
-  redirectUri: process.env.GOOGLE_CALENDAR_REDIRECT_URI || '',
+  clientId: process.env.GOOGLE_CLIENT_ID || '',
+  clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
+  redirectUri: process.env.GOOGLE_REDIRECT_URI || '',
   scopes: [
     'https://www.googleapis.com/auth/calendar',
     'https://www.googleapis.com/auth/calendar.events',
