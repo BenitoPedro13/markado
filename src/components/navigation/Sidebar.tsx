@@ -12,11 +12,13 @@ import {
   RiSettings2Line,
   RiSettings2Fill,
   RiSidebarFoldLine,
+  RiSidebarFoldFill,
   RiSidebarUnfoldLine,
+  RiSidebarUnfoldFill,
   RiTimeLine,
   RiTimeFill
 } from '@remixicon/react';
-import React, {PropsWithChildren, ReactElement} from 'react';
+import React, {Fragment, PropsWithChildren, ReactElement} from 'react';
 
 import * as TabMenuVertical from '@/components/align-ui/ui/tab-menu-vertical';
 import * as CompactButton from '@/components/align-ui/ui/compact-button';
@@ -105,26 +107,38 @@ const Sidebar = ({children}: PropsWithChildren) => {
                 <Logo isCollapsed={isCollapsed} />
               </Link>
             </div>
-            <CompactButton.Root
-              variant="stroke"
-              className={isCollapsed ? 'hidden' : ''}
-              id="sidebar-toggle"
-              onClick={toggleCollapse}
-            >
-              <CompactButton.Icon
-                as={isCollapsed ? RiSidebarUnfoldLine : RiSidebarFoldLine}
-              />
-            </CompactButton.Root>
-            <CompactButton.Root
-              variant="stroke"
-              className={`${isCollapsed ? 'absolute left-[calc(100%-12px)]' : 'hidden'} z-10`}
-              id="sidebar-toggle"
-              onClick={toggleCollapse}
-            >
-              <CompactButton.Icon
-                as={isCollapsed ? RiSidebarUnfoldLine : RiSidebarFoldLine}
-              />
-            </CompactButton.Root>
+            <div className="group flex items-center">
+              <CompactButton.Root
+                variant="stroke"
+                className={`${isCollapsed ? 'hidden' : ''}`}
+                id="sidebar-toggle"
+                onClick={toggleCollapse}
+              >
+                <CompactButton.Icon
+                  as={isCollapsed ? RiSidebarUnfoldLine : RiSidebarFoldLine}
+                  className="group-hover:hidden"
+                />
+                <CompactButton.Icon
+                  as={isCollapsed ? RiSidebarUnfoldFill : RiSidebarFoldFill}
+                  className="hidden group-hover:block"
+                />
+              </CompactButton.Root>
+              <CompactButton.Root
+                variant="stroke"
+                className={`${isCollapsed ? 'absolute left-[calc(100%-12px)]' : 'hidden'} z-10`}
+                id="sidebar-toggle"
+                onClick={toggleCollapse}
+              >
+                <CompactButton.Icon
+                  as={isCollapsed ? RiSidebarUnfoldLine : RiSidebarFoldLine}
+                  className="group-hover:hidden"
+                />
+                <CompactButton.Icon
+                  as={isCollapsed ? RiSidebarUnfoldFill : RiSidebarFoldFill}
+                  className="hidden group-hover:block"
+                />
+              </CompactButton.Root>
+            </div>
           </div>
         </div>
 
