@@ -2,6 +2,7 @@ import SummaryForm from '@/modules/auth/sign-up/summary/SummaryForm';
 import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
 import { getMeByUserId } from '~/trpc/server/handlers/user.handler';
+import { getCalendarsByUserId } from '~/trpc/server/routers/calendar.router';
 
 const SummaryPage = async () => {
   const session = await auth();
@@ -16,7 +17,9 @@ const SummaryPage = async () => {
     redirect('/sign-in');
   }
 
-  return <SummaryForm user={me} calendars={[]} />;
+  const calendars = await getCalendarsByUserId(session.user.id);
+
+  return <SummaryForm user={me} calendars={calendars} />;
 };
 
 export default SummaryPage;
