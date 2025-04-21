@@ -17,7 +17,9 @@ export default function AvailabilityList() {
             timezone={availability.timezone}
             isDefault={availability.isDefault}
           />
-            <Divider.Root />
+            {availability.id !== availabilities[availabilities.length - 1].id && (
+              <Divider.Root />
+            )} 
           </div>
         ))}
       </div>

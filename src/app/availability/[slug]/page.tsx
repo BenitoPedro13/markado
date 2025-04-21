@@ -12,10 +12,10 @@ type Props = {
 };
 
 export default function AvailabilityDetailsPage({params}: Props) {
-  const title = params.slug
-    .split('-')
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
+    const title = decodeURIComponent(params.slug)
+      .split('-')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
 
   return (
     <PageLayout title="Disponibilidade">
