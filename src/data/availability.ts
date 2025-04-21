@@ -12,6 +12,7 @@ export type AvailabilityProps = {
   isDefault?: boolean;
   schedules: Record<string, DaySchedule>;
   status: 'active' | 'disabled';
+  slug: string;
 };
 
 export const availabilities: AvailabilityProps[] = [
@@ -22,6 +23,7 @@ export const availabilities: AvailabilityProps[] = [
     timezone: 'America/São_Paulo',
     isDefault: true,
     status: 'active',
+    slug: 'horas-de-trabalho',
     schedules: {
       'Segunda-feira': { enabled: true, startTime: '09:00', endTime: '17:00' },
       'Terça-feira': { enabled: true, startTime: '09:00', endTime: '17:00' },
@@ -38,6 +40,7 @@ export const availabilities: AvailabilityProps[] = [
     schedule: 'sab. - dom., 9:00 até 14:00',
     timezone: 'America/São_Paulo',
     status: 'active',
+    slug: 'final-de-semana',
     schedules: {
       'Segunda-feira': { enabled: false, startTime: '09:00', endTime: '14:00' },
       'Terça-feira': { enabled: false, startTime: '09:00', endTime: '14:00' },
@@ -54,6 +57,7 @@ export const availabilities: AvailabilityProps[] = [
     schedule: 'sab. - dom., 9:00 até 14:00',
     timezone: 'America/São_Paulo',
     status: 'active',
+    slug: 'designer',
     schedules: {
       'Segunda-feira': { enabled: false, startTime: '09:00', endTime: '14:00' },
       'Terça-feira': { enabled: false, startTime: '09:00', endTime: '14:00' },
@@ -70,6 +74,7 @@ export const availabilities: AvailabilityProps[] = [
     schedule: 'sab. - dom., 9:00 até 14:00',
     timezone: 'America/São_Paulo',
     status: 'active',
+    slug: 'dev',
     schedules: {
       'Segunda-feira': { enabled: false, startTime: '09:00', endTime: '14:00' },
       'Terça-feira': { enabled: false, startTime: '09:00', endTime: '14:00' },
