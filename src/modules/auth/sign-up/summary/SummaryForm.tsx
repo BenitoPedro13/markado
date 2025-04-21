@@ -134,7 +134,7 @@ const SummaryForm = ({user, calendars}: SummaryFormProps) => {
 
   const submit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    nextStep();
+    goToStep('/sign-up/ending');
   };
 
   const schedules = availabilityForm.getValues().schedules;
