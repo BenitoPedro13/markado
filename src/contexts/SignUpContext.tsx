@@ -12,15 +12,21 @@ import {
   Dispatch,
   SetStateAction,
   useContext,
+  useEffect,
+  useMemo,
   useState
 } from 'react';
 import { useForm, UseFormReturn } from 'react-hook-form';
 import { z } from 'zod';
 import { type AppRouter } from '~/trpc/server';
+import { getMeByUserId } from '~/trpc/server/handlers/user.handler';
 
 // Sign up email form schema
 const signUpEmailFormSchema = z.object({
-  email: z.string().nonempty('SignUpPage.EmailForm.email_required').email('SignUpPage.EmailForm.invalid_email'),
+  email: z
+    .string()
+    .nonempty('SignUpPage.EmailForm.email_required')
+    .email('SignUpPage.EmailForm.invalid_email'),
   agree: z.boolean().refine((data) => data, {
     message: 'SignUpPage.EmailForm.must_agree_to_terms',
     path: ['agree']
@@ -50,20 +56,56 @@ const signUpPasswordFormSchema = z
 const signUpPersonalFormSchema = z.object({
   name: z.string().min(1, 'SignUpPage.PersonalForm.name_required'),
   username: z.string().min(1, 'SignUpPage.PersonalForm.username_required'),
-  timeZone: z.string().min(1, 'SignUpPage.PersonalForm.timezone_required'),
+  timeZone: z.string().min(1, 'SignUpPage.PersonalForm.timezone_required')
+});
+
+// Sign up availability form schema
+const signUpAvailabilityFormSchema = z.object({
+  schedules: z.record(
+    z.enum([
+      'sunday',
+      'monday',
+      'tuesday',
+      'wednesday',
+      'thursday',
+      'friday',
+      'saturday'
+    ]),
+    z.object({
+      enabled: z.boolean(),
+      timeWindows: z.array(
+        z.object({
+          startTime: z
+            .string()
+            .regex(
+              /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/,
+              'SignUpPage.AvailabilityForm.invalid_time_format'
+            ),
+          endTime: z
+            .string()
+            .regex(
+              /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/,
+              'SignUpPage.AvailabilityForm.invalid_time_format'
+            )
+        })
+      )
+    })
+  )
 });
 
 export type SignUpEmailFormData = z.infer<typeof signUpEmailFormSchema>;
 export type SignUpPasswordFormData = z.infer<typeof signUpPasswordFormSchema>;
 export type SignUpPersonalFormData = z.infer<typeof signUpPersonalFormSchema>;
+export type SignUpAvailabilityFormData = z.infer<typeof signUpAvailabilityFormSchema>;
 
 // Sign up context
 export type SignUpStep =
   | '/sign-up/email'
   | '/sign-up/password'
   | '/sign-up/personal'
-  | '/sign-up/connect'
+  | '/sign-up/calendar'
   | '/sign-up/availability'
+  | '/sign-up/summary'
   | '/sign-up/ending';
 
 // Infer the output type of the user.me procedure
@@ -80,7 +122,7 @@ type QueryState<T> = {
 
 type SignUpContextType = {
   queries: {
-    user: QueryState<MeResponse>;
+    user: MeResponse;
     // Add other query states here as needed
     // example: profile: QueryState<Profile>;
   };
@@ -88,109 +130,209 @@ type SignUpContextType = {
   setStep: Dispatch<SetStateAction<SignUpStep>>;
   backStep: () => void;
   nextStep: () => void;
+  goToStep: (targetStep: SignUpStep) => void;
   forms: {
     email: UseFormReturn<SignUpEmailFormData>;
     password: UseFormReturn<SignUpPasswordFormData>;
     personal: UseFormReturn<SignUpPersonalFormData>;
+    availability: UseFormReturn<SignUpAvailabilityFormData>;
   };
   agree: boolean;
   setAgree: Dispatch<SetStateAction<boolean>>;
   // Helper functions
-  isAnyQueryLoading: () => boolean;
-  hasAnyQueryError: () => boolean;
+  // isAnyQueryLoading: () => boolean;
+  // hasAnyQueryError: () => boolean;
 };
 
 const SignUpContext = createContext<SignUpContextType | null>(null);
 
-export function SignUpProvider({ children }: { children: React.ReactNode }) {
-  const trpc = useTRPC();   
-  const userQuery = useQuery(trpc.user.me.queryOptions());
+type SignUpProviderProps = {
+  children: React.ReactNode;
+  initialUser: Awaited<ReturnType<typeof getMeByUserId>> | null;
+};
+
+export function SignUpProvider({
+  children,
+  initialUser
+}: SignUpProviderProps) {
+  const trpc = useTRPC();
   const router = useRouter();
 
-  const [step, setStep] = useState<SignUpStep>('/sign-up/email');
-  const [agree, setAgree] = useState(false);
+  // Replace the query with state initialized from the prop
+  const [userData, setUserData] = useState<SignUpProviderProps['initialUser']>(initialUser);
+  const [agree, setAgree] = useState(true);
 
   const emailForm = useForm<SignUpEmailFormData>({
     resolver: zodResolver(signUpEmailFormSchema),
-    mode: 'onSubmit',
+    mode: 'onChange',
     defaultValues: {
       email: '',
-      agree: false,
+      agree: true
     }
   });
 
   const passwordForm = useForm<SignUpPasswordFormData>({
     resolver: zodResolver(signUpPasswordFormSchema),
-    mode: 'onSubmit',
+    mode: 'onChange',
     defaultValues: {
       password: '',
-      confirmPassword: '',
+      confirmPassword: ''
     }
   });
 
   const personalForm = useForm<SignUpPersonalFormData>({
     resolver: zodResolver(signUpPersonalFormSchema),
-    mode: 'onSubmit',
+    mode: 'onChange',
     defaultValues: {
       name: '',
       username: '',
-      timeZone: '',
+      timeZone: ''
     }
+  });
+  const availabilityForm = useForm<SignUpAvailabilityFormData>({
+    resolver: zodResolver(signUpAvailabilityFormSchema),
+    mode: 'onSubmit',
+    defaultValues: {
+      schedules: {
+        'sunday': {
+          enabled: false,
+          timeWindows: []
+        },
+        'monday': {
+          enabled: false,
+          timeWindows: []
+        },
+        'tuesday': {
+          enabled: false,
+          timeWindows: []
+        },
+        'wednesday': {
+          enabled: false,
+          timeWindows: []
+        },
+        'thursday': {
+          enabled: false,
+          timeWindows: []
+        },
+        'friday': {
+          enabled: false,
+          timeWindows: []
+        },
+        'saturday': {
+          enabled: false,
+          timeWindows: []
+        }
+      }
+    }   
   });
 
   const previousStepMap: Partial<Record<SignUpStep, SignUpStep>> = {
     '/sign-up/password': '/sign-up/email',
     '/sign-up/personal': '/sign-up/password',
-    '/sign-up/connect': '/sign-up/personal',
-    '/sign-up/availability': '/sign-up/connect',
-    '/sign-up/ending': '/sign-up/availability'
+    '/sign-up/calendar': '/sign-up/personal',
+    '/sign-up/availability': '/sign-up/calendar',
+    '/sign-up/summary': '/sign-up/availability',
+    '/sign-up/ending': '/sign-up/summary'
   };
 
   const nextStepMap: Partial<Record<SignUpStep, SignUpStep>> = {
     '/sign-up/email': '/sign-up/password',
     '/sign-up/password': '/sign-up/personal',
-    '/sign-up/personal': '/sign-up/connect',
-    '/sign-up/connect': '/sign-up/availability',
-    '/sign-up/availability': '/sign-up/ending',
+    '/sign-up/personal': '/sign-up/calendar',
+    '/sign-up/calendar': '/sign-up/availability',
+    '/sign-up/availability': '/sign-up/summary',
+    '/sign-up/summary': '/sign-up/ending'
   };
 
+  // Initialize step based on the current path if possible
+  const [step, setStep] = useState<SignUpStep>(() => {
+    if (typeof window !== 'undefined') {
+      const path = window.location.pathname;
+      // Check if the current path is a valid SignUpStep
+      const allSteps = [...Object.keys(nextStepMap), ...Object.values(nextStepMap)];
+      if (allSteps.includes(path as SignUpStep)) {
+        return path as SignUpStep;
+      }
+    }
+    return '/sign-up/email'; // Default fallback
+  });
+
+  // Sync step with URL when component mounts or URL changes
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const path = window.location.pathname;
+      const allSteps = [...Object.keys(nextStepMap), ...Object.values(nextStepMap)];
+      
+      if (allSteps.includes(path as SignUpStep) && path !== step) {
+        console.log(`[SignUpContext] Syncing step state with URL: ${path}`);
+        setStep(path as SignUpStep);
+      }
+    }
+  }, [step]); // Listen for component's own changes, window.location.pathname updates automatically
+
   const backStep = () => {
-    setStep(previousStepMap[step]!);
-    router.push(previousStepMap[step]!);
+    const prevStep = previousStepMap[step]!;
+    setStep(prevStep);
+    router.push(prevStep);
   };
 
   const nextStep = () => {
-    setStep(nextStepMap[step]!);
-    router.push(nextStepMap[step]!);
+    const nextStep = nextStepMap[step]!;
+    console.log(`[SignUpContext] Moving to next step: ${nextStep} from current step: ${step}`);
+    setStep(nextStep);
+    router.push(nextStep);
   };
 
-  const value: SignUpContextType = {
+  // New function to go to a specific step directly
+  const goToStep = (targetStep: SignUpStep) => {
+    console.log(`[SignUpContext] Directly navigating to step: ${targetStep} from current step: ${step}`);
+    setStep(targetStep);
+    router.push(targetStep);
+  };
+
+  // Remove the conditional fetching during render
+  const userQuery = useQuery({
+    ...trpc.user.me.queryOptions(),
+    staleTime: 1000 * 60 * 5 // 5 minutes
+  });
+  
+  // Move state update to useEffect
+  useEffect(() => {
+    if (!userData && userQuery.data) {
+      setUserData(userQuery.data);
+    }
+  }, [userQuery.data]);  // Remove userData from dependencies to prevent rerender loops
+
+  // Memoize the context value to prevent unnecessary re-renders of children
+  const value = useMemo<SignUpContextType>(() => ({
     queries: {
-      user: {
-        data: userQuery.data ?? null,
-        isLoading: userQuery.isLoading,
-        error: userQuery.error
-      }
+      user: userData!
     },
     forms: {
       email: emailForm,
       password: passwordForm,
-      personal: personalForm
+      personal: personalForm,
+      availability: availabilityForm
     },
     step,
     setStep,
     backStep,
     nextStep,
+    goToStep,
     agree,
     setAgree,
-    isAnyQueryLoading: () => Object.values(value.queries).some(q => q.isLoading),
-    hasAnyQueryError: () => Object.values(value.queries).some(q => q.error !== null)
-  };
+  }), [
+    userData,
+    emailForm,
+    passwordForm,
+    personalForm,
+    availabilityForm,
+    step,
+    agree
+  ]);
 
   return (
-    <SignUpContext.Provider value={value}>
-      {children}
-    </SignUpContext.Provider>
+    <SignUpContext.Provider value={value}>{children}</SignUpContext.Provider>
   );
 }
 

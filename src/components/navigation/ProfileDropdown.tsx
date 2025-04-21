@@ -18,6 +18,7 @@ import {signOut} from '../auth/auth-actions';
 import {useSessionStore} from '@/providers/session-store-provider';
 import {useThemeStore} from '@/providers/theme-store-provider';
 import SidebarFooterSkeleton from '@/components/navigation/SidebarFooterSkeleton';
+
 function CustomVerifiedIconSVG(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
@@ -77,8 +78,12 @@ export function ProfileDropdown({children}: PropsWithChildren) {
       </Dropdown.Trigger>
       <Dropdown.Content align="start">
         <div className="flex items-center gap-3 p-2">
-          <Avatar.Root size="40">
-            <Avatar.Image src={user?.image || ''} />
+          <Avatar.Root size="40" fallbackText={user?.name || ''}>
+            <Avatar.Image 
+              src={user?.image || ''} 
+              alt={user?.name || 'User'}
+              useNextImage={true}
+            />
             <Avatar.Indicator position="top">
               <CustomVerifiedIconSVG />
             </Avatar.Indicator>

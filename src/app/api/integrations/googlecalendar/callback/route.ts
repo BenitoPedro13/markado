@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import {auth} from '@/auth';
 
+// Force dynamic rendering for this API route
+export const dynamic = 'force-dynamic';
+
 import { google } from 'googleapis';
 import { encrypt } from '@/utils/encryption';
 
@@ -14,8 +17,6 @@ const oauth2Client = new google.auth.OAuth2(
 
 export async function GET(request: NextRequest) {
   try {
-    console.log('Google Calendar callback received');
-    console.log('Redirect URI:', process.env.GOOGLE_REDIRECT_URI);
 
     const session = await auth();
     if (!session?.user) {
@@ -23,44 +24,34 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(new URL('/sign-in', request.url));
     }
 
-    console.log('User authenticated:', session.user.id);
 
     const searchParams = request.nextUrl.searchParams;
     const code = searchParams.get('code');
-    console.log('Authorization code received:', code ? 'Yes' : 'No');
 
     if (!code) {
-      console.log('No code provided in callback');
       return NextResponse.redirect(
         new URL('/sign-up/calendar?error=no_code', request.url)
       );
     }
 
-    console.log('Getting tokens from Google...');
     const {tokens} = await oauth2Client.getToken(code);
-    console.log('Tokens received:', tokens ? 'Yes' : 'No');
 
     if (!tokens.refresh_token) {
-      console.log('No refresh token received');
       return NextResponse.redirect(
         new URL('/sign-up/calendar?error=no_refresh_token', request.url)
       );
     }
 
     // Encrypt tokens before storing
-    console.log('Encrypting tokens...');
     const encryptedAccessToken = encrypt(tokens.access_token || '');
     const encryptedRefreshToken = encrypt(tokens.refresh_token);
 
     // Get user's calendars
-    console.log('Setting credentials and fetching calendars...');
     oauth2Client.setCredentials(tokens);
     const calendar = google.calendar({version: 'v3', auth: oauth2Client});
     const {data: calendarList} = await calendar.calendarList.list();
-    console.log('Calendars fetched:', calendarList.items?.length || 0);
 
     // Store tokens and calendar list
-    console.log('Updating user with tokens and calendars...');
     // Then for each calendar, use upsert instead of create
 
     await prisma.user.update({
@@ -103,10 +94,9 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    console.log('User updated successfully');
 
     return NextResponse.redirect(
-      new URL('/sign-up/calendar/select', request.url)
+      new URL('/sign-up/calendar', request.url)
     );
   } catch (error) {
     console.error('Error in Google Calendar callback:', error);

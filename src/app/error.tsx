@@ -18,7 +18,7 @@ export default function Error({error, reset}: Props) {
   }, [error]);
 
   return (
-    <PageLayout title={t("Error")}>
+    <PageLayout title={t("title")}>
       <div>
         {t.rich('description', {
           p: (chunks) => <p className="mt-4">{chunks}</p>,

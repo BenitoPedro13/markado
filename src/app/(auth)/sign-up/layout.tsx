@@ -1,38 +1,30 @@
-'use client';
-
-import { Root as Button } from '@/components/align-ui/ui/button';
-import { SignUpProvider, useSignUp } from '@/contexts/SignUpContext';
-import { RiArrowLeftSLine } from '@remixicon/react';
+import { SignUpProvider } from '@/contexts/SignUpContext';
 import { PropsWithChildren } from 'react';
+import { auth } from '@/auth';
+import { redirect } from 'next/navigation';
+import { getMeByUserId } from '~/trpc/server/handlers/user.handler';
+import { headers } from 'next/headers';
 
-const Layout = ({children}: PropsWithChildren) => {
-  const {
-    step,
-    backStep,
-    queries: {user},
-    isAnyQueryLoading
-  } = useSignUp();
-
+export default async function SignUpLayout({children}: PropsWithChildren ) {
+  const session = await auth();
+  const headersList = headers();
+  const pathname = headersList.get('x-pathname') || '';
   
-  return (
-    <>
-      <div className="absolute left-24 top-8">
-        {step !== '/sign-up/email' && (
-          <Button variant="neutral" mode="stroke" onClick={backStep}>
-            <RiArrowLeftSLine size={20} color="var(--text-sub-600)" />
-            <span className="text-text-sub-600">Voltar</span>
-          </Button>
-        )}
-      </div>
-      {children}
-    </>
-  );
-};
+  // Check if we're on the main sign-up page or email page
+  const isEmailPage = pathname.includes('/sign-up/email');
+  const isRootSignUpPage = pathname === '/sign-up';
 
-export default function SignUpLayout({children}: PropsWithChildren) {
-  return (
-    <SignUpProvider>
-      <Layout>{children}</Layout>
-    </SignUpProvider>
-  );
+  // Allow unauthenticated users to access the main sign-up or email page
+  if ((isEmailPage || isRootSignUpPage) && !session?.user?.id) {
+    return <SignUpProvider initialUser={null}>{children}</SignUpProvider>;
+  }
+
+  // Redirect to sign-in if not authenticated and not on allowed pages
+  if (!session?.user?.id) {
+    return redirect('/sign-in');
+  }
+
+  // User is authenticated, get their data
+  const me = await getMeByUserId(session.user.id);
+  return <SignUpProvider initialUser={me}>{children}</SignUpProvider>;
 }

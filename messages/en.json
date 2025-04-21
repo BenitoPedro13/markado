@@ -48,7 +48,13 @@
     "create": "Create",
     "loading": "Loading...",
     "invalid_email": "Please enter a valid email address",
-    "min_password_length": "Password must be at least 8 characters long"
+    "min_password_length": "Password must be at least 8 characters long",
+    "oauth_account_not_linked": "This Google account is already linked to a different user. Please sign in with your original account or use a different Google account.",
+    "account_linking_failed": "We could not link your Google account. Please try again or contact support.",
+    "invalid_credentials": "Invalid email or password.",
+    "oauth_signin_error": "There was a problem signing in with Google. Please try again.",
+    "oauth_callback_error": "There was a problem with the Google authentication. Please try again.",
+    "general_error": "An error occurred during sign in. Please try again."
   },
   "SignInPage": {
     "markado": "Markado"
@@ -92,13 +98,59 @@
       "username_required": "Username is required",
       "timezone_required": "Time zone is required"
     },
+    "AvailabilityForm": {
+      "availability": "Availability",
+      "availability_description": "Set up your available hours",
+      "continue": "Continue",
+      "want_to_fill_later": "Want to fill this in later?",
+      "skip_for_now": "Skip for now",
+      "sunday": "Sunday",
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday",
+      "invalid_time_format": "Invalid time format. Use HH:MM format."
+    },
+    "SummaryForm": {
+      "summary": "Registration Summary",
+      "summary_description": "Review and complete your account configuration.",
+      "continue": "Continue",
+      "name_complete": "Full Name",
+      "company_name": "Company Name",
+      "availability": "Availability",
+      "address": "Address",
+      "username": "Username",
+      "email": "Email",
+      "selected_calendar": "Selected Calendar",
+      "not_provided": "Not provided",
+      "email_placeholder": "example@email.com",
+      "name_complete_placeholder": "Full Name",
+      "username_placeholder": "example",
+      "selected_calendar_placeholder": "Select a calendar",
+      "company_placeholder": "Markado",
+      "address_placeholder": "Rua da Passagem - Botafogo Rio de Janeiro",
+      "no_availability_set": "No availability set"
+    },
     "CalendarForm": {
       "connect_calendar": "Connect Calendar",
       "connect_calendar_description": "Connect your Google Calendar to manage your availability and appointments.",
       "connect_google_calendar": "Connect Google Calendar",
       "skip_for_now": "Skip for now",
+      "continue": "Continue",
+      "want_to_fill_later": "Want to fill this in later?",
+      "google_calendar": "Google Calendar",
+      "default": "Default",
       "error": "Error",
-      "error_connecting_calendar": "There was an error connecting to your Google Calendar. Please try again."
+      "error_connecting_calendar": "There was an error connecting to your Google Calendar. Please try again.",
+      "select_default_calendar": "Select default calendar",
+      "select_a_calendar": "Select a calendar",
+      "primary": "Primary",
+      "matches_email": "Matches your email",
+      "success": "Success",
+      "calendar_selected_successfully": "Calendar selected successfully",
+      "error_selecting_calendar": "There was an error selecting your calendar. Please try again."
     },
     "CalendarSelect": {
       "select_calendar": "Select Calendar",
@@ -149,5 +201,20 @@
     "invalid_link_description": "This password reset link is invalid or has expired. Please request a new one.",
     "min_password_length": "Password must be at least 8 characters long",
     "passwords_do_not_match": "Passwords do not match"
+  },
+  "Components": {
+    "CalendarIntegrationCard": {
+      "default": "Default",
+      "connected": "Connected",
+      "connecting": "Connecting",
+      "connect": "Connect"
+    }
+  },
+  "Middleware": {
+    "redirect_to_personal": "You need to complete your personal information first",
+    "redirect_to_calendar": "You need to connect your calendar first", 
+    "redirect_to_availability": "You need to set your availability first",
+    "onboarding_required": "You need to complete the onboarding process",
+    "authentication_required": "You need to sign in to access this page"
   }
 }

@@ -1,6 +1,7 @@
 import { getSession } from 'next-auth/react';
 import { createStore } from 'zustand/vanilla';
 import type { User } from '~/prisma/app/generated/prisma/client';
+import {auth} from '@/auth';
 
 export type SessionState = {
   user: User | null;

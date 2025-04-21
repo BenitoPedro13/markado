@@ -1,10 +1,12 @@
-import { z } from 'zod';
-import { protectedProcedure } from '~/trpc/server/middleware';
-import { router } from '~/trpc/server/trpc';
-import { TRPCError } from '@trpc/server';
-import { google } from 'googleapis';
-import { encrypt } from '@/utils/encryption';
-import type { Context } from '~/trpc/server/context';
+import {z} from 'zod';
+import {protectedProcedure} from '~/trpc/server/middleware';
+import {router} from '~/trpc/server/trpc';
+import {TRPCError} from '@trpc/server';
+import {google} from 'googleapis';
+import {encrypt} from '@/utils/encryption';
+import type {Context} from '~/trpc/server/context';
+import { Calendar } from '~/prisma/app/generated/prisma/client';
+import { prisma } from '@/lib/prisma';
 
 const oauth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_CLIENT_ID,
@@ -13,11 +15,11 @@ const oauth2Client = new google.auth.OAuth2(
 );
 
 export const calendarRouter = router({
-  connect: protectedProcedure.mutation(async ({ ctx }: { ctx: Context }) => {
+  connect: protectedProcedure.mutation(async ({ctx}: {ctx: Context}) => {
     if (!ctx.session?.user) {
       throw new TRPCError({
         code: 'UNAUTHORIZED',
-        message: 'Not authenticated',
+        message: 'Not authenticated'
       });
     }
 
@@ -25,36 +27,35 @@ export const calendarRouter = router({
       access_type: 'offline',
       scope: [
         'https://www.googleapis.com/auth/calendar.readonly',
-        'https://www.googleapis.com/auth/calendar.events',
+        'https://www.googleapis.com/auth/calendar.events'
       ],
-      prompt: 'consent',
+      prompt: 'consent'
     });
-    const res = {authUrl};
-    console.log('res', res);
-    return res;
+
+    return {authUrl};
   }),
 
   callback: protectedProcedure
     .input(
       z.object({
-        code: z.string(),
+        code: z.string()
       })
     )
-    .mutation(async ({ ctx, input }: { ctx: Context; input: { code: string } }) => {
+    .mutation(async ({ctx, input}: {ctx: Context; input: {code: string}}) => {
       if (!ctx.session?.user) {
         throw new TRPCError({
           code: 'UNAUTHORIZED',
-          message: 'Not authenticated',
+          message: 'Not authenticated'
         });
       }
 
       try {
-        const { tokens } = await oauth2Client.getToken(input.code);
-        
+        const {tokens} = await oauth2Client.getToken(input.code);
+
         if (!tokens.refresh_token) {
           throw new TRPCError({
             code: 'BAD_REQUEST',
-            message: 'No refresh token received from Google',
+            message: 'No refresh token received from Google'
           });
         }
 
@@ -64,9 +65,8 @@ export const calendarRouter = router({
 
         // Get user's calendars
         oauth2Client.setCredentials(tokens);
-        const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
-        const { data: calendarList } = await calendar.calendarList.list();
-
+        const calendar = google.calendar({version: 'v3', auth: oauth2Client});
+        const {data: calendarList} = await calendar.calendarList.list();
 
         await prisma.user.update({
           where: {id: ctx.session.user.id},
@@ -80,7 +80,7 @@ export const calendarRouter = router({
         if (!calendarList.items) {
           throw new TRPCError({
             code: 'BAD_REQUEST',
-            message: 'No calendars found from Google',
+            message: 'No calendars found from Google'
           });
         }
 
@@ -110,12 +110,12 @@ export const calendarRouter = router({
           });
         }
 
-        return { success: true };
+        return {success: true};
       } catch (error) {
         console.error('Error in Google Calendar callback:', error);
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to connect Google Calendar',
+          message: 'Failed to connect Google Calendar'
         });
       }
     }),
@@ -123,38 +123,40 @@ export const calendarRouter = router({
   selectCalendar: protectedProcedure
     .input(
       z.object({
-        calendarId: z.string(),
+        calendarId: z.string()
       })
     )
-    .mutation(async ({ ctx, input }: { ctx: Context; input: { calendarId: string } }) => {
-      if (!ctx.session?.user) {
-        throw new TRPCError({
-          code: 'UNAUTHORIZED',
-          message: 'Not authenticated',
+    .mutation(
+      async ({ctx, input}: {ctx: Context; input: {calendarId: string}}) => {
+        if (!ctx.session?.user) {
+          throw new TRPCError({
+            code: 'UNAUTHORIZED',
+            message: 'Not authenticated'
+          });
+        }
+
+        await ctx.prisma.user.update({
+          where: {id: ctx.session.user.id},
+          data: {
+            selectedCalendarId: input.calendarId
+          }
         });
+
+        return {success: true};
       }
+    ),
 
-      await ctx.prisma.user.update({
-        where: { id: ctx.session.user.id },
-        data: {
-          selectedCalendarId: input.calendarId,
-        },
-      });
-
-      return { success: true };
-    }),
-
-  getCalendars: protectedProcedure.query(async ({ ctx }: { ctx: Context }) => {
+  getCalendars: protectedProcedure.query(async ({ctx}: {ctx: Context}) => {
     if (!ctx.session?.user) {
       throw new TRPCError({
         code: 'UNAUTHORIZED',
-        message: 'Not authenticated',
+        message: 'Not authenticated'
       });
     }
 
     const user = await ctx.prisma.user.findUnique({
-      where: { id: ctx.session.user.id },
-      include: { calendars: true },
+      where: {id: ctx.session.user.id},
+      include: {calendars: true}
     });
 
     if (!user?.calendars) {
@@ -162,5 +164,19 @@ export const calendarRouter = router({
     }
 
     return user.calendars;
-  }),
-}); 
+  })
+});
+
+export async function getCalendarsByUserId(userId: string) {
+  const user = await prisma.user.findUnique({
+    where: {id: userId},
+    include: {calendars: true}
+  });
+
+
+  if (!user?.calendars) {
+    return [];
+  }
+
+  return user.calendars;
+}

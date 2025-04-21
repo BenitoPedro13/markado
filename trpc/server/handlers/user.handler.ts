@@ -1,8 +1,9 @@
-import { TRPCError } from '@trpc/server';
-import { Context } from '../context';
-import { ZUserInputSchema } from '../schemas/user.schema';
-import { hash } from 'bcryptjs';
+import {TRPCError} from '@trpc/server';
+import {Context} from '../context';
+import {ZUserInputSchema} from '../schemas/user.schema';
+import {hash} from 'bcryptjs';
 import crypto from 'crypto';
+import {prisma} from '@/lib/prisma';
 
 export async function getUserHandler(ctx: Context) {
   if (!ctx.session?.user) {
@@ -13,7 +14,7 @@ export async function getUserHandler(ctx: Context) {
   }
 
   return ctx.prisma.user.findUnique({
-    where: { id: ctx.session.user.id },
+    where: {id: ctx.session.user.id},
     include: {
       password: true,
       accounts: true,
@@ -35,10 +36,13 @@ export async function getFirstUserHandler(ctx: Context) {
   return user;
 }
 
-export async function createUserHandler(ctx: Context, input: typeof ZUserInputSchema._type) {
+export async function createUserHandler(
+  ctx: Context,
+  input: typeof ZUserInputSchema._type
+) {
   // Check if user already exists
   const existingUser = await ctx.prisma.user.findUnique({
-    where: { email: input.email }
+    where: {email: input.email}
   });
 
   if (existingUser) {
@@ -79,18 +83,7 @@ export async function getMeHandler(ctx: Context) {
     });
   }
 
-  const user = await ctx.prisma.user.findUnique({
-    where: { id: ctx.session.user.id },
-    include: {
-      password: true,
-      accounts: {
-        select: {
-          provider: true,
-          providerAccountId: true,
-        }
-      }
-    }
-  });
+  const user = await getMeByUserId(ctx.session.user.id);
 
   if (!user) {
     throw new TRPCError({
@@ -99,12 +92,33 @@ export async function getMeHandler(ctx: Context) {
     });
   }
 
+  return user;
+}
+
+export async function getMeByUserId(userId: string) {
+  const user = await prisma.user.findUnique({
+    where: {id: userId},
+    include: {
+      password: true,
+      accounts: {
+        select: {
+          provider: true,
+          providerAccountId: true
+        }
+      }
+    }
+  });
+
+  if (!user) {
+    return null;
+  }
+
   // Remove sensitive information
-  const { password, ...userWithoutPassword } = user;
+  const {password, ...userWithoutPassword} = user;
 
   return {
     ...userWithoutPassword,
     hasPassword: !!password,
     emailMd5: crypto.createHash('md5').update(user.email).digest('hex')
   };
-} 
+}

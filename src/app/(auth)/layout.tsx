@@ -1,37 +1,131 @@
 'use client';
 
-import Logo from '~/public/images/logoMarkado.svg';
-import VerticalStripesPattern from '~/public/patterns/vertical_stripes.svg';
 import {
   Root as Button,
   Icon as ButtonIcon
 } from '@/components/align-ui/ui/button';
+import * as HorizontalStepper from '@/components/align-ui/ui/horizontal-stepper';
 import LocaleSwitcher from '@/components/LocaleSwitcher';
-import { RiHeadphoneLine } from '@remixicon/react';
+import Logo from '@/components/navigation/Logo';
+import { RiArrowLeftSLine, RiHeadphoneLine } from '@remixicon/react';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
-import { PropsWithChildren } from 'react';
+import { usePathname } from 'next/navigation';
+import { createContext, PropsWithChildren, useContext, useEffect } from 'react';
+import VerticalStripesPattern from '~/public/patterns/vertical_stripes.svg';
+
+type ContextType = {
+  pathname: string;
+  isInSignUpFlow: boolean;
+  steps: {path: string; label: string}[];
+  getStepState: (stepPath: string) => 'default' | 'active' | 'completed';
+};
+
+const Context = createContext<ContextType>({
+  pathname: '',
+  isInSignUpFlow: false,
+  steps: [],
+  getStepState: () => 'default'
+});
+
+const Provider = ({children}: PropsWithChildren) => {
+  const pathname = usePathname();
+
+  const isInSignUpFlow =
+    pathname.startsWith('/sign-up') &&
+    pathname !== '/sign-up' &&
+    pathname !== '/sign-up/email';
+
+  const steps: {path: string; label: string}[] = [
+    {path: '/sign-up/password', label: 'Senha'},
+    {path: '/sign-up/personal', label: 'Pessoal'},
+    {path: '/sign-up/calendar', label: 'Conectar'},
+    {path: '/sign-up/availability', label: 'Disponibilidade'},
+    {path: '/sign-up/ending', label: 'Finalização'}
+  ];
+
+  const getStepState = (stepPath: string) => {
+    const stepOrder = [
+      '/sign-up/email',
+      '/sign-up/password',
+      '/sign-up/personal',
+      '/sign-up/calendar',
+      '/sign-up/availability',
+      '/sign-up/ending'
+    ];
+
+    const currentIndex = stepOrder.indexOf(pathname);
+    const stepIndex = stepOrder.indexOf(stepPath);
+
+    if (stepIndex < currentIndex) return 'completed';
+    if (stepIndex === currentIndex) return 'active';
+    return 'default';
+  };
+
+  return (
+    <Context.Provider value={{pathname, isInSignUpFlow, steps, getStepState}}>
+      {children}
+    </Context.Provider>
+  );
+};
+
+const useAuthContext = () => {
+  const context = useContext(Context);
+  if (!context)
+    throw new Error('useAuthContext must be used within a AuthProvider');
+  return context;
+};
 
 const Header = () => {
   const t = useTranslations('SignInHeader');
 
-  return (
-    <header className="w-full py-6 px-11 gap-6 border-b border-b-bg-soft-200 border-b-soft flex justify-between items-center">
-      <Link href={'/'}>
-        <Image src={Logo} width={141} height={40} alt={t('markado')} />
-      </Link>
+  const {pathname, isInSignUpFlow, steps, getStepState} = useAuthContext();
 
-      <div className="flex items-center gap-3">
-        <p className="text-paragraph-sm text-sub-600">{t('need_help')}</p>
-        <Button variant="neutral" mode="stroke">
-          <ButtonIcon>
-            <RiHeadphoneLine size={20} color="var(--text-sub-600)" />
-          </ButtonIcon>
-          <span className="text-label-sm text-sub-600">
-            {t('speak_with_us')}
-          </span>
-        </Button>
+  return (
+    <header className="relative w-full py-6 px-11 gap-6 border-b border-b-bg-soft-200 border-b-soft flex justify-between items-center">
+      <div className="w-full flex flex-row justify-between items-center gap-6">
+        <Link href={'/'} className="">
+          <Logo />
+        </Link>
+
+        {isInSignUpFlow && (
+          <HorizontalStepper.Root className="gap-1 flex-grow flex justify-center">
+            {steps.map((s, index) => {
+              const state = getStepState(s.path);
+              return (
+                <div key={index} className="flex items-center">
+                  {index > 0 && (
+                    <HorizontalStepper.SeparatorIcon className="mx-1" />
+                  )}
+                  <HorizontalStepper.Item state={state}>
+                    <HorizontalStepper.ItemIndicator>
+                      {index + 1}
+                    </HorizontalStepper.ItemIndicator>
+                    <span>{s.label}</span>
+                  </HorizontalStepper.Item>
+                </div>
+              );
+            })}
+          </HorizontalStepper.Root>
+        )}
+
+        {!isInSignUpFlow && (
+          <>
+            {/** Help button */}
+            <div className="flex items-center gap-3">
+              <p className="text-paragraph-sm text-text-sub-600">{t('need_help')}</p>
+              <Button variant="neutral" mode="stroke">
+                <ButtonIcon>
+                  <RiHeadphoneLine size={20} color="var(--text-sub-600)" />
+                </ButtonIcon>
+                <span className="text-label-sm text-sub-600">
+                  {t('speak_with_us')}
+                </span>
+              </Button>
+            </div>
+          </>
+        )}
       </div>
     </header>
   );
@@ -63,15 +157,38 @@ const Footer = () => {
 };
 
 export default function AuthLayout({children}: PropsWithChildren) {
+  const {pathname, isInSignUpFlow, steps, getStepState} = useAuthContext();
+  const t = useTranslations('SignInPage');
+
+  useEffect(() => {
+    console.log(pathname, isInSignUpFlow);
+  }, [pathname, isInSignUpFlow]);
   return (
-    <>
+    <Provider>
       <Header />
 
-      <div className="w-full h-full px-11 py-6 flex relative flex-col justify-between">
+      <div className="w-full h-full px-11 py-6 flex flex-col justify-between">
+        {isInSignUpFlow && (
+          <>
+            {/** Back button */}
+            {pathname !== '/sign-up/email' && pathname !== '/sign-up' && (
+              <Link
+                className="absolute left-0 top-0"
+                href={pathname.split('/').slice(0, -1).join('/')}
+              >
+                <Button variant="neutral" mode="stroke">
+                  <RiArrowLeftSLine size={20} color="var(--text-sub-600)" />
+                  <span className="text-text-sub-600">Voltar</span>
+                </Button>
+              </Link>
+            )}
+          </>
+        )}
+
         <div className="flex justify-center my-auto w-full">{children}</div>
 
         <Footer />
       </div>
-    </>
+    </Provider>
   );
 }

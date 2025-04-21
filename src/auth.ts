@@ -80,8 +80,73 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
   pages: {
     signIn: '/sign-in',
     signOut: '/logout',
+    error: '/sign-in',
   },
   callbacks: {
+    async signIn({ user, account, profile, email }) {
+      // Allow sign-in with credentials provider
+      if (account?.provider === 'credentials') {
+        return true;
+      }
+
+      // For OAuth providers, check if the email already exists
+      if (account?.provider && profile?.email) {
+        try {
+          // First, check if we have an account with this provider and ID
+          const existingAccount = await prisma.account.findFirst({
+            where: {
+              provider: account.provider,
+              providerAccountId: account.providerAccountId,
+            },
+            include: {
+              user: true,
+            },
+          });
+
+          // If we already have an account with this provider ID, we're good to go
+          if (existingAccount) {
+            return true;
+          }
+
+          // Next, check if we have a user with the same email
+          const existingUserWithEmail = await prisma.user.findUnique({
+            where: { email: profile.email },
+            include: { accounts: true },
+          });
+
+          // If we found a user with this email...
+          if (existingUserWithEmail) {
+            // Instead of checking provider accounts, let's link this OAuth account to the existing user
+            // This will solve the "OAuthAccountNotLinked" error
+            
+            // Create a new account linked to the existing user
+            await prisma.account.create({
+              data: {
+                userId: existingUserWithEmail.id,
+                type: account.type,
+                provider: account.provider,
+                providerAccountId: account.providerAccountId,
+                access_token: account.access_token,
+                token_type: account.token_type,
+                scope: account.scope,
+                id_token: account.id_token,
+                refresh_token: account.refresh_token,
+              },
+            });
+            
+            return true;
+          }
+          
+          // If no existing user, allow standard signup flow to continue
+          return true;
+        } catch (error) {
+          console.error('Error in OAuth account linking:', error);
+          return `/sign-in?error=AccountLinkingFailed`;
+        }
+      }
+
+      return true;
+    },
     jwt({token, user}) {
       if (user) {
         // User is available during sign-in
@@ -99,8 +164,9 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
         return `${baseUrl}/sign-in`;
       }
 
-      // If signing in, redirect to home
-      if (url === `${baseUrl}/sign-in`) {
+      // If signing in, check if onboarding is complete
+      if (url === `${baseUrl}/sign-in` || url === baseUrl) {
+        // We'll redirect to the homepage which has logic to redirect to personal if needed
         return baseUrl;
       }
 

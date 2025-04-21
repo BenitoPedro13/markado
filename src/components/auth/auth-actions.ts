@@ -8,6 +8,7 @@ import { cookies } from 'next/headers';
 
 // Sign in with Google
 export async function signInWithGoogle(redirectTo: string = '/') {
+  console.log(`[Auth] Google sign-in with redirect to: ${redirectTo}`);
   return nextAuthSignIn('google', {
     redirectTo,
     redirect: true
@@ -60,6 +61,14 @@ export async function signOut() {
   // Get the locale from the cookie or default to 'pt'
   const cookieStore = cookies();
   const locale = cookieStore.get('NEXT_LOCALE')?.value || 'pt';
+  
+  // Clear the onboarding_complete cookie
+  cookieStore.set('onboarding_complete', '', { 
+    maxAge: 0, 
+    path: '/', 
+  });
+  
+  console.log('[Auth] Signing out and clearing onboarding cookie');
   
   return nextAuthSignOut({ 
     redirect: true,

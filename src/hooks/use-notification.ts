@@ -121,6 +121,8 @@ export const reducer = (state: State, action: Action): State => {
           (t) => t.id !== action.notificationId
         )
       };
+    default:
+      return state;
   }
 };
 

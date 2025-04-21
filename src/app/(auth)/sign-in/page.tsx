@@ -8,22 +8,21 @@ import OrDivider from '@/components/OrDivider';
 import RoundedIconWrapper from '@/components/RoundedIconWrapper';
 import {RiUserAddFill} from '@remixicon/react';
 import {useTranslations} from 'next-intl';
-import Image from 'next/image';
 import Link from 'next/link';
-import {FormEvent, Suspense, useState} from 'react';
-import {signInWithGoogle, signInWithEmailPassword} from '@/components/auth/auth-actions';
+import {Suspense, useState, useEffect} from 'react';
+
 import {IconGoogle} from '@/components/auth/sign-in';
 import * as SocialButton from '@/components/align-ui/ui/social-button';
-import { useSearchParams } from 'next/navigation';
+import {useSearchParams} from 'next/navigation';
 import AuthSkeleton from '@/components/skeletons/AuthSkeleton';
-import { useAuthStore } from '@/stores/auth-store';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
+import {useAuthStore} from '@/stores/auth-store';
+import {useForm} from 'react-hook-form';
+import {z} from 'zod';
+import {zodResolver} from '@hookform/resolvers/zod';
 
 const signInSchema = z.object({
-  email: z.string().email('SignInForm.invalid_email'),
-  password: z.string().min(8, 'SignInForm.min_password_length'),
+  email: z.string().email('invalid_email'),
+  password: z.string().min(8, 'min_password_length')
 });
 
 type SignInFormData = z.infer<typeof signInSchema>;
@@ -32,14 +31,47 @@ const SignInForm = () => {
   const t = useTranslations('SignInForm');
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get('redirect') || '/';
-  const { signInWithEmail, signInWithGoogle, isLoading, error } = useAuthStore();
+  const errorParam = searchParams.get('error');
+  const {
+    signInWithEmail,
+    signInWithGoogle,
+    isLoading,
+    error: authStoreError
+  } = useAuthStore();
+  const [oauthError, setOauthError] = useState<string | null>(null);
+
+  // Handle OAuth errors from URL parameters
+  useEffect(() => {
+    if (errorParam) {
+      switch (errorParam) {
+        case 'OAuthAccountNotLinked':
+          setOauthError(t('oauth_account_not_linked'));
+          break;
+        case 'AccountLinkingFailed':
+          setOauthError(t('account_linking_failed'));
+          break;
+        case 'Signin':
+          // This is a general sign-in error, often caused by invalid credentials
+          setOauthError(t('invalid_credentials'));
+          break;
+        case 'OAuthSignin':
+          setOauthError(t('oauth_signin_error'));
+          break;
+        case 'OAuthCallback':
+          setOauthError(t('oauth_callback_error'));
+          break;
+        default:
+          setOauthError(t('general_error'));
+      }
+    }
+  }, [errorParam, t]);
 
   const form = useForm<SignInFormData>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
       email: '',
-      password: '',
-    },
+      password: ''
+    }
   });
 
   // Translate validation messages
@@ -96,15 +128,17 @@ const SignInForm = () => {
             <Asterisk />
           </Label>
           <Input.Root>
-            <Input.Input 
-              type="email" 
-              placeholder="hello@markado.co" 
+            <Input.Input
+              type="email"
+              placeholder="hello@markado.co"
               {...form.register('email')}
               required
             />
           </Input.Root>
           {form.formState.errors.email && (
-            <span className="text-red-500 text-sm">{getTranslatedError(form.formState.errors.email)}</span>
+            <span className="text-red-500 text-sm">
+              {getTranslatedError(form.formState.errors.email)}
+            </span>
           )}
         </div>
         <div className="flex flex-col gap-1">
@@ -122,31 +156,37 @@ const SignInForm = () => {
           </div>
 
           <Input.Root>
-            <Input.Input 
-              type="password" 
-              placeholder="• • • • • • • • • • " 
+            <Input.Input
+              type="password"
+              placeholder="• • • • • • • • • • "
               {...form.register('password')}
               required
             />
           </Input.Root>
           {form.formState.errors.password && (
-            <span className="text-red-500 text-sm">{getTranslatedError(form.formState.errors.password)}</span>
+            <span className="text-red-500 text-sm">
+              {getTranslatedError(form.formState.errors.password)}
+            </span>
           )}
         </div>
-        
-        {error && (
-          <div className="text-red-500 text-sm">{error}</div>
+
+        {(authStoreError || oauthError) && (
+          <div className="text-red-500 text-sm">
+            {oauthError || authStoreError}
+          </div>
         )}
       </div>
 
-      <Button 
-        className="w-full" 
-        variant="neutral" 
-        mode="filled" 
+      <Button
+        className="w-full"
+        variant="neutral"
+        mode="filled"
         type="submit"
         disabled={isLoading}
       >
-        <span className="text-label-sm">{isLoading ? t('loading') : t('start')}</span>
+        <span className="text-label-sm">
+          {isLoading ? t('loading') : t('start')}
+        </span>
       </Button>
 
       <div className="flex items-center gap-1">
@@ -155,7 +195,7 @@ const SignInForm = () => {
         </span>
         <Link
           className="text-label-sm text-text-strong-950 hover:border-b border-b-stroke-strong-950 transition"
-          href={`/sign-up${redirectTo !== '/' ? `?redirect=${redirectTo}` : ''}`}
+          href={`/sign-up${redirectTo !== '/' && !redirectTo.includes('/undefined/') ? `?redirect=${redirectTo}` : ''}`}
         >
           {t('create')}
         </Link>

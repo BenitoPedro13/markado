@@ -1,24 +1,29 @@
-import PageLayout from '@/components/PageLayout';
-import Home from '@/modules/home/home-view';
-import {useTranslations} from 'next-intl';
-import Header from '@/components/navigation/Header';
-import * as Divider from '@/components/align-ui/ui/divider';
+import { redirect } from 'next/navigation';
+import { auth } from '@/auth';
 import { cookies } from 'next/headers';
 
-/** Actual home page of the website.
- * 
-  The user is redirected to this page when them types the website URL.
-*/
-export default function IndexPage() {
-  const t = useTranslations('IndexPage');
-
-  return (
-    <PageLayout title="Home">
-      {/* <Header variant="scheduling"/> */}
-      <Header variant="availability" mode="inside" />
-      <Divider.Root />
-
-      <Home />
-    </PageLayout>
-  );
+export default async function IndexPage() {
+  // Check if user is already logged in
+  const session = await auth();
+  
+  // If user is not authenticated, redirect to sign-up/email
+  if (!session?.user) {
+    console.log('[Home] No session, redirecting to sign-up/email');
+    return redirect('/sign-up/email');
+  }
+  
+  // Check if user has completed onboarding
+  const onboardingComplete = cookies().get('onboarding_complete')?.value === 'true';
+  
+  console.log(`[Home] User: ${session.user.email}, Onboarding complete: ${onboardingComplete}`);
+  
+  // If onboarding is not complete, redirect to personal info page
+  if (!onboardingComplete) {
+    console.log('[Home] Onboarding not complete, redirecting to sign-up/personal');
+    return redirect('/sign-up/personal');
+  }
+  
+  // User is authenticated and has completed onboarding, redirect to services
+  console.log('[Home] Onboarding complete, redirecting to services');
+  return redirect('/services');
 }
