@@ -8,6 +8,8 @@ import { SignUpAvailabilityFormData, useSignUp } from '@/contexts/SignUpContext'
 import { RiAddFill, RiFileCopyFill, RiTimeFill } from '@remixicon/react';
 import { useTranslations } from 'next-intl';
 import { FormEvent } from 'react';
+import Cookies from 'js-cookie';
+import {setStepComplete, clearEditMode} from '@/utils/cookie-utils';
 
 const Availability = (props: SignUpAvailabilityFormData) => {
   const {schedules} = props;
@@ -26,10 +28,10 @@ const Availability = (props: SignUpAvailabilityFormData) => {
             </div>
           </div>
 
-          <Button className='w-[32px] h-[32px]' variant={'primary'} mode="filled" size="xxsmall">
+          <Button className='w-[32px] h-[32px]' variant={'neutral'} mode="filled" size="xxsmall">
             <RiAddFill size={16} />
           </Button>
-          <Button className='w-[32px] h-[32px]' variant={'primary'} mode="filled" size="xxsmall">
+          <Button className='w-[32px] h-[32px]' variant={'neutral'} mode="filled" size="xxsmall">
             <RiFileCopyFill size={16} />
           </Button>
         </div>
@@ -39,13 +41,22 @@ const Availability = (props: SignUpAvailabilityFormData) => {
 };
 
 const AvailabilityPage = () => {
-  const {forms, nextStep} = useSignUp();
+  const {forms, goToStep} = useSignUp();
   const availabilityForm = forms.availability;
 
   const t = useTranslations('SignUpPage.AvailabilityForm');
 
   const submit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    
+    // Clear the edit_mode cookie if it exists
+    clearEditMode();
+    
+    // Set the availability step completion cookie
+    setStepComplete('availability');
+    
+    // Continue to the next step
+    goToStep('/sign-up/summary');
   };
 
   return (
@@ -81,7 +92,7 @@ const AvailabilityPage = () => {
 
       <Button
         className="w-full"
-        variant={'primary'}
+        variant="neutral"
         mode="filled"
         type="submit"
       >
