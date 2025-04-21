@@ -71,6 +71,7 @@ const SummaryItem = ({label, value, onEdit, icon}: SummaryItemProps) => {
         variant="neutral"
         mode="ghost"
         size="xsmall"
+        type="button"
         onClick={onEdit}
         className="flex items-center justify-center p-1.5 rounded-md text-text-sub-600"
       >
