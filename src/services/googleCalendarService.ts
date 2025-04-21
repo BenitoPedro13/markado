@@ -7,7 +7,7 @@ const EVENTS_ENDPOINT = (calendarId: string) => `${GOOGLE_CALENDAR_API_BASE}/cal
 
 // Interface for API response
 interface ApiResponse<T> {
-  data: T;
+  data: T | null;
   error?: {
     code: number;
     message: string;
@@ -240,7 +240,7 @@ export const refreshAccessToken = async (
   clientId: string,
   clientSecret: string,
   refreshToken: string
-): Promise<ApiResponse<{ access_token: string; expires_in: number }>> => {
+): Promise<ApiResponse<{ access_token: string; expires_in: number } | null>> => {
   try {
     const response = await fetch('https://oauth2.googleapis.com/token', {
       method: 'POST',
