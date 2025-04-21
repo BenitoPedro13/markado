@@ -16,6 +16,7 @@ import {useRouter} from 'next/navigation';
 import Cookies from 'js-cookie';
 
 import {getMeByUserId} from '~/trpc/server/handlers/user.handler';
+import {setStepComplete, clearEditMode, setNextStep, isEditMode} from '@/utils/cookie-utils';
 
 interface PersonalFormProps {
   user: Awaited<ReturnType<typeof getMeByUserId>>;
@@ -63,15 +64,16 @@ const PersonalForm = ({user}: PersonalFormProps) => {
         console.log('[PersonalForm] Profile updated, updating onboarding progress');
         
         // Set the personal step completion cookie directly
-        Cookies.set('personal_step_complete', 'true', { 
-          expires: 1, // 1 day
-          path: '/' 
-        });
+        setStepComplete('personal');
         
-        // Set a temporary one-time navigation cookie
-        Cookies.set('next_step', '/sign-up/calendar', { 
-          path: '/' 
-        });
+        // Clear the edit_mode cookie if it exists
+        clearEditMode();
+        
+        // Only set next_step cookie if we're not in edit mode
+        if (!isEditMode()) {
+          // Set a temporary one-time navigation cookie
+          setNextStep('/sign-up/calendar');
+        }
         
         console.log('[PersonalForm] Cookies set, navigating to next step');
         
@@ -201,7 +203,7 @@ const PersonalForm = ({user}: PersonalFormProps) => {
 
       <Button
         className="w-full"
-        variant={'primary'}
+        variant="neutral"
         mode="filled"
         type="submit"
         disabled={updateProfileMutation.isPending || updateOnboardingProgressMutation.isPending}

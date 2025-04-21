@@ -113,6 +113,26 @@
       "saturday": "Sábado",
       "invalid_time_format": "Formato de hora inválido. Use o formato HH:MM."
     },
+    "SummaryForm": {
+      "summary": "Sumário do cadastro",
+      "summary_description": "Revise e conclua a configuração da sua conta.",
+      "continue": "Continuar",
+      "name_complete": "Nome Completo",
+      "company_name": "Nome da Empresa",
+      "availability": "Disponibilidade",
+      "address": "Endereço",
+      "username":"Nome de Usuário",
+      "email":"E-mail",
+      "selected_calendar": "Calendário Selecionado",
+      "not_provided": "Não informado",
+      "email_placeholder": "exemplo@email.com",
+      "name_complete_placeholder": "Nome Completo",
+      "username_placeholder": "exemplo",
+      "selected_calendar_placeholder": "Selecione um calendário",
+      "company_placeholder": "Markado",
+      "address_placeholder": "Rua da Passagem - Botafogo Rio de Janeiro", 
+      "no_availability_set": "Nenhuma disponibilidade definida"
+    },
     "CalendarForm": {
       "connect_calendar": "Conecte seu calendário",
       "connect_calendar_description": "Conecte seu Google Calendar para gerenciar sua disponibilidade e compromissos",

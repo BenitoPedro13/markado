@@ -105,6 +105,7 @@ export type SignUpStep =
   | '/sign-up/personal'
   | '/sign-up/calendar'
   | '/sign-up/availability'
+  | '/sign-up/summary'
   | '/sign-up/ending';
 
 // Infer the output type of the user.me procedure
@@ -230,7 +231,8 @@ export function SignUpProvider({
     '/sign-up/personal': '/sign-up/password',
     '/sign-up/calendar': '/sign-up/personal',
     '/sign-up/availability': '/sign-up/calendar',
-    '/sign-up/ending': '/sign-up/availability'
+    '/sign-up/summary': '/sign-up/availability',
+    '/sign-up/ending': '/sign-up/summary'
   };
 
   const nextStepMap: Partial<Record<SignUpStep, SignUpStep>> = {
@@ -238,7 +240,8 @@ export function SignUpProvider({
     '/sign-up/password': '/sign-up/personal',
     '/sign-up/personal': '/sign-up/calendar',
     '/sign-up/calendar': '/sign-up/availability',
-    '/sign-up/availability': '/sign-up/ending'
+    '/sign-up/availability': '/sign-up/summary',
+    '/sign-up/summary': '/sign-up/ending'
   };
 
   // Initialize step based on the current path if possible

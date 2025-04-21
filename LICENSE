@@ -1,21 +1,27 @@
-MIT License
+Proprietary Software License
 
-Copyright (c) 2024 Doğukan Çavuş
+Copyright (c) 2024 Markado Company. All rights reserved.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+This software and associated documentation files (the "Software") are the proprietary property of Markado Company. The Software is protected by copyright laws and international copyright treaties, as well as other intellectual property laws and treaties.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+No part of this Software may be reproduced, distributed, or transmitted in any form or by any means, including photocopying, recording, or other electronic or mechanical methods, without the prior written permission of Markado Company.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+Unauthorized copying, modification, distribution, or use of this Software, via any medium, is strictly prohibited. The Software is provided "AS IS", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement.
+
+In no event shall Markado Company be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the Software or the use or other dealings in the Software.
+
+Third-Party Libraries and Licenses
+
+This Software incorporates various third-party libraries, APIs, and packages that are subject to their own respective licenses. These third-party components include but are not limited to:
+
+1. Next.js - MIT License
+2. React - MIT License
+3. TypeScript - Apache License 2.0
+4. Tailwind CSS - MIT License
+5. Prisma - Apache License 2.0
+6. Google Calendar API - Google APIs Terms of Service
+7. AlignUI Design System - Proprietary License
+
+The use of these third-party components is governed by their respective licenses, which can be found in their documentation or source code repositories. Users of this Software must comply with both this proprietary license and the licenses of any third-party components they utilize.
+
+For a complete list of third-party dependencies and their licenses, please refer to the Software Bill of Materials (SBOM) file at `sbom.json` in the root directory of this project. The SBOM provides a comprehensive inventory of all software components, their versions, and their respective licenses.
