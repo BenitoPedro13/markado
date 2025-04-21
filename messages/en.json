@@ -113,6 +113,19 @@
       "saturday": "Saturday",
       "invalid_time_format": "Invalid time format. Use HH:MM format."
     },
+    "SummaryForm": {
+      "summary": "Registration Summary",
+      "summary_description": "Review and complete your account configuration.",
+      "continue": "Continue",
+      "name_complete": "Full Name",
+      "company_name": "Company Name",
+      "availability": "Availability",
+      "address": "Address",
+      "not_provided": "Not provided",
+      "company_placeholder": "Markado",
+      "address_placeholder": "Rua da Passagem - Botafogo Rio de Janeiro",
+      "no_availability_set": "No availability set"
+    },
     "CalendarForm": {
       "connect_calendar": "Connect Calendar",
       "connect_calendar_description": "Connect your Google Calendar to manage your availability and appointments.",

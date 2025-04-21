@@ -1,0 +1,358 @@
+# Google Calendar Integration Guide
+
+## API Overview
+
+### Core Concepts
+- Calendar API v3 structure
+- RESTful endpoints with JSON responses
+- OAuth 2.0 authentication flow
+- Resource types: calendars, events, access control
+- Batch operations for performance
+- Push notifications for real-time updates
+
+### Authentication Methods
+- OAuth 2.0 with scopes:
+  - `calendar.readonly` - View calendars
+  - `calendar.events` - Create/edit events
+  - `calendar.settings.readonly` - Read user settings
+  - `calendar.addons.execute` - Run add-ons
+- Service accounts for server-side applications
+- API keys for public data only (not recommended for most use cases)
+
+### Rate Limits
+- Daily usage limit: 1,000,000 queries per day
+- User rate limit: 500 queries per 100 seconds per user
+- Concurrent rate limit: 10 concurrent requests per user
+- Exponential backoff required for failed requests
+- Quotas can be monitored via Google Cloud Console
+
+## Integration Features
+
+### Calendar Management
+1. List User Calendars
+   - Retrieve primary calendar
+   - Access shared calendars
+   - List calendar groups
+   - Calendar metadata (color, description, timezone)
+   - Hidden/visible status
+
+2. Calendar Operations
+   - Create new calendars
+   - Update existing calendars
+   - Delete/unsubscribe from calendars
+   - Modify sharing settings
+   - Change display settings (color, visibility)
+
+3. Calendar Sharing
+   - ACL management (Access Control Lists)
+   - Role-based permissions
+   - Share calendars via email
+   - Public calendar URLs
+   - Managing access levels (read, write, owner)
+
+### Event Management
+1. Event Retrieval
+   - List events with filtering
+   - Date range queries
+   - Single event lookup by ID
+   - Recurring event instances
+   - Search by keywords
+   - Changed events since timestamp
+
+2. Event Creation
+   - Basic event properties:
+     - Summary (title)
+     - Description
+     - Start/end times
+     - Time zone handling
+     - Location
+   - Advanced properties:
+     - Attendees
+     - Reminders
+     - Recurrence rules
+     - Video conferencing
+     - Attachments
+     - Custom properties
+
+3. Event Updates & Deletion
+   - Full vs. patch updates
+   - Updating single instance vs. series
+   - Soft delete (status=cancelled)
+   - Hard delete (permanent removal)
+   - Handling recurring event modifications
+   - Exception handling
+  
+4. Event Attendance
+   - Invite attendees
+   - Track responses (yes/no/maybe)
+   - Optional vs. required attendees
+   - Resource scheduling (rooms, equipment)
+   - Attendance visibility settings
+
+### Synchronization Approaches
+1. Full Sync
+   - Complete calendar download
+   - Suitable for initial setup
+   - Higher bandwidth usage
+   - Simple implementation
+
+2. Incremental Sync
+   - Using `syncToken` for efficient updates
+   - Only returns changed items
+   - Lower bandwidth and processing requirements
+   - More complex to implement
+   - Token expiration handling
+
+3. Push Notifications
+   - Real-time updates via webhooks
+   - Requires public HTTPS endpoint
+   - Watch resources for changes
+   - Channel management
+   - Notification verification
+
+## Data Structures & Models
+
+### Calendar Object
+```typescript
+interface GoogleCalendar {
+  id: string;            // Unique identifier
+  summary: string;       // Calendar name
+  description?: string;  // Optional description
+  timeZone: string;      // e.g., "America/Los_Angeles"
+  colorId?: string;      // Color identifier (1-24)
+  backgroundColor?: string; // e.g., "#4285F4"
+  foregroundColor?: string; // e.g., "#FFFFFF"
+  accessRole: string;    // owner, writer, reader
+  primary?: boolean;     // Is this the primary calendar
+}
+```
+
+### Event Object
+```typescript
+interface GoogleEvent {
+  id: string;              // Unique event identifier
+  summary: string;         // Event title
+  description?: string;    // Event description
+  location?: string;       // Physical location
+  colorId?: string;        // Event color (1-11)
+  start: {                 // Start time
+    dateTime?: string;     // ISO 8601 format with timezone
+    date?: string;         // For all-day events (YYYY-MM-DD)
+    timeZone?: string;     // Override calendar timezone
+  };
+  end: {                   // End time (same structure as start)
+    dateTime?: string;
+    date?: string;
+    timeZone?: string;
+  };
+  recurrence?: string[];   // RRULE, EXRULE, RDATE, EXDATE
+  attendees?: {            // List of attendees
+    email: string;
+    displayName?: string;
+    responseStatus?: string; // needsAction, declined, tentative, accepted
+    optional?: boolean;
+  }[];
+  reminders?: {
+    useDefault: boolean;
+    overrides?: {
+      method: string;      // email, popup
+      minutes: number;     // Time before event
+    }[];
+  };
+  status: string;          // confirmed, tentative, cancelled
+}
+```
+
+## Implementation Phases
+
+### Phase 1: Basic Integration
+- [ ] OAuth authentication setup
+- [ ] List user's calendars
+- [ ] Display events in read-only mode
+- [ ] Basic event details view
+- [ ] Calendar selection/filtering
+- [ ] Simple error handling
+- [ ] Implement incremental sync with syncToken
+
+### Phase 2: Event Management
+- [ ] Create new events
+- [ ] Edit existing events
+- [ ] Delete events
+- [ ] Recurring event support
+- [ ] All-day events
+- [ ] Event color customization
+- [ ] Add event location
+
+### Phase 3: Advanced Features
+- [ ] Attendee management
+- [ ] Calendar sharing controls
+- [ ] Push notifications for real-time updates
+- [ ] Free/busy time lookup
+- [ ] Resource scheduling
+- [ ] Video conferencing integration
+- [ ] Custom event properties
+- [ ] Improved error handling and recovery
+
+### Phase 4: Optimization & Enhancement
+- [ ] Caching strategy
+- [ ] Offline support
+- [ ] Batch operations
+- [ ] Performance optimizations
+- [ ] Custom recurrence patterns
+- [ ] Advanced search capabilities
+- [ ] Multi-calendar operations
+- [ ] Import/export functionality
+
+## Technical Implementation
+
+### Authentication Flow
+1. Register application in Google Cloud Console
+2. Configure OAuth consent screen
+3. Obtain client ID and secret
+4. Implement authorization code flow:
+   - Redirect to Google's OAuth server
+   - User grants permission
+   - Handle redirect with authorization code
+   - Exchange code for access/refresh tokens
+   - Store tokens securely
+   - Use refresh token to maintain access
+
+### Synchronization Strategy
+1. Initial full sync:
+   ```typescript
+   // Fetch all events from primary calendar
+   const response = await gapi.client.calendar.events.list({
+     calendarId: 'primary',
+     timeMin: (new Date()).toISOString(),
+     maxResults: 1000,
+     singleEvents: true,
+     orderBy: 'startTime'
+   });
+   const events = response.result.items;
+   const syncToken = response.result.nextSyncToken;
+   // Store syncToken for later use
+   ```
+
+2. Subsequent incremental syncs:
+   ```typescript
+   // Only fetch events that changed since last sync
+   const response = await gapi.client.calendar.events.list({
+     calendarId: 'primary',
+     syncToken: storedSyncToken
+   });
+   const updatedEvents = response.result.items;
+   const newSyncToken = response.result.nextSyncToken;
+   // Update stored syncToken
+   ```
+
+3. Error handling:
+   ```typescript
+   try {
+     // Sync with stored token
+   } catch (error) {
+     if (error.code === 410) {
+       // Token expired, perform full sync
+     } else {
+       // Handle other errors
+     }
+   }
+   ```
+
+### Event Creation Example
+```typescript
+const createEvent = async (eventDetails) => {
+  try {
+    const event = {
+      summary: eventDetails.title,
+      description: eventDetails.description,
+      start: {
+        dateTime: eventDetails.start.toISOString(),
+        timeZone: 'America/Los_Angeles'
+      },
+      end: {
+        dateTime: eventDetails.end.toISOString(),
+        timeZone: 'America/Los_Angeles'
+      },
+      attendees: eventDetails.attendees.map(email => ({ email })),
+      reminders: {
+        useDefault: false,
+        overrides: [
+          { method: 'email', minutes: 24 * 60 },
+          { method: 'popup', minutes: 10 }
+        ]
+      }
+    };
+    
+    const response = await gapi.client.calendar.events.insert({
+      calendarId: 'primary',
+      resource: event
+    });
+    
+    return response.result;
+  } catch (error) {
+    console.error('Error creating event:', error);
+    throw error;
+  }
+};
+```
+
+## Best Practices
+
+### Performance Optimization
+- Batch API requests when possible
+- Implement proper caching
+- Use incremental sync with syncToken
+- Limit requested fields with 'fields' parameter
+- Paginate large result sets
+- Prefetch data for common user actions
+
+### Error Handling
+- Implement exponential backoff for rate limit errors
+- Handle token expiration gracefully
+- Provide meaningful error messages to users
+- Log API errors for debugging
+- Recover from sync failures with full sync fallback
+- Cache data for offline functionality
+
+### Security Considerations
+- Store tokens securely (HTTPOnly cookies, secure storage)
+- Request minimal scopes needed for functionality
+- Implement proper CORS handling for web applications
+- Validate all user inputs
+- Use HTTPS for all communications
+- Implement proper token refresh strategy
+- Consider server-side proxy for sensitive operations
+
+## Common Challenges
+
+### Timezone Handling
+- Always store event times with timezone information
+- Handle DST transitions properly
+- Show events in user's local timezone
+- Consider calendar's timezone setting
+- Handle all-day events crossing timezones
+- Format times according to user preferences
+
+### Recurring Events
+- Properly interpret RRULE strings
+- Handle exceptions in recurring series
+- Support editing single vs. all instances
+- Properly display recurring event patterns to users
+- Limit expansion of infinite recurrence rules
+- Use instances endpoint for expanding recurring events
+
+### Offline Support
+- Implement optimistic UI updates
+- Queue changes when offline
+- Sync when connection returns
+- Handle conflict resolution
+- Provide clear offline indicators
+- Cache calendar data for offline viewing
+
+## References
+- [Google Calendar API Documentation](https://developers.google.com/calendar/api/guides/overview)
+- [API Reference](https://developers.google.com/calendar/api/v3/reference)
+- [Authentication Guide](https://developers.google.com/identity/protocols/oauth2)
+- [JavaScript Quickstart](https://developers.google.com/calendar/api/quickstart/js)
+- [Server-side Authentication](https://developers.google.com/identity/protocols/oauth2/service-account)
+- [Push Notifications](https://developers.google.com/calendar/api/guides/push) 
