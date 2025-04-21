@@ -103,7 +103,7 @@ const CalendarSelect = () => {
 
         <Button
           className="w-full"
-          variant="primary"
+          variant="neutral"
           mode="filled"
           onClick={handleSelect}
           disabled={!selectedCalendarId || isSubmitting}
