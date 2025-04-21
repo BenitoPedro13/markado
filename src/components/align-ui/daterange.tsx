@@ -9,13 +9,13 @@ import * as DatepickerPrimivites from '@/components/align-ui/ui/datepicker';
 import * as Popover from '@/components/align-ui/ui/popover';
 import { RiCalendarLine } from '@remixicon/react';
 
-type SingleDatepickerProps = {
-  defaultValue?: DateRange;
+interface DatepickerProps {
   value?: DateRange;
   onChange?: (range: DateRange | undefined) => void;
-};
+  defaultValue?: DateRange;
+}
 
-function Datepicker({ value, defaultValue, onChange }: SingleDatepickerProps) {
+export function Datepicker({ value, defaultValue, onChange }: DatepickerProps) {
   const [open, setOpen] = React.useState(false);
   const [range, setRange] = React.useState<DateRange | undefined>(
     value ?? defaultValue ?? undefined,
@@ -30,15 +30,14 @@ function Datepicker({ value, defaultValue, onChange }: SingleDatepickerProps) {
     <Popover.Root open={open} onOpenChange={setOpen}>
       <Popover.Trigger asChild>
         <Button.Root variant='neutral' mode='stroke'>
-        <Button.Icon><RiCalendarLine className='text-bg-strong-950'/></Button.Icon>
+          <Button.Icon><RiCalendarLine className='text-bg-strong-950'/></Button.Icon>
           {range?.from ? (
             <>
               {format(range.from, 'LLL dd, y')}
               {range.to && <> - {format(range.to, 'LLL dd, y')}</>}
             </>
           ) : (
-            
-            <span>Selecione um período</span>
+            <span>Select date range</span>
           )}
         </Button.Root>
       </Popover.Trigger>

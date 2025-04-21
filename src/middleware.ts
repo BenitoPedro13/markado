@@ -7,6 +7,7 @@ import Negotiator from 'negotiator';
 
 // Define public routes that don't require authentication
 const publicRoutes = [
+  '/calendar',
   '/sign-in',
   '/verify-email',
   '/check-email',
@@ -27,6 +28,7 @@ const publicRoutes = [
 
 // Define routes that don't require onboarding
 const noOnboardingRoutes = [
+  '/calendar',
   '/sign-in',
   '/verify-email',
   '/check-email',
