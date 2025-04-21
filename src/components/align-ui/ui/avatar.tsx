@@ -2,6 +2,7 @@
 
 import { Slot } from '@radix-ui/react-slot';
 import * as React from 'react';
+import Image from 'next/image';
 
 import {
   IconEmptyCompany,
@@ -17,6 +18,7 @@ const AVATAR_INDICATOR_NAME = 'AvatarIndicator';
 const AVATAR_STATUS_NAME = 'AvatarStatus';
 const AVATAR_BRAND_LOGO_NAME = 'AvatarBrandLogo';
 const AVATAR_NOTIFICATION_NAME = 'AvatarNotification';
+const AVATAR_FALLBACK_NAME = 'AvatarFallback';
 
 export const avatarVariants = tv({
   slots: {
@@ -141,6 +143,7 @@ export type AvatarRootProps = VariantProps<typeof avatarVariants> &
   React.HTMLAttributes<HTMLDivElement> & {
     asChild?: boolean;
     placeholderType?: 'user' | 'company';
+    fallbackText?: string;
   };
 
 const AvatarRoot = React.forwardRef<HTMLDivElement, AvatarRootProps>(
@@ -152,6 +155,7 @@ const AvatarRoot = React.forwardRef<HTMLDivElement, AvatarRootProps>(
       color,
       className,
       placeholderType = 'user',
+      fallbackText,
       ...rest
     },
     forwardedRef,
@@ -180,8 +184,36 @@ const AvatarRoot = React.forwardRef<HTMLDivElement, AvatarRootProps>(
       );
     }
 
+    // Process children to handle fallback text
+    const processedChildren = React.Children.map(children, (child) => {
+      if (React.isValidElement(child) && child.type === AvatarImage) {
+        // If we have an image and it has a src, use it
+        if (child.props.src) {
+          return child;
+        }
+        
+        // If we have fallback text, create a fallback component
+        if (fallbackText) {
+          // Get initials (max 2 letters)
+          const initials = fallbackText
+            .split(' ')
+            .map(name => name.charAt(0))
+            .join('')
+            .toUpperCase()
+            .substring(0, 2);
+            
+          return (
+            <div className={root({ class: `${className} text-text-strong-950` })}>
+              {initials}
+            </div>
+          );
+        }
+      }
+      return child;
+    });
+
     const extendedChildren = recursiveCloneChildren(
-      children as React.ReactElement[],
+      processedChildren as React.ReactElement[],
       sharedProps,
       [AVATAR_IMAGE_NAME, AVATAR_INDICATOR_NAME],
       uniqueId,
@@ -204,17 +236,71 @@ AvatarRoot.displayName = AVATAR_ROOT_NAME;
 type AvatarImageProps = AvatarSharedProps &
   Omit<React.ImgHTMLAttributes<HTMLImageElement>, 'color'> & {
     asChild?: boolean;
+    useNextImage?: boolean;
   };
 
 const AvatarImage = React.forwardRef<HTMLImageElement, AvatarImageProps>(
-  ({ asChild, className, size, color, ...rest }, forwardedRef) => {
-    const Component = asChild ? Slot : 'img';
+  ({ asChild, className, size, color, useNextImage = true, src, alt = '', ...rest }, forwardedRef) => {
     const { image } = avatarVariants({ size, color });
 
+    // Get size from the avatarVariants
+    const sizeMap = {
+      '80': 80,
+      '72': 72,
+      '64': 64,
+      '56': 56,
+      '48': 48,
+      '40': 40,
+      '32': 32,
+      '24': 24,
+      '20': 20,
+    };
+    
+    const sizeValue = sizeMap[size as keyof typeof sizeMap] || 80;
+    
+    const restProps = rest;
+
+
+    // If using asChild, let the parent component handle the rendering
+    if (asChild) {
+      return (
+        <Slot
+          ref={forwardedRef}
+          className={image({ class: className })}
+          {...rest}
+        />
+      );
+    }
+    
+    // If using Next.js Image
+    if (useNextImage) {
+      // Ensure src is not undefined for Next.js Image
+      if (!src) {
+        return null;
+      }
+      
+      const {width, height, ...rest} = restProps;
+
+      return (
+        <Image
+          ref={forwardedRef}
+          className={image({class: className})}
+          width={sizeValue}
+          height={sizeValue}
+          src={src}
+          alt={alt}
+          {...rest}
+        />
+      );
+    }
+    
+    // For regular img element
     return (
-      <Component
+      <img
         ref={forwardedRef}
         className={image({ class: className })}
+        src={src}
+        alt={alt}
         {...rest}
       />
     );
@@ -316,7 +402,11 @@ function AvatarNotification({
 AvatarNotification.displayName = AVATAR_NOTIFICATION_NAME;
 
 export {
-  AvatarBrandLogo as BrandLogo, AvatarImage as Image,
-  AvatarIndicator as Indicator, AvatarNotification as Notification, AvatarRoot as Root, AvatarStatus as Status
+  AvatarBrandLogo as BrandLogo, 
+  AvatarImage as Image,
+  AvatarIndicator as Indicator, 
+  AvatarNotification as Notification, 
+  AvatarRoot as Root, 
+  AvatarStatus as Status,
 };
 
