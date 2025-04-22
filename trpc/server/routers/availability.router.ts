@@ -8,16 +8,16 @@ import {protectedProcedure} from '../middleware';
 import {z} from 'zod';
 import {cookies} from 'next/headers';
 import {
-  createAvailabilitySchema,
-  updateAvailabilitySchema
+  ZCreateAvailabilitySchema,
+  ZUpdateAvailabilitySchema
 } from '../schemas/availability.schema';
 
 export const availabilityRouter = router({
   // Get all availabilities for the current user
   getAll: protectedProcedure.query(async ({ctx}) => {
-    return ctx.db.availability.findMany({
+    return ctx.prisma.availability.findMany({
       where: {
-        userId: ctx.session.user.id
+        userId: ctx.session?.user.id
       },
       include: {
         schedule: true
@@ -29,10 +29,10 @@ export const availabilityRouter = router({
   getById: protectedProcedure
     .input(z.object({id: z.number()}))
     .query(async ({ctx, input}) => {
-      return ctx.db.availability.findFirst({
+      return ctx.prisma.availability.findFirst({
         where: {
           id: input.id,
-          userId: ctx.session.user.id
+          userId: ctx.session?.user.id
         },
         include: {
           schedule: true
@@ -42,12 +42,12 @@ export const availabilityRouter = router({
 
   // Create a new availability
   create: protectedProcedure
-    .input(createAvailabilitySchema)
+    .input(ZCreateAvailabilitySchema)
     .mutation(async ({ctx, input}) => {
-      return ctx.db.availability.create({
+      return ctx.prisma.availability.create({
         data: {
           ...input,
-          userId: ctx.session.user.id
+          userId: ctx.session?.user.id
         },
         include: {
           schedule: true
@@ -60,15 +60,15 @@ export const availabilityRouter = router({
     .input(
       z.object({
         id: z.number(),
-        data: updateAvailabilitySchema
+        data: ZUpdateAvailabilitySchema
       })
     )
     .mutation(async ({ctx, input}) => {
       // First check if the availability belongs to the user
-      const existingAvailability = await ctx.db.availability.findFirst({
+      const existingAvailability = await ctx.prisma.availability.findFirst({
         where: {
           id: input.id,
-          userId: ctx.session.user.id
+          userId: ctx.session?.user.id
         }
       });
 
@@ -78,7 +78,7 @@ export const availabilityRouter = router({
         );
       }
 
-      return ctx.db.availability.update({
+      return ctx.prisma.availability.update({
         where: {
           id: input.id
         },
@@ -94,10 +94,10 @@ export const availabilityRouter = router({
     .input(z.object({id: z.number()}))
     .mutation(async ({ctx, input}) => {
       // First check if the availability belongs to the user
-      const existingAvailability = await ctx.db.availability.findFirst({
+      const existingAvailability = await ctx.prisma.availability.findFirst({
         where: {
           id: input.id,
-          userId: ctx.session.user.id
+          userId: ctx.session?.user.id
         }
       });
 
@@ -107,7 +107,7 @@ export const availabilityRouter = router({
         );
       }
 
-      return ctx.db.availability.delete({
+      return ctx.prisma.availability.delete({
         where: {
           id: input.id
         }
