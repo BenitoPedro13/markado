@@ -29,13 +29,13 @@ export const scheduleSchema = z.object({
 });
 
 // Create availability input
-export const createAvailabilitySchema = availabilitySchema.omit({id: true});
+export const ZCreateAvailabilitySchema = availabilitySchema.omit({id: true});
 
 // Update availability input
-export const updateAvailabilitySchema = availabilitySchema.partial();
+export const ZUpdateAvailabilitySchema = availabilitySchema.partial();
 
 // Create schedule input
-export const createScheduleSchema = scheduleSchema.omit({id: true});
+export const ZCreateScheduleSchema = scheduleSchema.omit({id: true});
 
 // Update schedule input
-export const updateScheduleSchema = scheduleSchema.partial();
+export const ZUpdateScheduleSchema = scheduleSchema.partial();
