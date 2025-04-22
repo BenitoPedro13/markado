@@ -6,7 +6,8 @@ import * as Input from '@/components/align-ui/ui/input';
 import * as Button from '@/components/align-ui/ui/button';
 import * as Select from '@/components/align-ui/ui/select';
 import { availabilities, DaySchedule } from '@/data/availability';
-
+import { RiDeleteBinLine, RiAddLine } from '@remixicon/react';
+import * as Divider from '@/components/align-ui/ui/divider';
 type AvailabilityDetailsProps = {
   title: string;
 };
@@ -39,7 +40,7 @@ export default function AvailabilityDetails({title}: AvailabilityDetailsProps) {
         <div className="space-y-4">
           {Object.entries(schedules).map(([day, schedule]) => (
             <div key={day} className="flex items-center gap-4">
-              <div className="w-32">
+              <div className="flex items-center gap-2">
                 <Switch.Root
                   checked={schedule.enabled}
                   onCheckedChange={(checked) =>
@@ -49,7 +50,7 @@ export default function AvailabilityDetails({title}: AvailabilityDetailsProps) {
                     }))
                   }
                 />
-                <span className="ml-2">{day}</span>
+                <span className=" w-[120px]">{day}</span>
               </div>
               <Input.Root className="w-24">
                 <Input.Input
@@ -78,15 +79,17 @@ export default function AvailabilityDetails({title}: AvailabilityDetailsProps) {
                 />
               </Input.Root>
               <Button.Root variant="neutral" mode="stroke" size="small">
-                +
+                <Button.Icon as={RiAddLine} />
               </Button.Root>
               <Button.Root variant="neutral" mode="stroke" size="small">
-                <Button.Icon as={() => <span>🗑</span>} />
+                <Button.Icon as={RiDeleteBinLine} />
               </Button.Root>
             </div>
           ))}
         </div>
       </div>
+
+<Divider.Root />
 
       <div className="space-y-4">
         <div className="text-title-h6">Avançado</div>
