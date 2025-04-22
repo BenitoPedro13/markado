@@ -104,6 +104,7 @@ export type SignUpStep =
   | '/sign-up/password'
   | '/sign-up/personal'
   | '/sign-up/calendar'
+  | '/sign-up/conferencing'
   | '/sign-up/availability'
   | '/sign-up/summary'
   | '/sign-up/ending';
@@ -230,7 +231,8 @@ export function SignUpProvider({
     '/sign-up/password': '/sign-up/email',
     '/sign-up/personal': '/sign-up/password',
     '/sign-up/calendar': '/sign-up/personal',
-    '/sign-up/availability': '/sign-up/calendar',
+    '/sign-up/conferencing': '/sign-up/calendar',
+    '/sign-up/availability': '/sign-up/conferencing',
     '/sign-up/summary': '/sign-up/availability',
     '/sign-up/ending': '/sign-up/summary'
   };
@@ -239,7 +241,8 @@ export function SignUpProvider({
     '/sign-up/email': '/sign-up/password',
     '/sign-up/password': '/sign-up/personal',
     '/sign-up/personal': '/sign-up/calendar',
-    '/sign-up/calendar': '/sign-up/availability',
+    '/sign-up/calendar': '/sign-up/conferencing',
+    '/sign-up/conferencing': '/sign-up/availability',
     '/sign-up/availability': '/sign-up/summary',
     '/sign-up/summary': '/sign-up/ending'
   };

@@ -20,6 +20,8 @@ const DEFAULT_COOKIE_OPTIONS = {
   path: '/'
 };
 
+export type StepType = 'personal' | 'calendar' | 'conferencing' | 'availability';
+
 /**
  * Set the edit mode cookie to allow navigation to previous steps
  */
@@ -38,7 +40,7 @@ export const clearEditMode = () => {
  * Set a step completion cookie
  * @param step The step that was completed
  */
-export const setStepComplete = (step: 'personal' | 'calendar' | 'availability') => {
+export const setStepComplete = (step: StepType) => {
   const cookieName = `${step}_step_complete`;
   Cookies.set(cookieName, 'true', DEFAULT_COOKIE_OPTIONS);
 };
@@ -70,7 +72,7 @@ export const setOnboardingComplete = () => {
  * @param step The step to check
  * @returns boolean indicating if the step is complete
  */
-export const isStepComplete = (step: 'personal' | 'calendar' | 'availability'): boolean => {
+export const isStepComplete = (step: StepType): boolean => {
   const cookieName = `${step}_step_complete`;
   return Cookies.get(cookieName) === 'true';
 };
