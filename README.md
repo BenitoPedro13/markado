@@ -15,6 +15,10 @@
   - [Table of Contents](#table-of-contents)
   - [Overview](#overview)
   - [Features](#features)
+  - [Architecture](#architecture)
+    - [Authentication Flow](#authentication-flow)
+    - [Cookie Management](#cookie-management)
+    - [State Management](#state-management)
   - [Quick Start](#quick-start)
   - [Development Guide](#development-guide)
     - [Environment Setup](#environment-setup)
@@ -30,6 +34,7 @@
   - [Deployment](#deployment)
     - [CI/CD Setup](#cicd-setup)
     - [Security Guidelines](#security-guidelines)
+  - [License](#license)
 
 ## Overview
 
@@ -45,6 +50,54 @@ Markado is a Next.js application built with TypeScript that provides calendar in
 - 🔸 Dark mode support
 - 🔸 TypeScript support
 - 🔸 CI/CD pipeline
+
+## Architecture
+
+### Authentication Flow
+
+Markado uses a multi-step authentication flow with the following steps:
+
+1. **Email Entry**: Users enter their email and agree to terms
+2. **Password Creation**: Users create a secure password
+3. **Personal Information**: Users provide name, username, and timezone
+4. **Calendar Integration**: Users connect their Google Calendar
+5. **Conferencing Integration**: Users connec their Google Meet
+6. **Availability Setup**: Users set their availability schedule
+7. **Summary & Review**: Users review all entered information
+8. **Completion**: Onboarding is completed and users are redirected
+
+### Cookie Management
+
+The application uses a centralized cookie management system to track user progress through the sign-up flow. This is implemented in `src/utils/cookie-utils.ts` and provides the following functionality:
+
+```typescript
+// Cookie names
+export const COOKIE_NAMES = {
+  EDIT_MODE: 'edit_mode',
+  PERSONAL_STEP_COMPLETE: 'personal_step_complete',
+  CALENDAR_STEP_COMPLETE: 'calendar_step_complete',
+  AVAILABILITY_STEP_COMPLETE: 'availability_step_complete',
+  NEXT_STEP: 'next_step',
+  ONBOARDING_COMPLETE: 'onboarding_complete'
+};
+```
+
+Key utility functions:
+
+- `setEditMode()`: Enables editing of previous steps
+- `clearEditMode()`: Disables editing mode
+- `setStepComplete(step)`: Marks a specific step as complete
+- `setNextStep(nextStep)`: Sets the next step in the flow
+- `clearNextStep()`: Clears the next step directive
+- `setOnboardingComplete()`: Marks onboarding as complete
+- `isStepComplete(step)`: Checks if a step is complete
+- `isEditMode()`: Checks if user is in edit mode
+
+This centralized approach ensures consistent cookie handling across the application and simplifies debugging.
+
+### State Management
+
+The application uses React Context for state management, particularly for the sign-up flow. The `SignUpContext` maintains form state across steps and handles navigation between them.
 
 ## Quick Start
 
@@ -202,3 +255,7 @@ The project uses GitHub Actions with a self-hosted runner for continuous integra
 - Regularly rotate secrets
 - Keep runner machine secure and updated
 - Monitor runner logs for suspicious activity
+
+## License
+
+This software is proprietary and confidential. Unauthorized copying, modification, distribution, or use of this software, via any medium, is strictly prohibited. All rights reserved by Markado Company.

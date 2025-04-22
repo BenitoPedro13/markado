@@ -113,6 +113,26 @@
       "saturday": "Saturday",
       "invalid_time_format": "Invalid time format. Use HH:MM format."
     },
+    "SummaryForm": {
+      "summary": "Registration Summary",
+      "summary_description": "Review and complete your account configuration.",
+      "continue": "Continue",
+      "name_complete": "Full Name",
+      "company_name": "Company Name",
+      "availability": "Availability",
+      "address": "Address",
+      "username": "Username",
+      "email": "Email",
+      "selected_calendar": "Selected Calendar",
+      "not_provided": "Not provided",
+      "email_placeholder": "example@email.com",
+      "name_complete_placeholder": "Full Name",
+      "username_placeholder": "example",
+      "selected_calendar_placeholder": "Select a calendar",
+      "company_placeholder": "Markado",
+      "address_placeholder": "Rua da Passagem - Botafogo Rio de Janeiro",
+      "no_availability_set": "No availability set"
+    },
     "CalendarForm": {
       "connect_calendar": "Connect Calendar",
       "connect_calendar_description": "Connect your Google Calendar to manage your availability and appointments.",
@@ -141,10 +161,34 @@
       "error": "Error",
       "error_selecting_calendar": "There was an error selecting your calendar. Please try again."
     },
+    "ConferencingForm": {
+      "connect_meet": "Connect Google Meet",
+      "connect_meet_description": "Connect your video conferencing apps",
+      "continue": "Continue",
+      "want_to_fill_later": "Want to fill this in later?",
+      "skip_for_now": "Skip for now",
+      "google_meet": "Google Meet",
+      "default": "Default",
+      "error": "Error",
+      "error_connecting_meet": "There was an error connecting to Google Meet. Please try again."
+    },
     "EndingPage": {
       "all_set": "All Set!",
       "your_account_is_ready": "Your account is ready to use",
       "get_started": "Get Started"
+    },
+    "ProfileForm": {
+      "quase_terminando": "Almost done!",
+      "envie_uma_foto_bonita": "Send us a nice photo of yourself",
+      "enviar_imagem": "Upload Image",
+      "descreva_voce": "Tell us about yourself...",
+      "sera_exibido_no_perfil": "This will be displayed on your profile.",
+      "continuar": "Continue",
+      "pular_etapa": "Skip this step",
+      "error": "Error",
+      "error_updating_profile": "There was an error updating your profile. Please try again.",
+      "invalid_file_type": "Invalid file type. Please upload a PNG or JPEG image.",
+      "image_too_small": "Image is too small. Minimum size is 400x400 pixels."
     }
   },
   "VerifyEmailPage": {

@@ -27,7 +27,8 @@ export const calendarRouter = router({
       access_type: 'offline',
       scope: [
         'https://www.googleapis.com/auth/calendar.readonly',
-        'https://www.googleapis.com/auth/calendar.events'
+        'https://www.googleapis.com/auth/calendar.events',
+        'https://www.googleapis.com/auth/meetings.space.created'
       ],
       prompt: 'consent'
     });

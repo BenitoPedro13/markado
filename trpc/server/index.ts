@@ -5,6 +5,7 @@ import { authRouter } from './routers/auth.router';
 import { timezoneRouter } from './routers/timezone.router';
 import { cityTimezonesRouter } from './routers/cityTimezones.router';
 import { calendarRouter } from './routers/calendar.router';
+import { meetRouter } from './routers/meet.router';
 
 export const appRouter = router({
   user: userRouter,
@@ -13,6 +14,7 @@ export const appRouter = router({
   timezone: timezoneRouter,
   cityTimezones: cityTimezonesRouter,
   calendar: calendarRouter,
+  meet: meetRouter,
 });
 
 export type AppRouter = typeof appRouter;

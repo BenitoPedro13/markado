@@ -7,6 +7,7 @@ import Negotiator from 'negotiator';
 
 // Define public routes that don't require authentication
 const publicRoutes = [
+  '/calendar',
   '/sign-in',
   '/verify-email',
   '/check-email',
@@ -27,6 +28,7 @@ const publicRoutes = [
 
 // Define routes that don't require onboarding
 const noOnboardingRoutes = [
+  '/calendar',
   '/sign-in',
   '/verify-email',
   '/check-email',
@@ -107,6 +109,9 @@ export async function middleware(request: NextRequest) {
       pathname.startsWith(route)
     );
 
+    // Check if we're in edit mode (user is editing their data)
+    const isEditMode = request.cookies.get('edit_mode')?.value === 'true';
+    
     // Only check onboarding status for routes that require it and for /sign-up/personal
     if (requiresOnboarding && !pathname.startsWith('/sign-up/personal')) {
       // Check for a temporary next_step cookie that allows one-time navigation to a specific step
@@ -126,6 +131,12 @@ export async function middleware(request: NextRequest) {
       const personalStepComplete = request.cookies.get('personal_step_complete')?.value === 'true';
       const calendarStepComplete = request.cookies.get('calendar_step_complete')?.value === 'true';
       const availabilityStepComplete = request.cookies.get('availability_step_complete')?.value === 'true';
+      
+      // If in edit mode, allow access to any sign-up step
+      if (isEditMode && pathname.startsWith('/sign-up/')) {
+        console.log(`[Middleware] Edit mode active, allowing access to ${pathname}`);
+        return NextResponse.next();
+      }
       
       // Allow access to calendar if personal is complete
       if (pathname === '/sign-up/calendar' && personalStepComplete) {

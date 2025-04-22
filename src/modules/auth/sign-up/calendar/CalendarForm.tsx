@@ -9,6 +9,7 @@ import {useEffect, useState} from 'react';
 import {useRouter, useSearchParams} from 'next/navigation';
 import {useMutation, useQuery} from '@tanstack/react-query';
 import {useNotification} from '@/hooks/use-notification';
+import Cookies from 'js-cookie';
 
 import * as FancyButton from '@/components/align-ui/ui/fancy-button';
 import CalendarIntegrationCard from '@/components/CalendarIntegrationCard';
@@ -21,6 +22,8 @@ import {AppRouter} from '~/trpc/server';
 import {getMeByUserId, getMeHandler} from '~/trpc/server/handlers/user.handler';
 import {Session} from 'next-auth';
 import {getCalendarsByUserId} from '~/trpc/server/routers/calendar.router';
+import {setStepComplete, clearEditMode} from '@/utils/cookie-utils';
+
 const GoogleCalendarBrand = () => {
   return (
     <svg
@@ -193,22 +196,34 @@ const CalendarForm = ({calendars, userEmail}: CalendarFormProps) => {
   // };
 
   const handleContinue = () => {
+    // Clear the edit_mode cookie if it exists
+    clearEditMode();
+    
+    // Set the calendar step completion cookie
+    setStepComplete('calendar');
+    
     if (selectedCalendarId) {
       // Save selected calendar if not already done
       selectCalendarMutation.mutate(
         {calendarId: selectedCalendarId},
         {
-          onSuccess: () => goToStep('/sign-up/availability'),
-          onError: () => goToStep('/sign-up/availability') // Continue anyway if selection fails
+          onSuccess: () => goToStep('/sign-up/conferencing'),
+          onError: () => goToStep('/sign-up/conferencing') // Continue anyway if selection fails
         }
       );
     } else {
-      goToStep('/sign-up/availability');
+      goToStep('/sign-up/conferencing');
     }
   };
 
   const handleSkip = () => {
-    goToStep('/sign-up/availability');
+    // Clear the edit_mode cookie if it exists
+    clearEditMode();
+    
+    // Set the calendar step completion cookie
+    setStepComplete('calendar');
+    
+    goToStep('/sign-up/conferencing');
   };
 
   return (
@@ -267,7 +282,7 @@ const CalendarForm = ({calendars, userEmail}: CalendarFormProps) => {
 
       <FancyButton.Root
         className="w-full"
-        variant="primary"
+        variant="neutral"
         onClick={handleContinue}
       >
         <span className="text-label-sm">{t('continue')}</span>
