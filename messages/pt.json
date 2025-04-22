@@ -161,6 +161,17 @@
       "error": "Erro",
       "error_selecting_calendar": "Ocorreu um erro ao selecionar seu calendário. Por favor, tente novamente."
     },
+    "ConferencingForm": {
+      "connect_meet": "Conecte seus apps",
+      "connect_meet_description": "Conecte seus aplicativos de video chamada ",
+      "continue": "Continuar",
+      "want_to_fill_later": "Quer preencher depois?",
+      "skip_for_now": "Pular etapa",
+      "google_meet": "Google Meet",
+      "default": "Padrão",
+      "error": "Erro",
+      "error_connecting_meet": "Ocorreu um erro ao conectar ao Google Meet. Por favor, tente novamente."
+    },
     "EndingPage": {
       "all_set": "Tudo Pronto!",
       "your_account_is_ready": "Sua conta está pronta para uso",
