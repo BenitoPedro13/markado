@@ -35,7 +35,7 @@ export const ZCreateAvailabilitySchema = availabilitySchema.omit({id: true});
 export const ZUpdateAvailabilitySchema = availabilitySchema.partial();
 
 // Create schedule input
-export const ZCreateScheduleSchema = scheduleSchema.omit({id: true});
+export const ZCreateScheduleSchema = scheduleSchema.omit({id: true, userId: true});
 
 // Update schedule input
 export const ZUpdateScheduleSchema = scheduleSchema.partial();
