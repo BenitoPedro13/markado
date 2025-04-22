@@ -176,6 +176,19 @@
       "all_set": "All Set!",
       "your_account_is_ready": "Your account is ready to use",
       "get_started": "Get Started"
+    },
+    "ProfileForm": {
+      "quase_terminando": "Almost done!",
+      "envie_uma_foto_bonita": "Send us a nice photo of yourself",
+      "enviar_imagem": "Upload Image",
+      "descreva_voce": "Tell us about yourself...",
+      "sera_exibido_no_perfil": "This will be displayed on your profile.",
+      "continuar": "Continue",
+      "pular_etapa": "Skip this step",
+      "error": "Error",
+      "error_updating_profile": "There was an error updating your profile. Please try again.",
+      "invalid_file_type": "Invalid file type. Please upload a PNG or JPEG image.",
+      "image_too_small": "Image is too small. Minimum size is 400x400 pixels."
     }
   },
   "VerifyEmailPage": {
