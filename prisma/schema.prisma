@@ -84,12 +84,13 @@ model User {
   accounts            Account[]
   sessions            Session[]
   Authenticator       Authenticator[]
-  // Google Calendar integration
+  // Google Calendar & Meet integration
   googleAccessToken   String?
   googleRefreshToken  String?
   googleTokenExpiry   BigInt?
   selectedCalendarId  String?
   calendars           Calendar[]
+  googleMeetEnabled   Boolean           @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
