@@ -161,10 +161,34 @@
       "error": "Erro",
       "error_selecting_calendar": "Ocorreu um erro ao selecionar seu calendário. Por favor, tente novamente."
     },
+    "ConferencingForm": {
+      "connect_meet": "Conecte seus apps",
+      "connect_meet_description": "Conecte seus aplicativos de video chamada ",
+      "continue": "Continuar",
+      "want_to_fill_later": "Quer preencher depois?",
+      "skip_for_now": "Pular etapa",
+      "google_meet": "Google Meet",
+      "default": "Padrão",
+      "error": "Erro",
+      "error_connecting_meet": "Ocorreu um erro ao conectar ao Google Meet. Por favor, tente novamente."
+    },
     "EndingPage": {
       "all_set": "Tudo Pronto!",
       "your_account_is_ready": "Sua conta está pronta para uso",
       "get_started": "Começar"
+    },
+    "ProfileForm": {
+      "quase_terminando": "Quase terminando!",
+      "envie_uma_foto_bonita": "Envie uma foto bonita sua pra gente",
+      "enviar_imagem": "Enviar Imagem",
+      "descreva_voce": "Descreva você...",
+      "sera_exibido_no_perfil": "Ele será exibido no seu perfil.",
+      "continuar": "Continuar",
+      "pular_etapa": "Pular etapa",
+      "error": "Erro",
+      "error_updating_profile": "Ocorreu um erro ao atualizar seu perfil. Por favor, tente novamente.",
+      "invalid_file_type": "Tipo de arquivo inválido. Por favor, envie uma imagem PNG ou JPEG.",
+      "image_too_small": "Imagem muito pequena. O tamanho mínimo é 400x400 pixels."
     }
   },
   "VerifyEmailPage": {

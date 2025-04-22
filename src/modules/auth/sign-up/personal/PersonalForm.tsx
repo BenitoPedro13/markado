@@ -26,7 +26,6 @@ const PersonalForm = ({user}: PersonalFormProps) => {
   const trpc = useTRPC();
   const router = useRouter();
   const {forms, goToStep} = useSignUp();
-  const [hasUserTimezone, setHasUserTimezone] = useState(false);
   const t = useTranslations('SignUpPage.PersonalForm');
   const formInitializedRef = useRef(false);
 
@@ -190,7 +189,7 @@ const PersonalForm = ({user}: PersonalFormProps) => {
               forms.personal.setValue('timeZone', value);
               forms.personal.trigger();
             }}
-            autoDetect={!hasUserTimezone}
+            autoDetect={!user?.timeZone}
             defaultValue={user?.timeZone || 'America/Sao_Paulo'}
           />
           {forms.personal.formState.errors.timeZone && (
