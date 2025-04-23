@@ -2,8 +2,8 @@
 
 import * as Avatar from '@/components/align-ui/ui/avatar';
 import * as Badge from '@/components/align-ui/ui/badge';
+import { useScheduling } from '@/contexts/SchedulingContext';
 import { services as initialServices } from '@/data/services';
-import { useSessionStore } from '@/providers/session-store-provider';
 import { cn } from '@/utils/cn';
 import { RiArrowRightSLine, RiTimeLine } from '@remixicon/react';
 import Link from 'next/link';
@@ -29,20 +29,35 @@ const formatPrice = (price: number): string => {
 };
 
 const ServicesSchedulingForm = () => {
-  // TODO: Change to a query to fetch the user image
-  const user = useSessionStore((state) => state.user);
+  const { profileUser, isLoading, error } = useScheduling();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen w-full flex flex-col justify-center items-center">
+        <p className="text-text-sub-600">Carregando...</p>
+      </div>
+    );
+  }
+
+  if (error || !profileUser) {
+    return (
+      <div className="min-h-screen w-full flex flex-col justify-center items-center">
+        <p className="text-text-sub-600">Usuário não encontrado</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen w-full flex flex-col justify-center items-center">
       <main className="p-8 flex flex-col md:flex-row items-center md:items-start gap-6 w-full max-w-[624px]">
         <div className="w-full md:flex-1 flex flex-col items-center md:items-start gap-4">
-          <Avatar.Root size={'48'} fallbackText={user?.name || ''}>
-            <Avatar.Image src={user?.image || ''} alt={user?.name || 'User'} />
+          <Avatar.Root size={'48'} fallbackText={profileUser.name || ''}>
+            <Avatar.Image src={profileUser.image || ''} alt={profileUser.name || 'User'} />
           </Avatar.Root>
 
-          <h1 className="text-label-lg text-text-strong-950">{user?.name}</h1>
+          <h1 className="text-label-lg text-text-strong-950">{profileUser.name}</h1>
 
-          <p className="text-label-sm text-text-sub-600">{user?.biography}</p>
+          <p className="text-label-sm text-text-sub-600">{profileUser.biography}</p>
           {/** Social icons */}
           <div className="flex flex-row items-center gap-3"></div>
         </div>
@@ -50,7 +65,7 @@ const ServicesSchedulingForm = () => {
           {initialServices.map((service, index) => (
             <Link
               key={service.slug}
-              href={`/${user?.username}/${service.slug}`}
+              href={`/${profileUser.username}/${service.slug}`}
               className={cn(
                 'p-4 flex gap-4 justify-between items-center hover:bg-stroke-soft-200 transition hover:cursor-pointer',
                 index !== initialServices.length - 1 &&
