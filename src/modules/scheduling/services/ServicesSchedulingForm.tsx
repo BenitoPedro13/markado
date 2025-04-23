@@ -6,6 +6,7 @@ import { services as initialServices } from '@/data/services';
 import { useSessionStore } from '@/providers/session-store-provider';
 import { cn } from '@/utils/cn';
 import { RiArrowRightSLine, RiTimeLine } from '@remixicon/react';
+import Link from 'next/link';
 
 const formatDuration = (minutes: number): string => {
   if (minutes >= 24 * 60) {
@@ -47,8 +48,9 @@ const ServicesSchedulingForm = () => {
         </div>
         <div className="w-full md:min-w-[332px] md:flex-1 overflow-hidden flex flex-col rounded-3xl border border-stroke-soft-200">
           {initialServices.map((service, index) => (
-            <div
+            <Link
               key={service.slug}
+              href={`/${user?.username}/${service.slug}`}
               className={cn(
                 'p-4 flex gap-4 justify-between items-center hover:bg-stroke-soft-200 transition hover:cursor-pointer',
                 index !== initialServices.length - 1 &&
@@ -77,7 +79,7 @@ const ServicesSchedulingForm = () => {
                 </div>
               </div>
               <RiArrowRightSLine size={24} color="var(--text-sub-600)" />
-            </div>
+            </Link>
           ))}
         </div>
       </main>
