@@ -22,12 +22,7 @@ import {
 } from "../../align-ui/ui/modal";
 import type { TimeRange } from "./Schedule";
 import { DayRanges } from "./Schedule";
-
-// Helper function to show toast messages
-const showToast = (message: string, type: string, duration: number) => {
-  // Implement your own toast functionality or use a library
-  console.log(`Toast: ${message} (${type}, ${duration}ms)`);
-};
+import { useNotification } from "@/hooks/use-notification";
 
 // Map locale strings to date-fns locale objects
 const getDateFnsLocale = (localeString: string) => {
@@ -58,6 +53,7 @@ const DateOverrideForm = ({
 }) => {
   const [browsingDate, setBrowsingDate] = useState<Dayjs>();
   const { t, locale, isLocaleReady } = useLocale();
+  const { notification } = useNotification();
   const [datesUnavailable, setDatesUnavailable] = useState(
     value &&
       value[0].start.getUTCHours() === 0 &&
@@ -203,7 +199,11 @@ const DateOverrideForm = ({
                 variant="primary"
                 type="submit"
                 onClick={() => {
-                  showToast(t("date_successfully_added"), "success", 500);
+                  notification({
+                    title: t("date_successfully_added"),
+                    variant: "filled",
+                    color: "green"
+                  });
                 }}
                 disabled={selectedDates.length === 0}
                 data-testid="add-override-submit-btn">
