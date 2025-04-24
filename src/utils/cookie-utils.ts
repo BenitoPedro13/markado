@@ -21,7 +21,7 @@ const DEFAULT_COOKIE_OPTIONS = {
   path: '/'
 };
 
-export type StepType = 'personal' | 'calendar' | 'conferencing' | 'availability' | 'profile';
+export type StepType = 'personal' | 'calendar' | 'availability' | 'profile';
 
 /**
  * Set the edit mode cookie to allow navigation to previous steps
