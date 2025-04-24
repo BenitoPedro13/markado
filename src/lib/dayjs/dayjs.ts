@@ -28,7 +28,7 @@ dayjs.extend(duration);
 dayjs.extend(isSameOrAfter);
 
 // Import the type declarations to ensure they're recognized
-import './plugins/business-days-plugin.d';
+import './plugins/business-days-plugin';
 
 export type Dayjs = dayjs.Dayjs;
 export type { ConfigType } from 'dayjs';

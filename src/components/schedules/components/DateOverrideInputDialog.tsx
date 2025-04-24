@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
-import type { Dayjs } from "@calcom/dayjs";
-import dayjs from "@calcom/dayjs";
-import { classNames as cs } from "@calcom/lib";
-import { yyyymmdd } from "@calcom/lib/date-fns";
-import { useLocale } from "@calcom/lib/hooks/useLocale";
+import type {Dayjs} from '@/lib/dayjs/dayjs';
+import dayjs from "@/lib/dayjs/dayjs";
+import {cn} from '@/utils/cn';
+
+import { yyyymmdd } from "@/lib/date-fns";
+import { useLocale } from "@/hooks/use-locale";
 import type { WorkingHours } from "@calcom/types/schedule";
 import {
   Dialog,
@@ -223,7 +224,7 @@ const DateOverrideInputDialog = ({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{Trigger}</DialogTrigger>
 
-      <DialogContent enableOverflow={true} size="md" className={cs("p-0", className)}>
+      <DialogContent enableOverflow={true} size="md" className={cn("p-0", className)}>
         <DateOverrideForm
           excludedDates={excludedDates}
           weekStart={weekStart}
