@@ -1,20 +1,15 @@
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 
-import { useLocale } from "@calcom/lib/hooks/useLocale";
-import { HttpError } from "@calcom/lib/http-error";
-import { trpc } from "@calcom/trpc/react";
-import {
-  Button,
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogFooter,
-  DialogTrigger,
-  Form,
-  InputField,
-  showToast,
-} from "@calcom/ui";
+import { useLocale } from "@/hooks/use-locale";
+import * as Button from "@/components/align-ui/ui/button";
+import * as Modal from "@/components/align-ui/ui/modal";
+import * as Input from "@/components/align-ui/ui/input";
+import { useNotification } from "@/hooks/use-notification";
+import { RiAddLine } from "@remixicon/react";
+import { useTRPC } from "@/utils/trpc";
+import { useMutation } from "@tanstack/react-query";
+import { getQueryClient } from "@/app/get-query-client";
 
 export function NewScheduleButton({
   name = "new-schedule",
@@ -23,73 +18,93 @@ export function NewScheduleButton({
   name?: string;
   fromEventType?: boolean;
 }) {
+  const trpc = useTRPC();
   const router = useRouter();
   const { t } = useLocale();
+  const { notification } = useNotification();
+  const queryClient = getQueryClient();
 
   const form = useForm<{
     name: string;
   }>();
   const { register } = form;
-  const utils = trpc.useUtils();
 
-  const createMutation = trpc.viewer.availability.schedule.create.useMutation({
-    onSuccess: async ({ schedule }) => {
-      await router.push(`/availability/${schedule.id}${fromEventType ? "?fromEventType=true" : ""}`);
-      showToast(t("schedule_created_successfully", { scheduleName: schedule.name }), "success");
-      utils.viewer.availability.list.setData(undefined, (data) => {
-        const newSchedule = { ...schedule, isDefault: false, availability: [] };
-        if (!data)
-          return {
-            schedules: [newSchedule],
-          };
-        return {
-          ...data,
-          schedules: [...data.schedules, newSchedule],
-        };
+  const createMutation = useMutation(trpc.schedule.create.mutationOptions({
+    onSuccess: async (data: { id: number; name: string }) => {
+      router.push(`/availability/${data.id}${fromEventType ? "?fromEventType=true" : ""}`);
+      notification({
+        title: t("schedule_created_successfully", { scheduleName: data.name }),
+        status: "success",
       });
+      queryClient.invalidateQueries({ queryKey: trpc.schedule.getAll.queryKey() });
     },
     onError: (err) => {
-      if (err instanceof HttpError) {
-        const message = `${err.statusCode}: ${err.message}`;
-        showToast(message, "error");
-      }
-
-      if (err.data?.code === "UNAUTHORIZED") {
-        const message = `${err.data.code}: ${t("error_schedule_unauthorized_create")}`;
-        showToast(message, "error");
-      }
+      const message = err.message || t("error_creating_schedule");
+      notification({
+        title: message,
+        status: "error",
+      });
     },
-  });
+  }));
 
   return (
-    <Dialog name={name} clearQueryParamsOnClose={["copy-schedule-id"]}>
-      <DialogTrigger asChild>
-        <Button variant="fab" data-testid={name} StartIcon="plus">
-          {t("new")}
-        </Button>
-      </DialogTrigger>
-      <DialogContent title={t("add_new_schedule")}>
-        <Form
-          form={form}
-          handleSubmit={(values) => {
+    <Modal.Root>
+      <Modal.Trigger asChild>
+        <Button.Root
+          variant="primary"
+          mode="filled"
+          size="medium"
+          data-testid={name}
+        >
+          <Button.Icon as={RiAddLine} />
+          {t('new')}
+        </Button.Root>
+      </Modal.Trigger>
+      <Modal.Content title={t('add_new_schedule')}>
+        <form
+          onSubmit={form.handleSubmit((values) => {
             createMutation.mutate(values);
-          }}>
-          <InputField
-            label={t("name")}
-            type="text"
-            id="name"
-            required
-            placeholder={t("default_schedule_name")}
-            {...register("name")}
-          />
-          <DialogFooter>
-            <DialogClose />
-            <Button type="submit" loading={createMutation.isPending}>
-              {t("continue")}
-            </Button>
-          </DialogFooter>
-        </Form>
-      </DialogContent>
-    </Dialog>
+          })}
+        >
+          <div className="space-y-4 p-5">
+            <div className="space-y-2">
+              <label
+                htmlFor="name"
+                className="text-label-sm text-text-strong-950"
+              >
+                {t('name')}
+              </label>
+              <Input.Root>
+                <Input.Wrapper>
+                  <Input.Input
+                    id="name"
+                    type="text"
+                    required
+                    placeholder={t('default_schedule_name')}
+                    {...register('name')}
+                  />
+                </Input.Wrapper>
+              </Input.Root>
+            </div>
+          </div>
+          <Modal.Footer>
+            <Modal.Close asChild>
+              <Button.Root variant="neutral" mode="stroke" size="medium">
+                {t('cancel')}
+              </Button.Root>
+            </Modal.Close>
+            <Button.Root
+              type="submit"
+              variant="primary"
+              mode="filled"
+              size="medium"
+              disabled={createMutation.isPending}
+            >
+              {createMutation.isPending ? t('loading') : t('continue')}
+            </Button.Root>
+          </Modal.Footer>
+        </form>
+      </Modal.Content>
+    </Modal.Root>
   );
 }
