@@ -7,6 +7,7 @@ import {RiTimeFill} from '@remixicon/react';
 import {useTranslations} from 'next-intl';
 import {FormEvent, useState} from 'react';
 import {z} from 'zod';
+import dayjs from 'dayjs';
 
 import {setStepComplete, clearEditMode} from '@/utils/cookie-utils';
 import {useTRPC} from '@/utils/trpc';
@@ -95,10 +96,14 @@ const AvailabilityPage = () => {
         const timeRanges = schedule[dayIndex];
         if (timeRanges && timeRanges.length > 0) {
           for (const timeRange of timeRanges) {
+            // Format the time values as HH:MM strings to match the schema requirements
+            const startTime = dayjs(timeRange.start).format('HH:mm');
+            const endTime = dayjs(timeRange.end).format('HH:mm');
+
             await createAvailabilityMutation.mutateAsync({
               days: [dayIndex],
-              startTime: timeRange.start.toISOString().split('T')[1].substring(0, 5),
-              endTime: timeRange.end.toISOString().split('T')[1].substring(0, 5),
+              startTime,
+              endTime,
               scheduleId: scheduleResult.id
             });
           }
@@ -175,37 +180,3 @@ const AvailabilityPage = () => {
 };
 
 export default AvailabilityPage;
-
-// Sign up availability form schema
-const signUpAvailabilityFormSchema = z.object({
-  schedules: z.record(
-    z.enum([
-      'sunday',
-      'monday',
-      'tuesday',
-      'wednesday',
-      'thursday',
-      'friday',
-      'saturday'
-    ]),
-    z.object({
-      enabled: z.boolean(),
-      timeWindows: z.array(
-        z.object({
-          startTime: z
-            .string()
-            .regex(
-              /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/,
-              'SignUpPage.AvailabilityForm.invalid_time_format'
-            ),
-          endTime: z
-            .string()
-            .regex(
-              /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/,
-              'SignUpPage.AvailabilityForm.invalid_time_format'
-            )
-        })
-      )
-    })
-  )
-});
