@@ -11,6 +11,16 @@ import {
   ZCreateAvailabilitySchema,
   ZUpdateAvailabilitySchema
 } from '../schemas/availability.schema';
+import {timeStringToDate} from '@/utils/time-utils';
+
+// Define a type for the update data that matches the Prisma schema
+type AvailabilityUpdateData = {
+  days?: number[];
+  startTime?: Date;
+  endTime?: Date;
+  date?: Date;
+  scheduleId?: number;
+};
 
 export const availabilityRouter = router({
   // Get all availabilities for the current user
@@ -49,9 +59,15 @@ export const availabilityRouter = router({
   create: protectedProcedure
     .input(ZCreateAvailabilitySchema)
     .mutation(async ({ctx, input}) => {
+      // Convert time strings to Date objects for database storage
+      const startDateTime = timeStringToDate(input.startTime);
+      const endDateTime = timeStringToDate(input.endTime);
+
       return ctx.prisma.availability.create({
         data: {
           ...input,
+          startTime: startDateTime,
+          endTime: endDateTime,
           userId: ctx.session?.user.id
         },
         include: {
@@ -83,11 +99,36 @@ export const availabilityRouter = router({
         );
       }
 
+      // Create a properly typed update data object
+      const updateData: AvailabilityUpdateData = {};
+      
+      // Copy all fields except startTime and endTime
+      if (input.data.days) {
+        updateData.days = input.data.days;
+      }
+      
+      if (input.data.date) {
+        updateData.date = new Date(input.data.date);
+      }
+      
+      if (input.data.scheduleId) {
+        updateData.scheduleId = input.data.scheduleId;
+      }
+      
+      // Convert time strings to Date objects for database storage if provided
+      if (input.data.startTime) {
+        updateData.startTime = timeStringToDate(input.data.startTime);
+      }
+      
+      if (input.data.endTime) {
+        updateData.endTime = timeStringToDate(input.data.endTime);
+      }
+
       return ctx.prisma.availability.update({
         where: {
           id: input.id
         },
-        data: input.data,
+        data: updateData,
         include: {
           schedule: true
         }
