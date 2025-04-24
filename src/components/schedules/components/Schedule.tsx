@@ -1,4 +1,4 @@
-"use client"
+'use client';
 
 import {
   Fragment,
@@ -6,6 +6,7 @@ import {
   useEffect,
   useMemo,
   useRef,
+  forwardRef,
   useState
 } from 'react';
 import type {
@@ -18,7 +19,12 @@ import type {
   FieldValues,
   UseFieldArrayRemove
 } from 'react-hook-form';
-import {Controller, useFieldArray, useFormContext, useWatch} from 'react-hook-form';
+import {
+  Controller,
+  useFieldArray,
+  useFormContext,
+  useWatch
+} from 'react-hook-form';
 
 import type {ConfigType} from '@/lib/dayjs';
 import dayjs from '@/lib/dayjs';
@@ -83,7 +89,7 @@ export const ScheduleDay = <TFieldValues extends FieldValues>({
   name: ArrayPath<TFieldValues>;
   weekday: string;
   control: Control<TFieldValues>;
-  CopyButton: JSX.Element;
+  CopyButton?: JSX.Element;
   disabled?: boolean;
   labels?: ScheduleLabelsType;
   userTimeFormat: number | null;
@@ -97,17 +103,17 @@ export const ScheduleDay = <TFieldValues extends FieldValues>({
 }) => {
   // Use useFieldArray to handle the array field
   const formContext = useFormContext<TFieldValues>();
-  
+
   // Use the provided control or fall back to the form context
   const effectiveControl = control || formContext?.control;
-  
+
   // If we don't have a valid control, we can't proceed
   if (!effectiveControl) {
     console.error('ScheduleDay: No form control available');
     return null;
   }
-  
-  const { fields, append, remove } = useFieldArray({
+
+  const {fields, append, remove} = useFieldArray({
     control: effectiveControl,
     name
   });
@@ -123,7 +129,7 @@ export const ScheduleDay = <TFieldValues extends FieldValues>({
       {/* Label & switch container */}
       <div
         className={classNames(
-          'flex h-[36px] items-center justify-between sm:w-32',
+          'flex h-10 items-center justify-between',
           className?.labelAndSwitchContainer
         )}
       >
@@ -137,7 +143,9 @@ export const ScheduleDay = <TFieldValues extends FieldValues>({
                 data-testid={`${weekday}-switch`}
                 onCheckedChange={(isChecked) => {
                   if (isChecked) {
-                    append(DEFAULT_DAY_RANGE as TFieldValues[typeof name][number]);
+                    append(
+                      DEFAULT_DAY_RANGE as TFieldValues[typeof name][number]
+                    );
                   } else {
                     // Remove all fields
                     fields.forEach((_, index) => remove(index));
@@ -145,7 +153,7 @@ export const ScheduleDay = <TFieldValues extends FieldValues>({
                 }}
               />
             </div>
-            <span className="inline-block min-w-[88px] text-sm capitalize">
+            <span className="inline-block min-w-[88px] w-[120px] text-sm capitalize">
               {weekday}
             </span>
           </label>
@@ -166,7 +174,9 @@ export const ScheduleDay = <TFieldValues extends FieldValues>({
                 timeRangeField: className?.timeRangeField
               }}
             />
-            {!disabled && <div className="block">{CopyButton}</div>}
+            {!disabled && CopyButton && (
+              <div className="block">{CopyButton}</div>
+            )}
           </div>
         )}
       </>
@@ -243,17 +253,23 @@ const Schedule = <
   // const { timeFormat } = query.data || { timeFormat: null };
   // const { t } = useLocale();
   const formContext = useFormContext<TFieldValues>();
-  
+
   // Use the provided control or fall back to the form context
   const effectiveControl = props.control || formContext?.control;
-  
+
   // If we don't have a valid control, we can't proceed
   if (!effectiveControl) {
     console.error('Schedule: No form control available');
     return null;
   }
 
-  return <ScheduleComponent userTimeFormat={null} {...props} control={effectiveControl} />;
+  return (
+    <ScheduleComponent
+      userTimeFormat={null}
+      {...props}
+      control={effectiveControl}
+    />
+  );
 };
 
 export const ScheduleComponent = <
@@ -284,10 +300,10 @@ export const ScheduleComponent = <
 }) => {
   const {locale, isLocaleReady} = useLocale();
   const formContext = useFormContext<TFieldValues>();
-  
+
   // Use the provided control or fall back to the form context
   const effectiveControl = control || formContext?.control;
-  
+
   // If we don't have a valid control, we can't proceed
   if (!effectiveControl) {
     console.error('ScheduleComponent: No form control available');
@@ -322,13 +338,13 @@ export const ScheduleComponent = <
               key={weekday}
               weekday={weekday}
               control={effectiveControl}
-              CopyButton={
-                <CopyButton
-                  weekStart={weekStart}
-                  labels={labels}
-                  getValuesFromDayRange={dayRangeName}
-                />
-              }
+              // CopyButton={
+              //   <CopyButton
+              //     weekStart={weekStart}
+              //     labels={labels}
+              //     getValuesFromDayRange={dayRangeName}
+              //   />
+              // }
             />
           );
         }
@@ -357,10 +373,10 @@ export const DayRanges = <TFieldValues extends FieldValues>({
 }) => {
   const {t} = useLocale();
   const formContext = useFormContext<TFieldValues>();
-  
+
   // Use the provided control or fall back to the form context
   const effectiveControl = control || formContext?.control;
-  
+
   // If we don't have a valid control, we can't proceed
   if (!effectiveControl) {
     console.error('DayRanges: No form control available');
@@ -382,29 +398,36 @@ export const DayRanges = <TFieldValues extends FieldValues>({
             <Controller
               name={`${name}.${index}` as any}
               control={effectiveControl}
-              render={({field}) => (
-                <TimeRangeField
-                  className={className?.timeRangeField}
-                  userTimeFormat={userTimeFormat}
-                  {...field}
-                />
-              )}
+              render={({field}) => {
+                return (
+                  <TimeRangeField
+                    className={className?.timeRangeField}
+                    userTimeFormat={userTimeFormat}
+                    {...field}
+                  />
+                );
+              }}
             />
             {index === 0 && (
               <Button
                 disabled={disabled}
                 data-testid="add-time-availability"
-                // tooltip={labels?.addTime ?? t("add_time_availability")}
-                className="text-sub-600 hover:bg-white-0 border-soft-200 border"
+                className="text-sub-600"
                 type="button"
-                color="minimal"
-                // variant="icon"
-                // StartIcon="plus"
+                variant="neutral"
+                mode="stroke"
+                size="small"
                 onClick={() => {
                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   const slotRange: any = getDateSlotRange(
-                    formContext?.getValues ? formContext.getValues(`${name}.${fields.length - 1}` as any) : undefined,
-                    formContext?.getValues ? formContext.getValues(`${name}.0` as any) : undefined
+                    formContext?.getValues
+                      ? formContext.getValues(
+                          `${name}.${fields.length - 1}` as any
+                        )
+                      : undefined,
+                    formContext?.getValues
+                      ? formContext.getValues(`${name}.0` as any)
+                      : undefined
                   );
 
                   if (slotRange?.append) {
@@ -451,7 +474,9 @@ const RemoveTimeButton = ({
     <Button
       type="button"
       variant="neutral"
-      mode="ghost"
+      mode="stroke"
+      size="small"
+      disabled={disabled}
       onClick={() => remove(index)}
       className={className}
     >
@@ -460,29 +485,38 @@ const RemoveTimeButton = ({
   );
 };
 
-const TimeRangeField = ({
+const TimeRangeField = forwardRef<
+  HTMLDivElement,
+  {
+    className?: string;
+    disabled?: boolean;
+    userTimeFormat: number | null;
+  } & ControllerRenderProps
+>(({
   className,
   value,
   onChange,
   disabled,
   userTimeFormat
-}: {
-  className?: string;
-  disabled?: boolean;
-  userTimeFormat: number | null;
-} & ControllerRenderProps) => {
+}, ref) => {
   // this is a controlled component anyway given it uses LazySelect, so keep it RHF agnostic.
+  
+  // Ensure we have valid Date objects
+  const startDate = value.start instanceof Date ? value.start : new Date(value.start);
+  const endDate = value.end instanceof Date ? value.end : new Date(value.end);
+
+
   return (
-    <div className={classNames('flex flex-row gap-2 sm:gap-3', className)}>
+    <div ref={ref} className={classNames('flex flex-row gap-2 sm:gap-3', className)}>
       <LazySelect
         userTimeFormat={userTimeFormat}
         className="block w-[90px] sm:w-[100px]"
         isDisabled={disabled}
-        value={value.start}
+        value={startDate}
         menuPlacement="bottom"
         onChange={(option: IOption) => {
           const newStart = new Date(option?.value as number);
-          if (newStart >= new Date(value.end)) {
+          if (newStart >= endDate) {
             const newEnd = new Date(option?.value as number);
             newEnd.setMinutes(newEnd.getMinutes() + INCREMENT);
             onChange({...value, start: newStart, end: newEnd});
@@ -496,8 +530,8 @@ const TimeRangeField = ({
         userTimeFormat={userTimeFormat}
         className="block w-[90px] rounded-md sm:w-[100px]"
         isDisabled={disabled}
-        value={value.end}
-        min={value.start}
+        value={endDate}
+        min={startDate}
         menuPlacement="bottom"
         onChange={(option: IOption) => {
           onChange({...value, end: new Date(option?.value as number)});
@@ -505,7 +539,9 @@ const TimeRangeField = ({
       />
     </div>
   );
-};
+});
+
+TimeRangeField.displayName = 'TimeRangeField';
 
 const LazySelect = ({
   value,
@@ -513,6 +549,7 @@ const LazySelect = ({
   max,
   userTimeFormat,
   menuPlacement,
+  onChange,
   ...props
 }: {
   value: ConfigType;
@@ -520,18 +557,18 @@ const LazySelect = ({
   max?: ConfigType;
   userTimeFormat: number | null;
   menuPlacement?: string;
+  onChange?: (option: IOption) => void;
   [key: string]: any;
 }) => {
   // Lazy-loaded options, otherwise adding a field has a noticeable redraw delay.
   const {options, filter} = useOptions(userTimeFormat);
+  
+  // Convert the Date value to a timestamp for comparison
+  const valueTimestamp = value instanceof Date ? value.getTime() : dayjs(value).toDate().valueOf();
 
   useEffect(() => {
     filter({current: value});
   }, [filter, value]);
-
-  const handleOptionChange = (option: {value: string}) => {
-    // ... existing code ...
-  };
 
   return (
     <Select
@@ -544,27 +581,31 @@ const LazySelect = ({
           filter({current: value});
         }
       }}
+      value={valueTimestamp.toString()}
+      onValueChange={(newValue: string) => {
+        if (onChange) {
+          const option = options.find(
+            (opt) => opt.value.toString() === newValue
+          );
+          if (option) {
+            onChange(option);
+          }
+        }
+      }}
       {...props}
     >
-      <SelectTrigger className="block w-[90px] sm:w-[100px]">
+      <SelectTrigger className="flex w-[90px] sm:w-[100px]">
         <SelectValue>
-          {options.find(
-            (option) => option.value === dayjs(value).toDate().valueOf()
-          )?.label}
+          {
+            options.find(
+              (option) => option.value === valueTimestamp
+            )?.label
+          }
         </SelectValue>
       </SelectTrigger>
       <SelectContent>
         {options.map((option) => (
-          <SelectItem 
-            key={option.value} 
-            value={option.value.toString()}
-            onSelect={() => {
-              const newValue = new Date(option.value);
-              if (props.onChange) {
-                props.onChange({ value: newValue });
-              }
-            }}
-          >
+          <SelectItem key={option.value} value={option.value.toString()}>
             {option.label}
           </SelectItem>
         ))}
@@ -584,8 +625,7 @@ interface IOption {
  * 23:45:00 (End of day with enough time for 15 min booking)
  */
 /** Begin Time Increments For Select */
-const INCREMENT =
-  Number(process.env.NEXT_AVAILABILITY_SCHEDULE_INTERVAL) || 15;
+const INCREMENT = Number(process.env.NEXT_AVAILABILITY_SCHEDULE_INTERVAL) || 15;
 const useOptions = (timeFormat: number | null) => {
   const [filteredOptions, setFilteredOptions] = useState<IOption[]>([]);
 
@@ -628,8 +668,13 @@ const useOptions = (timeFormat: number | null) => {
       current?: ConfigType;
     }) => {
       if (current) {
+        // Convert current to a timestamp for comparison
+        const currentTimestamp = current instanceof Date 
+          ? current.getTime() 
+          : dayjs(current).toDate().valueOf();
+          
         const currentOption = options.find(
-          (option) => option.value === dayjs(current).toDate().valueOf()
+          (option) => option.value === currentTimestamp
         );
         if (currentOption) setFilteredOptions([currentOption]);
       } else
@@ -796,10 +841,7 @@ const CopyTimes = ({
                       }
                       disabled={disabled === weekdayIndex}
                       onCheckedChange={(isChecked) => {
-                        if (
-                          isChecked &&
-                          !selected.includes(weekdayIndex)
-                        ) {
+                        if (isChecked && !selected.includes(weekdayIndex)) {
                           setSelected(selected.concat([weekdayIndex]));
                         } else if (
                           !isChecked &&
