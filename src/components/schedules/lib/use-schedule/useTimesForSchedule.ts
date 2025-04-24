@@ -1,4 +1,4 @@
-import dayjs from "@calcom/dayjs";
+import dayjs from "@/lib/dayjs";
 
 import type { UseScheduleWithCacheArgs } from "./useSchedule";
 
