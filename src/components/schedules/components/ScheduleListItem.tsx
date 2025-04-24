@@ -43,7 +43,7 @@ export function ScheduleListItem({
 }) {
   const trpc = useTRPC();
   const { data: user } = useQuery(trpc.user.me.queryOptions());
-  const { t, locale, isLocaleReady } = useLocale();
+  const {t, locale, isLocaleReady} = useLocale('Schedules');
   const { notification } = useNotification();
 
   if (!schedule || !user) {

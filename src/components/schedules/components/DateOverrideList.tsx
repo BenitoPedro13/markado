@@ -30,7 +30,7 @@ const DateOverrideList = ({
   hour12: boolean;
   weekStart?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
 }) => {
-  const { t, locale } = useLocale();
+  const { t, locale } = useLocale('Schedules');
 
   const unsortedFieldArrayMap = fields.reduce(
     (map: { [id: string]: number }, { id }, index) => ({ ...map, [id]: index }),
@@ -120,7 +120,7 @@ const DateOverrideList = ({
                   <Button.Icon as={RiDeleteBin2Line} />
                 </Button.Root>
               </Tooltip.Trigger>
-              <Tooltip.Content>Delete</Tooltip.Content>
+              <Tooltip.Content>{t("delete")}</Tooltip.Content>
             </Tooltip.Root>
           </div>
         </li>

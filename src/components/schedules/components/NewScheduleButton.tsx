@@ -20,7 +20,7 @@ export function NewScheduleButton({
 }) {
   const trpc = useTRPC();
   const router = useRouter();
-  const { t } = useLocale();
+  const { t } = useLocale('Schedules');
   const { notification } = useNotification();
   const queryClient = getQueryClient();
 
@@ -57,10 +57,10 @@ export function NewScheduleButton({
           data-testid={name}
         >
           <Button.Icon as={RiAddLine} />
-          {t('new')}
+          {t('new_schedule')}
         </Button.Root>
       </Modal.Trigger>
-      <Modal.Content title={t('add_new_schedule')}>
+      <Modal.Content title={t('new_schedule')}>
         <form
           onSubmit={form.handleSubmit((values) => {
             createMutation.mutate(values);
@@ -72,7 +72,7 @@ export function NewScheduleButton({
                 htmlFor="name"
                 className="text-label-sm text-text-strong-950"
               >
-                {t('name')}
+                {t('schedule_name')}
               </label>
               <Input.Root>
                 <Input.Wrapper>
@@ -80,7 +80,7 @@ export function NewScheduleButton({
                     id="name"
                     type="text"
                     required
-                    placeholder={t('default_schedule_name')}
+                    placeholder={t('schedule_name_placeholder')}
                     {...register('name')}
                   />
                 </Input.Wrapper>
@@ -100,7 +100,7 @@ export function NewScheduleButton({
               size="medium"
               disabled={createMutation.isPending}
             >
-              {createMutation.isPending ? t('loading') : t('continue')}
+              {createMutation.isPending ? t('loading') : t('create')}
             </Button.Root>
           </Modal.Footer>
         </form>

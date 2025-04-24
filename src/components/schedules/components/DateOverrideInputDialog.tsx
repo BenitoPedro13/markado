@@ -52,7 +52,7 @@ const DateOverrideForm = ({
   weekStart: 0 | 1 | 2 | 3 | 4 | 5 | 6;
 }) => {
   const [browsingDate, setBrowsingDate] = useState<Dayjs>();
-  const { t, locale, isLocaleReady } = useLocale();
+  const {t, locale, isLocaleReady} = useLocale('Schedules');
   const { notification } = useNotification();
   const [datesUnavailable, setDatesUnavailable] = useState(
     value &&
@@ -178,10 +178,14 @@ const DateOverrideForm = ({
               <div>
                 {datesUnavailable ? (
                   <p className="text-subtle border-default rounded border p-2 text-sm">
-                    {t("date_overrides_unavailable")}
+                    {t("unavailable")}
                   </p>
                 ) : (
-                  <DayRanges name="range" userTimeFormat={userTimeFormat} />
+                  <DayRanges 
+                    name="range" 
+                    userTimeFormat={userTimeFormat} 
+                    control={form.control}
+                  />
                 )}
               </div>
               <div className="flex items-center space-x-2">

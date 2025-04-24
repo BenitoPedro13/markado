@@ -16,7 +16,7 @@ import type {
   FieldValues,
   UseFieldArrayRemove
 } from 'react-hook-form';
-import {Controller, useFieldArray, useFormContext} from 'react-hook-form';
+import {Controller, useFieldArray, useFormContext, useWatch} from 'react-hook-form';
 
 import type {ConfigType} from '@/lib/dayjs';
 import dayjs from '@/lib/dayjs';
@@ -93,8 +93,11 @@ export const ScheduleDay = <TFieldValues extends FieldValues>({
     scheduleContainer?: string;
   };
 }) => {
-  const {watch, setValue} = useFormContext();
-  const watchDayRange = watch(name);
+  // Use useFieldArray to handle the array field
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name
+  });
 
   return (
     <div
@@ -115,17 +118,17 @@ export const ScheduleDay = <TFieldValues extends FieldValues>({
           <label className="text-sub-600 flex flex-row items-center space-x-2 rtl:space-x-reverse">
             <div>
               <Switch
-                disabled={!watchDayRange || disabled}
-                defaultChecked={watchDayRange && watchDayRange.length > 0}
-                checked={watchDayRange && !!watchDayRange.length}
+                disabled={!fields || disabled}
+                defaultChecked={fields && fields.length > 0}
+                checked={fields && !!fields.length}
                 data-testid={`${weekday}-switch`}
                 onCheckedChange={(isChecked) => {
-                  setValue(
-                    name,
-                    (isChecked
-                      ? [DEFAULT_DAY_RANGE]
-                      : []) as TFieldValues[typeof name]
-                  );
+                  if (isChecked) {
+                    append(DEFAULT_DAY_RANGE as TFieldValues[typeof name][number]);
+                  } else {
+                    // Remove all fields
+                    fields.forEach((_, index) => remove(index));
+                  }
                 }}
               />
             </div>
@@ -136,8 +139,8 @@ export const ScheduleDay = <TFieldValues extends FieldValues>({
         </div>
       </div>
       <>
-        {!watchDayRange && <SkeletonText className="ml-1 mt-2.5 h-6 w-48" />}
-        {watchDayRange.length > 0 && (
+        {!fields && <SkeletonText className="ml-1 mt-2.5 h-6 w-48" />}
+        {fields && fields.length > 0 && (
           <div className="flex sm:gap-2">
             <DayRanges
               userTimeFormat={userTimeFormat}
@@ -320,7 +323,8 @@ export const DayRanges = <TFieldValues extends FieldValues>({
   };
 }) => {
   const {t} = useLocale();
-  const {getValues} = useFormContext();
+  const formContext = useFormContext();
+  const getValues = formContext?.getValues;
 
   const {remove, fields, prepend, append} = useFieldArray({
     control,
@@ -357,8 +361,8 @@ export const DayRanges = <TFieldValues extends FieldValues>({
                 onClick={() => {
                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   const slotRange: any = getDateSlotRange(
-                    getValues(`${name}.${fields.length - 1}`),
-                    getValues(`${name}.0`)
+                    getValues ? getValues(`${name}.${fields.length - 1}`) : undefined,
+                    getValues ? getValues(`${name}.0`) : undefined
                   );
 
                   if (slotRange?.append) {
@@ -661,7 +665,7 @@ const CopyTimes = ({
   weekStart: number;
 }) => {
   const [selected, setSelected] = useState<number[]>([]);
-  const {isLocaleReady, locale, t} = useLocale();
+  const {isLocaleReady, locale, t} = useLocale('Schedules');
   const itteratablesByKeyRef = useRef<(HTMLInputElement | HTMLButtonElement)[]>(
     []
   );
