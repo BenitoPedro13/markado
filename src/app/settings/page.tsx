@@ -89,12 +89,12 @@ export default function ServicePage() {
   return (
     <PageLayout title="Configurações">
       <Header variant="settings" />
-      <div className="p-8 flex w-full justify-center">
+      <div className="py-8 flex w-full justify-center">
         <TabMenuVertical.Root
           defaultValue="profile"
           className="max-w-[900px] w-full items-start justify-center flex gap-8"
         >
-          <TabMenuVertical.List className="w-[300px] p-4 border border-stroke-soft-200 rounded-lg h-fit">
+          <TabMenuVertical.List className="min-w-[250px] p-4 border border-stroke-soft-200 rounded-lg h-fit">
             <div className="text-subheading-xs uppercase text-text-sub-600">
               Menu
             </div>
