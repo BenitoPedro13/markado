@@ -1,4 +1,18 @@
 {
+  "common": {
+    "loading": "Carregando...",
+    "error": "Erro",
+    "success": "Sucesso",
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "delete": "Excluir",
+    "edit": "Editar",
+    "create": "Criar",
+    "search": "Pesquisar",
+    "noResults": "Nenhum resultado encontrado",
+    "required": "Obrigatório",
+    "optional": "Opcional"
+  },
   "Error": {
     "description": "<p>Infelizmente encontramos um erro.</p><p>Você pode tentar <retry>recarregar a página</retry> que estava tentando visitar.</p>",
     "title": "Algo deu errado!"
@@ -111,7 +125,14 @@
       "thursday": "Quinta-feira",
       "friday": "Sexta-feira",
       "saturday": "Sábado",
-      "invalid_time_format": "Formato de hora inválido. Use o formato HH:MM."
+      "invalid_time_format": "Formato de hora inválido. Use o formato HH:MM.",
+      "saving": "Salvando...",
+      "schedule_created_success": "Agendamento criado com sucesso",
+      "schedule_created_error": "Erro ao criar agendamento",
+      "availability_created_success": "Disponibilidade criada com sucesso",
+      "availability_created_error": "Erro ao criar disponibilidade",
+      "form_submission_error": "Erro ao enviar formulário",
+      "default_schedule_name": "Agendamento Padrão"
     },
     "SummaryForm": {
       "summary": "Sumário do cadastro",
@@ -176,6 +197,19 @@
       "all_set": "Tudo Pronto!",
       "your_account_is_ready": "Sua conta está pronta para uso",
       "get_started": "Começar"
+    },
+    "ProfileForm": {
+      "quase_terminando": "Quase terminando!",
+      "envie_uma_foto_bonita": "Envie uma foto bonita sua pra gente",
+      "enviar_imagem": "Enviar Imagem",
+      "descreva_voce": "Descreva você...",
+      "sera_exibido_no_perfil": "Ele será exibido no seu perfil.",
+      "continuar": "Continuar",
+      "pular_etapa": "Pular etapa",
+      "error": "Erro",
+      "error_updating_profile": "Ocorreu um erro ao atualizar seu perfil. Por favor, tente novamente.",
+      "invalid_file_type": "Tipo de arquivo inválido. Por favor, envie uma imagem PNG ou JPEG.",
+      "image_too_small": "Imagem muito pequena. O tamanho mínimo é 400x400 pixels."
     }
   },
   "VerifyEmailPage": {
@@ -223,9 +257,53 @@
   },
   "Middleware": {
     "redirect_to_personal": "Você precisa completar suas informações pessoais primeiro",
-    "redirect_to_calendar": "Você precisa conectar seu calendário primeiro", 
+    "redirect_to_calendar": "Você precisa conectar seu calendário primeiro",
     "redirect_to_availability": "Você precisa definir sua disponibilidade primeiro",
-    "onboarding_required": "Você precisa completar o processo de integração",
+    "onboarding_required": "Você precisa completar o processo de onboarding",
     "authentication_required": "Você precisa fazer login para acessar esta página"
+  },
+  "Schedules": {
+    "copy_times_to": "Copiar horários para",
+    "select_all": "Selecionar todos",
+    "cancel": "Cancelar",
+    "unavailable": "Indisponível",
+    "date_overrides_delete_on_date": "Excluir substituição de data para {date}",
+    "new_schedule": "Novo Agendamento",
+    "schedule_name": "Nome do Agendamento",
+    "schedule_name_placeholder": "Digite o nome do agendamento",
+    "create": "Criar",
+    "edit": "Editar",
+    "delete": "Excluir",
+    "delete_schedule": "Excluir Agendamento",
+    "delete_schedule_confirmation": "Tem certeza que deseja excluir este agendamento?",
+    "yes": "Sim",
+    "no": "Não",
+    "add_date_override": "Adicionar Substituição de Data",
+    "date": "Data",
+    "time_ranges": "Intervalos de Horário",
+    "add_time_range": "Adicionar Intervalo de Horário",
+    "start_time": "Horário de Início",
+    "end_time": "Horário de Término",
+    "remove": "Remover",
+    "save": "Salvar",
+    "close": "Fechar",
+    "date_overrides_dialog_title": "Substituição de Data",
+    "date_overrides_dialog_which_hours": "Quais horas você está disponível nesta data?",
+    "date_overrides_mark_all_day_unavailable_one": "Marcar como indisponível o dia inteiro",
+    "date_successfully_added": "Substituição de data adicionada com sucesso",
+    "date_overrides_update_btn": "Atualizar",
+    "date_overrides_add_btn": "Adicionar",
+    "set_as_default": "Definir como padrão",
+    "duplicate": "Duplicar",
+    "requires_at_least_one_schedule": "Você precisa de pelo menos um agendamento",
+    "schedule_created_successfully": "Agendamento '{scheduleName}' criado com sucesso",
+    "error_creating_schedule": "Erro ao criar agendamento",
+    "schedule_created_success": "Agendamento criado com sucesso",
+    "schedule_created_error": "Erro ao criar agendamento",
+    "availability_created_success": "Disponibilidade criada com sucesso",
+    "availability_created_error": "Erro ao criar disponibilidade",
+    "default_schedule_name": "Agendamento Padrão",
+    "form_submission_error": "Erro ao enviar formulário",
+    "saving": "Salvando..."
   }
 }

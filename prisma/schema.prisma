@@ -78,6 +78,8 @@ model User {
   timeZone            String            @default("America/Sao_Paulo")
   completedOnboarding Boolean           @default(false)
   availability        Availability[]
+  defaultScheduleId   Int?
+  schedules           Schedule[]
   locale              Locale?           @default(PT)
   identityProvider    IdentityProvider? @default(MARKADO)
   password            UserPassword?
@@ -147,13 +149,27 @@ model VerificationToken {
 }
 
 model Availability {
-  id          Int        @id @default(autoincrement())
-  user        User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId      String?
-  days        Int[]
-  startTime   DateTime   @db.Time
-  endTime     DateTime   @db.Time
-  date        DateTime?  @db.Date
+  id         Int       @id @default(autoincrement())
+  user       User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String?
+  days       Int[]
+  startTime  DateTime  @db.Time
+  endTime    DateTime  @db.Time
+  date       DateTime? @db.Date
+  schedule   Schedule? @relation(fields: [scheduleId], references: [id])
+  scheduleId Int?
+
+  @@index([userId])
+  @@index([scheduleId])
+}
+
+model Schedule {
+  id           Int            @id @default(autoincrement())
+  name         String
+  timeZone     String?
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       String
+  availability Availability[]
 
   @@index([userId])
 }
@@ -202,12 +218,12 @@ model Authenticator {
 }
 
 model Calendar {
-  id          String   @id @default(cuid())
+  id          String  @id @default(cuid())
   googleId    String
   name        String
   description String?
-  primary     Boolean  @default(false)
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  primary     Boolean @default(false)
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      String
 
   createdAt DateTime @default(now())
