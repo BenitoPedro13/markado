@@ -1,29 +1,25 @@
 'use client';
 
-import { Root as Button } from '@/components/align-ui/ui/button';
+import {Root as Button} from '@/components/align-ui/ui/button';
 import * as Input from '@/components/align-ui/ui/input';
-import { Asterisk, Root as Label } from '@/components/align-ui/ui/label';
+import {Asterisk, Root as Label} from '@/components/align-ui/ui/label';
 import {
   signInWithEmailPassword,
   signUpWithEmailPassword
 } from '@/components/auth/auth-actions';
 import RoundedIconWrapper from '@/components/RoundedIconWrapper';
-import { useSignUp } from '@/contexts/SignUpContext';
-import { cn } from '@/utils/cn';
-import { useTRPC } from '@/utils/trpc';
+import {useSignUp} from '@/contexts/SignUpContext';
+import {cn} from '@/utils/cn';
+import {useTRPC} from '@/utils/trpc';
 import {
   RiCheckboxCircleFill,
   RiCloseCircleFill,
   RiLockFill
 } from '@remixicon/react';
-import { useMutation } from '@tanstack/react-query';
-import { useTranslations } from 'next-intl';
-import { useRouter, useSearchParams } from 'next/navigation';
-import {
-  FormEvent,
-  useEffect,
-  useState
-} from 'react';
+import {useMutation} from '@tanstack/react-query';
+import {useTranslations} from 'next-intl';
+import {useRouter, useSearchParams} from 'next/navigation';
+import {FormEvent, useEffect, useState} from 'react';
 
 // Define password criteria type
 type PasswordCriteria = {
@@ -41,18 +37,11 @@ const StrengthBarIndicator = ({
   t: any;
 }) => {
   // Debug
-  console.log('StrengthBarIndicator rendered with criteria:', criteria);
-  
+
   // Calculate strength based on how many criteria are met
   const strength = Object.values(criteria).filter(Boolean).length;
-  console.log('Calculated strength:', strength);
 
-  const colors = [
-    'bg-gray-300',
-    'bg-red-500',
-    'bg-yellow-500',
-    'bg-green-500'
-  ];
+  const colors = ['bg-gray-300', 'bg-red-500', 'bg-yellow-500', 'bg-green-500'];
 
   const requirements = [
     {
@@ -117,38 +106,13 @@ const PasswordForm = () => {
   const confirmPassword = forms.password.watch('confirmPassword');
   const email = forms.email.watch('email');
   const passwordsMatch = !forms.password.formState.errors.confirmPassword;
-  
+
   // Move criteria state to parent component
   const [passwordCriteria, setPasswordCriteria] = useState<PasswordCriteria>({
     length: false,
     uppercase: false,
     number: false
   });
-
-  // Update criteria when password changes - with extra safeguards
-  // Commenting out since we're now handling this directly in the input onChange
-  /*
-  useEffect(() => {
-    console.log('Password changed effect triggered:', password);
-    
-    // Force criteria evaluation
-    const newCriteria = {
-      length: Boolean(password && password.length >= 8),
-      uppercase: Boolean(password && /[A-Z]/.test(password)),
-      number: Boolean(password && /[0-9]/.test(password))
-    };
-    
-    console.log('New criteria calculated:', newCriteria);
-    setPasswordCriteria(newCriteria);
-  }, [password]);
-  */
-
-  // Debug render cycle
-  console.log('Rendering PasswordForm, passwordCriteria:', passwordCriteria);
-
-  // Add debugging for React Hook Form
-  console.log('Form values:', forms.password.getValues());
-  console.log('Form errors:', forms.password.formState.errors);
 
   const sendVerificationEmailMutation = useMutation(
     trpc.auth.sendVerificationEmail.mutationOptions({
@@ -180,10 +144,8 @@ const PasswordForm = () => {
 
       // Send verification email
       sendVerificationEmailMutation.mutate({email});
-        // nextStep();
-        // router.push('/');
-
-     
+      // nextStep();
+      // router.push('/');
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);
@@ -230,7 +192,6 @@ const PasswordForm = () => {
               placeholder="• • • • • • • • • • "
               {...forms.password.register('password', {
                 onChange: (e) => {
-                  console.log('RHF password change:', e.target.value);
                   // Update criteria immediately for faster feedback
                   const val = e.target.value;
                   setPasswordCriteria({
@@ -258,7 +219,6 @@ const PasswordForm = () => {
               placeholder="• • • • • • • • • • "
               {...forms.password.register('confirmPassword', {
                 onChange: (e) => {
-                  console.log('RHF confirmPassword change:', e.target.value);
                   // Update criteria immediately for faster feedback
                   const val = e.target.value;
                   setPasswordCriteria({
@@ -267,12 +227,13 @@ const PasswordForm = () => {
                     number: Boolean(val && /[0-9]/.test(val))
                   });
 
+                  forms.password.setValue('confirmPassword', val);
                   forms.password.trigger();
                 }
               })}
             />
           </Input.Root>
-          {forms.password.formState.errors.confirmPassword && (
+          {password !== confirmPassword && (
             <p className="text-paragraph-xs text-red-500">
               {t('passwords_do_not_match')}
             </p>
