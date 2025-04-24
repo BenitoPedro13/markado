@@ -18,7 +18,10 @@ import {useTranslations} from 'next-intl';
 import {FormEvent, Fragment} from 'react';
 import {Calendar} from '~/prisma/app/generated/prisma/client';
 import {getMeByUserId} from '~/trpc/server/handlers/user.handler';
-import {setEditMode, clearNextStep} from '@/utils/cookie-utils';
+import {setEditMode, clearNextStep, setOnboardingComplete} from '@/utils/cookie-utils';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useTRPC } from '@/utils/trpc';
+import { useMutation } from '@tanstack/react-query';
 
 interface SummaryFormProps {
   user: Awaited<ReturnType<typeof getMeByUserId>>;
@@ -88,6 +91,21 @@ const SummaryForm = ({user, calendars}: SummaryFormProps) => {
   const emailForm = forms.email;
   const personalForm = forms.personal;
   const availabilityForm = forms.availability;
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const trpc = useTRPC();
+  const redirectTo = searchParams.get('redirect') || '/';
+
+  const completeOnboardingMutation = useMutation(
+    trpc.profile.completeOnboarding.mutationOptions({
+      onSuccess: () => {
+        // Set the onboarding complete cookie when the DB is updated
+        setOnboardingComplete();
+        // Redirect to the original destination or home
+        router.push(redirectTo);
+      }
+    })
+  );
 
   const t = useTranslations('SignUpPage.SummaryForm');
 
@@ -95,7 +113,7 @@ const SummaryForm = ({user, calendars}: SummaryFormProps) => {
   const handleEdit = (targetStep: SignUpStep) => {
     // Set the edit_mode cookie to allow navigation to previous steps
     setEditMode();
-    
+
     // Clear the next_step cookie to prevent navigation override
     clearNextStep();
 
@@ -135,7 +153,7 @@ const SummaryForm = ({user, calendars}: SummaryFormProps) => {
 
   const submit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    goToStep('/sign-up/ending');
+    completeOnboardingMutation.mutate();
   };
 
   const schedules = availabilityForm.getValues().schedules;
@@ -209,6 +227,7 @@ const SummaryForm = ({user, calendars}: SummaryFormProps) => {
         variant="neutral"
         mode="filled"
         type="submit"
+        disabled={completeOnboardingMutation.isPending}
       >
         <span className="text-label-sm">{t('continue')}</span>
       </Button.Root>
