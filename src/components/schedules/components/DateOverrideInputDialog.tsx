@@ -1,28 +1,44 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
-import type {Dayjs} from '@/lib/dayjs/dayjs';
-import dayjs from "@/lib/dayjs/dayjs";
+import type {Dayjs} from '@/lib/dayjs';
+import dayjs from "@/lib/dayjs";
 import {cn} from '@/utils/cn';
 
 import { yyyymmdd } from "@/lib/date-fns";
 import { useLocale } from "@/hooks/use-locale";
-import type { WorkingHours } from "@calcom/types/schedule";
-import {
-  Dialog,
-  DialogContent,
-  DialogTrigger,
-  DialogHeader,
-  DialogClose,
-  Switch,
-  showToast,
-  Form,
-  Button,
-} from "@calcom/ui";
+import type { WorkingHours } from "@/types/scheadule";
+import { enUS, ptBR } from 'date-fns/locale';
 
-import DatePicker from "../../calendars/DatePicker";
+import { Calendar } from "../../align-ui/ui/datepicker";
+import { Root as ButtonRoot } from "../../align-ui/ui/button";
+import { Root as SwitchRoot } from "../../align-ui/ui/switch";
+import { 
+  Root as DialogRoot,
+  Content as DialogContent,
+  Trigger as DialogTrigger,
+  Header as DialogHeader,
+  Close as DialogClose
+} from "../../align-ui/ui/modal";
 import type { TimeRange } from "./Schedule";
 import { DayRanges } from "./Schedule";
+
+// Helper function to show toast messages
+const showToast = (message: string, type: string, duration: number) => {
+  // Implement your own toast functionality or use a library
+  console.log(`Toast: ${message} (${type}, ${duration}ms)`);
+};
+
+// Map locale strings to date-fns locale objects
+const getDateFnsLocale = (localeString: string) => {
+  switch (localeString) {
+    case 'pt':
+      return ptBR;
+    case 'en':
+    default:
+      return enUS;
+  }
+};
 
 const DateOverrideForm = ({
   value,
@@ -41,7 +57,7 @@ const DateOverrideForm = ({
   weekStart: 0 | 1 | 2 | 3 | 4 | 5 | 6;
 }) => {
   const [browsingDate, setBrowsingDate] = useState<Dayjs>();
-  const { t, i18n, isLocaleReady } = useLocale();
+  const { t, locale, isLocaleReady } = useLocale();
   const [datesUnavailable, setDatesUnavailable] = useState(
     value &&
       value[0].start.getUTCHours() === 0 &&
@@ -106,54 +122,56 @@ const DateOverrideForm = ({
     },
   });
 
+  const handleSubmit = (values: any) => {
+    const datesInRanges: TimeRange[] = [];
+
+    if (selectedDates.length === 0) return;
+
+    if (datesUnavailable) {
+      selectedDates.map((date) => {
+        datesInRanges.push({
+          start: date.utc(true).startOf("day").toDate(),
+          end: date.utc(true).startOf("day").toDate(),
+        });
+      });
+    } else {
+      selectedDates.map((date) => {
+        values.range.map((item: any) => {
+          datesInRanges.push({
+            start: date
+              .hour(item.start.getUTCHours())
+              .minute(item.start.getUTCMinutes())
+              .utc(true)
+              .toDate(),
+            end: date.hour(item.end.getUTCHours()).minute(item.end.getUTCMinutes()).utc(true).toDate(),
+          });
+        });
+      });
+    }
+
+    onChange(datesInRanges);
+    setSelectedDates([]);
+  };
+
   return (
-    <Form
-      form={form}
-      handleSubmit={(values) => {
-        const datesInRanges: TimeRange[] = [];
-
-        if (selectedDates.length === 0) return;
-
-        if (datesUnavailable) {
-          selectedDates.map((date) => {
-            datesInRanges.push({
-              start: date.utc(true).startOf("day").toDate(),
-              end: date.utc(true).startOf("day").toDate(),
-            });
-          });
-        } else {
-          selectedDates.map((date) => {
-            values.range.map((item) => {
-              datesInRanges.push({
-                start: date
-                  .hour(item.start.getUTCHours())
-                  .minute(item.start.getUTCMinutes())
-                  .utc(true)
-                  .toDate(),
-                end: date.hour(item.end.getUTCHours()).minute(item.end.getUTCMinutes()).utc(true).toDate(),
-              });
-            });
-          });
-        }
-
-        onChange(datesInRanges);
-        setSelectedDates([]);
-      }}
+    <form
+      onSubmit={form.handleSubmit(handleSubmit)}
       className="p-6 sm:flex sm:p-0 xl:flex-row">
       <div className="sm:border-subtle w-full sm:border-r sm:p-4 sm:pr-6 md:p-8">
         <DialogHeader title={t("date_overrides_dialog_title")} />
-        <DatePicker
-          excludedDates={excludedDates}
-          weekStart={weekStart}
-          selected={selectedDates}
-          onChange={(day) => {
-            if (day) onDateChange(day);
+        <Calendar
+          mode="single"
+          selected={selectedDates.length > 0 ? selectedDates[0].toDate() : undefined}
+          onSelect={(day) => {
+            if (day) onDateChange(dayjs(day));
           }}
           onMonthChange={(newMonth) => {
-            setBrowsingDate(newMonth);
+            setBrowsingDate(dayjs(newMonth));
           }}
-          browsingDate={browsingDate}
-          locale={isLocaleReady ? i18n.language : "en"}
+          month={browsingDate?.toDate()}
+          locale={isLocaleReady ? getDateFnsLocale(locale) : ptBR}
+          disabled={excludedDates.map(date => new Date(date))}
+          weekStartsOn={weekStart}
         />
       </div>
       <div className="relative mt-8 flex w-full flex-col sm:mt-0 sm:p-4 md:p-8">
@@ -170,17 +188,19 @@ const DateOverrideForm = ({
                   <DayRanges name="range" userTimeFormat={userTimeFormat} />
                 )}
               </div>
-              <Switch
-                label={t("date_overrides_mark_all_day_unavailable_one")}
-                checked={datesUnavailable}
-                onCheckedChange={setDatesUnavailable}
-                data-testid="date-override-mark-unavailable"
-              />
+              <div className="flex items-center space-x-2">
+                <SwitchRoot
+                  checked={datesUnavailable}
+                  onCheckedChange={setDatesUnavailable}
+                  data-testid="date-override-mark-unavailable"
+                />
+                <span>{t("date_overrides_mark_all_day_unavailable_one")}</span>
+              </div>
             </div>
             <div className="mt-4 flex flex-row-reverse sm:mt-0">
-              <Button
+              <ButtonRoot
                 className="ml-2"
-                color="primary"
+                variant="primary"
                 type="submit"
                 onClick={() => {
                   showToast(t("date_successfully_added"), "success", 500);
@@ -188,7 +208,7 @@ const DateOverrideForm = ({
                 disabled={selectedDates.length === 0}
                 data-testid="add-override-submit-btn">
                 {value ? t("date_overrides_update_btn") : t("date_overrides_add_btn")}
-              </Button>
+              </ButtonRoot>
               <DialogClose />
             </div>
           </>
@@ -198,7 +218,7 @@ const DateOverrideForm = ({
           </div>
         )}
       </div>
-    </Form>
+    </form>
   );
 };
 
@@ -221,10 +241,10 @@ const DateOverrideInputDialog = ({
 }) => {
   const [open, setOpen] = useState(false);
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <DialogRoot open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{Trigger}</DialogTrigger>
 
-      <DialogContent enableOverflow={true} size="md" className={cn("p-0", className)}>
+      <DialogContent className={cn("p-0", className)}>
         <DateOverrideForm
           excludedDates={excludedDates}
           weekStart={weekStart}
@@ -233,7 +253,7 @@ const DateOverrideInputDialog = ({
           userTimeFormat={userTimeFormat}
         />
       </DialogContent>
-    </Dialog>
+    </DialogRoot>
   );
 };
 
