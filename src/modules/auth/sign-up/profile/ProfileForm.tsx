@@ -1,40 +1,42 @@
 'use client';
 
-import { Root as Button } from '@/components/align-ui/ui/button';
+import * as Avatar from '@/components/align-ui/ui/avatar';
+import {Root as Button} from '@/components/align-ui/ui/button';
 import * as Textarea from '@/components/align-ui/ui/textarea';
 import RoundedIconWrapper from '@/components/RoundedIconWrapper';
-import { useSignUp } from '@/contexts/SignUpContext';
-import { useTRPC } from '@/utils/trpc';
-import { RiUserSmileFill } from '@remixicon/react';
-import { useTranslations } from 'next-intl';
-import { FormEvent, useRef, useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
-import { useNotification } from '@/hooks/use-notification';
-import { getMeByUserId } from '~/trpc/server/handlers/user.handler';
-import { setStepComplete, clearEditMode } from '@/utils/cookie-utils';
+import {useSignUp} from '@/contexts/SignUpContext';
+import {useTRPC} from '@/utils/trpc';
+import {RiAccountPinCircleFill, RiUserSmileFill} from '@remixicon/react';
+import {useTranslations} from 'next-intl';
+import {FormEvent, useEffect, useRef, useState} from 'react';
+import {useMutation} from '@tanstack/react-query';
+import {useNotification} from '@/hooks/use-notification';
+import {getMeByUserId} from '~/trpc/server/handlers/user.handler';
+import {setStepComplete, clearEditMode} from '@/utils/cookie-utils';
 import Image from 'next/image';
 
 interface ProfileFormProps {
   user: Awaited<ReturnType<typeof getMeByUserId>>;
 }
 
-const ProfileForm = ({ user }: ProfileFormProps) => {
+const ProfileForm = ({user}: ProfileFormProps) => {
   const trpc = useTRPC();
-  const { forms, goToStep } = useSignUp();
+  const {forms, goToStep} = useSignUp();
   const t = useTranslations('SignUpPage.ProfileForm');
-  const { notification } = useNotification();
+  const {notification} = useNotification();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewImage, setPreviewImage] = useState<string>(user?.image || '');
+  const [bioLength, setBioLength] = useState(0);
 
   const updateProfileMutation = useMutation(
     trpc.profile.update.mutationOptions({
       onSuccess: () => {
         // Set the profile step completion cookie
         setStepComplete('profile');
-        
+
         // Clear the edit_mode cookie if it exists
         clearEditMode();
-        
+
         // Continue to the next step
         goToStep('/sign-up/ending');
       },
@@ -65,7 +67,7 @@ const ProfileForm = ({ user }: ProfileFormProps) => {
     // Create an image object to check dimensions
     const imgElement = document.createElement('img');
     const objectUrl = URL.createObjectURL(file);
-    
+
     imgElement.onload = () => {
       if (imgElement.width < 400 || imgElement.height < 400) {
         notification({
@@ -104,6 +106,19 @@ const ProfileForm = ({ user }: ProfileFormProps) => {
     }
   };
 
+  // Subscribe to biography field changes
+  useEffect(() => {
+    const subscription = forms.profile.watch((value, { name, type }) => {
+      if (name === 'biography') {
+        console.log('[ProfileForm] Bio changed:', value.biography);
+        setBioLength(value.biography?.length || 0);
+      }
+    });
+    
+    // Clean up subscription on unmount
+    return () => subscription.unsubscribe();
+  }, [forms.profile]);
+
   return (
     <form
       onSubmit={submit}
@@ -111,7 +126,7 @@ const ProfileForm = ({ user }: ProfileFormProps) => {
     >
       <div className="flex flex-col items-center">
         <RoundedIconWrapper>
-          <RiUserSmileFill size={32} color="var(--text-sub-600)" />
+          <RiAccountPinCircleFill size={32} color="var(--text-sub-600)" />
         </RoundedIconWrapper>
 
         <div className="flex flex-col gap-1 text-center">
@@ -128,21 +143,39 @@ const ProfileForm = ({ user }: ProfileFormProps) => {
 
       <div className="flex flex-col gap-4 w-full">
         {/* Image Upload Section */}
-        <div className="flex flex-col items-center gap-4">
-          <div className="relative w-24 h-24 rounded-full overflow-hidden bg-bg-soft-200">
-            {previewImage ? (
-              <Image
-                src={previewImage}
-                alt="Profile"
-                fill
-                className="object-cover"
-              />
-            ) : (
-              <div className="flex items-center justify-center w-full h-full text-text-sub-600">
-                <RiUserSmileFill size={48} />
+        <div className="flex flex-row items-center gap-3">
+          <div className="flex flex-row items-center justify-start gap-3">
+            <div className="relative w-16 h-16 rounded-full overflow-hidden bg-bg-soft-200 flex items-center justify-start gap-5">
+              <Avatar.Root size="64" fallbackText={user?.name || 'User Name'}>
+                <Avatar.Image
+                  src={previewImage || user?.image || ''}
+                  alt={user?.name || 'User Name'}
+                  useNextImage={true}
+                />
+              </Avatar.Root>
+            </div>
+            <div className="flex flex-col gap-3 items-start">
+              <div className="flex flex-col items-start gap-1">
+                <p className="text-label-md text-text-strong-950">
+                  Carregar Imagem
+                </p>
+                <span className="text-paragraph-sm text-text-sub-600">
+                  Min 400x400px, PNG ou JPEG
+                </span>
               </div>
-            )}
+
+              <Button
+                type="button"
+                variant="neutral"
+                mode="stroke"
+                size="xsmall"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <span className="text-label-sm">{t('enviar_imagem')}</span>
+              </Button>
+            </div>
           </div>
+
           <input
             type="file"
             ref={fileInputRef}
@@ -150,32 +183,20 @@ const ProfileForm = ({ user }: ProfileFormProps) => {
             className="hidden"
             onChange={handleImageUpload}
           />
-          <Button
-            type="button"
-            variant="neutral"
-            mode="stroke"
-            onClick={() => fileInputRef.current?.click()}
-          >
-            <span className="text-label-sm">{t('enviar_imagem')}</span>
-          </Button>
-          <span className="text-paragraph-xs text-text-sub-600">
-            Min 400x400px, PNG ou JPEG
-          </span>
         </div>
 
         {/* Biography Section */}
-        <div className="flex flex-col gap-2">
-          <Textarea.Root>
-            <textarea
-              placeholder={t('descreva_voce')}
-              className="min-h-[120px] p-3 w-full rounded-xl border border-stroke-soft-200 focus:border-stroke-strong-950 focus:ring-0 transition-colors"
-              maxLength={200}
-              {...forms.profile.register('biography')}
-            />
-            <Textarea.CharCounter
-              current={forms.profile.watch('biography')?.length || 0}
-              max={200}
-            />
+        <div className="flex flex-col items-start gap-1 self-stretch min-h-[120px]">
+          <div className="flex items-center self-stretch">
+            <p className="text-label-sm text-text-strong-950">Biografia</p>
+          </div>
+          <Textarea.Root
+            placeholder={t('descreva_voce')}
+            containerClassName="min-h-[88px] w-full rounded-xl shadow-regular-xs bg-bg-white-0 border-bg-soft-200"
+            maxLength={200}
+            {...forms.profile.register('biography')}
+          >
+            <Textarea.CharCounter current={bioLength} max={200} />
           </Textarea.Root>
           <span className="text-paragraph-xs text-text-sub-600">
             {t('sera_exibido_no_perfil')}
