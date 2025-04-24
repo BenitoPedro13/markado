@@ -160,9 +160,6 @@ export default function AuthLayout({children}: PropsWithChildren) {
   const {pathname, isInSignUpFlow, steps, getStepState} = useAuthContext();
   const t = useTranslations('SignInPage');
 
-  useEffect(() => {
-    console.log(pathname, isInSignUpFlow);
-  }, [pathname, isInSignUpFlow]);
   return (
     <Provider>
       <Header />
