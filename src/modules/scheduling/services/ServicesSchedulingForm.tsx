@@ -83,7 +83,7 @@ const ServicesSchedulingForm = () => {
                     className="lowercase"
                   >
                     {/** TODO: Change the color of the icon based on the badge color */}
-                    <RiTimeLine size={12} color="blue" />
+                    <RiTimeLine size={12} />
 
                     {formatDuration(service.duration)}
                   </Badge.Root>
