@@ -1,8 +1,9 @@
-import dayjs from "@calcom/dayjs";
-import { useLocale } from "@calcom/lib/hooks/useLocale";
-import type { RouterOutputs } from "@calcom/trpc/react";
-import type { TimeRange, WorkingHours } from "@calcom/types/schedule";
-import { Button, DialogTrigger, Tooltip } from "@calcom/ui";
+import { useLocale } from "@/hooks/use-locale";
+import type { TimeRange, WorkingHours } from "@/types/scheadule";
+import * as Button from "@/components/align-ui/ui/button";
+import * as Modal from "@/components/align-ui/ui/modal";
+import * as Tooltip from "@/components/align-ui/ui/tooltip";
+import { RiPencilLine, RiDeleteBin2Line } from "@remixicon/react";
 
 import DateOverrideInputDialog from "./DateOverrideInputDialog";
 
@@ -14,7 +15,6 @@ const sortByDate = (a: { ranges: TimeRange[]; id: string }, b: { ranges: TimeRan
 const DateOverrideList = ({
   workingHours,
   excludedDates = [],
-  travelSchedules = [],
   userTimeFormat,
   hour12,
   replace,
@@ -28,10 +28,9 @@ const DateOverrideList = ({
   excludedDates?: string[];
   userTimeFormat: number | null;
   hour12: boolean;
-  travelSchedules?: RouterOutputs["viewer"]["getTravelSchedules"];
   weekStart?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
 }) => {
-  const { t, i18n } = useLocale();
+  const { t, locale } = useLocale();
 
   const unsortedFieldArrayMap = fields.reduce(
     (map: { [id: string]: number }, { id }, index) => ({ ...map, [id]: index }),
@@ -43,9 +42,9 @@ const DateOverrideList = ({
   }
 
   const timeSpan = ({ start, end }: TimeRange) => {
-    return `${new Intl.DateTimeFormat(i18n.language, { hour: "numeric", minute: "numeric", hour12 }).format(
+    return `${new Intl.DateTimeFormat(locale, { hour: "numeric", minute: "numeric", hour12 }).format(
       new Date(start.toISOString().slice(0, -1))
-    )} - ${new Intl.DateTimeFormat(i18n.language, { hour: "numeric", minute: "numeric", hour12 }).format(
+    )} - ${new Intl.DateTimeFormat(locale, { hour: "numeric", minute: "numeric", hour12 }).format(
       new Date(end.toISOString().slice(0, -1))
     )}`;
   };
@@ -56,7 +55,7 @@ const DateOverrideList = ({
         <li key={item.id} className="border-subtle flex justify-between border-b px-5 py-4 last:border-b-0">
           <div>
             <h3 className="text-emphasis text-sm">
-              {new Intl.DateTimeFormat(i18n.language, {
+              {new Intl.DateTimeFormat(locale, {
                 weekday: "long",
                 month: "long",
                 day: "numeric",
@@ -68,17 +67,7 @@ const DateOverrideList = ({
             ) : (
               item.ranges.map((range, i) => (
                 <p key={i} className="text-subtle text-xs">
-                  {`${timeSpan(range)} ${
-                    travelSchedules
-                      .find(
-                        (travelSchedule) =>
-                          !dayjs(item.ranges[0].start).isBefore(travelSchedule.startDate) &&
-                          (!dayjs(item.ranges[0].end).isAfter(travelSchedule.endDate) ||
-                            !travelSchedule.endDate)
-                      )
-                      ?.timeZone.replace(/_/g, " ") || ""
-                  }`}
-                  <></>
+                  {timeSpan(range)}
                 </p>
               ))
             )}
@@ -96,37 +85,43 @@ const DateOverrideList = ({
                 delete unsortedFieldArrayMap[item.id];
               }}
               Trigger={
-                <DialogTrigger asChild>
-                  <Button
-                    tooltip={t("edit")}
+                <Modal.Trigger asChild>
+                  <Button.Root
                     className="text-default"
-                    color="minimal"
-                    variant="icon"
-                    StartIcon="pencil"
-                  />
-                </DialogTrigger>
+                    variant="neutral"
+                    mode="ghost"
+                    size="small"
+                  >
+                    <Button.Icon as={RiPencilLine} />
+                  </Button.Root>
+                </Modal.Trigger>
               }
             />
-            <Tooltip content="Delete">
-              <Button
-                className="text-default"
-                data-testid="delete-button"
-                title={t("date_overrides_delete_on_date", {
-                  date: new Intl.DateTimeFormat(i18n.language, {
-                    weekday: "long",
-                    month: "long",
-                    day: "numeric",
-                    timeZone: "UTC",
-                  }).format(item.ranges[0].start),
-                })}
-                color="destructive"
-                variant="icon"
-                StartIcon="trash-2"
-                onClick={() => {
-                  replace([...fields.filter((currentItem) => currentItem.id !== item.id)]);
-                }}
-              />
-            </Tooltip>
+            <Tooltip.Root>
+              <Tooltip.Trigger asChild>
+                <Button.Root
+                  className="text-default"
+                  data-testid="delete-button"
+                  title={t("date_overrides_delete_on_date", {
+                    date: new Intl.DateTimeFormat(locale, {
+                      weekday: "long",
+                      month: "long",
+                      day: "numeric",
+                      timeZone: "UTC",
+                    }).format(item.ranges[0].start),
+                  })}
+                  variant="error"
+                  mode="ghost"
+                  size="small"
+                  onClick={() => {
+                    replace([...fields.filter((currentItem) => currentItem.id !== item.id)]);
+                  }}
+                >
+                  <Button.Icon as={RiDeleteBin2Line} />
+                </Button.Root>
+              </Tooltip.Trigger>
+              <Tooltip.Content>Delete</Tooltip.Content>
+            </Tooltip.Root>
           </div>
         </li>
       ))}
