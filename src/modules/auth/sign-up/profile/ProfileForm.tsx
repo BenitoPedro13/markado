@@ -38,7 +38,7 @@ const ProfileForm = ({user}: ProfileFormProps) => {
         clearEditMode();
 
         // Continue to the next step
-        goToStep('/sign-up/ending');
+        goToStep('/sign-up/summary');
       },
       onError: (error) => {
         notification({
