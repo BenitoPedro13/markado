@@ -6,15 +6,16 @@ import ServiceDetails from '@/components/services/service-details/ServiceDetails
 import ServiceAvailability from '@/components/services/service-details/ServiceAvailability';
 import ServiceForm from '@/components/services/service-details/ServiceForm';
 import ServiceAdvanced from '@/components/services/service-details/ServiceAdvanced';
+import * as Divider from '@/components/align-ui/ui/divider';
 import {
   RiArrowRightSLine,
-  RiCalendarLine,
+
   RiDraftFill,
   RiDraftLine,
-  RiFileCopyFill,
+
   RiLinksFill,
   RiLinksLine,
-  RiMore2Fill,
+
   RiSettingsFill,
   RiSettingsLine,
   RiTimeFill,
@@ -62,6 +63,9 @@ export default function ServicePage({params: {slug}}: Props) {
   return (
     <PageLayout title="Detalhes do Serviço">
       <Header variant="services" mode="inside" />
+      <div className="px-8">
+        <Divider.Root />
+      </div>          
       <div className="p-8 flex w-full justify-center">
         <TabMenuVertical.Root
           defaultValue="service"

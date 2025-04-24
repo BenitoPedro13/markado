@@ -6,6 +6,7 @@ import * as Input from '@/components/align-ui/ui/input';
 import {RiArrowRightSLine} from '@remixicon/react';
 import * as Textarea from '@/components/align-ui/ui/textarea';
 import {useSessionStore} from '@/providers/session-store-provider';
+import { Me } from '@/app/settings/page';
 
 interface ProfileFieldProps {
   label: string;
@@ -42,8 +43,9 @@ const ProfileField = ({
   </div>
 );
 
-export default function Profile() {
-  const user = useSessionStore((state) => state.user);
+export default function Profile({me}: {me: Me}) {
+  const user = me
+  
   return (
     <div className="space-y-8">
       <div className="border border-stroke-soft-200 rounded-lg divide-y divide-stroke-soft-200">
@@ -74,7 +76,7 @@ export default function Profile() {
           </div>
         </div>
 
-        <div className="divide-y divide-stroke-soft-200">
+        <div className="">
           <ProfileField
             label="Nome do usuário"
             value={user?.name || ''}
