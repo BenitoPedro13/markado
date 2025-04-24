@@ -26,7 +26,7 @@ import {
   RiWalletLine,
   RiWalletFill
 } from '@remixicon/react';
-
+import * as Divider from '@/components/align-ui/ui/divider';
 import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
 import { getMeByUserId } from '~/trpc/server/handlers/user.handler';
@@ -107,8 +107,10 @@ export default async function ServicePage() {
   return (
     <PageLayout title="Configurações">
       <Header variant="settings" />
-
-      <div className="flex w-full justify-center">
+      <div className="px-8">
+        <Divider.Root />
+      </div>
+      <div className="flex w-full py-8 justify-center">
         <TabMenuVertical.Root
           defaultValue="profile"
           className="px-8 w-full items-start justify-center flex gap-8"
