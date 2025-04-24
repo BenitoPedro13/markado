@@ -20,7 +20,12 @@ export const availabilityRouter = router({
         userId: ctx.session?.user.id
       },
       include: {
-        schedule: true
+        schedule: {
+          include: {
+            user: true,
+            availability: true
+          }
+        }
       }
     });
   }),
