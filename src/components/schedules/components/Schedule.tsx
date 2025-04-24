@@ -1,4 +1,11 @@
-import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react';
 import type {
   ArrayPath,
   Control,
@@ -7,31 +14,44 @@ import type {
   FieldPath,
   FieldPathValue,
   FieldValues,
-  UseFieldArrayRemove,
-} from "react-hook-form";
-import { Controller, useFieldArray, useFormContext } from "react-hook-form";
-import type { GroupBase, Props } from "react-select";
+  UseFieldArrayRemove
+} from 'react-hook-form';
+import {Controller, useFieldArray, useFormContext} from 'react-hook-form';
 
-import type { ConfigType } from "@calcom/dayjs";
-import dayjs from "@calcom/dayjs";
-import { defaultDayRange as DEFAULT_DAY_RANGE } from "@calcom/lib/availability";
-import classNames from "@calcom/lib/classNames";
-import { useLocale } from "@calcom/lib/hooks/useLocale";
-import { weekdayNames } from "@calcom/lib/weekday";
-import useMeQuery from "@calcom/trpc/react/hooks/useMeQuery";
-import type { TimeRange } from "@calcom/types/schedule";
+import type {ConfigType} from '@/lib/dayjs';
+import dayjs from '@/lib/dayjs';
+import {defaultDayRange as DEFAULT_DAY_RANGE} from '@/lib/availability';
+import {cn as classNames} from '@/utils/cn';
+import {useLocale} from '@/hooks/use-locale';
+import {weekdayNames} from '@/lib/weekday';
+import {useMeQuery} from '@/hooks/use-me-query';
+
+// Import AlignUI components
 import {
-  Button,
-  CheckboxField,
-  Dropdown,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-  Select,
-  SkeletonText,
-  Switch,
-} from "@calcom/ui";
+  Root as Button,
+  Icon as ButtonIcon
+} from '@/components/align-ui/ui/button';
+import {Root as Checkbox} from '@/components/align-ui/ui/checkbox';
+import {
+  Root as DropdownMenu,
+  Trigger as DropdownMenuTrigger,
+  Content as DropdownMenuContent,
+  Item as DropdownMenuItem
+} from '@/components/align-ui/ui/dropdown';
+import {
+  Root as Select,
+  Trigger as SelectTrigger,
+  Content as SelectContent,
+  Item as SelectItem,
+  Value as SelectValue
+} from '@/components/align-ui/ui/select';
+import {Root as Switch} from '@/components/align-ui/ui/switch';
+import {Text as SkeletonText} from '@/components/align-ui/ui/skeleton';
 
-export type { TimeRange };
+import {TimeRange} from '@/types/scheadule';
+import {RiAddLine, RiDeleteBinLine} from '@remixicon/react';
+
+export type {TimeRange};
 
 export type ScheduleLabelsType = {
   addTime: string;
@@ -40,7 +60,12 @@ export type ScheduleLabelsType = {
 };
 
 export type FieldPathByValue<TFieldValues extends FieldValues, TValue> = {
-  [Key in FieldPath<TFieldValues>]: FieldPathValue<TFieldValues, Key> extends TValue ? Key : never;
+  [Key in FieldPath<TFieldValues>]: FieldPathValue<
+    TFieldValues,
+    Key
+  > extends TValue
+    ? Key
+    : never;
 }[FieldPath<TFieldValues>];
 
 export const ScheduleDay = <TFieldValues extends FieldValues>({
@@ -51,7 +76,7 @@ export const ScheduleDay = <TFieldValues extends FieldValues>({
   disabled,
   labels,
   userTimeFormat,
-  className,
+  className
 }: {
   name: ArrayPath<TFieldValues>;
   weekday: string;
@@ -68,22 +93,24 @@ export const ScheduleDay = <TFieldValues extends FieldValues>({
     scheduleContainer?: string;
   };
 }) => {
-  const { watch, setValue } = useFormContext();
+  const {watch, setValue} = useFormContext();
   const watchDayRange = watch(name);
 
   return (
     <div
       className={classNames(
-        "flex w-full flex-col gap-4 last:mb-0 sm:flex-row sm:gap-6 sm:px-0",
+        'flex w-full flex-col gap-4 last:mb-0 sm:flex-row sm:gap-6 sm:px-0',
         className?.scheduleDay
       )}
-      data-testid={weekday}>
+      data-testid={weekday}
+    >
       {/* Label & switch container */}
       <div
         className={classNames(
-          "flex h-[36px] items-center justify-between sm:w-32",
+          'flex h-[36px] items-center justify-between sm:w-32',
           className?.labelAndSwitchContainer
-        )}>
+        )}
+      >
         <div>
           <label className="text-sub-600 flex flex-row items-center space-x-2 rtl:space-x-reverse">
             <div>
@@ -93,11 +120,18 @@ export const ScheduleDay = <TFieldValues extends FieldValues>({
                 checked={watchDayRange && !!watchDayRange.length}
                 data-testid={`${weekday}-switch`}
                 onCheckedChange={(isChecked) => {
-                  setValue(name, (isChecked ? [DEFAULT_DAY_RANGE] : []) as TFieldValues[typeof name]);
+                  setValue(
+                    name,
+                    (isChecked
+                      ? [DEFAULT_DAY_RANGE]
+                      : []) as TFieldValues[typeof name]
+                  );
                 }}
               />
             </div>
-            <span className="inline-block min-w-[88px] text-sm capitalize">{weekday}</span>
+            <span className="inline-block min-w-[88px] text-sm capitalize">
+              {weekday}
+            </span>
           </label>
         </div>
       </div>
@@ -113,7 +147,7 @@ export const ScheduleDay = <TFieldValues extends FieldValues>({
               disabled={disabled}
               className={{
                 dayRanges: className?.dayRanges,
-                timeRangeField: className?.timeRangeField,
+                timeRangeField: className?.timeRangeField
               }}
             />
             {!disabled && <div className="block">{CopyButton}</div>}
@@ -127,44 +161,54 @@ export const ScheduleDay = <TFieldValues extends FieldValues>({
 const CopyButton = ({
   getValuesFromDayRange,
   weekStart,
-  labels,
+  labels
 }: {
   getValuesFromDayRange: string;
   weekStart: number;
   labels?: ScheduleLabelsType;
 }) => {
-  const { t } = useLocale();
+  const {t} = useLocale();
   const [open, setOpen] = useState(false);
-  const fieldArrayName = getValuesFromDayRange.substring(0, getValuesFromDayRange.lastIndexOf("."));
-  const { setValue, getValues } = useFormContext();
+  const fieldArrayName = getValuesFromDayRange.substring(
+    0,
+    getValuesFromDayRange.lastIndexOf('.')
+  );
+  const {setValue, getValues} = useFormContext();
   return (
-    <Dropdown open={open} onOpenChange={setOpen}>
+    <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
         <Button
           className={classNames(
-            "text-sub-600 hover:bg-white-0 border-soft-200 border",
-            open && "ring-brand-500 !bg-subtle outline-none ring-2 ring-offset-1"
+            'text-sub-600 hover:bg-white-0 border-soft-200 border',
+            open &&
+              'ring-brand-500 !bg-subtle outline-none ring-2 ring-offset-1'
           )}
           data-testid="copy-button"
           type="button"
-          tooltip={labels?.copyTime ?? t("copy_times_to_tooltip")}
-          color="minimal"
-          variant="icon"
-          StartIcon="copy"
+          variant="neutral"
+          mode="ghost"
         />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="bg-white-0 rounded-[10px]">
         <CopyTimes
           weekStart={weekStart}
-          disabled={parseInt(getValuesFromDayRange.replace(`${fieldArrayName}.`, ""), 10)}
+          disabled={parseInt(
+            getValuesFromDayRange.replace(`${fieldArrayName}.`, ''),
+            10
+          )}
           onClick={(selected) => {
-            selected.forEach((day) => setValue(`${fieldArrayName}.${day}`, getValues(getValuesFromDayRange)));
+            selected.forEach((day) =>
+              setValue(
+                `${fieldArrayName}.${day}`,
+                getValues(getValuesFromDayRange)
+              )
+            );
             setOpen(false);
           }}
           onCancel={() => setOpen(false)}
         />
       </DropdownMenuContent>
-    </Dropdown>
+    </DropdownMenu>
   );
 };
 
@@ -180,9 +224,10 @@ const Schedule = <
   userTimeFormat?: number | null;
 }) => {
   const query = useMeQuery();
-  const { timeFormat } = query.data || { timeFormat: null };
+  // const { timeFormat } = query.data || { timeFormat: null };
+  // const { t } = useLocale();
 
-  return <ScheduleComponent userTimeFormat={timeFormat} {...props} />;
+  return <ScheduleComponent userTimeFormat={null} {...props} />;
 };
 
 export const ScheduleComponent = <
@@ -195,7 +240,7 @@ export const ScheduleComponent = <
   weekStart = 0,
   labels,
   userTimeFormat,
-  className,
+  className
 }: {
   name: TPath;
   control: Control<TFieldValues>;
@@ -211,35 +256,47 @@ export const ScheduleComponent = <
     labelAndSwitchContainer?: string;
   };
 }) => {
-  const { i18n } = useLocale();
+  const {locale, isLocaleReady} = useLocale();
 
   return (
-    <div className={classNames("flex flex-col gap-4 p-2 sm:p-4", className?.schedule)}>
+    <div
+      className={classNames(
+        'flex flex-col gap-4 p-2 sm:p-4',
+        className?.schedule
+      )}
+    >
       {/* First iterate for each day */}
-      {weekdayNames(i18n.language, weekStart, "long").map((weekday, num) => {
-        const weekdayIndex = (num + weekStart) % 7;
-        const dayRangeName = `${name}.${weekdayIndex}` as ArrayPath<TFieldValues>;
-        return (
-          <ScheduleDay
-            className={{
-              scheduleDay: className?.scheduleDay,
-              dayRanges: className?.dayRanges,
-              timeRangeField: className?.timeRanges,
-              labelAndSwitchContainer: className?.labelAndSwitchContainer,
-            }}
-            userTimeFormat={userTimeFormat}
-            labels={labels}
-            disabled={disabled}
-            name={dayRangeName}
-            key={weekday}
-            weekday={weekday}
-            control={control}
-            CopyButton={
-              <CopyButton weekStart={weekStart} labels={labels} getValuesFromDayRange={dayRangeName} />
-            }
-          />
-        );
-      })}
+      {weekdayNames(isLocaleReady ? locale : 'pt', weekStart, 'long').map(
+        (weekday, num) => {
+          const weekdayIndex = (num + weekStart) % 7;
+          const dayRangeName =
+            `${name}.${weekdayIndex}` as ArrayPath<TFieldValues>;
+          return (
+            <ScheduleDay
+              className={{
+                scheduleDay: className?.scheduleDay,
+                dayRanges: className?.dayRanges,
+                timeRangeField: className?.timeRanges,
+                labelAndSwitchContainer: className?.labelAndSwitchContainer
+              }}
+              userTimeFormat={userTimeFormat}
+              labels={labels}
+              disabled={disabled}
+              name={dayRangeName}
+              key={weekday}
+              weekday={weekday}
+              control={control}
+              CopyButton={
+                <CopyButton
+                  weekStart={weekStart}
+                  labels={labels}
+                  getValuesFromDayRange={dayRangeName}
+                />
+              }
+            />
+          );
+        }
+      )}
     </div>
   );
 };
@@ -250,7 +307,7 @@ export const DayRanges = <TFieldValues extends FieldValues>({
   control,
   labels,
   userTimeFormat,
-  className,
+  className
 }: {
   name: ArrayPath<TFieldValues>;
   control?: Control<TFieldValues>;
@@ -262,24 +319,24 @@ export const DayRanges = <TFieldValues extends FieldValues>({
     timeRangeField?: string;
   };
 }) => {
-  const { t } = useLocale();
-  const { getValues } = useFormContext();
+  const {t} = useLocale();
+  const {getValues} = useFormContext();
 
-  const { remove, fields, prepend, append } = useFieldArray({
+  const {remove, fields, prepend, append} = useFieldArray({
     control,
-    name,
+    name
   });
 
   if (!fields.length) return null;
 
   return (
-    <div className={classNames("flex flex-col gap-2", className?.dayRanges)}>
+    <div className={classNames('flex flex-col gap-2', className?.dayRanges)}>
       {fields.map((field, index: number) => (
         <Fragment key={field.id}>
           <div className="flex gap-1 last:mb-0 sm:gap-2">
             <Controller
               name={`${name}.${index}`}
-              render={({ field }) => (
+              render={({field}) => (
                 <TimeRangeField
                   className={className?.timeRangeField}
                   userTimeFormat={userTimeFormat}
@@ -291,12 +348,12 @@ export const DayRanges = <TFieldValues extends FieldValues>({
               <Button
                 disabled={disabled}
                 data-testid="add-time-availability"
-                tooltip={labels?.addTime ?? t("add_time_availability")}
+                // tooltip={labels?.addTime ?? t("add_time_availability")}
                 className="text-sub-600 hover:bg-white-0 border-soft-200 border"
                 type="button"
                 color="minimal"
-                variant="icon"
-                StartIcon="plus"
+                // variant="icon"
+                // StartIcon="plus"
                 onClick={() => {
                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   const slotRange: any = getDateSlotRange(
@@ -312,10 +369,16 @@ export const DayRanges = <TFieldValues extends FieldValues>({
                     prepend(slotRange.prepend);
                   }
                 }}
-              />
+              >
+                <ButtonIcon as={RiAddLine} />
+              </Button>
             )}
             {index !== 0 && (
-              <RemoveTimeButton index={index} remove={remove} className="text-sub-600 border-none" />
+              <RemoveTimeButton
+                index={index}
+                remove={remove}
+                className="text-sub-600 border-none"
+              />
             )}
           </div>
         </Fragment>
@@ -329,7 +392,7 @@ const RemoveTimeButton = ({
   remove,
   disabled,
   className,
-  labels,
+  labels
 }: {
   index: number | number[];
   remove: UseFieldArrayRemove;
@@ -337,18 +400,17 @@ const RemoveTimeButton = ({
   disabled?: boolean;
   labels?: ScheduleLabelsType;
 }) => {
-  const { t } = useLocale();
+  // const { t } = useLocale();
   return (
     <Button
-      disabled={disabled}
       type="button"
-      variant="icon"
-      color="destructive"
-      StartIcon="trash"
+      variant="neutral"
+      mode="ghost"
       onClick={() => remove(index)}
       className={className}
-      tooltip={labels?.deleteTime ?? t("delete")}
-    />
+    >
+      <ButtonIcon as={RiDeleteBinLine} />
+    </Button>
   );
 };
 
@@ -357,7 +419,7 @@ const TimeRangeField = ({
   value,
   onChange,
   disabled,
-  userTimeFormat,
+  userTimeFormat
 }: {
   className?: string;
   disabled?: boolean;
@@ -365,21 +427,21 @@ const TimeRangeField = ({
 } & ControllerRenderProps) => {
   // this is a controlled component anyway given it uses LazySelect, so keep it RHF agnostic.
   return (
-    <div className={classNames("flex flex-row gap-2 sm:gap-3", className)}>
+    <div className={classNames('flex flex-row gap-2 sm:gap-3', className)}>
       <LazySelect
         userTimeFormat={userTimeFormat}
         className="block w-[90px] sm:w-[100px]"
         isDisabled={disabled}
         value={value.start}
         menuPlacement="bottom"
-        onChange={(option) => {
+        onChange={(option: IOption) => {
           const newStart = new Date(option?.value as number);
           if (newStart >= new Date(value.end)) {
             const newEnd = new Date(option?.value as number);
             newEnd.setMinutes(newEnd.getMinutes() + INCREMENT);
-            onChange({ ...value, start: newStart, end: newEnd });
+            onChange({...value, start: newStart, end: newEnd});
           } else {
-            onChange({ ...value, start: newStart });
+            onChange({...value, start: newStart});
           }
         }}
       />
@@ -391,8 +453,8 @@ const TimeRangeField = ({
         value={value.end}
         min={value.start}
         menuPlacement="bottom"
-        onChange={(option) => {
-          onChange({ ...value, end: new Date(option?.value as number) });
+        onChange={(option: IOption) => {
+          onChange({...value, end: new Date(option?.value as number)});
         }}
       />
     </div>
@@ -406,33 +468,62 @@ const LazySelect = ({
   userTimeFormat,
   menuPlacement,
   ...props
-}: Omit<Props<IOption, false, GroupBase<IOption>>, "value"> & {
+}: {
   value: ConfigType;
   min?: ConfigType;
   max?: ConfigType;
   userTimeFormat: number | null;
+  menuPlacement?: string;
+  [key: string]: any;
 }) => {
   // Lazy-loaded options, otherwise adding a field has a noticeable redraw delay.
-  const { options, filter } = useOptions(userTimeFormat);
+  const {options, filter} = useOptions(userTimeFormat);
 
   useEffect(() => {
-    filter({ current: value });
+    filter({current: value});
   }, [filter, value]);
+
+  const handleOptionChange = (option: {value: string}) => {
+    // ... existing code ...
+  };
 
   return (
     <Select
-      options={options}
-      onMenuOpen={() => {
-        if (min) filter({ offset: min });
-        if (max) filter({ limit: max });
-        if (!min && !max) filter({ offset: 0, limit: 0 });
+      onOpenChange={(open: boolean) => {
+        if (open) {
+          if (min) filter({offset: min});
+          if (max) filter({limit: max});
+          if (!min && !max) filter({offset: 0, limit: 0});
+        } else {
+          filter({current: value});
+        }
       }}
-      menuPlacement={menuPlacement}
-      value={options.find((option) => option.value === dayjs(value).toDate().valueOf())}
-      onMenuClose={() => filter({ current: value })}
-      components={{ DropdownIndicator: () => null, IndicatorSeparator: () => null }}
       {...props}
-    />
+    >
+      <SelectTrigger className="block w-[90px] sm:w-[100px]">
+        <SelectValue>
+          {options.find(
+            (option) => option.value === dayjs(value).toDate().valueOf()
+          )?.label}
+        </SelectValue>
+      </SelectTrigger>
+      <SelectContent>
+        {options.map((option) => (
+          <SelectItem 
+            key={option.value} 
+            value={option.value.toString()}
+            onSelect={() => {
+              const newValue = new Date(option.value);
+              if (props.onChange) {
+                props.onChange({ value: newValue });
+              }
+            }}
+          >
+            {option.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 };
 
@@ -447,23 +538,27 @@ interface IOption {
  * 23:45:00 (End of day with enough time for 15 min booking)
  */
 /** Begin Time Increments For Select */
-const INCREMENT = Number(process.env.NEXT_PUBLIC_AVAILABILITY_SCHEDULE_INTERVAL) || 15;
+const INCREMENT =
+  Number(process.env.NEXT_AVAILABILITY_SCHEDULE_INTERVAL) || 15;
 const useOptions = (timeFormat: number | null) => {
   const [filteredOptions, setFilteredOptions] = useState<IOption[]>([]);
 
   const options = useMemo(() => {
-    const end = dayjs().utc().endOf("day");
+    const end = dayjs().utc().endOf('day');
     const options: IOption[] = [];
     for (
-      let t = dayjs().utc().startOf("day");
+      let t = dayjs().utc().startOf('day');
       t.isBefore(end);
-      t = t.add(INCREMENT + (!t.add(INCREMENT).isSame(t, "day") ? -1 : 0), "minutes")
+      t = t.add(
+        INCREMENT + (!t.add(INCREMENT).isSame(t, 'day') ? -1 : 0),
+        'minutes'
+      )
     ) {
       options.push({
         value: t.toDate().valueOf(),
         label: dayjs(t)
           .utc()
-          .format(timeFormat === 12 ? "h:mma" : "HH:mm"),
+          .format(timeFormat === 12 ? 'h:mma' : 'HH:mm')
       });
     }
     // allow 23:59
@@ -471,58 +566,85 @@ const useOptions = (timeFormat: number | null) => {
       value: end.toDate().valueOf(),
       label: dayjs(end)
         .utc()
-        .format(timeFormat === 12 ? "h:mma" : "HH:mm"),
+        .format(timeFormat === 12 ? 'h:mma' : 'HH:mm')
     });
     return options;
   }, [timeFormat]);
 
   const filter = useCallback(
-    ({ offset, limit, current }: { offset?: ConfigType; limit?: ConfigType; current?: ConfigType }) => {
+    ({
+      offset,
+      limit,
+      current
+    }: {
+      offset?: ConfigType;
+      limit?: ConfigType;
+      current?: ConfigType;
+    }) => {
       if (current) {
-        const currentOption = options.find((option) => option.value === dayjs(current).toDate().valueOf());
+        const currentOption = options.find(
+          (option) => option.value === dayjs(current).toDate().valueOf()
+        );
         if (currentOption) setFilteredOptions([currentOption]);
       } else
         setFilteredOptions(
           options.filter((option) => {
             const time = dayjs(option.value);
-            return (!limit || time.isBefore(limit)) && (!offset || time.isAfter(offset));
+            return (
+              (!limit || time.isBefore(limit)) &&
+              (!offset || time.isAfter(offset))
+            );
           })
         );
     },
     [options]
   );
 
-  return { options: filteredOptions, filter };
+  return {options: filteredOptions, filter};
 };
 
-const getDateSlotRange = (endField?: FieldArrayWithId, startField?: FieldArrayWithId) => {
-  const timezoneStartRange = dayjs((startField as unknown as TimeRange).start).utc();
+const getDateSlotRange = (
+  endField?: FieldArrayWithId,
+  startField?: FieldArrayWithId
+) => {
+  const timezoneStartRange = dayjs(
+    (startField as unknown as TimeRange).start
+  ).utc();
   const nextRangeStart = dayjs((endField as unknown as TimeRange).end).utc();
   const nextRangeEnd =
     nextRangeStart.hour() === 23
-      ? dayjs(nextRangeStart).add(59, "minutes").add(59, "seconds").add(999, "milliseconds")
-      : dayjs(nextRangeStart).add(1, "hour");
+      ? dayjs(nextRangeStart)
+          .add(59, 'minutes')
+          .add(59, 'seconds')
+          .add(999, 'milliseconds')
+      : dayjs(nextRangeStart).add(1, 'hour');
 
-  const endOfDay = nextRangeStart.endOf("day");
+  const endOfDay = nextRangeStart.endOf('day');
 
   if (!nextRangeStart.isSame(endOfDay)) {
     return {
       append: {
         start: nextRangeStart.toDate(),
-        end: nextRangeEnd.isAfter(endOfDay) ? endOfDay.toDate() : nextRangeEnd.toDate(),
-      },
+        end: nextRangeEnd.isAfter(endOfDay)
+          ? endOfDay.toDate()
+          : nextRangeEnd.toDate()
+      }
     };
   }
 
-  const previousRangeStart = dayjs((startField as unknown as TimeRange).start).subtract(1, "hour");
-  const startOfDay = timezoneStartRange.startOf("day");
+  const previousRangeStart = dayjs(
+    (startField as unknown as TimeRange).start
+  ).subtract(1, 'hour');
+  const startOfDay = timezoneStartRange.startOf('day');
 
   if (!timezoneStartRange.isSame(startOfDay)) {
     return {
       prepend: {
-        start: previousRangeStart.isBefore(startOfDay) ? startOfDay.toDate() : previousRangeStart.toDate(),
-        end: timezoneStartRange.toDate(),
-      },
+        start: previousRangeStart.isBefore(startOfDay)
+          ? startOfDay.toDate()
+          : previousRangeStart.toDate(),
+        end: timezoneStartRange.toDate()
+      }
     };
   }
 };
@@ -531,7 +653,7 @@ const CopyTimes = ({
   disabled,
   onClick,
   onCancel,
-  weekStart,
+  weekStart
 }: {
   disabled: number;
   onClick: (selected: number[]) => void;
@@ -539,23 +661,32 @@ const CopyTimes = ({
   weekStart: number;
 }) => {
   const [selected, setSelected] = useState<number[]>([]);
-  const { i18n, t } = useLocale();
-  const itteratablesByKeyRef = useRef<(HTMLInputElement | HTMLButtonElement)[]>([]);
+  const {isLocaleReady, locale, t} = useLocale();
+  const itteratablesByKeyRef = useRef<(HTMLInputElement | HTMLButtonElement)[]>(
+    []
+  );
   useEffect(() => {
-    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener('keydown', handleKeyDown);
     return () => {
-      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener('keydown', handleKeyDown);
     };
   }, []);
   const handleKeyDown = (event: KeyboardEvent) => {
     const itteratables = itteratablesByKeyRef.current;
     const isActionRequired =
-      event.key === "Tab" || event.key === "ArrowUp" || event.key === "ArrowDown" || event.key === "Enter";
+      event.key === 'Tab' ||
+      event.key === 'ArrowUp' ||
+      event.key === 'ArrowDown' ||
+      event.key === 'Enter';
     if (!isActionRequired || !itteratables.length) return;
     event.preventDefault();
-    const currentFocused = document.activeElement as HTMLInputElement | HTMLButtonElement;
-    let currentIndex = itteratables.findIndex((checkbox) => checkbox === currentFocused);
-    if (event.key === "Enter") {
+    const currentFocused = document.activeElement as
+      | HTMLInputElement
+      | HTMLButtonElement;
+    let currentIndex = itteratables.findIndex(
+      (checkbox) => checkbox === currentFocused
+    );
+    if (event.key === 'Enter') {
       if (currentIndex === -1) return;
       currentFocused.click();
       return;
@@ -564,9 +695,10 @@ const CopyTimes = ({
       itteratables[0].focus();
     } else {
       // Move focus based on the arrow key pressed
-      if (event.key === "ArrowUp") {
-        currentIndex = (currentIndex - 1 + itteratables.length) % itteratables.length;
-      } else if (event.key === "ArrowDown" || event.key === "Tab") {
+      if (event.key === 'ArrowUp') {
+        currentIndex =
+          (currentIndex - 1 + itteratables.length) % itteratables.length;
+      } else if (event.key === 'ArrowDown' || event.key === 'Tab') {
         currentIndex = (currentIndex + 1) % itteratables.length;
       }
       itteratables[currentIndex].focus();
@@ -576,19 +708,21 @@ const CopyTimes = ({
   return (
     <div className="space-y-2 py-2">
       <div className="p-2">
-        <p className="h6 text-emphasis pb-3 pl-1 text-xs font-medium uppercase">{t("copy_times_to")}</p>
+        <p className="h6 text-emphasis pb-3 pl-1 text-xs font-medium uppercase">
+          {t('copy_times_to')}
+        </p>
         <ol className="space-y-2">
           <li key="select all">
             <label className="text-sub-600 flex w-full items-center justify-between">
-              <span className="px-1">{t("select_all")}</span>
-              <CheckboxField
-                description=""
-                value={t("select_all")}
+              <span className="px-1">{t('select_all')}</span>
+              <Checkbox
+                // description=""
+                value={t('select_all')}
                 checked={selected.length === 7}
-                onChange={(e) => {
-                  if (e.target.checked) {
+                onCheckedChange={(isChecked) => {
+                  if (isChecked) {
                     setSelected([0, 1, 2, 3, 4, 5, 6]);
-                  } else if (!e.target.checked) {
+                  } else {
                     setSelected([]);
                   }
                 }}
@@ -600,35 +734,50 @@ const CopyTimes = ({
               />
             </label>
           </li>
-          {weekdayNames(i18n.language, weekStart).map((weekday, num) => {
-            const weekdayIndex = (num + weekStart) % 7;
-            return (
-              <li key={weekday}>
-                <label className="text-sub-600 flex w-full items-center justify-between">
-                  <span className="px-1">{weekday}</span>
-                  <CheckboxField
-                    description=""
-                    value={weekdayIndex}
-                    checked={selected.includes(weekdayIndex) || disabled === weekdayIndex}
-                    disabled={disabled === weekdayIndex}
-                    onChange={(e) => {
-                      if (e.target.checked && !selected.includes(weekdayIndex)) {
-                        setSelected(selected.concat([weekdayIndex]));
-                      } else if (!e.target.checked && selected.includes(weekdayIndex)) {
-                        setSelected(selected.filter((item) => item !== weekdayIndex));
+          {weekdayNames(isLocaleReady ? locale : 'pt', weekStart).map(
+            (weekday, num) => {
+              const weekdayIndex = (num + weekStart) % 7;
+              return (
+                <li key={weekday}>
+                  <label className="text-sub-600 flex w-full items-center justify-between">
+                    <span className="px-1">{weekday}</span>
+                    <Checkbox
+                      // description=""
+                      value={weekdayIndex}
+                      checked={
+                        selected.includes(weekdayIndex) ||
+                        disabled === weekdayIndex
                       }
-                    }}
-                    ref={(ref) => {
-                      if (ref && disabled !== weekdayIndex) {
-                        //we don't need to iterate over disabled elements
-                        itteratablesByKeyRef.current.push(ref as HTMLInputElement);
-                      }
-                    }}
-                  />
-                </label>
-              </li>
-            );
-          })}
+                      disabled={disabled === weekdayIndex}
+                      onCheckedChange={(isChecked) => {
+                        if (
+                          isChecked &&
+                          !selected.includes(weekdayIndex)
+                        ) {
+                          setSelected(selected.concat([weekdayIndex]));
+                        } else if (
+                          !isChecked &&
+                          selected.includes(weekdayIndex)
+                        ) {
+                          setSelected(
+                            selected.filter((item) => item !== weekdayIndex)
+                          );
+                        }
+                      }}
+                      ref={(ref) => {
+                        if (ref && disabled !== weekdayIndex) {
+                          //we don't need to iterate over disabled elements
+                          itteratablesByKeyRef.current.push(
+                            ref as HTMLInputElement
+                          );
+                        }
+                      }}
+                    />
+                  </label>
+                </li>
+              );
+            }
+          )}
         </ol>
       </div>
       <hr className="border-subtle" />
@@ -640,8 +789,9 @@ const CopyTimes = ({
             if (ref) {
               itteratablesByKeyRef.current.push(ref as HTMLButtonElement);
             }
-          }}>
-          {t("cancel")}
+          }}
+        >
+          {t('cancel')}
         </Button>
         <Button
           color="primary"
@@ -654,11 +804,12 @@ const CopyTimes = ({
           className="bg-button-primary shadow-button-primary border-linear-12 font-jakarta text-white-fixed text-sm font-medium tracking-tighter"
           style={{
             background:
-              "linear-gradient(180deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.00) 100%), var(--cal-brand-primary-base, #717784)",
+              'linear-gradient(180deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.00) 100%), var(--cal-brand-primary-base, #717784)',
             boxShadow:
-              "0px 1px 2px 0px rgba(14, 18, 27, 0.24), 0px 0px 0px 1px var(--cal-brand-primary-base, #717784)",
-          }}>
-          {t("apply")}
+              '0px 1px 2px 0px rgba(14, 18, 27, 0.24), 0px 0px 0px 1px var(--cal-brand-primary-base, #717784)'
+          }}
+        >
+          {t('apply')}
         </Button>
       </div>
     </div>
