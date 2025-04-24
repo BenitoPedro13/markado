@@ -1,22 +1,26 @@
 import Link from "next/link";
 import { Fragment } from "react";
 
-import { availabilityAsString } from "@calcom/lib/availability";
-import { useLocale } from "@calcom/lib/hooks/useLocale";
-import { sortAvailabilityStrings } from "@calcom/lib/weekstart";
-import type { RouterOutputs } from "@calcom/trpc/react";
-import { trpc } from "@calcom/trpc/react";
-import {
-  Badge,
-  Button,
-  Dropdown,
-  DropdownItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  Icon,
-  showToast,
-} from "@calcom/ui";
+import { availabilityAsString } from "@/lib/availability";
+import { useLocale } from "@/hooks/use-locale";
+import { sortAvailabilityStrings } from "@/lib/weekstart";
+// import type { RouterOutputs } from "@/trpc/react";
+// import { trpc } from "@/trpc/react";
+import { Root as Badge } from "@/components/align-ui/ui/badge";
+import { Root as Button, Icon as ButtonIcon } from "@/components/align-ui/ui/button";
+import { 
+  Root as Dropdown, 
+  Trigger as DropdownMenuTrigger, 
+  Content as DropdownMenuContent, 
+  Item as DropdownMenuItem,
+  ItemIcon as DropdownItemIcon
+} from "@/components/align-ui/ui/dropdown";
+import { useNotification } from "@/hooks/use-notification";
+import { useTRPC } from "@/utils/trpc";
+import { RiStarLine, RiFileCopyLine, RiDeleteBinLine, RiGlobalLine, RiMoreLine } from "@remixicon/react";
+import { useQuery } from "@tanstack/react-query";
+import { inferRouterOutputs } from "@trpc/server";
+import { AppRouter } from "~/trpc/server";
 
 export function ScheduleListItem({
   schedule,
@@ -26,7 +30,7 @@ export function ScheduleListItem({
   isDeletable,
   duplicateFunction,
 }: {
-  schedule: RouterOutputs["viewer"]["availability"]["list"]["schedules"][number];
+  schedule: inferRouterOutputs<AppRouter>['availability']['getAll'][number]['schedule'];
   deleteFunction: ({ scheduleId }: { scheduleId: number }) => void;
   displayOptions?: {
     timeZone?: string;
@@ -37,9 +41,20 @@ export function ScheduleListItem({
   updateDefault: ({ scheduleId, isDefault }: { scheduleId: number; isDefault: boolean }) => void;
   duplicateFunction: ({ scheduleId }: { scheduleId: number }) => void;
 }) {
-  const { t, i18n } = useLocale();
+  const trpc = useTRPC();
+  const { data: user } = useQuery(trpc.user.me.queryOptions());
+  const { t, locale, isLocaleReady } = useLocale();
+  const { notification } = useNotification();
 
-  const { data, isPending } = trpc.viewer.availability.schedule.get.useQuery({ scheduleId: schedule.id });
+  if (!schedule || !user) {
+    return null;
+  }
+
+  const { data, isPending } = useQuery(trpc.schedule.getById.queryOptions({ id: schedule.id }));
+
+  if (!data) {
+    return null;
+  }
 
   return (
     <li key={schedule.id}>
@@ -51,8 +66,8 @@ export function ScheduleListItem({
             title={schedule.name}>
             <div className="space-x-2 rtl:space-x-reverse">
               <span className="text-emphasis truncate font-medium">{schedule.name}</span>
-              {schedule.isDefault && (
-                <Badge variant="success" className="text-xs">
+              {schedule.id === user.defaultScheduleId && (
+                <Badge variant="filled" color="green" className="text-xs">
                   {t("default")}
                 </Badge>
               )}
@@ -62,12 +77,12 @@ export function ScheduleListItem({
                 .filter((availability) => !!availability.days.length)
                 .map((availability) =>
                   availabilityAsString(availability, {
-                    locale: i18n.language,
+                    locale: isLocaleReady ? locale : 'pt',
                     hour12: displayOptions?.hour12,
                   })
                 )
                 // sort the availability strings as per user's weekstart (settings)
-                .sort(sortAvailabilityStrings(i18n.language, displayOptions?.weekStart))
+                .sort(sortAvailabilityStrings(isLocaleReady ? locale : 'pt', displayOptions?.weekStart))
                 .map((availabilityString, index) => (
                   <Fragment key={index}>
                     {availabilityString}
@@ -76,7 +91,7 @@ export function ScheduleListItem({
                 ))}
               {(schedule.timeZone || displayOptions?.timeZone) && (
                 <p className="my-1 flex items-center first-letter:text-xs">
-                  <Icon name="globe" className="h-3.5 w-3.5" />
+                  <RiGlobalLine className="h-3.5 w-3.5" />
                   &nbsp;{schedule.timeZone ?? displayOptions?.timeZone}
                 </p>
               )}
@@ -89,58 +104,59 @@ export function ScheduleListItem({
               data-testid="schedule-more"
               className="mx-5"
               type="button"
-              variant="icon"
-              color="secondary"
-              StartIcon="ellipsis"
-            />
+              variant="neutral"
+              mode="ghost"
+            >
+              <ButtonIcon as={RiMoreLine} />
+            </Button>
           </DropdownMenuTrigger>
           {!isPending && data && (
             <DropdownMenuContent>
               <DropdownMenuItem className="min-w-40 focus:ring-muted">
-                {!schedule.isDefault && (
-                  <DropdownItem
-                    type="button"
-                    StartIcon="star"
+                {schedule.id !== user.defaultScheduleId && (
+                  <DropdownMenuItem
                     onClick={() => {
                       updateDefault({
                         scheduleId: schedule.id,
                         isDefault: true,
                       });
                     }}>
+                    <DropdownItemIcon as={RiStarLine} />
                     {t("set_as_default")}
-                  </DropdownItem>
+                  </DropdownMenuItem>
                 )}
               </DropdownMenuItem>
               <DropdownMenuItem className="outline-none">
-                <DropdownItem
-                  type="button"
+                <DropdownMenuItem
                   data-testid={`schedule-duplicate${schedule.id}`}
-                  StartIcon="copy"
                   onClick={() => {
                     duplicateFunction({
                       scheduleId: schedule.id,
                     });
                   }}>
+                  <DropdownItemIcon as={RiFileCopyLine} />
                   {t("duplicate")}
-                </DropdownItem>
+                </DropdownMenuItem>
               </DropdownMenuItem>
               <DropdownMenuItem className="min-w-40 focus:ring-muted">
-                <DropdownItem
-                  type="button"
-                  color="destructive"
-                  StartIcon="trash"
+                <DropdownMenuItem
                   data-testid="delete-schedule"
                   onClick={() => {
                     if (!isDeletable) {
-                      showToast(t("requires_at_least_one_schedule"), "error");
+                      notification({
+                        title: t("requires_at_least_one_schedule"),
+                        variant: "filled",
+                        color: "red"
+                      });
                     } else {
                       deleteFunction({
                         scheduleId: schedule.id,
                       });
                     }
                   }}>
+                  <DropdownItemIcon as={RiDeleteBinLine} />
                   {t("delete")}
-                </DropdownItem>
+                </DropdownMenuItem>
               </DropdownMenuItem>
             </DropdownMenuContent>
           )}
