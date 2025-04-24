@@ -1,5 +1,5 @@
-import type { Dayjs } from "@/lib/dayjs/dayjs";
-import dayjs from "@/lib/dayjs/dayjs";
+import type { Dayjs } from "@/lib/dayjs";
+import dayjs from "@/lib/dayjs";
 
 // converts a date to 2022-04-25 for example.
 export const yyyymmdd = (date: Date | Dayjs) =>

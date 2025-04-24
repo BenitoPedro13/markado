@@ -1,6 +1,6 @@
 import type {ITimezoneOption} from 'react-timezone-select';
 
-import dayjs from '@/lib/dayjs/dayjs';
+import dayjs from '@/lib/dayjs';
 
 function isProblematicTimezone(tz: string): boolean {
   const problematicTimezones = [

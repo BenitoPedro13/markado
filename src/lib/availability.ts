@@ -1,7 +1,7 @@
 import type {Availability} from '~/prisma/app/generated/prisma/client';
 
-import type {ConfigType} from '@/lib/dayjs/dayjs';
-import dayjs from '@/lib/dayjs/dayjs';
+import type {ConfigType} from '@/lib/dayjs';
+import dayjs from '@/lib/dayjs';
 import type {Schedule, TimeRange, WorkingHours} from '@/types/scheadule';
 
 
