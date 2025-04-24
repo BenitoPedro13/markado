@@ -11,6 +11,11 @@ import {
 export const scheduleRouter = router({
   // Get all schedules for the current user
   getAll: protectedProcedure.query(async ({ctx}) => {
+    console.log(
+      `[TRPC] Getting all schedules for user ${ctx.session?.user.id}:`,
+      ctx.session?.user.id
+    );
+
     return ctx.prisma.schedule.findMany({
       where: {
         userId: ctx.session?.user.id
@@ -25,6 +30,11 @@ export const scheduleRouter = router({
   getById: protectedProcedure
     .input(z.object({id: z.number()}))
     .query(async ({ctx, input}) => {
+      console.log(
+        `[TRPC] Getting schedule for user ${ctx.session?.user.id}:`,
+        input
+      );
+
       return ctx.prisma.schedule.findFirst({
         where: {
           id: input.id,
@@ -40,6 +50,15 @@ export const scheduleRouter = router({
   create: protectedProcedure
     .input(ZCreateScheduleSchema)
     .mutation(async ({ctx, input}) => {
+      if (!ctx.session?.user) {
+        throw new Error('Not authenticated');
+      }
+
+      console.log(
+        `[TRPC] Creating schedule for user ${ctx.session.user.id}:`,
+        input
+      );
+
       return ctx.prisma.schedule.create({
         data: {
           ...input,
@@ -61,6 +80,10 @@ export const scheduleRouter = router({
     )
     .mutation(async ({ctx, input}) => {
       // First check if the schedule belongs to the user
+      if (!ctx.session?.user) {
+        throw new Error('Not authenticated');
+      }
+      
       const existingSchedule = await ctx.prisma.schedule.findFirst({
         where: {
           id: input.id,
@@ -73,6 +96,11 @@ export const scheduleRouter = router({
           "Schedule not found or you don't have permission to update it"
         );
       }
+
+      console.log(
+        `[TRPC] Updating schedule for user ${ctx.session.user.id}:`,
+        input
+      );
 
       return ctx.prisma.schedule.update({
         where: {
@@ -102,6 +130,11 @@ export const scheduleRouter = router({
           "Schedule not found or you don't have permission to delete it"
         );
       }
+
+      console.log(
+        `[TRPC] Deleting schedule for user ${ctx.session?.user.id}:`,
+        input
+      );
 
       return ctx.prisma.schedule.delete({
         where: {
