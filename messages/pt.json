@@ -125,7 +125,14 @@
       "thursday": "Quinta-feira",
       "friday": "Sexta-feira",
       "saturday": "Sábado",
-      "invalid_time_format": "Formato de hora inválido. Use o formato HH:MM."
+      "invalid_time_format": "Formato de hora inválido. Use o formato HH:MM.",
+      "saving": "Salvando...",
+      "schedule_created_success": "Agendamento criado com sucesso",
+      "schedule_created_error": "Erro ao criar agendamento",
+      "availability_created_success": "Disponibilidade criada com sucesso",
+      "availability_created_error": "Erro ao criar disponibilidade",
+      "form_submission_error": "Erro ao enviar formulário",
+      "default_schedule_name": "Agendamento Padrão"
     },
     "SummaryForm": {
       "summary": "Sumário do cadastro",

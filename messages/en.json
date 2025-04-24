@@ -125,7 +125,14 @@
       "thursday": "Thursday",
       "friday": "Friday",
       "saturday": "Saturday",
-      "invalid_time_format": "Invalid time format. Use HH:MM format."
+      "invalid_time_format": "Invalid time format. Use HH:MM format.",
+      "saving": "Saving...",
+      "schedule_created_success": "Schedule created successfully",
+      "schedule_created_error": "Error creating schedule",
+      "availability_created_success": "Availability created successfully",
+      "availability_created_error": "Error creating availability",
+      "form_submission_error": "Error submitting form",
+      "default_schedule_name": "Default Schedule"
     },
     "SummaryForm": {
       "summary": "Registration Summary",
