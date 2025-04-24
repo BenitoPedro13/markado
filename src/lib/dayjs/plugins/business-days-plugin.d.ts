@@ -1,5 +1,4 @@
-import type { Dayjs, PluginFunc } from "dayjs";
-
+import type { PluginFunc } from "dayjs";
 declare module "dayjs" {
   interface BusinessDaysPluginOptions {
     holidays?: string[];
@@ -37,5 +36,11 @@ declare module "dayjs" {
   }
 }
 
-declare const plugin: PluginFunc<BusinessDaysPluginOptions>;
+declare const plugin: PluginFunc<{
+  holidays?: string[];
+  holidayFormat?: string;
+  additionalWorkingDays?: string[];
+  additionalWorkingDayFormat?: string;
+  workingWeekdays?: number[];
+}>;
 export default plugin;
