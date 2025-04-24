@@ -128,7 +128,7 @@ const AvailabilityPage = () => {
     <form
       action=""
       onSubmit={submit}
-      className="flex flex-col gap-6 justify-center items-center w-[480px]"
+      className="flex flex-col gap-6 justify-center items-center w-fit max-w-[521px]"
     >
       <div className="flex flex-col items-center">
         <RoundedIconWrapper>
