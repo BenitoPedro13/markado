@@ -2,6 +2,7 @@ import {router} from '../trpc';
 import {protectedProcedure} from '../middleware';
 import {z} from 'zod';
 import {getAvailableSlots} from '@/utils/slots';
+import { type GetScheduleResponse } from '@/components/schedules/lib/use-schedule/types';
 
 // Schema for getting schedule
 const getScheduleSchema = z.object({
@@ -27,7 +28,7 @@ export const slotsRouter = router({
   // Get available slots for a schedule
   getSchedule: protectedProcedure
     .input(getScheduleSchema)
-    .query(async ({ctx, input}) => {
+    .query(async ({ctx, input}): Promise<GetScheduleResponse> => {
       console.log(
         `[TRPC] Getting slots for schedule ${input.scheduleId}:`,
         input
@@ -45,13 +46,18 @@ export const slotsRouter = router({
         throw new Error('Schedule not found or you do not have permission to access it');
       }
 
-      return getAvailableSlots({
+      const result = await getAvailableSlots({
         ctx,
         input: {
           ...input,
           timeZone: input.timeZone || schedule.timeZone || ctx.session?.user.timeZone || 'America/Sao_Paulo'
         }
       });
+
+      return {
+        slots: result.slots,
+        timeZone: result.timeZone || input.timeZone || schedule.timeZone || ctx.session?.user.timeZone || 'America/Sao_Paulo'
+      };
     }),
 
   // Reserve a slot
