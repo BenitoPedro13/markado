@@ -23,11 +23,11 @@ const ProfileField = ({
 }: ProfileFieldProps) => (
   <div className="p-6 border-b border-stroke-soft-200">
     <div className="flex justify-between items-start">
-      <div className="w-[300px] space-y-1">
+      <div className="space-y-1 w-[280px]">
         <h3 className="text-paragraph-md text-text-strong-950">{label}</h3>
         <p className="text-paragraph-sm text-text-sub-600">{description}</p>
       </div>
-      <div className="w-fill min-w-[300px]">
+      <div className="w-[400px]">
         <Input.Root>
           <Input.Wrapper>
             <Input.Input
@@ -51,7 +51,7 @@ export default function Profile({me}: {me: Me}) {
       <div className="border border-stroke-soft-200 rounded-lg divide-y divide-stroke-soft-200">
         <div className="p-6">
           <div className="flex justify-between items-center">
-            <div className="w-[400px] space-y-1">
+            <div className="space-y-1 w-[280px]">
               <h3 className="text-paragraph-md text-text-strong-950">
                 Foto do perfil
               </h3>
@@ -66,7 +66,7 @@ export default function Profile({me}: {me: Me}) {
                   alt="Foto do perfil"
                 />
               </Avatar.Root>
-              <Button.Root variant="neutral" mode="ghost">
+              <Button.Root variant="neutral" mode="stroke">
                 <span className="text-paragraph-md text-text-sub-600">
                   Carregar imagem
                 </span>
@@ -100,7 +100,7 @@ export default function Profile({me}: {me: Me}) {
 
           <div className="p-6">
             <div className="flex justify-between items-start">
-              <div className="w-[400px] space-y-1">
+              <div className="space-y-1 w-[280px]">
                 <h3 className="text-paragraph-md text-text-strong-950">
                   Biografia
                 </h3>
