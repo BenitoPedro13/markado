@@ -13,8 +13,7 @@ import {useTRPC} from '@/utils/trpc';
 import {useNotification} from '@/hooks/use-notification';
 import {useMutation} from '@tanstack/react-query';
 import Schedule from '@/components/schedules/components/Schedule';
-import {DEFAULT_SCHEDULE} from '@/lib/availability';
-import {useForm} from 'react-hook-form';
+import {FormProvider} from 'react-hook-form';
 
 // Map day names to day numbers (0 = Sunday, 1 = Monday, etc.)
 const dayMap: Record<string, number> = {
@@ -30,17 +29,11 @@ const dayMap: Record<string, number> = {
 const AvailabilityPage = () => {
   const {forms, goToStep} = useSignUp();
   const availabilityForm = forms.availability;
+  const scheduleForm = forms.schedule;
   const trpc = useTRPC();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const {notification} = useNotification();
   const t = useTranslations('SignUpPage.AvailabilityForm');
-
-  // Create a new form for the Schedule component
-  const scheduleForm = useForm({
-    defaultValues: {
-      schedule: DEFAULT_SCHEDULE
-    }
-  });
 
   // Create schedule mutation
   const createScheduleMutation = useMutation(
@@ -156,11 +149,13 @@ const AvailabilityPage = () => {
 
       <div className="flex flex-col gap-4 w-full">
         <div className="text-strong-950 font-jakarta w-full font-medium tracking-tighter">
-          <Schedule 
-            control={scheduleForm.control} 
-            name="schedule" 
-            weekStart={1} 
-          />
+          <FormProvider {...scheduleForm}>
+            <Schedule 
+              control={scheduleForm.control} 
+              name="schedule" 
+              weekStart={1} 
+            />
+          </FormProvider>
         </div>
       </div>
 

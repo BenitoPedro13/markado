@@ -1,3 +1,5 @@
+"use client"
+
 import {
   Fragment,
   useCallback,
@@ -94,8 +96,19 @@ export const ScheduleDay = <TFieldValues extends FieldValues>({
   };
 }) => {
   // Use useFieldArray to handle the array field
+  const formContext = useFormContext<TFieldValues>();
+  
+  // Use the provided control or fall back to the form context
+  const effectiveControl = control || formContext?.control;
+  
+  // If we don't have a valid control, we can't proceed
+  if (!effectiveControl) {
+    console.error('ScheduleDay: No form control available');
+    return null;
+  }
+  
   const { fields, append, remove } = useFieldArray({
-    control,
+    control: effectiveControl,
     name
   });
 
@@ -145,7 +158,7 @@ export const ScheduleDay = <TFieldValues extends FieldValues>({
             <DayRanges
               userTimeFormat={userTimeFormat}
               labels={labels}
-              control={control}
+              control={effectiveControl}
               name={name}
               disabled={disabled}
               className={{
@@ -229,8 +242,18 @@ const Schedule = <
   const query = useMeQuery();
   // const { timeFormat } = query.data || { timeFormat: null };
   // const { t } = useLocale();
+  const formContext = useFormContext<TFieldValues>();
+  
+  // Use the provided control or fall back to the form context
+  const effectiveControl = props.control || formContext?.control;
+  
+  // If we don't have a valid control, we can't proceed
+  if (!effectiveControl) {
+    console.error('Schedule: No form control available');
+    return null;
+  }
 
-  return <ScheduleComponent userTimeFormat={null} {...props} />;
+  return <ScheduleComponent userTimeFormat={null} {...props} control={effectiveControl} />;
 };
 
 export const ScheduleComponent = <
@@ -260,6 +283,16 @@ export const ScheduleComponent = <
   };
 }) => {
   const {locale, isLocaleReady} = useLocale();
+  const formContext = useFormContext<TFieldValues>();
+  
+  // Use the provided control or fall back to the form context
+  const effectiveControl = control || formContext?.control;
+  
+  // If we don't have a valid control, we can't proceed
+  if (!effectiveControl) {
+    console.error('ScheduleComponent: No form control available');
+    return null;
+  }
 
   return (
     <div
@@ -288,7 +321,7 @@ export const ScheduleComponent = <
               name={dayRangeName}
               key={weekday}
               weekday={weekday}
-              control={control}
+              control={effectiveControl}
               CopyButton={
                 <CopyButton
                   weekStart={weekStart}
@@ -313,7 +346,7 @@ export const DayRanges = <TFieldValues extends FieldValues>({
   className
 }: {
   name: ArrayPath<TFieldValues>;
-  control?: Control<TFieldValues>;
+  control: Control<TFieldValues>;
   disabled?: boolean;
   labels?: ScheduleLabelsType;
   userTimeFormat: number | null;
@@ -323,11 +356,19 @@ export const DayRanges = <TFieldValues extends FieldValues>({
   };
 }) => {
   const {t} = useLocale();
-  const formContext = useFormContext();
-  const getValues = formContext?.getValues;
+  const formContext = useFormContext<TFieldValues>();
+  
+  // Use the provided control or fall back to the form context
+  const effectiveControl = control || formContext?.control;
+  
+  // If we don't have a valid control, we can't proceed
+  if (!effectiveControl) {
+    console.error('DayRanges: No form control available');
+    return null;
+  }
 
   const {remove, fields, prepend, append} = useFieldArray({
-    control,
+    control: effectiveControl,
     name
   });
 
@@ -339,7 +380,8 @@ export const DayRanges = <TFieldValues extends FieldValues>({
         <Fragment key={field.id}>
           <div className="flex gap-1 last:mb-0 sm:gap-2">
             <Controller
-              name={`${name}.${index}`}
+              name={`${name}.${index}` as any}
+              control={effectiveControl}
               render={({field}) => (
                 <TimeRangeField
                   className={className?.timeRangeField}
@@ -361,8 +403,8 @@ export const DayRanges = <TFieldValues extends FieldValues>({
                 onClick={() => {
                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   const slotRange: any = getDateSlotRange(
-                    getValues ? getValues(`${name}.${fields.length - 1}`) : undefined,
-                    getValues ? getValues(`${name}.0`) : undefined
+                    formContext?.getValues ? formContext.getValues(`${name}.${fields.length - 1}` as any) : undefined,
+                    formContext?.getValues ? formContext.getValues(`${name}.0` as any) : undefined
                   );
 
                   if (slotRange?.append) {
