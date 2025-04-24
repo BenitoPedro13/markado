@@ -42,14 +42,16 @@ const AvailabilityPage = () => {
       onSuccess: () => {
         notification({
           title: t('schedule_created_success'),
-          variant: 'stroke'
+          variant: 'stroke',
+          id: 'schedule_created_success'
         });
       },
       onError: (error) => {
         notification({
           title: t('schedule_created_error'),
           description: error.message,
-          variant: 'stroke'
+          variant: 'stroke',
+          id: 'schedule_created_error'
         });
       }
     })
@@ -59,17 +61,21 @@ const AvailabilityPage = () => {
   const createAvailabilityMutation = useMutation(
     trpc.availability.create.mutationOptions({
       onSuccess: () => {
-        notification({
-          title: t('availability_created_success'),
-          variant: 'stroke'
-        });
+        // notification({
+        //   title: t('availability_created_success'),
+        //   variant: 'stroke',
+        //   id: 'availability_created_success'
+        // });
+        console.log('availability created successfully');
       },
       onError: (error) => {
-        notification({
-          title: t('availability_created_error'),
-          description: error.message,
-          variant: 'stroke'
-        });
+        // notification({
+        //   title: t('availability_created_error'),
+        //   description: error.message,
+        //   variant: 'stroke',
+        //   id: 'availability_created_error'
+        // });
+        console.log('availability created error', error);
       }
     })
   );
@@ -81,7 +87,7 @@ const AvailabilityPage = () => {
     try {
       // Get form values from the Schedule component
       const scheduleValues = scheduleForm.getValues();
-      
+
       // Create a schedule first
       const scheduleResult = await createScheduleMutation.mutateAsync({
         name: t('default_schedule_name'),
@@ -90,7 +96,7 @@ const AvailabilityPage = () => {
 
       // Convert the schedule format to availability format
       const schedule = scheduleValues.schedule;
-      
+
       // Create availabilities for each day
       for (let dayIndex = 0; dayIndex < schedule.length; dayIndex++) {
         const timeRanges = schedule[dayIndex];
@@ -118,11 +124,18 @@ const AvailabilityPage = () => {
 
       // Continue to the next step
       goToStep('/sign-up/summary');
-    } catch (error) {
+      notification({
+        title: t('schedule_created_success'),
+        variant: 'stroke',
+        id: 'schedule_created_success'
+      });
+    } catch (error: any) {
       console.error('Error submitting availability form:', error);
       notification({
-        title: t('form_submission_error'),
-        variant: 'stroke'
+        title: t('availability_created_error'),
+        description: error.message,
+        variant: 'stroke',
+        id: 'availability_created_error'
       });
     } finally {
       setIsSubmitting(false);
@@ -155,10 +168,10 @@ const AvailabilityPage = () => {
       <div className="flex flex-col gap-4 w-full">
         <div className="text-strong-950 font-jakarta w-full font-medium tracking-tighter">
           <FormProvider {...scheduleForm}>
-            <Schedule 
-              control={scheduleForm.control} 
-              name="schedule" 
-              weekStart={1} 
+            <Schedule
+              control={scheduleForm.control}
+              name="schedule"
+              weekStart={1}
             />
           </FormProvider>
         </div>
