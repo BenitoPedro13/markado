@@ -20,6 +20,8 @@ import { useForm, UseFormReturn } from 'react-hook-form';
 import { z } from 'zod';
 import { type AppRouter } from '~/trpc/server';
 import { getMeByUserId } from '~/trpc/server/handlers/user.handler';
+import { DEFAULT_SCHEDULE } from '@/lib/availability';
+import { TimeRange } from '@/types/scheadule';
 
 // Sign up email form schema
 const signUpEmailFormSchema = z.object({
@@ -99,11 +101,17 @@ const signUpProfileFormSchema = z.object({
   image: z.string().optional()
 });
 
+// Sign up schedule form schema
+const signUpScheduleFormSchema = z.object({
+  schedule: z.array(z.array(z.custom<TimeRange>()))
+});
+
 export type SignUpEmailFormData = z.infer<typeof signUpEmailFormSchema>;
 export type SignUpPasswordFormData = z.infer<typeof signUpPasswordFormSchema>;
 export type SignUpPersonalFormData = z.infer<typeof signUpPersonalFormSchema>;
 export type SignUpAvailabilityFormData = z.infer<typeof signUpAvailabilityFormSchema>;
 export type SignUpProfileFormData = z.infer<typeof signUpProfileFormSchema>;
+export type SignUpScheduleFormData = z.infer<typeof signUpScheduleFormSchema>;
 
 // Sign up context
 export type SignUpStep =
@@ -146,6 +154,7 @@ type SignUpContextType = {
     personal: UseFormReturn<SignUpPersonalFormData>;
     availability: UseFormReturn<SignUpAvailabilityFormData>;
     profile: UseFormReturn<SignUpProfileFormData>;
+    schedule: UseFormReturn<SignUpScheduleFormData>;
   };
   agree: boolean;
   setAgree: Dispatch<SetStateAction<boolean>>;
@@ -246,6 +255,13 @@ export function SignUpProvider({
     }
   });
 
+  // Schedule form for availability scheduling
+  const scheduleForm = useForm<SignUpScheduleFormData>({
+    defaultValues: {
+      schedule: DEFAULT_SCHEDULE
+    }
+  });
+
   const previousStepMap: Partial<Record<SignUpStep, SignUpStep>> = {
     '/sign-up/password': '/sign-up/email',
     '/sign-up/personal': '/sign-up/password',
@@ -337,7 +353,8 @@ export function SignUpProvider({
       password: passwordForm,
       personal: personalForm,
       availability: availabilityForm,
-      profile: profileForm
+      profile: profileForm,
+      schedule: scheduleForm
     },
     step,
     setStep,
@@ -353,6 +370,7 @@ export function SignUpProvider({
     personalForm,
     availabilityForm,
     profileForm,
+    scheduleForm,
     step,
     agree
   ]);

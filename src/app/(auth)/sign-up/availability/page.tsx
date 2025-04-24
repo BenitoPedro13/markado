@@ -1,69 +1,152 @@
 'use client';
 
-import { Root as Button } from '@/components/align-ui/ui/button';
-import { Input } from '@/components/align-ui/ui/input';
-import { Root as Switch } from '@/components/align-ui/ui/switch';
+import {Root as Button} from '@/components/align-ui/ui/button';
 import RoundedIconWrapper from '@/components/RoundedIconWrapper';
-import { SignUpAvailabilityFormData, useSignUp } from '@/contexts/SignUpContext';
-import { RiAddFill, RiFileCopyFill, RiTimeFill } from '@remixicon/react';
-import { useTranslations } from 'next-intl';
-import { FormEvent } from 'react';
-import Cookies from 'js-cookie';
+import {SignUpAvailabilityFormData, useSignUp} from '@/contexts/SignUpContext';
+import {RiTimeFill} from '@remixicon/react';
+import {useTranslations} from 'next-intl';
+import {FormEvent, useState} from 'react';
+import {z} from 'zod';
+import dayjs from 'dayjs';
+
 import {setStepComplete, clearEditMode} from '@/utils/cookie-utils';
+import {useTRPC} from '@/utils/trpc';
+import {useNotification} from '@/hooks/use-notification';
+import {useMutation} from '@tanstack/react-query';
+import Schedule from '@/components/schedules/components/Schedule';
+import {FormProvider} from 'react-hook-form';
 
-const Availability = (props: SignUpAvailabilityFormData) => {
-  const {schedules} = props;
-  const t = useTranslations("SignUpPage.AvailabilityForm");
-
-  return (
-    <div className="flex flex-col gap-4 w-full">
-      {Object.entries(schedules).map(([key, value]) => (
-        <div className="flex items-center gap-4">
-          <Switch id={key} />
-          <div className="grid grid-rows-1 grid-cols-3 items-center">
-            <span className="text-label-sm whitespace-nowrap col-span-1">{t(key)}</span>
-            <div className="flex items-center gap-4 col-span-2">
-              <Input className='border border-bg-soft-200 rounded-10 min-w-[84px]' type="text" placeholder="09:00" min={0} max={24} value={''} />
-              <Input className='border border-bg-soft-200 rounded-10 min-w-[84px]' type="text" placeholder="17:00" min={0} max={24} value={''} />
-            </div>
-          </div>
-
-          <Button className='w-[32px] h-[32px]' variant={'neutral'} mode="filled" size="xxsmall">
-            <RiAddFill size={16} />
-          </Button>
-          <Button className='w-[32px] h-[32px]' variant={'neutral'} mode="filled" size="xxsmall">
-            <RiFileCopyFill size={16} />
-          </Button>
-        </div>
-      ))}
-    </div>
-  );
+// Map day names to day numbers (0 = Sunday, 1 = Monday, etc.)
+const dayMap: Record<string, number> = {
+  sunday: 0,
+  monday: 1,
+  tuesday: 2,
+  wednesday: 3,
+  thursday: 4,
+  friday: 5,
+  saturday: 6
 };
 
 const AvailabilityPage = () => {
   const {forms, goToStep} = useSignUp();
   const availabilityForm = forms.availability;
-
+  const scheduleForm = forms.schedule;
+  const trpc = useTRPC();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const {notification} = useNotification();
   const t = useTranslations('SignUpPage.AvailabilityForm');
+
+  // Create schedule mutation
+  const createScheduleMutation = useMutation(
+    trpc.schedule.create.mutationOptions({
+      onSuccess: () => {
+        notification({
+          title: t('schedule_created_success'),
+          variant: 'stroke',
+          id: 'schedule_created_success'
+        });
+      },
+      onError: (error) => {
+        notification({
+          title: t('schedule_created_error'),
+          description: error.message,
+          variant: 'stroke',
+          id: 'schedule_created_error'
+        });
+      }
+    })
+  );
+
+  // Create availability mutation
+  const createAvailabilityMutation = useMutation(
+    trpc.availability.create.mutationOptions({
+      onSuccess: () => {
+        // notification({
+        //   title: t('availability_created_success'),
+        //   variant: 'stroke',
+        //   id: 'availability_created_success'
+        // });
+        console.log('availability created successfully');
+      },
+      onError: (error) => {
+        // notification({
+        //   title: t('availability_created_error'),
+        //   description: error.message,
+        //   variant: 'stroke',
+        //   id: 'availability_created_error'
+        // });
+        console.log('availability created error', error);
+      }
+    })
+  );
 
   const submit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
-    // Clear the edit_mode cookie if it exists
-    clearEditMode();
-    
-    // Set the availability step completion cookie
-    setStepComplete('availability');
-    
-    // Continue to the next step
-    goToStep('/sign-up/summary');
+    setIsSubmitting(true);
+
+    try {
+      // Get form values from the Schedule component
+      const scheduleValues = scheduleForm.getValues();
+
+      // Create a schedule first
+      const scheduleResult = await createScheduleMutation.mutateAsync({
+        name: t('default_schedule_name'),
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+      });
+
+      // Convert the schedule format to availability format
+      const schedule = scheduleValues.schedule;
+
+      // Create availabilities for each day
+      for (let dayIndex = 0; dayIndex < schedule.length; dayIndex++) {
+        const timeRanges = schedule[dayIndex];
+        if (timeRanges && timeRanges.length > 0) {
+          for (const timeRange of timeRanges) {
+            // Format the time values as HH:MM strings to match the schema requirements
+            const startTime = dayjs(timeRange.start).format('HH:mm');
+            const endTime = dayjs(timeRange.end).format('HH:mm');
+
+            await createAvailabilityMutation.mutateAsync({
+              days: [dayIndex],
+              startTime,
+              endTime,
+              scheduleId: scheduleResult.id
+            });
+          }
+        }
+      }
+
+      // Clear the edit_mode cookie if it exists
+      clearEditMode();
+
+      // Set the availability step completion cookie
+      setStepComplete('availability');
+
+      // Continue to the next step
+      goToStep('/sign-up/summary');
+      notification({
+        title: t('schedule_created_success'),
+        variant: 'stroke',
+        id: 'schedule_created_success'
+      });
+    } catch (error: any) {
+      console.error('Error submitting availability form:', error);
+      notification({
+        title: t('availability_created_error'),
+        description: error.message,
+        variant: 'stroke',
+        id: 'availability_created_error'
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <form
       action=""
       onSubmit={submit}
-      className="flex flex-col gap-6 justify-center items-center w-[480px]"
+      className="flex flex-col gap-6 justify-center items-center w-fit max-w-[521px]"
     >
       <div className="flex flex-col items-center">
         <RoundedIconWrapper>
@@ -83,11 +166,15 @@ const AvailabilityPage = () => {
       <div className="w-full h-[1px] bg-bg-soft-200" />
 
       <div className="flex flex-col gap-4 w-full">
-        {Object.entries(availabilityForm.getValues().schedules).map(
-          ([key, value]) => (
-            <Availability key={key} schedules={{[key]: value}} />
-          )
-        )}
+        <div className="text-strong-950 font-jakarta w-full font-medium tracking-tighter">
+          <FormProvider {...scheduleForm}>
+            <Schedule
+              control={scheduleForm.control}
+              name="schedule"
+              weekStart={1}
+            />
+          </FormProvider>
+        </div>
       </div>
 
       <Button
@@ -95,8 +182,11 @@ const AvailabilityPage = () => {
         variant="neutral"
         mode="filled"
         type="submit"
+        disabled={isSubmitting}
       >
-        <span className="text-label-sm">{t('continue')}</span>
+        <span className="text-label-sm">
+          {isSubmitting ? t('saving') : t('continue')}
+        </span>
       </Button>
     </form>
   );
