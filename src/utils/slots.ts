@@ -1,14 +1,7 @@
 import {addMinutes, format, parseISO} from 'date-fns';
+import { type IGetAvailableSlots, type Slot, type IToUser } from '@/components/schedules/lib/use-schedule/types';
 
 // Types
-export type Slot = {
-  time: string;
-  userIds?: string[];
-  attendees?: number;
-  bookingUid?: string;
-  users?: string[];
-};
-
 export type GetScheduleOptions = {
   ctx: {
     session: {
@@ -61,7 +54,7 @@ function generateTimeSlots(
 }
 
 // Main function to get available slots
-export async function getAvailableSlots({ctx, input}: GetScheduleOptions) {
+export async function getAvailableSlots({ctx, input}: GetScheduleOptions): Promise<IGetAvailableSlots> {
   const {
     startTime,
     endTime,
@@ -75,6 +68,7 @@ export async function getAvailableSlots({ctx, input}: GetScheduleOptions) {
 
   const userId = ctx.session.user.id;
   const userName = ctx.session.user.name;
+  const userEmail = ctx.session.user.email;
 
   // Parse input dates
   const startDate = parseISO(startTime);
@@ -115,17 +109,37 @@ export async function getAvailableSlots({ctx, input}: GetScheduleOptions) {
     )
   );
 
-  // Convert slots to the expected format
-  const availableSlots: Slot[] = allSlots
-    .filter((slot) => !bookedTimes.has(format(slot, "yyyy-MM-dd'T'HH:mm:ss")))
-    .map((slot) => ({
-      time: format(slot, "yyyy-MM-dd'T'HH:mm:ss"),
-      userIds: [userId],
-      users: [userName || '']
-    }));
+  // Group slots by date
+  const slotsByDate: Record<string, Slot[]> = {};
+
+  // Convert slots to the expected format and group by date
+  allSlots.forEach((slot) => {
+    const dateStr = format(slot, 'yyyy-MM-dd');
+    const timeStr = format(slot, "yyyy-MM-dd'T'HH:mm:ss");
+
+    if (!bookedTimes.has(timeStr)) {
+      const toUser: IToUser = {
+        id: userId,
+        name: userName,
+        email: userEmail,
+        timeZone: timeZone
+      };
+
+      const slotData: Slot = {
+        time: timeStr,
+        away: false,
+        toUser
+      };
+
+      if (!slotsByDate[dateStr]) {
+        slotsByDate[dateStr] = [];
+      }
+      slotsByDate[dateStr].push(slotData);
+    }
+  });
 
   return {
-    slots: availableSlots,
+    slots: slotsByDate,
     timeZone
   };
 }
