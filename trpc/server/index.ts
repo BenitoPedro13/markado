@@ -6,6 +6,9 @@ import { timezoneRouter } from './routers/timezone.router';
 import { cityTimezonesRouter } from './routers/cityTimezones.router';
 import { calendarRouter } from './routers/calendar.router';
 import { meetRouter } from './routers/meet.router';
+import { availabilityRouter } from './routers/availability.router';
+import { scheduleRouter } from './routers/scheadule.router';
+import { slotsRouter } from './routers/slots.router';
 
 export const appRouter = router({
   user: userRouter,
@@ -15,6 +18,9 @@ export const appRouter = router({
   cityTimezones: cityTimezonesRouter,
   calendar: calendarRouter,
   meet: meetRouter,
+  availability: availabilityRouter,
+  schedule: scheduleRouter,
+  slots: slotsRouter,
 });
 
 export type AppRouter = typeof appRouter;
