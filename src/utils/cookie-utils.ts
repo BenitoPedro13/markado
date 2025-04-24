@@ -10,6 +10,7 @@ export const COOKIE_NAMES = {
   PERSONAL_STEP_COMPLETE: 'personal_step_complete',
   CALENDAR_STEP_COMPLETE: 'calendar_step_complete',
   AVAILABILITY_STEP_COMPLETE: 'availability_step_complete',
+  PROFILE_STEP_COMPLETE: 'profile_step_complete',
   NEXT_STEP: 'next_step',
   ONBOARDING_COMPLETE: 'onboarding_complete'
 };
@@ -20,7 +21,7 @@ const DEFAULT_COOKIE_OPTIONS = {
   path: '/'
 };
 
-export type StepType = 'personal' | 'calendar' | 'conferencing' | 'availability';
+export type StepType = 'personal' | 'calendar' | 'conferencing' | 'availability' | 'profile';
 
 /**
  * Set the edit mode cookie to allow navigation to previous steps
