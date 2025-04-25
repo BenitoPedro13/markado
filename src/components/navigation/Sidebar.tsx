@@ -19,6 +19,7 @@ import {
   RiTimeFill
 } from '@remixicon/react';
 import React, {Fragment, PropsWithChildren, ReactElement} from 'react';
+import {usePathname} from 'next/navigation';
 
 import * as TabMenuVertical from '@/components/align-ui/ui/tab-menu-vertical';
 import * as CompactButton from '@/components/align-ui/ui/compact-button';
@@ -84,8 +85,12 @@ const settingsItems: sidebarItem[] = [
 ];
 
 const Sidebar = ({children}: PropsWithChildren) => {
-  // const pathname = usePathname()
+  const pathname = usePathname();
   const {isCollapsed, toggleCollapse} = useSidebarStore();
+
+  const isActive = (link: string) => {
+    return pathname === `/${link}`;
+  };
 
   return (
     <div className="flex relative">
@@ -161,11 +166,7 @@ const Sidebar = ({children}: PropsWithChildren) => {
                       <Link href={`/${link}`} key={label}>
                         <TabMenuVertical.Trigger
                           value={label}
-                          className={
-                            isCollapsed
-                              ? 'justify-center flex items-center'
-                              : ''
-                          }
+                          className={`${isCollapsed ? 'justify-center flex items-center' : ''} ${isActive(link) ? 'bg-primary-50 text-primary-600' : ''}`}
                         >
                           <TabMenuVertical.Icon
                             iconLine={iconLine}
@@ -184,11 +185,7 @@ const Sidebar = ({children}: PropsWithChildren) => {
                           <Link href={`/${link}`} key={label}>
                             <TabMenuVertical.Trigger
                               value={label}
-                              className={
-                                isCollapsed
-                                  ? 'justify-center flex items-center'
-                                  : ''
-                              }
+                              className={`${isCollapsed ? 'justify-center flex items-center' : ''} ${isActive(link) ? 'bg-primary-50 text-primary-600' : ''}`}
                             >
                               <TabMenuVertical.Icon
                                 iconLine={iconLine}
