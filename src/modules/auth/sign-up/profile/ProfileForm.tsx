@@ -6,7 +6,12 @@ import * as Textarea from '@/components/align-ui/ui/textarea';
 import RoundedIconWrapper from '@/components/RoundedIconWrapper';
 import {useSignUp} from '@/contexts/SignUpContext';
 import {useTRPC} from '@/utils/trpc';
-import {RiAccountPinCircleFill, RiUserSmileFill} from '@remixicon/react';
+import * as FancyButton from '@/components/align-ui/ui/fancy-button';
+import {
+  RiAccountPinCircleFill,
+  RiInformationFill,
+  RiUserSmileFill
+} from '@remixicon/react';
 import {useTranslations} from 'next-intl';
 import {FormEvent, useEffect, useRef, useState} from 'react';
 import {useMutation} from '@tanstack/react-query';
@@ -114,13 +119,13 @@ const ProfileForm = ({user}: ProfileFormProps) => {
 
   // Subscribe to biography field changes
   useEffect(() => {
-    const subscription = forms.profile.watch((value, { name, type }) => {
+    const subscription = forms.profile.watch((value, {name, type}) => {
       if (name === 'biography') {
         console.log('[ProfileForm] Bio changed:', value.biography);
         setBioLength(value.biography?.length || 0);
       }
     });
-    
+
     // Clean up subscription on unmount
     return () => subscription.unsubscribe();
   }, [forms.profile]);
@@ -204,13 +209,14 @@ const ProfileForm = ({user}: ProfileFormProps) => {
           >
             <Textarea.CharCounter current={bioLength} max={200} />
           </Textarea.Root>
-          <span className="text-paragraph-xs text-text-sub-600">
+          <div className="text-paragraph-xs text-text-sub-600 gap-1 flex items-center justify-start">
+            <RiInformationFill className="w-4 h-4" />
             {t('sera_exibido_no_perfil')}
-          </span>
+          </div>
         </div>
       </div>
 
-      <div className="flex flex-col gap-2 w-full">
+      {/* <div className="flex flex-col gap-2 w-full">
         <Button
           className="w-full"
           variant="neutral"
@@ -229,6 +235,30 @@ const ProfileForm = ({user}: ProfileFormProps) => {
         >
           <span className="text-label-sm">{t('pular_etapa')}</span>
         </Button>
+      </div> */}
+
+      <FancyButton.Root
+        className="w-full"
+        variant="neutral"
+        // onClick={handleContinue}
+        // mode="filled"
+        type="submit"
+        disabled={updateProfileMutation.isPending}
+      >
+        <span className="text-label-sm">{t('continuar')}</span>
+      </FancyButton.Root>
+
+      <div className="flex w-full justify-center items-start gap-1">
+        <span className="text-paragraph-sm text-text-sub-600">
+          {t('want_to_fill_later')}
+        </span>
+
+        <span
+          onClick={handleSkip}
+          className="text-paragraph-sm text-text-strong-950 hover:underline decoration-2 underline-offset-2 cursor-pointer"
+        >
+          {t('skip_for_now')}
+        </span>
       </div>
     </form>
   );
