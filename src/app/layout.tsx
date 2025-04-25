@@ -8,6 +8,8 @@ import {Plus_Jakarta_Sans} from 'next/font/google';
 import Providers from '@/app/providers';
 import {getMessages} from 'next-intl/server';
 import '@/app/globals.css';
+import { getQueryClient } from './get-query-client';
+import { getMeByUserId } from '~/trpc/server/handlers/user.handler';
 
 
 
@@ -27,10 +29,15 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 
 export default async function RootLayout({children}: PropsWithChildren) {
   const locale = cookies().get('NEXT_LOCALE')?.value || routing.defaultLocale;
-
+  const queryClient = getQueryClient();
   const session = await auth();
 
   const messages = await getMessages({locale});
+
+  await queryClient.prefetchQuery({
+    queryKey: ['user.me'],
+    queryFn: () => getMeByUserId(session?.user?.id)
+  });
 
   return (
     <html className="h-full" lang={locale}>

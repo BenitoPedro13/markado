@@ -1,7 +1,7 @@
-"use client"
+'use client';
 
-import { QueryClientProvider } from "@tanstack/react-query";
-import { getQueryClient } from "./get-query-client";
+import {QueryClientProvider, useQuery} from '@tanstack/react-query';
+import {getQueryClient} from './get-query-client';
 
 import {NextIntlClientProvider} from 'next-intl';
 import {trpc} from '~/trpc/client';
@@ -18,6 +18,7 @@ import GoogleAuthRedirectHandler from '@/components/GoogleAuthRedirectHandler';
 import AuthStateHandler from '@/components/AuthStateHandler';
 import {TooltipProvider} from '@radix-ui/react-tooltip';
 import {ThemeProvider} from 'next-themes';
+import {getMeByUserId} from '~/trpc/server/handlers/user.handler';
 
 interface ProvidersProps {
   initialSession: Session | null;
@@ -36,7 +37,8 @@ export default function Providers({
 
   const [sessionStore] = useState(() =>
     createSessionStore({
-      user: initialSession?.user || null,
+      session: initialSession,
+      user: null,
       isAuthenticated: !!initialSession?.user,
       isLoading: false
     })
@@ -45,7 +47,11 @@ export default function Providers({
   return (
     <ThemeProvider attribute="class">
       <TooltipProvider>
-        <NextIntlClientProvider messages={messages} locale={locale} timeZone="UTC">
+        <NextIntlClientProvider
+          messages={messages}
+          locale={locale}
+          timeZone="UTC"
+        >
           <SessionProvider session={initialSession}>
             <QueryClientProvider client={queryClient}>
               <TRPCProvider trpcClient={trpcClient} queryClient={queryClient}>

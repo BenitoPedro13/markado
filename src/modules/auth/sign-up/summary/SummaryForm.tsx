@@ -21,7 +21,7 @@ import {getMeByUserId} from '~/trpc/server/handlers/user.handler';
 import {setEditMode, clearNextStep, setOnboardingComplete} from '@/utils/cookie-utils';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTRPC } from '@/utils/trpc';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 
 interface SummaryFormProps {
   user: Awaited<ReturnType<typeof getMeByUserId>>;
@@ -95,6 +95,8 @@ const SummaryForm = ({user, calendars}: SummaryFormProps) => {
   const router = useRouter();
   const trpc = useTRPC();
   const redirectTo = searchParams.get('redirect') || '/';
+  
+  const {data: me, isPending} = useQuery(trpc.user.me.queryOptions())
 
   const completeOnboardingMutation = useMutation(
     trpc.profile.completeOnboarding.mutationOptions({
@@ -154,6 +156,7 @@ const SummaryForm = ({user, calendars}: SummaryFormProps) => {
   const submit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     completeOnboardingMutation.mutate();
+    console.log("me query", me, isPending)
   };
 
   const schedules = availabilityForm.getValues().schedules;
