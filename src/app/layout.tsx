@@ -30,7 +30,8 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 export default async function RootLayout({children}: PropsWithChildren) {
   const locale = cookies().get('NEXT_LOCALE')?.value || routing.defaultLocale;
   const session = await auth();
-  const user = await getMeByUserId(session?.user.id);
+  const userId = session?.user.id || null;
+  const user = userId ? await getMeByUserId(userId) : null;
   const messages = await getMessages({locale});
 
   return (
