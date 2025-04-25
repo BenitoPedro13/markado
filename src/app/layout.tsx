@@ -29,20 +29,14 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 
 export default async function RootLayout({children}: PropsWithChildren) {
   const locale = cookies().get('NEXT_LOCALE')?.value || routing.defaultLocale;
-  const queryClient = getQueryClient();
   const session = await auth();
-
+  const user = await getMeByUserId(session?.user.id);
   const messages = await getMessages({locale});
-
-  await queryClient.prefetchQuery({
-    queryKey: ['user.me'],
-    queryFn: () => getMeByUserId(session?.user?.id)
-  });
 
   return (
     <html className="h-full" lang={locale}>
       <body className={clsx(plusJakartaSans.className, 'flex h-full flex-col')}>
-        <Providers messages={messages} locale={locale} initialSession={session}>
+        <Providers messages={messages} locale={locale} initialSession={session} user={user}>
           <div className="flex min-h-screen flex-col">
             <main className="flex flex-1 flex-col">{children}</main>
           </div>
