@@ -4,7 +4,7 @@ import {hash} from 'bcryptjs';
 import crypto from 'crypto';
 import {Context} from '../context';
 import {ZUserInputSchema} from '../schemas/user.schema';
-import {serializeUser} from '@/lib/utils';
+import {serializeObject} from '@/lib/utils';
 
 export async function getUserHandler(ctx: Context) {
   if (!ctx.session?.user) {
@@ -117,7 +117,7 @@ export async function getMeByUserId(userId: string) {
   // Remove sensitive information
   const {password, ...userWithoutPassword} = user;
 
-  const serializedUser = serializeUser({
+  const serializedUser = serializeObject({
     ...userWithoutPassword,
     hasPassword: !!password,
     emailMd5: crypto.createHash('md5').update(user.email).digest('hex')
