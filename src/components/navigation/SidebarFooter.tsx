@@ -13,16 +13,12 @@ export default function SidebarFooter() {
   const isLoading = useSessionStore((state) => state.isLoading);
   const {isCollapsed, toggleCollapse} = useSidebarStore();
 
-  const trpc = useTRPC()
-
-  const {data: me, isPending} = useQuery(trpc.user.me.queryOptions())
-
-  if (isLoading || isPending) {
+  if (isLoading) {
     return <SidebarFooterSkeleton />;
   }
 
-  if (!user || !me) {
-    return <div>Not signed in</div>;
+  if (!user) {
+    return <SidebarFooterSkeleton />;
   }
 
   return (
@@ -32,11 +28,11 @@ export default function SidebarFooter() {
       >
         <Avatar.Root
           size={isCollapsed ? '48' : '40'}
-          fallbackText={me.name || user.name || ''}
+          fallbackText={user.name || ''}
         >
           <Avatar.Image
-            src={me.image || user.image || ''}
-            alt={me.name || user.name || 'User Icon'}
+            src={user.image || ''}
+            alt={user.name || 'User Icon'}
             
           />
         </Avatar.Root>
@@ -44,10 +40,10 @@ export default function SidebarFooter() {
           className={`flex flex-col items-start ${isCollapsed ? 'hidden' : ''}`}
         >
           <p className="text-text-strong-950 text-label-sm">
-            {me.name ?? user.name}
+            {user.name}
           </p>
           <p className="text-text-sub-600 text-paragraph-xs">
-            {me.email ?? user.email}
+            {user.email}
           </p>
         </div>
       </div>
