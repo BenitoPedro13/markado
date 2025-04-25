@@ -205,6 +205,8 @@
       "descreva_voce": "Tell us about yourself...",
       "sera_exibido_no_perfil": "This will be displayed on your profile.",
       "continuar": "Continue",
+      "want_to_fill_later": "Want to fill this in later?",
+      "skip_for_now": "Skip for now",
       "pular_etapa": "Skip this step",
       "error": "Error",
       "error_updating_profile": "There was an error updating your profile. Please try again.",
