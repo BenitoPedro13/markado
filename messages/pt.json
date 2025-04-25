@@ -205,6 +205,8 @@
       "descreva_voce": "Descreva você...",
       "sera_exibido_no_perfil": "Ele será exibido no seu perfil.",
       "continuar": "Continuar",
+      "want_to_fill_later": "Quer preencher depois?",
+      "skip_for_now": "Pular etapa",
       "pular_etapa": "Pular etapa",
       "error": "Erro",
       "error_updating_profile": "Ocorreu um erro ao atualizar seu perfil. Por favor, tente novamente.",
@@ -305,5 +307,12 @@
     "default_schedule_name": "Agendamento Padrão",
     "form_submission_error": "Erro ao enviar formulário",
     "saving": "Salvando..."
+  },
+  "SignUpStepper": {
+    "password": "Senha",
+    "personal": "Pessoal",
+    "connect": "Conectar",
+    "availability": "Disponibilidade",
+    "finalization": "Finalização"
   }
 }

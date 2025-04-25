@@ -207,12 +207,12 @@ const CalendarForm = ({calendars, userEmail}: CalendarFormProps) => {
       selectCalendarMutation.mutate(
         {calendarId: selectedCalendarId},
         {
-          onSuccess: () => goToStep('/sign-up/conferencing'),
-          onError: () => goToStep('/sign-up/conferencing') // Continue anyway if selection fails
+          onSuccess: () => goToStep('/sign-up/availability'),
+          onError: () => goToStep('/sign-up/availability') // Continue anyway if selection fails
         }
       );
     } else {
-      goToStep('/sign-up/conferencing');
+      goToStep('/sign-up/availability');
     }
   };
 
@@ -223,7 +223,7 @@ const CalendarForm = ({calendars, userEmail}: CalendarFormProps) => {
     // Set the calendar step completion cookie
     setStepComplete('calendar');
     
-    goToStep('/sign-up/conferencing');
+    goToStep('/sign-up/availability');
   };
 
   return (

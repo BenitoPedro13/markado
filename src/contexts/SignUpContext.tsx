@@ -203,9 +203,9 @@ export function SignUpProvider({
     resolver: zodResolver(signUpPersonalFormSchema),
     mode: 'onChange',
     defaultValues: {
-      name: '',
-      username: '',
-      timeZone: ''
+      name: userData?.name || '',
+      username: userData?.username || '',
+      timeZone: userData?.timeZone || ''
     }
   });
   const availabilityForm = useForm<SignUpAvailabilityFormData>({
@@ -250,8 +250,8 @@ export function SignUpProvider({
     resolver: zodResolver(signUpProfileFormSchema),
     mode: 'onChange',
     defaultValues: {
-      biography: '',
-      image: ''
+      biography: userData?.biography || '',
+      image: userData?.image || ''
     }
   });
 

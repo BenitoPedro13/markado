@@ -31,6 +31,7 @@ const Context = createContext<ContextType>({
 
 const Provider = ({children}: PropsWithChildren) => {
   const pathname = usePathname();
+  const t = useTranslations('SignUpStepper');
 
   const isInSignUpFlow =
     pathname.startsWith('/sign-up') &&
@@ -38,11 +39,11 @@ const Provider = ({children}: PropsWithChildren) => {
     pathname !== '/sign-up/email';
 
   const steps: {path: string; label: string}[] = [
-    {path: '/sign-up/password', label: 'Senha'},
-    {path: '/sign-up/personal', label: 'Pessoal'},
-    {path: '/sign-up/calendar', label: 'Conectar'},
-    {path: '/sign-up/availability', label: 'Disponibilidade'},
-    {path: '/sign-up/ending', label: 'Finalização'}
+    {path: '/sign-up/password', label: t('password')},
+    {path: '/sign-up/personal', label: t('personal')},
+    {path: '/sign-up/calendar', label: t('connect')},
+    {path: '/sign-up/availability', label: t('availability')},
+    {path: '/sign-up/profile', label: t('finalization')}
   ];
 
   const getStepState = (stepPath: string) => {
@@ -52,11 +53,17 @@ const Provider = ({children}: PropsWithChildren) => {
       '/sign-up/personal',
       '/sign-up/calendar',
       '/sign-up/availability',
-      '/sign-up/ending'
+      '/sign-up/profile',
+      '/sign-up/summary'
     ];
 
     const currentIndex = stepOrder.indexOf(pathname);
     const stepIndex = stepOrder.indexOf(stepPath);
+
+    // Special case for profile and summary steps
+    if (stepPath === '/sign-up/profile' && (pathname === '/sign-up/profile' || pathname === '/sign-up/summary')) {
+      return 'active';
+    }
 
     if (stepIndex < currentIndex) return 'completed';
     if (stepIndex === currentIndex) return 'active';
@@ -90,7 +97,7 @@ const Header = () => {
         </Link>
 
         {isInSignUpFlow && (
-          <HorizontalStepper.Root className="gap-1 flex-grow flex justify-center">
+          <HorizontalStepper.Root className="absolute left-1/2 -translate-x-1/2 gap-1 flex-grow flex justify-center">
             {steps.map((s, index) => {
               const state = getStepState(s.path);
               return (
@@ -98,8 +105,8 @@ const Header = () => {
                   {index > 0 && (
                     <HorizontalStepper.SeparatorIcon className="mx-1" />
                   )}
-                  <HorizontalStepper.Item state={state}>
-                    <HorizontalStepper.ItemIndicator>
+                  <HorizontalStepper.Item state={state} className="">
+                    <HorizontalStepper.ItemIndicator className="">
                       {index + 1}
                     </HorizontalStepper.ItemIndicator>
                     <span>{s.label}</span>
@@ -160,9 +167,6 @@ export default function AuthLayout({children}: PropsWithChildren) {
   const {pathname, isInSignUpFlow, steps, getStepState} = useAuthContext();
   const t = useTranslations('SignInPage');
 
-  useEffect(() => {
-    console.log(pathname, isInSignUpFlow);
-  }, [pathname, isInSignUpFlow]);
   return (
     <Provider>
       <Header />

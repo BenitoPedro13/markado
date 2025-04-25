@@ -5,6 +5,7 @@ import {
   createContext,
   useRef,
   useContext,
+  useEffect
 } from 'react';
 import {StoreApi, useStore} from 'zustand';
 
@@ -35,23 +36,6 @@ export const SessionStoreProvider = ({
   const storeRef = useRef(
     initialSession || createSessionStore(defaultInitState)
   );
-
-  // if (storeRef.current === null) {
-  //   storeRef.current = createSessionStore();
-  // }
-
-  // // Initialize the store with the session from auth.js
-  // useEffect(() => {
-  //   const initStore = async () => {
-  //     const store = storeRef.current;
-  //     if (store) {
-  //       const initState = await initSessionStore();
-  //       store.setState(initState);
-  //     }
-  //   };
-
-  //   initStore();
-  // }, []);
 
   return (
     <SessionStoreContext.Provider value={storeRef.current}>
