@@ -94,9 +94,7 @@ const SummaryForm = ({user, calendars}: SummaryFormProps) => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const trpc = useTRPC();
-  const redirectTo = searchParams.get('redirect') || '/';
-  
-  const {data: me, isPending} = useQuery(trpc.user.me.queryOptions())
+  const redirectTo = searchParams.get('redirect') || '/services';
 
   const completeOnboardingMutation = useMutation(
     trpc.profile.completeOnboarding.mutationOptions({
@@ -104,7 +102,7 @@ const SummaryForm = ({user, calendars}: SummaryFormProps) => {
         // Set the onboarding complete cookie when the DB is updated
         setOnboardingComplete();
         // Redirect to the original destination or home
-        router.push(redirectTo);
+        router.push('/');
       }
     })
   );
@@ -156,7 +154,6 @@ const SummaryForm = ({user, calendars}: SummaryFormProps) => {
   const submit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     completeOnboardingMutation.mutate();
-    console.log("me query", me, isPending)
   };
 
   const schedules = availabilityForm.getValues().schedules;
