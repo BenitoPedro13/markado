@@ -99,7 +99,7 @@ const ProfileForm = ({user}: ProfileFormProps) => {
   };
 
   const handleSkip = () => {
-    goToStep('/sign-up/ending');
+    goToStep('/sign-up/summary');
   };
 
   const submit = async (e: FormEvent<HTMLFormElement>) => {
