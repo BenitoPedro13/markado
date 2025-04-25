@@ -26,5 +26,10 @@ export default async function SignUpLayout({children}: PropsWithChildren ) {
 
   // User is authenticated, get their data
   const me = await getMeByUserId(session.user.id);
+
+  if (me?.completedOnboarding) {
+    return redirect('/services');
+  }
+
   return <SignUpProvider initialUser={me}>{children}</SignUpProvider>;
 }
