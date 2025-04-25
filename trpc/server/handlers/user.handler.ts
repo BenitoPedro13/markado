@@ -4,6 +4,7 @@ import {hash} from 'bcryptjs';
 import crypto from 'crypto';
 import {Context} from '../context';
 import {ZUserInputSchema} from '../schemas/user.schema';
+import {serializeUser} from '@/lib/utils';
 
 export async function getUserHandler(ctx: Context) {
   if (!ctx.session?.user) {
@@ -116,11 +117,13 @@ export async function getMeByUserId(userId: string) {
   // Remove sensitive information
   const {password, ...userWithoutPassword} = user;
 
-  return {
+  const serializedUser = serializeUser({
     ...userWithoutPassword,
     hasPassword: !!password,
     emailMd5: crypto.createHash('md5').update(user.email).digest('hex')
-  };
+  });
+
+  return serializedUser;
 }
 
 export async function getUserByUsernameHandler(ctx: Context, username: string) {
@@ -141,7 +144,7 @@ export async function getUserByUsernameHandler(ctx: Context, username: string) {
   if (!user) {
     throw new TRPCError({
       code: 'NOT_FOUND',
-      message: `Usuário não encontrado com o nome: ${username}`
+      message: 'User not found'
     });
   }
 

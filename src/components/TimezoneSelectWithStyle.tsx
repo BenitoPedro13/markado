@@ -56,17 +56,6 @@ export function TimezoneSelectWithStyle({
   autoDetect = true,
   defaultValue = ''
 }: TimezoneSelectWithStyleProps) {
-  const trpc = useTRPC();
-  const {data = [], isPending} = useQuery(
-    trpc.cityTimezones.list.queryOptions(undefined, {
-      trpc: {
-        context: {
-          skipBatch: true
-        }
-      }
-    })
-  );
-
   const {options, parseTimezone} = useTimezoneSelect({labelStyle});
   const [currentTime, setCurrentTime] = useState<string>('');
   const [isDetecting, setIsDetecting] = useState(false);
@@ -234,7 +223,7 @@ export function TimezoneSelectWithStyle({
           </span>
         </Select.Trigger>
         <Select.Content>
-          {isLoading || isPending || isDetecting ? (
+          {isLoading || isDetecting ? (
             <div className="p-2 text-center text-text-sub-600">
               {isDetecting ? 'Detecting your timezone...' : 'Loading timezones...'}
             </div>
