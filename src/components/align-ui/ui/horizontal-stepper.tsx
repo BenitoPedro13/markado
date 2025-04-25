@@ -54,33 +54,33 @@ const horizontalStepperItemVariants = tv({
   slots: {
     root: [
       // base
-      'flex items-center gap-2 text-paragraph-sm',
+      'flex items-center gap-2 text-paragraph-sm'
     ],
     indicator: [
       // base
-      'flex size-5 shrink-0 items-center justify-center rounded-full text-label-xs',
-    ],
+      'flex size-5 shrink-0 items-center justify-center rounded-full text-label-xs'
+    ]
   },
   variants: {
     state: {
       completed: {
         root: 'text-text-strong-950',
-        indicator: 'bg-success-base text-static-white',
+        indicator: 'bg-success-base text-static-white'
       },
       active: {
         root: 'text-text-strong-950',
-        indicator: 'bg-primary-base text-static-white',
+        indicator: 'bg-bg-soft-200 text-text-strong-950'
       },
       default: {
         root: 'text-text-sub-600',
         indicator:
-          'bg-bg-white-0 text-text-sub-600 ring-1 ring-inset ring-stroke-soft-200',
-      },
-    },
+          'bg-bg-white-0 text-text-sub-600 ring-1 ring-inset ring-stroke-soft-200'
+      }
+    }
   },
   defaultVariants: {
-    state: 'default',
-  },
+    state: 'default'
+  }
 });
 
 type HorizontalStepperItemSharedProps = VariantProps<
