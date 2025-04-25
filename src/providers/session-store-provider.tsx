@@ -14,9 +14,6 @@ import {
   createSessionStore,
   defaultInitState
 } from '@/stores/session-store';
-import {getSession} from 'next-auth/react';
-import {useTRPC} from '@/utils/trpc';
-import {useQuery} from '@tanstack/react-query';
 
 export type SessionStoreApi = ReturnType<typeof createSessionStore>;
 
@@ -39,37 +36,6 @@ export const SessionStoreProvider = ({
   const storeRef = useRef(
     initialSession || createSessionStore(defaultInitState)
   );
-
-  const trpc = useTRPC();
-  const {data: user, isLoading: isUserLoading} = useQuery(trpc.user.me.queryOptions());
-
-
-  // if (storeRef.current === null) {
-  //   storeRef.current = createSessionStore();
-  // }
-
-  // Initialize the store with the session from auth.js
-  useEffect(() => {
-    const initStore = async () => {
-      const store = storeRef.current;
-      if (store && initialSession?.getState().user === null && !isUserLoading) {
-        const session = await getSession();
-
-        console.log('user', user);
-
-        const initState = {
-          session: session,
-          user: user || null,
-          isAuthenticated: !!session,
-          isLoading: false
-        };
-
-        store.setState(initState);
-      }
-    };
-
-    initStore();
-  }, [isUserLoading]);
 
   return (
     <SessionStoreContext.Provider value={storeRef.current}>
