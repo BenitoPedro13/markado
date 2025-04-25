@@ -79,9 +79,15 @@ const ProfileForm = ({user}: ProfileFormProps) => {
         return;
       }
 
-      // Valid image, set preview and form value
-      setPreviewImage(objectUrl);
-      forms.profile.setValue('image', objectUrl);
+      // Convert the file to base64
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+        // Valid image, set preview and form value
+        setPreviewImage(objectUrl);
+        forms.profile.setValue('image', base64String);
+      };
+      reader.readAsDataURL(file);
     };
 
     imgElement.src = objectUrl;
@@ -150,7 +156,7 @@ const ProfileForm = ({user}: ProfileFormProps) => {
                 <Avatar.Image
                   src={previewImage || user?.image || ''}
                   alt={user?.name || 'User Name'}
-                  useNextImage={true}
+                  useNextImage={!previewImage}
                 />
               </Avatar.Root>
             </div>
