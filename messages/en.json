@@ -305,5 +305,12 @@
     "default_schedule_name": "Default Schedule",
     "form_submission_error": "Error submitting form",
     "saving": "Saving..."
+  },
+  "SignUpStepper": {
+    "password": "Password",
+    "personal": "Personal",
+    "connect": "Connect",
+    "availability": "Availability",
+    "finalization": "Finalization"
   }
 }

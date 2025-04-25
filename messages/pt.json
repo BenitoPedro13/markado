@@ -305,5 +305,12 @@
     "default_schedule_name": "Agendamento Padrão",
     "form_submission_error": "Erro ao enviar formulário",
     "saving": "Salvando..."
+  },
+  "SignUpStepper": {
+    "password": "Senha",
+    "personal": "Pessoal",
+    "connect": "Conectar",
+    "availability": "Disponibilidade",
+    "finalization": "Finalização"
   }
 }
