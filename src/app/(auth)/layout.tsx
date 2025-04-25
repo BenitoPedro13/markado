@@ -98,8 +98,8 @@ const Header = () => {
                   {index > 0 && (
                     <HorizontalStepper.SeparatorIcon className="mx-1" />
                   )}
-                  <HorizontalStepper.Item state={state}>
-                    <HorizontalStepper.ItemIndicator>
+                  <HorizontalStepper.Item state={state} className="">
+                    <HorizontalStepper.ItemIndicator className="">
                       {index + 1}
                     </HorizontalStepper.ItemIndicator>
                     <span>{s.label}</span>
