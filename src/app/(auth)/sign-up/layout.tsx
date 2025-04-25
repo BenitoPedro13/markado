@@ -13,6 +13,14 @@ export default async function SignUpLayout({children}: PropsWithChildren ) {
   // Check if we're on the main sign-up page or email page
   const isEmailPage = pathname.includes('/sign-up/email');
   const isRootSignUpPage = pathname === '/sign-up';
+  
+  // Check if we're in the onboarding flow
+  const isOnboardingFlow = pathname.includes('/sign-up/personal') || 
+                          pathname.includes('/sign-up/calendar') || 
+                          pathname.includes('/sign-up/availability') || 
+                          pathname.includes('/sign-up/profile') || 
+                          pathname.includes('/sign-up/summary') || 
+                          pathname.includes('/sign-up/ending');
 
   // Allow unauthenticated users to access the main sign-up or email page
   if ((isEmailPage || isRootSignUpPage) && !session?.user?.id) {
@@ -27,7 +35,8 @@ export default async function SignUpLayout({children}: PropsWithChildren ) {
   // User is authenticated, get their data
   const me = await getMeByUserId(session.user.id);
 
-  if (me?.completedOnboarding) {
+  // If user has completed onboarding and is not in the onboarding flow, redirect to services
+  if (me?.completedOnboarding && !isOnboardingFlow) {
     return redirect('/services');
   }
 

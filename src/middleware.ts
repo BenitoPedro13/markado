@@ -46,6 +46,16 @@ const noOnboardingRoutes = [
   '/locales'
 ];
 
+// Define onboarding flow routes
+const onboardingFlowRoutes = [
+  '/sign-up/personal',
+  '/sign-up/calendar',
+  '/sign-up/availability',
+  '/sign-up/profile',
+  '/sign-up/summary',
+  '/sign-up/ending'
+];
+
 function getLocale(request: NextRequest): string {
   // Check cookie first
   const cookieLocale = request.cookies.get('NEXT_LOCALE')?.value;
@@ -109,53 +119,18 @@ export async function middleware(request: NextRequest) {
       pathname.startsWith(route)
     );
 
-    // Check if we're in edit mode (user is editing their data)
-    const isEditMode = request.cookies.get('edit_mode')?.value === 'true';
+    // Check if we're in the onboarding flow
+    const isOnboardingFlow = onboardingFlowRoutes.some((route) =>
+      pathname.startsWith(route)
+    );
     
-    // Only check onboarding status for routes that require it and for /sign-up/personal
-    if (requiresOnboarding && !pathname.startsWith('/sign-up/personal')) {
-      // Check for a temporary next_step cookie that allows one-time navigation to a specific step
-      const nextStepCookie = request.cookies.get('next_step')?.value;
-      
-      if (nextStepCookie && pathname === nextStepCookie) {
-        console.log(`[Middleware] Found next_step cookie for: ${nextStepCookie}, allowing access`);
-        
-        // Create a response that clears the cookie (it's one-time use only)
-        const response = NextResponse.next();
-        response.cookies.set('next_step', '', { maxAge: 0, path: '/' });
-        
-        return response;
-      }
-      
-      // Check for step-specific completion cookies
-      const personalStepComplete = request.cookies.get('personal_step_complete')?.value === 'true';
-      const calendarStepComplete = request.cookies.get('calendar_step_complete')?.value === 'true';
-      const availabilityStepComplete = request.cookies.get('availability_step_complete')?.value === 'true';
-      
-      // If in edit mode, allow access to any sign-up step
-      if (isEditMode && pathname.startsWith('/sign-up/')) {
-        console.log(`[Middleware] Edit mode active, allowing access to ${pathname}`);
-        return NextResponse.next();
-      }
-      
-      // Allow access to calendar if personal is complete
-      if (pathname === '/sign-up/calendar' && personalStepComplete) {
-        console.log(`[Middleware] Personal step is complete, allowing access to calendar`);
-        return NextResponse.next();
-      }
-      
-      // Allow access to availability if calendar is complete
-      if (pathname === '/sign-up/availability' && calendarStepComplete) {
-        console.log(`[Middleware] Calendar step is complete, allowing access to availability`);
-        return NextResponse.next();
-      }
-      
-      // Allow access to ending if availability is complete
-      if (pathname === '/sign-up/ending' && availabilityStepComplete) {
-        console.log(`[Middleware] Availability step is complete, allowing access to ending`);
-        return NextResponse.next();
-      }
-      
+    // If we're in the onboarding flow, allow access
+    if (isOnboardingFlow) {
+      return response;
+    }
+    
+    // Only check onboarding status for routes that require it and not in onboarding flow
+    if (requiresOnboarding) {
       // Get the onboarding status from the cookie
       const onboardingComplete =
         request.cookies.get('onboarding_complete')?.value === 'true';
