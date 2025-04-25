@@ -18,10 +18,10 @@ import GoogleAuthRedirectHandler from '@/components/GoogleAuthRedirectHandler';
 import AuthStateHandler from '@/components/AuthStateHandler';
 import {TooltipProvider} from '@radix-ui/react-tooltip';
 import {ThemeProvider} from 'next-themes';
-import {getMeByUserId} from '~/trpc/server/handlers/user.handler';
-
+import {User} from '~/prisma/app/generated/prisma/client';
 interface ProvidersProps {
   initialSession: Session | null;
+  user: User | null;
   messages: Record<string, any>;
   locale: string;
 }
@@ -30,7 +30,8 @@ export default function Providers({
   children,
   initialSession,
   messages,
-  locale
+  locale,
+  user
 }: React.PropsWithChildren<ProvidersProps>) {
   const queryClient = getQueryClient();
   const [trpcClient] = useState(() => trpc);
@@ -38,7 +39,7 @@ export default function Providers({
   const [sessionStore] = useState(() =>
     createSessionStore({
       session: initialSession,
-      user: null,
+      user: user,
       isAuthenticated: !!initialSession?.user,
       isLoading: false
     })
