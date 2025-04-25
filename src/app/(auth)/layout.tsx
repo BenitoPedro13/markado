@@ -97,7 +97,7 @@ const Header = () => {
         </Link>
 
         {isInSignUpFlow && (
-          <HorizontalStepper.Root className="gap-1 flex-grow flex justify-center">
+          <HorizontalStepper.Root className="absolute left-1/2 -translate-x-1/2 gap-1 flex-grow flex justify-center">
             {steps.map((s, index) => {
               const state = getStepState(s.path);
               return (
