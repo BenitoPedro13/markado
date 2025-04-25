@@ -1,7 +1,7 @@
-"use client"
+'use client';
 
-import { QueryClientProvider } from "@tanstack/react-query";
-import { getQueryClient } from "./get-query-client";
+import {QueryClientProvider, useQuery} from '@tanstack/react-query';
+import {getQueryClient} from './get-query-client';
 
 import {NextIntlClientProvider} from 'next-intl';
 import {trpc} from '~/trpc/client';
@@ -18,9 +18,10 @@ import GoogleAuthRedirectHandler from '@/components/GoogleAuthRedirectHandler';
 import AuthStateHandler from '@/components/AuthStateHandler';
 import {TooltipProvider} from '@radix-ui/react-tooltip';
 import {ThemeProvider} from 'next-themes';
-
+import {User} from '~/prisma/app/generated/prisma/client';
 interface ProvidersProps {
   initialSession: Session | null;
+  user: User | null;
   messages: Record<string, any>;
   locale: string;
 }
@@ -29,14 +30,16 @@ export default function Providers({
   children,
   initialSession,
   messages,
-  locale
+  locale,
+  user
 }: React.PropsWithChildren<ProvidersProps>) {
   const queryClient = getQueryClient();
   const [trpcClient] = useState(() => trpc);
 
   const [sessionStore] = useState(() =>
     createSessionStore({
-      user: initialSession?.user || null,
+      session: initialSession,
+      user: user,
       isAuthenticated: !!initialSession?.user,
       isLoading: false
     })
@@ -45,7 +48,11 @@ export default function Providers({
   return (
     <ThemeProvider attribute="class">
       <TooltipProvider>
-        <NextIntlClientProvider messages={messages} locale={locale} timeZone="UTC">
+        <NextIntlClientProvider
+          messages={messages}
+          locale={locale}
+          timeZone="UTC"
+        >
           <SessionProvider session={initialSession}>
             <QueryClientProvider client={queryClient}>
               <TRPCProvider trpcClient={trpcClient} queryClient={queryClient}>

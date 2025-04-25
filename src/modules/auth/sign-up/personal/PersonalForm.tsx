@@ -27,20 +27,6 @@ const PersonalForm = ({user}: PersonalFormProps) => {
   const router = useRouter();
   const {forms, goToStep} = useSignUp();
   const t = useTranslations('SignUpPage.PersonalForm');
-  const formInitializedRef = useRef(false);
-
-  // Initialize form values from user data if not already done
-  useEffect(() => {
-    if (user && !formInitializedRef.current) {
-      console.log('[PersonalForm] Initializing form with user data:', user.name, user.username, user.timeZone);
-      forms.personal.reset({
-        name: user.name || '',
-        username: user.username || '',
-        timeZone: user.timeZone || ''
-      });
-      formInitializedRef.current = true;
-    }
-  }, [user, forms.personal]);
 
   // New mutation to update onboarding progress
   const updateOnboardingProgressMutation = useMutation(
@@ -48,7 +34,7 @@ const PersonalForm = ({user}: PersonalFormProps) => {
       onSuccess: () => {
         // Set a specific cookie to bypass middleware on the next step ONLY
         console.log('[PersonalForm] Setting temporary next_step cookie');
-        Cookies.set('next_step', '/sign-up/calendar', { path: '/' });
+        setNextStep('/sign-up/calendar');
         
         // Finally, navigate to next step
         console.log('[PersonalForm] Profile and progress updated, navigating to calendar step');
@@ -83,14 +69,6 @@ const PersonalForm = ({user}: PersonalFormProps) => {
       }
     })
   );
-  
-  const completeOnboardingMutation = useMutation(
-    trpc.profile.completeOnboarding.mutationOptions({
-      onSuccess: () => {
-        router.push('/');
-      }
-    })
-  );
 
   const submit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -120,8 +98,8 @@ const PersonalForm = ({user}: PersonalFormProps) => {
   };
 
   const timeZone = forms.personal.watch('timeZone');
-  const name = forms.personal.watch('name');
-  const username = forms.personal.watch('username');
+  // const name = forms.personal.watch('name');
+  // const username = forms.personal.watch('username');
 
   return (
     <form

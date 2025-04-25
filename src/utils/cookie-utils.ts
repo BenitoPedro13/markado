@@ -21,7 +21,7 @@ const DEFAULT_COOKIE_OPTIONS = {
   path: '/'
 };
 
-export type StepType = 'personal' | 'calendar' | 'conferencing' | 'availability' | 'profile';
+export type StepType = 'personal' | 'calendar' | 'availability' | 'profile';
 
 /**
  * Set the edit mode cookie to allow navigation to previous steps
@@ -62,9 +62,18 @@ export const clearNextStep = () => {
 };
 
 /**
- * Set the onboarding complete cookie
+ * Set the onboarding complete cookie and clear all onboarding-related cookies
  */
 export const setOnboardingComplete = () => {
+  // Clear all onboarding step cookies
+  Cookies.remove(COOKIE_NAMES.NEXT_STEP, { path: '/' });
+  Cookies.remove(COOKIE_NAMES.EDIT_MODE, { path: '/' });
+  Cookies.remove(COOKIE_NAMES.PERSONAL_STEP_COMPLETE, { path: '/' });
+  Cookies.remove(COOKIE_NAMES.CALENDAR_STEP_COMPLETE, { path: '/' });
+  Cookies.remove(COOKIE_NAMES.AVAILABILITY_STEP_COMPLETE, { path: '/' });
+  Cookies.remove(COOKIE_NAMES.PROFILE_STEP_COMPLETE, { path: '/' });
+
+  // Set the onboarding complete cookie
   Cookies.set(COOKIE_NAMES.ONBOARDING_COMPLETE, 'true', DEFAULT_COOKIE_OPTIONS);
 };
 

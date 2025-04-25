@@ -1,9 +1,10 @@
+import {prisma} from '@/lib/prisma';
 import {TRPCError} from '@trpc/server';
-import {Context} from '../context';
-import {ZUserInputSchema} from '../schemas/user.schema';
 import {hash} from 'bcryptjs';
 import crypto from 'crypto';
-import {prisma} from '@/lib/prisma';
+import {Context} from '../context';
+import {ZUserInputSchema} from '../schemas/user.schema';
+import {serializeUser} from '@/lib/utils';
 
 export async function getUserHandler(ctx: Context) {
   if (!ctx.session?.user) {
@@ -116,9 +117,39 @@ export async function getMeByUserId(userId: string) {
   // Remove sensitive information
   const {password, ...userWithoutPassword} = user;
 
-  return {
+  const serializedUser = serializeUser({
     ...userWithoutPassword,
     hasPassword: !!password,
+    emailMd5: crypto.createHash('md5').update(user.email).digest('hex')
+  });
+
+  return serializedUser;
+}
+
+export async function getUserByUsernameHandler(ctx: Context, username: string) {
+  const user = await ctx.prisma.user.findFirst({
+    where: {
+      username
+    },
+    include: {
+      accounts: {
+        select: {
+          provider: true,
+          providerAccountId: true
+        }
+      }
+    }
+  });
+
+  if (!user) {
+    throw new TRPCError({
+      code: 'NOT_FOUND',
+      message: 'User not found'
+    });
+  }
+
+  return {
+    ...user,
     emailMd5: crypto.createHash('md5').update(user.email).digest('hex')
   };
 }

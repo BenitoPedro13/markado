@@ -123,7 +123,7 @@ const AvailabilityPage = () => {
       setStepComplete('availability');
 
       // Continue to the next step
-      goToStep('/sign-up/summary');
+      goToStep('/sign-up/profile');
       notification({
         title: t('schedule_created_success'),
         variant: 'stroke',
