@@ -14,7 +14,22 @@ import {
   RiCodeLine,
   RiSaveLine,
   RiSaveFill,
-  RiSettings4Line
+  RiSettings4Line,
+  RiUser3Line,
+  RiUser3Fill,
+  RiGlobalLine,
+  RiGlobalFill,
+  RiCalendarFill,
+  RiVideoLine,
+  RiVideoFill,
+  RiLockLine,
+  RiLockFill,
+  RiVipCrownLine,
+  RiVipCrownFill,
+  RiWalletLine,
+  RiWalletFill,
+  RiStoreLine,
+  RiStoreFill
 } from '@remixicon/react';
 import React, {useState} from 'react';
 import * as Button from '@/components/align-ui/ui/button';
@@ -26,37 +41,35 @@ import * as ButtonGroup from '@/components/align-ui/ui/button-group';
 import * as Tooltip from '@/components/align-ui/ui/tooltip';
 import { useRouter } from 'next/navigation';
 import { DatepickerRangeDemo } from '@/components/align-ui/daterange';
+
 type HeaderVariant = 'scheduling' | 'availability' | 'services' | 'reports' | 'settings';
 type HeaderMode = 'default' | 'inside';
 
 type HeaderProps = {
   variant?: HeaderVariant;
   mode?: HeaderMode;
-  title?: string; // Título personalizado para modo inside
-  subtitle?: string; // Subtítulo opcional para modo inside (ex: "seg. - sex., 9:00 até 17:00")
-  icon?: React.ReactNode; // Ícone personalizado para a variante settings
-};
-
-type SingleDatepickerProps = {
-    defaultValue?: Date;
-    value?: Date;
-    onChange?: (date: Date | undefined) => void;
+  title?: string;
+  subtitle?: string;
+  icon?: React.ReactNode;
+  selectedMenuItem?: {
+    value: string;
+    label: string;
+    iconLine: React.ElementType;
+    iconFill: React.ElementType;
   };
-   
-
-
+};
 
 function Header({
   variant = 'scheduling',
   mode = 'default',
   title,
   subtitle,
-  icon
+  icon,
+  selectedMenuItem
 }: HeaderProps) {
   const {notification} = useNotification();
   const [open, setOpen] = useState(false);
   const router = useRouter();
-    
 
   if (mode === 'inside') {
     return (
@@ -116,9 +129,6 @@ function Header({
                       Criar embed
                     </Tooltip.Content>
                   </Tooltip.Root>
-
-                  
-                  
                 </ButtonGroup.Root>
               </>
             )}
@@ -189,6 +199,17 @@ function Header({
   }
 
   const getHeaderContent = () => {
+    if (selectedMenuItem) {
+      const IconLine = selectedMenuItem.iconLine;
+      const IconFill = selectedMenuItem.iconFill;
+      return {
+        icon: <IconFill className="text-bg-strong-950" />,
+        title: selectedMenuItem.label,
+        description: getDescriptionForMenuItem(selectedMenuItem.value),
+        buttons: getButtonsForMenuItem(selectedMenuItem.value)
+      };
+    }
+
     switch (variant) {
       case 'settings':
         return {
@@ -197,7 +218,10 @@ function Header({
           description: 'Gerencie as configurações do seu projeto.',
           buttons: (
             <div className="settings">
-              
+              <FancyButton.Root variant="neutral">
+                <FancyButton.Icon as={RiSaveFill} />
+                Salvar
+              </FancyButton.Root>
             </div>
           )
         };
@@ -209,14 +233,10 @@ function Header({
             'Visualize e gerencie todos os agendamentos do seu calendário.',
           buttons: (
             <div className="scheduling">
-              {/* <Button.Root variant="neutral" mode="stroke">
-                <Button.Icon as={RiCalendarLine} />
-                Calendário
-              </Button.Root>
               <FancyButton.Root variant="neutral">
                 <FancyButton.Icon as={RiAddLine} />
                 Novo Agendamento
-              </FancyButton.Root> */}
+              </FancyButton.Root>
             </div>
           )
         };
@@ -227,22 +247,6 @@ function Header({
           description: 'Configure seus horários disponíveis para agendamentos.',
           buttons: (
             <div className="flex justify-start items-center gap-3 availability">
-              {/* <SegmentedControl.Root defaultValue='system'>
-        <SegmentedControl.List>
-          <SegmentedControl.Trigger value='light'>
-            
-            Todos
-          </SegmentedControl.Trigger>
-          <SegmentedControl.Trigger value='dark'>
-            
-            Meu
-          </SegmentedControl.Trigger>
-          <SegmentedControl.Trigger value='system'>
-            
-            Equipe
-          </SegmentedControl.Trigger>
-        </SegmentedControl.List>
-      </SegmentedControl.Root> */}
               <FancyButton.Root variant="neutral">
                 <FancyButton.Icon as={RiAddLine} />
                 Criar Disponibilidade
@@ -300,6 +304,52 @@ function Header({
             </div>
           )
         };
+    }
+  };
+
+  const getDescriptionForMenuItem = (value: string) => {
+    switch (value) {
+      case 'profile':
+        return 'Gerencie suas informações pessoais e preferências.';
+      case 'business':
+        return 'Configure as informações da sua página de negócio.';
+      case 'general':
+        return 'Ajuste as configurações gerais do seu projeto.';
+      case 'calendars':
+        return 'Gerencie seus calendários e integrações.';
+      case 'conference':
+        return 'Configure suas opções de videoconferência.';
+      case 'privacy':
+        return 'Gerencie suas configurações de privacidade e segurança.';
+      case 'subscription':
+        return 'Visualize e gerencie sua assinatura.';
+      case 'payment':
+        return 'Configure seus métodos de pagamento.';
+      default:
+        return 'Gerencie suas configurações.';
+    }
+  };
+
+  const getButtonsForMenuItem = (value: string) => {
+    switch (value) {
+      case 'profile':
+      case 'business':
+      case 'general':
+      case 'calendars':
+      case 'conference':
+      case 'privacy':
+      case 'subscription':
+      case 'payment':
+        return (
+          <div className="settings">
+            <FancyButton.Root variant="neutral">
+              <FancyButton.Icon as={RiSaveFill} />
+              Salvar
+            </FancyButton.Root>
+          </div>
+        );
+      default:
+        return null;
     }
   };
 
