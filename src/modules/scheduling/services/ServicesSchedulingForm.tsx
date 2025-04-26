@@ -2,11 +2,17 @@
 
 import * as Avatar from '@/components/align-ui/ui/avatar';
 import * as Badge from '@/components/align-ui/ui/badge';
-import { useScheduling } from '@/contexts/SchedulingContext';
-import { services as initialServices } from '@/data/services';
-import { cn } from '@/utils/cn';
-import { RiArrowRightSLine, RiTimeLine } from '@remixicon/react';
+import {useScheduling} from '@/contexts/SchedulingContext';
+import {services as initialServices} from '@/data/services';
+import {cn} from '@/utils/cn';
+import {RiArrowRightSLine, RiTimeLine, RiFacebookLine, RiInstagramLine, RiTwitterXLine, RiLinkedinLine, RiGlobalLine, RiLinkedinFill, RiFacebookFill  } from '@remixicon/react';
 import Link from 'next/link';
+import { useBusiness } from '@/components/settings/business/Business';
+import { ServiceBadgeColor } from '@/types/service';
+import type { VariantProps } from '@/utils/tv';
+import { badgeVariants } from '@/components/align-ui/ui/badge';
+
+type BadgeColor = NonNullable<VariantProps<typeof badgeVariants>['color']>;
 
 const formatDuration = (minutes: number): string => {
   if (minutes >= 24 * 60) {
@@ -28,8 +34,36 @@ const formatPrice = (price: number): string => {
   }).format(price);
 };
 
+const mapServiceColorToBadgeColor = (color: ServiceBadgeColor | undefined): BadgeColor => {
+  switch (color) {
+    case 'faded':
+      return 'gray';
+    case 'information':
+      return 'blue';
+    case 'warning':
+      return 'yellow';
+    case 'error':
+      return 'red';
+    case 'success':
+      return 'green';
+    case 'away':
+      return 'orange';
+    case 'feature':
+      return 'purple';
+    case 'verified':
+      return 'sky';
+    case 'highlighted':
+      return 'pink';
+    case 'stable':
+      return 'teal';
+    default:
+      return 'blue';
+  }
+};
+
 const ServicesSchedulingForm = () => {
-  const { profileUser, isLoading, error } = useScheduling();
+  const {profileUser, isLoading, error} = useScheduling();
+  const { businessName, businessColor, businessDescription, socialLinks } = useBusiness();
 
   if (isLoading) {
     return (
@@ -51,17 +85,50 @@ const ServicesSchedulingForm = () => {
     <div className="min-h-screen w-full flex flex-col justify-center items-center">
       <main className="p-8 flex flex-col md:flex-row items-center md:items-start gap-6 w-full max-w-[624px]">
         <div className="w-full md:flex-1 flex flex-col items-center md:items-start gap-4">
-          <Avatar.Root size={'48'} fallbackText={profileUser.name || ''}>
-            <Avatar.Image src={profileUser.image || ''} alt={profileUser.name || 'User'} />
+          <Avatar.Root size={'48'} fallbackText={businessName || profileUser.name || ''}>
+            <Avatar.Image
+              src={profileUser.image || ''}
+              alt={businessName || profileUser.name || 'User'}
+            />
           </Avatar.Root>
 
-          <h1 className="text-label-lg text-text-strong-950">{profileUser.name}</h1>
+          <h1 className="text-label-lg text-text-strong-950">
+            {businessName || profileUser.name}
+          </h1>
 
-          <p className="text-label-sm text-text-sub-600">{profileUser.biography}</p>
+          <p className="text-label-sm text-text-sub-600">
+            {businessDescription || profileUser.biography}
+          </p>
           {/** Social icons */}
-          <div className="flex flex-row items-center gap-3"></div>
+          <div className="flex flex-row items-center gap-3">
+            {socialLinks?.instagram && (
+              <a href={socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="text-text-sub-600 hover:text-text-strong-950 transition-colors">
+                <RiInstagramLine size={20} />
+              </a>
+            )}
+            {socialLinks?.linkedin && (
+              <a href={socialLinks.linkedin} target="_blank" rel="noopener noreferrer" className="text-text-sub-600 hover:text-text-strong-950 transition-colors">
+                <RiLinkedinFill size={20} />
+              </a>
+            )}
+            {socialLinks?.twitter && (
+              <a href={socialLinks.twitter} target="_blank" rel="noopener noreferrer" className="text-text-sub-600 hover:text-text-strong-950 transition-colors">
+                <RiTwitterXLine size={20} />
+              </a>
+            )}
+            {socialLinks?.facebook && (
+              <a href={socialLinks.facebook} target="_blank" rel="noopener noreferrer" className="text-text-sub-600 hover:text-text-strong-950 transition-colors">
+                <RiFacebookFill size={20} />
+              </a>
+            )}
+            {socialLinks?.website && (
+              <a href={socialLinks.website} target="_blank" rel="noopener noreferrer" className="text-text-sub-600 hover:text-text-strong-950 transition-colors">
+                <RiGlobalLine size={20} />
+              </a>
+            )}
+          </div>
         </div>
-        <div className="w-full md:min-w-[332px] md:flex-1 overflow-hidden flex flex-col rounded-3xl border border-stroke-soft-200">
+        <div className="bg-bg-white-0 w-full md:min-w-[332px] md:flex-1 overflow-hidden flex flex-col rounded-3xl border border-stroke-soft-200">
           {initialServices.map((service, index) => (
             <Link
               key={service.slug}
@@ -77,14 +144,8 @@ const ServicesSchedulingForm = () => {
                   {service.title}
                 </h2>
                 <div className="flex items-center gap-2">
-                  <Badge.Root
-                    variant={'light'}
-                    color={'blue'}
-                    className="lowercase"
-                  >
-                    {/** TODO: Change the color of the icon based on the badge color */}
-                    <RiTimeLine size={12} />
-
+                  <Badge.Root variant="light" color={mapServiceColorToBadgeColor(businessColor)} size="medium">
+                    <Badge.Icon as={RiTimeLine} />
                     {formatDuration(service.duration)}
                   </Badge.Root>
 
