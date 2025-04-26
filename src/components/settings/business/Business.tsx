@@ -1,6 +1,15 @@
 import {Me} from '@/app/settings/page';
 import * as Input from '@/components/align-ui/ui/input';
-import {RiStoreLine, RiArrowRightSLine, RiGlobalLine, RiLinkedinLine, RiTwitterXLine, RiInstagramLine, RiFacebookLine} from '@remixicon/react';
+import {
+  RiStoreLine,
+  RiArrowRightSLine,
+  RiGlobalLine,
+  RiLinkedinLine,
+  RiTwitterXLine,
+  RiInstagramLine,
+  RiFacebookLine,
+  RiMoreLine
+} from '@remixicon/react';
 import * as Label from '@/components/align-ui/ui/label';
 import * as Avatar from '@/components/align-ui/ui/avatar';
 import * as Button from '@/components/align-ui/ui/button';
@@ -8,7 +17,7 @@ import * as Select from '@/components/align-ui/ui/select';
 import {ServiceBadgeColor} from '@/types/service';
 import * as Divider from '@/components/align-ui/ui/divider';
 import ServicesSchedulingForm from '@/modules/scheduling/services/ServicesSchedulingForm';
-import { SchedulingProvider } from '@/contexts/SchedulingContext';
+import {SchedulingProvider} from '@/contexts/SchedulingContext';
 import * as Textarea from '@/components/align-ui/ui/textarea';
 // Array com as opções de cores e seus emojis
 const colorOptions: {value: ServiceBadgeColor; label: string}[] = [
@@ -52,10 +61,7 @@ export default function Business({me}: Props) {
           <Label.Root htmlFor="name">Foto de perfil</Label.Root>
           <div className="flex items-center gap-2">
             <Avatar.Root size="48">
-              <Avatar.Image
-                src={'/images/logo.png'}
-                alt="Foto do perfil"
-              />
+              <Avatar.Image src={'/images/logo.png'} alt="Foto do perfil" />
             </Avatar.Root>
             <Button.Root variant="neutral" mode="stroke">
               <span className="text-paragraph-md text-text-sub-600">
@@ -66,7 +72,6 @@ export default function Business({me}: Props) {
           </div>
         </div>
 
-        
         <div className="flex flex-col gap-2">
           <Label.Root htmlFor="color">Cor do negócio</Label.Root>
           <Select.Root>
@@ -99,9 +104,7 @@ export default function Business({me}: Props) {
         <Divider.Root />
 
         <div className="flex flex-col gap-2">
-          <p className="text-label-lg text-text-strong-950">
-            Redes sociais
-          </p>
+          <p className="text-label-lg text-text-strong-950">Redes sociais</p>
           <p className="text-paragraph-sm text-text-sub-600">
             Coloque o link das suas redes
           </p>
@@ -110,70 +113,76 @@ export default function Business({me}: Props) {
           <div className="flex flex-col gap-2">
             <Label.Root htmlFor="instagram">Instagram</Label.Root>
             <Input.Root>
-            <Input.Wrapper>
-              <Input.Icon>
-                <RiInstagramLine />
-              </Input.Icon>
-              <Input.Input placeholder="https://instagram.com/username" />
-            </Input.Wrapper>
-          </Input.Root>
-        </div>
+              <Input.Wrapper>
+                <Input.Icon>
+                  <RiInstagramLine />
+                </Input.Icon>
+                <Input.Input placeholder="https://instagram.com/username" />
+              </Input.Wrapper>
+            </Input.Root>
+          </div>
           <div className="flex flex-col gap-2">
             <Label.Root htmlFor="twitter">Twitter</Label.Root>
             <Input.Root>
-            <Input.Wrapper>
-              <Input.Icon>
-                <RiTwitterXLine />
-              </Input.Icon>
-              <Input.Input placeholder="https://twitter.com/username" />
-            </Input.Wrapper>
-          </Input.Root>
-        </div>
+              <Input.Wrapper>
+                <Input.Icon>
+                  <RiTwitterXLine />
+                </Input.Icon>
+                <Input.Input placeholder="https://twitter.com/username" />
+              </Input.Wrapper>
+            </Input.Root>
+          </div>
 
-        <div className="flex flex-col gap-2">
-          <Label.Root htmlFor="linkedin">LinkedIn</Label.Root>
-          <Input.Root>
-            <Input.Wrapper>
-              <Input.Icon>
-                <RiLinkedinLine />
-              </Input.Icon>
-              <Input.Input placeholder="https://linkedin.com/username" />
-            </Input.Wrapper>
-          </Input.Root>
-        </div>
-        <div className="flex flex-col gap-2">
-          <Label.Root htmlFor="facebook">Facebook</Label.Root>
-          <Input.Root>
-            <Input.Wrapper>
-              <Input.Icon>
-                <RiFacebookLine />
-              </Input.Icon>
-              <Input.Input placeholder="https://facebook.com/username" />
-            </Input.Wrapper>
-          </Input.Root>
-        </div>
+          <div className="flex flex-col gap-2">
+            <Label.Root htmlFor="linkedin">LinkedIn</Label.Root>
+            <Input.Root>
+              <Input.Wrapper>
+                <Input.Icon>
+                  <RiLinkedinLine />
+                </Input.Icon>
+                <Input.Input placeholder="https://linkedin.com/username" />
+              </Input.Wrapper>
+            </Input.Root>
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label.Root htmlFor="facebook">Facebook</Label.Root>
+            <Input.Root>
+              <Input.Wrapper>
+                <Input.Icon>
+                  <RiFacebookLine />
+                </Input.Icon>
+                <Input.Input placeholder="https://facebook.com/username" />
+              </Input.Wrapper>
+            </Input.Root>
+          </div>
 
-        <div className="flex flex-col gap-2">
-          <Label.Root htmlFor="website">Website</Label.Root>
-          <Input.Root>
-            <Input.Wrapper>
-              <Input.Icon>
-                <RiGlobalLine />
-              </Input.Icon>
-              <Input.Input placeholder="https://meuwebsite.com/" />
-            </Input.Wrapper>
-          </Input.Root>
+          <div className="flex flex-col gap-2">
+            <Label.Root htmlFor="website">Website</Label.Root>
+            <Input.Root>
+              <Input.Wrapper>
+                <Input.Icon>
+                  <RiGlobalLine />
+                </Input.Icon>
+                <Input.Input placeholder="https://meuwebsite.com/" />
+              </Input.Wrapper>
+            </Input.Root>
+          </div>
         </div>
-      </div>
-
       </div>
 
       {/* Preview da página do negócio */}
       <div className="w-full">
-        
-
-        <div className="bg-bg-weak-50 h-fit rounded-lg border border-stroke-soft-200 overflow-hidden">
-          <div className="bg-bg-white-0"></div>
+        <div className=" bg-bg-weak-50 h-fit rounded-lg border border-stroke-soft-200 overflow-hidden">
+          <div className="border-b border-stroke-soft-200 w-full justify-between flex items-center h-fit p-4 bg-bg-white-0">
+            <div className="flex items-center gap-2">
+              <div className="w-[12px] h-[12px] bg-error-base rounded-full" />
+              <div className="w-[12px] h-[12px] bg-warning-base rounded-full" />
+              <div className="w-[12px] h-[12px] bg-success-base rounded-full" />
+            </div>
+            <div className="flex items-center gap-1">
+              <RiMoreLine className="text-bg-sub-300" />
+            </div>
+          </div>
           <SchedulingProvider username={me.username || ''}>
             <ServicesSchedulingForm />
           </SchedulingProvider>
