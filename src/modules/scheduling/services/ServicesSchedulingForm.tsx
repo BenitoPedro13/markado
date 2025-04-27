@@ -11,6 +11,7 @@ import { useBusiness } from '@/components/settings/business/Business';
 import { ServiceBadgeColor } from '@/types/service';
 import type { VariantProps } from '@/utils/tv';
 import { badgeVariants } from '@/components/align-ui/ui/badge';
+import * as Skeleton from '@/components/align-ui/ui/skeleton';
 
 type BadgeColor = NonNullable<VariantProps<typeof badgeVariants>['color']>;
 
@@ -61,28 +62,63 @@ const mapServiceColorToBadgeColor = (color: ServiceBadgeColor | undefined): Badg
   }
 };
 
-const ServicesSchedulingForm = () => {
+type ServicesSchedulingFormProps = {
+  fullHeight?: boolean;
+};
+
+const ServicesSchedulingForm = ({ fullHeight = true }: ServicesSchedulingFormProps) => {
   const {profileUser, isLoading, error} = useScheduling();
   const { businessName, businessColor, businessDescription, socialLinks } = useBusiness();
 
   if (isLoading) {
     return (
-      <div className="min-h-screen w-full flex flex-col justify-center items-center">
-        <p className="text-text-sub-600">Carregando...</p>
+      <div className={cn("w-full flex flex-col justify-center items-center", fullHeight && "min-h-screen")}>
+        <main className="p-8 flex flex-col md:flex-row items-center md:items-start gap-6 w-full max-w-[624px]">
+          <div className="w-full md:flex-1 flex flex-col items-center md:items-start gap-4">
+            <Skeleton.Root className="w-12 h-12 rounded-full" />
+            <Skeleton.Text lines={1} className="w-32" />
+            <Skeleton.Text lines={2} className="w-full" />
+            <div className="flex flex-row items-center gap-3">
+              <Skeleton.Root className="w-5 h-5 rounded-full" />
+              <Skeleton.Root className="w-5 h-5 rounded-full" />
+              <Skeleton.Root className="w-5 h-5 rounded-full" />
+            </div>
+          </div>
+          <div className="bg-bg-white-0 w-full md:min-w-[332px] md:flex-1 overflow-hidden flex flex-col rounded-3xl border border-stroke-soft-200">
+            {[1, 2, 3].map((index) => (
+              <div
+                key={index}
+                className={cn(
+                  'p-4 flex gap-4 justify-between items-center',
+                  index !== 3 && 'border-b border-stroke-soft-200'
+                )}
+              >
+                <div className="flex flex-col gap-2">
+                  <Skeleton.Text lines={1} className="w-32" />
+                  <div className="flex items-center gap-2">
+                    <Skeleton.Root className="w-16 h-6 rounded-full" />
+                    <Skeleton.Root className="w-20 h-4" />
+                  </div>
+                </div>
+                <Skeleton.Root className="w-6 h-6 rounded-md" />
+              </div>
+            ))}
+          </div>
+        </main>
       </div>
     );
   }
 
   if (error || !profileUser) {
     return (
-      <div className="min-h-screen w-full flex flex-col justify-center items-center">
+      <div className={cn("w-full flex flex-col justify-center items-center", fullHeight && "min-h-screen")}>
         <p className="text-text-sub-600">Usuário não encontrado</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen w-full flex flex-col justify-center items-center">
+    <div className={cn("w-full flex flex-col justify-center items-center", fullHeight && "min-h-screen")}>
       <main className="p-8 flex flex-col md:flex-row items-center md:items-start gap-6 w-full max-w-[624px]">
         <div className="w-full md:flex-1 flex flex-col items-center md:items-start gap-4">
           <Avatar.Root size={'48'} fallbackText={businessName || profileUser.name || ''}>
