@@ -46,7 +46,7 @@ const mainItems: sidebarItem[] = [
     iconLine: <RiCalendarLine />,
     iconFill: <RiCalendarFill />,
     label: 'Agendamentos',
-    link: 'bookings'
+    link: 'scheduling'
   },
   {
     iconLine: <RiTimeLine />,
