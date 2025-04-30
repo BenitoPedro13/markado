@@ -3,8 +3,9 @@
 import { useScheduling } from '@/contexts/SchedulingContext';
 import * as Badge from '@/components/align-ui/ui/badge';
 import * as Button from '@/components/align-ui/ui/button';
-
-import { RiComputerLine, RiMapPinLine, RiEditLine, RiTimeLine } from '@remixicon/react';
+import * as ButtonGroup from '@/components/align-ui/ui/button-group';
+import * as Dropdown from '@/components/align-ui/ui/dropdown';
+import { RiComputerLine, RiMapPinLine, RiEditLine, RiTimeLine, RiMore2Fill, RiDeleteBinLine, RiPencilLine, RiUserAddLine } from '@remixicon/react';
 
 
 type SchedulingProps = {
@@ -35,7 +36,7 @@ export default function Scheduling({
   const { updateSchedulingStatus, deleteScheduling } = useScheduling();
 
   return (
-    <div className={`flex items-center justify-between p-4 bg-white rounded-lg shadow ${
+    <div className={`flex items-center justify-between p-4 bg-bg-white-0 rounded-lg shadow ${
       status === 'canceled' ? 'opacity-60' : ''
     }`}>
       {/* Lado Esquerdo */}
@@ -44,7 +45,7 @@ export default function Scheduling({
         <div className="w-[250px]">
           <h3 className="text-paragraph-lg font-medium text-text-strong-950">{title}</h3>
           <div className="flex items-center gap-2 mt-2">
-            <Badge.Root size="medium" variant="lighter" color={type === 'online' ? 'blue' : 'green'}>
+            <Badge.Root className='text-label-sm' size="medium" variant="lighter" color={type === 'online' ? 'blue' : 'green'}>
               <Badge.Icon as={type === 'online' ? RiComputerLine : RiMapPinLine} />
               {type === 'online' ? 'Online' : 'Presencial'}
             </Badge.Root>
@@ -60,7 +61,7 @@ export default function Scheduling({
             <span>{date}</span>
           </div>
           <div className="flex items-center gap-2 mt-2">
-            <Badge.Root className='text-paragraph-sm' size="medium" variant="lighter" color="gray">
+            <Badge.Root className='text-label-sm' size="medium" variant="lighter" color="orange">
               <Badge.Icon as={RiTimeLine} />
               {duration}min
             </Badge.Root>
@@ -84,29 +85,40 @@ export default function Scheduling({
             rel="noopener noreferrer"
             className="flex items-center gap-2"
           >
-            <Button.Icon as={() => <img src="/logo/google-meet.svg" alt="Google Meet" className="w-4 h-4" />} />
+            <Button.Icon as={() => <img src="/logos/Google Meet.svg" alt="Google Meet" className="w-4 h-4" />} />
             Entrar no Google Meet
           </a>
         </Button.Root>
 
         <Button.Root
-          variant={status === 'confirmed' ? 'error' : 'primary'}
-          mode="ghost"
+          variant="neutral"
+          mode="stroke"
           size="small"
-          onClick={() => updateSchedulingStatus(id, status === 'confirmed' ? 'canceled' : 'confirmed')}
         >
-          {status === 'confirmed' ? 'Cancelar evento' : 'Confirmar evento'}
+          Reagendar agendamento
         </Button.Root>
 
-        <Button.Root
-          variant="neutral"
-          mode="ghost"
-          size="small"
-          onClick={() => deleteScheduling(id)}
-        >
-          <Button.Icon as={RiEditLine} />
-          Editar
-        </Button.Root>
+        <Dropdown.Root>
+              <Dropdown.Trigger asChild>
+                <Button.Root variant="neutral" mode="stroke" size="small">
+                  <Button.Icon as={RiMore2Fill} />
+                </Button.Root>
+              </Dropdown.Trigger>
+              <Dropdown.Content align="end" className="w-fit">
+                <Dropdown.Item>
+                  <Dropdown.ItemIcon as={RiMapPinLine} />
+                  Editar localização
+                </Dropdown.Item>
+                <Dropdown.Item>
+                  <Dropdown.ItemIcon as={RiUserAddLine} />
+                  Adicionar participantes
+                </Dropdown.Item>
+                <Dropdown.Item>
+                  <Dropdown.ItemIcon as={RiDeleteBinLine} />
+                  Cancelar agendamento
+                </Dropdown.Item>
+              </Dropdown.Content>
+            </Dropdown.Root>
       </div>
     </div>
   );
