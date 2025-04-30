@@ -18,7 +18,9 @@ export const profileRouter = router({
     .input(z.object({
       personalComplete: z.boolean().optional(),
       calendarComplete: z.boolean().optional(),
-      availabilityComplete: z.boolean().optional()
+      availabilityComplete: z.boolean().optional(),
+      profileComplete: z.boolean().optional(),
+      onboardingComplete: z.boolean().optional()
     }))
     .mutation(async ({ ctx, input }) => {
       if (!ctx.session?.user) {
@@ -57,7 +59,25 @@ export const profileRouter = router({
         });
         console.log(`[TRPC] Availability step marked as complete for user ${ctx.session.user.id}`);
       }
+
+      if (input.profileComplete) {
+        // Set a cookie to mark the profile step as complete
+        cookies().set('profile_step_complete', 'true', { 
+          maxAge: 60 * 60 * 24, // 1 day
+          path: '/' 
+        });
+        console.log(`[TRPC] Profile step marked as complete for user ${ctx.session.user.id}`);
+      }
       
+      if (input.onboardingComplete) {
+        // Set a cookie to mark the onboarding as complete
+        cookies().set('onboarding_complete', 'true', { 
+          maxAge: 60 * 60 * 24, // 1 day
+          path: '/' 
+        });
+        console.log(`[TRPC] Onboarding marked as complete for user ${ctx.session.user.id}`);
+      }
+
       // Return the user without modifications for now
       return ctx.prisma.user.findUnique({
         where: { id: ctx.session.user.id }

@@ -2,8 +2,11 @@ import { getSession } from 'next-auth/react';
 import { createStore } from 'zustand/vanilla';
 import type { User } from '~/prisma/app/generated/prisma/client';
 import {auth} from '@/auth';
+import { Session } from 'next-auth';
+
 
 export type SessionState = {
+  session: Session | null;
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
@@ -19,22 +22,23 @@ export type SessionActions = {
 export type SessionStore = SessionState & SessionActions;
 
 export const defaultInitState: SessionState = {
+  session: null,
   user: null,
   isAuthenticated: false,
   isLoading: true,
 };
 
 // This function can be used to initialize the store with data from auth.js
-export const initSessionStore = async (): Promise<SessionState> => {
-  // You would typically get the session from auth.js here
-  // Example:
-  const session = await getSession();
-  return {
-    user: session?.user || null,
-    isAuthenticated: !!session,
-    isLoading: false,
-  };
-}
+// export const initSessionStore = async (): Promise<SessionState> => {
+//   // You would typically get the session from auth.js here
+//   // Example:
+//   const session = await getSession();
+//   return {
+//     user: session?.user || null,
+//     isAuthenticated: !!session,
+//     isLoading: false,
+//   };
+// }
 
 export const createSessionStore = (
   initState: SessionState = defaultInitState,

@@ -20,6 +20,8 @@ import { useForm, UseFormReturn } from 'react-hook-form';
 import { z } from 'zod';
 import { type AppRouter } from '~/trpc/server';
 import { getMeByUserId } from '~/trpc/server/handlers/user.handler';
+import { DEFAULT_SCHEDULE } from '@/lib/availability';
+import { TimeRange } from '@/types/scheadule';
 
 // Sign up email form schema
 const signUpEmailFormSchema = z.object({
@@ -93,10 +95,23 @@ const signUpAvailabilityFormSchema = z.object({
   )
 });
 
+// Sign up profile form schema
+const signUpProfileFormSchema = z.object({
+  biography: z.string().max(200, 'SignUpPage.ProfileForm.max_length'),
+  image: z.string().optional()
+});
+
+// Sign up schedule form schema
+const signUpScheduleFormSchema = z.object({
+  schedule: z.array(z.array(z.custom<TimeRange>()))
+});
+
 export type SignUpEmailFormData = z.infer<typeof signUpEmailFormSchema>;
 export type SignUpPasswordFormData = z.infer<typeof signUpPasswordFormSchema>;
 export type SignUpPersonalFormData = z.infer<typeof signUpPersonalFormSchema>;
 export type SignUpAvailabilityFormData = z.infer<typeof signUpAvailabilityFormSchema>;
+export type SignUpProfileFormData = z.infer<typeof signUpProfileFormSchema>;
+export type SignUpScheduleFormData = z.infer<typeof signUpScheduleFormSchema>;
 
 // Sign up context
 export type SignUpStep =
@@ -104,8 +119,10 @@ export type SignUpStep =
   | '/sign-up/password'
   | '/sign-up/personal'
   | '/sign-up/calendar'
+  | '/sign-up/conferencing'
   | '/sign-up/availability'
   | '/sign-up/summary'
+  | '/sign-up/profile'
   | '/sign-up/ending';
 
 // Infer the output type of the user.me procedure
@@ -136,6 +153,8 @@ type SignUpContextType = {
     password: UseFormReturn<SignUpPasswordFormData>;
     personal: UseFormReturn<SignUpPersonalFormData>;
     availability: UseFormReturn<SignUpAvailabilityFormData>;
+    profile: UseFormReturn<SignUpProfileFormData>;
+    schedule: UseFormReturn<SignUpScheduleFormData>;
   };
   agree: boolean;
   setAgree: Dispatch<SetStateAction<boolean>>;
@@ -184,9 +203,9 @@ export function SignUpProvider({
     resolver: zodResolver(signUpPersonalFormSchema),
     mode: 'onChange',
     defaultValues: {
-      name: '',
-      username: '',
-      timeZone: ''
+      name: userData?.name || '',
+      username: userData?.username || '',
+      timeZone: userData?.timeZone || ''
     }
   });
   const availabilityForm = useForm<SignUpAvailabilityFormData>({
@@ -226,22 +245,43 @@ export function SignUpProvider({
     }   
   });
 
+  // Profile form for biography input
+  const profileForm = useForm<SignUpProfileFormData>({
+    resolver: zodResolver(signUpProfileFormSchema),
+    mode: 'onChange',
+    defaultValues: {
+      biography: userData?.biography || '',
+      image: userData?.image || ''
+    }
+  });
+
+  // Schedule form for availability scheduling
+  const scheduleForm = useForm<SignUpScheduleFormData>({
+    defaultValues: {
+      schedule: DEFAULT_SCHEDULE
+    }
+  });
+
   const previousStepMap: Partial<Record<SignUpStep, SignUpStep>> = {
     '/sign-up/password': '/sign-up/email',
     '/sign-up/personal': '/sign-up/password',
     '/sign-up/calendar': '/sign-up/personal',
-    '/sign-up/availability': '/sign-up/calendar',
+    '/sign-up/conferencing': '/sign-up/calendar',
+    '/sign-up/availability': '/sign-up/conferencing',
     '/sign-up/summary': '/sign-up/availability',
-    '/sign-up/ending': '/sign-up/summary'
+    '/sign-up/profile': '/sign-up/summary',
+    '/sign-up/ending': '/sign-up/profile'
   };
 
   const nextStepMap: Partial<Record<SignUpStep, SignUpStep>> = {
     '/sign-up/email': '/sign-up/password',
     '/sign-up/password': '/sign-up/personal',
     '/sign-up/personal': '/sign-up/calendar',
-    '/sign-up/calendar': '/sign-up/availability',
+    '/sign-up/calendar': '/sign-up/conferencing',
+    '/sign-up/conferencing': '/sign-up/availability',
     '/sign-up/availability': '/sign-up/summary',
-    '/sign-up/summary': '/sign-up/ending'
+    '/sign-up/summary': '/sign-up/profile',
+    '/sign-up/profile': '/sign-up/ending'
   };
 
   // Initialize step based on the current path if possible
@@ -312,7 +352,9 @@ export function SignUpProvider({
       email: emailForm,
       password: passwordForm,
       personal: personalForm,
-      availability: availabilityForm
+      availability: availabilityForm,
+      profile: profileForm,
+      schedule: scheduleForm
     },
     step,
     setStep,
@@ -327,6 +369,8 @@ export function SignUpProvider({
     passwordForm,
     personalForm,
     availabilityForm,
+    profileForm,
+    scheduleForm,
     step,
     agree
   ]);

@@ -8,6 +8,8 @@ import {Plus_Jakarta_Sans} from 'next/font/google';
 import Providers from '@/app/providers';
 import {getMessages} from 'next-intl/server';
 import '@/app/globals.css';
+import { getQueryClient } from './get-query-client';
+import { getMeByUserId } from '~/trpc/server/handlers/user.handler';
 
 
 
@@ -27,15 +29,15 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 
 export default async function RootLayout({children}: PropsWithChildren) {
   const locale = cookies().get('NEXT_LOCALE')?.value || routing.defaultLocale;
-
   const session = await auth();
-
+  const userId = session?.user.id || null;
+  const user = userId ? await getMeByUserId(userId) : null;
   const messages = await getMessages({locale});
 
   return (
     <html className="h-full" lang={locale}>
       <body className={clsx(plusJakartaSans.className, 'flex h-full flex-col')}>
-        <Providers messages={messages} locale={locale} initialSession={session}>
+        <Providers messages={messages} locale={locale} initialSession={session} user={user}>
           <div className="flex min-h-screen flex-col">
             <main className="flex flex-1 flex-col">{children}</main>
           </div>

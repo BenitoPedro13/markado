@@ -206,4 +206,4 @@ export function useScheduling() {
     throw new Error('useScheduling must be used within a SchedulingProvider');
   }
   return context;
-} 
+}
