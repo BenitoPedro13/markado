@@ -7,7 +7,7 @@ export default function SchedulingList() {
   const { filteredSchedulings } = useScheduling();
 
   return (
-    <div className=" space-y-4 px-8 rounded-lg w-full border border-stroke-soft-200">
+    <div className="rounded-lg w-full border border-stroke-soft-200">
       {filteredSchedulings.map((scheduling) => (
         <Scheduling
           key={scheduling.id}

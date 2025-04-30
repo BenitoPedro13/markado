@@ -42,7 +42,7 @@ export default function ServicesPage() {
       </div>
 
       <SchedulingProvider>
-        <div className="gap-8 p-8">
+        <div className="w-full gap-8 p-8">
           <div className="flex justify-between">
             <SchedulingFilter />
             <div className="flex items-center gap-2">
@@ -51,8 +51,9 @@ export default function ServicesPage() {
             </div>
           </div>
         </div>
-
-        <SchedulingList />
+        <div className="w-full gap-8 px-8">
+          <SchedulingList />
+        </div>
       </SchedulingProvider>
     </PageLayout>
   );
