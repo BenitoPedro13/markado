@@ -7,6 +7,7 @@ import * as ButtonGroup from '@/components/align-ui/ui/button-group';
 import * as Dropdown from '@/components/align-ui/ui/dropdown';
 import * as Drawer from '@/components/align-ui/ui/drawer';
 import * as Divider from '@/components/align-ui/ui/divider';
+import * as StatusBadge from '@/components/align-ui/ui/status-badge';
 import {
   RiComputerLine,
   RiMapPinLine,
@@ -16,7 +17,14 @@ import {
   RiDeleteBinLine,
   RiPencilLine,
   RiUserAddLine,
-  RiMapPin2Line
+  RiMapPin2Line,
+  RiCheckLine,
+  RiCheckboxFill,
+  RiCheckboxCircleFill,
+  RiCloseFill,
+  RiCloseCircleFill,
+  RiSendPlaneLine,
+  RiSendPlane2Line
 } from '@remixicon/react';
 
 type SchedulingProps = {
@@ -50,9 +58,8 @@ export default function Scheduling({
     <Drawer.Root>
       <Drawer.Trigger asChild>
         <div
-          className={`flex items-center justify-between  cursor-pointer p-4 hover:bg-bg-weak-50 transition-colors duration-200 bg-bg-white-0 rounded-lg shadow ${
-            status === 'canceled' ? 'opacity-60' : ''
-          }`}
+          className="flex items-center justify-between  cursor-pointer p-4 hover:bg-bg-weak-50 transition-colors duration-200 bg-bg-white-0 rounded-lg shadow
+            "
         >
           {/* Lado Esquerdo */}
           <div className="flex gap-8">
@@ -84,15 +91,17 @@ export default function Scheduling({
                 <span>{date}</span>
               </div>
               <div className="flex items-center gap-2 mt-2">
-                <Badge.Root
-                  className="text-label-sm"
-                  size="medium"
-                  variant="lighter"
-                  color="orange"
-                >
-                  <Badge.Icon as={RiTimeLine} />
-                  {duration}min
-                </Badge.Root>
+                {status === 'confirmed' ? (
+                  <StatusBadge.Root className="text-label-sm" status="completed">
+                    <StatusBadge.Icon as={RiCheckboxCircleFill} />
+                    Confirmado
+                  </StatusBadge.Root>
+                ) : (
+                  <StatusBadge.Root className="text-label-sm" status="failed">
+                    <StatusBadge.Icon as={RiCloseCircleFill} />
+                    Cancelado
+                  </StatusBadge.Root>
+                )}
                 <span className="text-paragraph-sm text-text-sub-600">
                   {time} até {endTime}
                 </span>
@@ -102,20 +111,33 @@ export default function Scheduling({
 
           {/* Lado Direito - Ações */}
           <div className="flex items-center gap-3">
-          {type === 'online' ? (
-            <Button.Root variant="neutral" mode="ghost" size="small" className='text-blue-400'>
-              <img src="/logos/Google Meet.svg" width={20} height={20}/>
-              Entrar no Google Meet
-            </Button.Root>
-          ) : (<Button.Root variant="neutral" mode="stroke" size="small" className='text-text-strong-950'>
-            <Button.Icon as={RiMapPinLine}/>
-            Obter Rotas
-          </Button.Root>)}
-            <Button.Root variant="neutral" mode="stroke" size="small">
-              Reagendar agendamento
-            </Button.Root>
-
-            <Dropdown.Root>
+            {status === 'confirmed' ? (
+              <>
+                {type === 'online' ? (
+                  <Button.Root
+                    variant="neutral"
+                    mode="ghost"
+                    size="small"
+                    className="text-blue-400"
+              >
+                <img src="/logos/Google Meet.svg" width={20} height={20} />
+                Entrar no Google Meet
+              </Button.Root>
+            ) : (
+              <Button.Root
+                variant="neutral"
+                mode="stroke"
+                size="small"
+               
+              >
+                <Button.Icon as={RiMapPinLine} />
+                Obter Rotas
+              </Button.Root>
+            )}
+                <Button.Root variant="neutral" mode="stroke" size="small">
+                  Reagendar
+                </Button.Root>
+                <Dropdown.Root>
               <Dropdown.Trigger asChild>
                 <Button.Root variant="neutral" mode="stroke" size="small">
                   <Button.Icon as={RiMore2Fill} />
@@ -134,8 +156,21 @@ export default function Scheduling({
                   <Dropdown.ItemIcon as={RiDeleteBinLine} />
                   Cancelar agendamento
                 </Dropdown.Item>
+                <Dropdown.Item>
+                  <Dropdown.ItemIcon as={RiSendPlane2Line} />
+                  Solicitar reagendamento
+                </Dropdown.Item>
               </Dropdown.Content>
             </Dropdown.Root>
+              </>
+            ) : (
+              <Button.Root variant="neutral" mode="stroke" size="small">
+                <Button.Icon as={RiSendPlane2Line} />
+                Solicitar reagendamento
+              </Button.Root>
+            )}
+
+           
           </div>
         </div>
       </Drawer.Trigger>
@@ -154,9 +189,8 @@ export default function Scheduling({
                 {weekDay}, {date}
               </div>
             </div>
-            <Divider.Root variant='solid-text'>Convidado</Divider.Root>
+            <Divider.Root variant="solid-text">Convidado</Divider.Root>
             <div className="px-4 rounded-lg space-y-2">
-              
               <div className="flex items-center gap-3">
                 <div className="bg-success-lighter text-success-base rounded-full size-10 flex items-center justify-center text-heading-sm">
                   {organizer
@@ -174,10 +208,10 @@ export default function Scheduling({
                 </div>
               </div>
             </div>
-            <Divider.Root variant='solid-text'>Convidado</Divider.Root>
+            <Divider.Root variant="solid-text">Convidado</Divider.Root>
             <div className="px-4 rounded-lg space-y-2">
               <div className="space-y-4">
-                <div className='flex flex-col gap-2'>
+                <div className="flex flex-col gap-2">
                   <div className="text-subheading-xs text-text-soft-400 uppercase">
                     ASSUNTO
                   </div>
@@ -185,20 +219,28 @@ export default function Scheduling({
                     {title}
                   </div>
                 </div>
-                <Divider.Root/>
-                <div className='flex flex-col gap-2'>
+                <Divider.Root />
+                <div className="flex flex-col gap-2">
                   <div className="text-subheading-xs text-text-soft-400 uppercase">
                     LOCAL
                   </div>
                   <div className="text-paragraph-md text-text-strong-950">
-                    {type === 'online' ? <Button.Root variant="neutral" mode="ghost" size="small">
-              <img src="/logos/Google Meet.svg" width={20} height={20}/>
-              Entrar com Google Meet
-            </Button.Root> : 'Presencial'}
+                    {type === 'online' ? (
+                      <Button.Root variant="neutral" mode="ghost" size="small">
+                        <img
+                          src="/logos/Google Meet.svg"
+                          width={20}
+                          height={20}
+                        />
+                        Entrar com Google Meet
+                      </Button.Root>
+                    ) : (
+                      'Presencial'
+                    )}
                   </div>
                 </div>
-                <Divider.Root/>
-                <div className='flex flex-col gap-2'>
+                <Divider.Root />
+                <div className="flex flex-col gap-2">
                   <div className="text-subheading-xs text-text-soft-400 uppercase">
                     DESCRIÇÃO
                   </div>
@@ -213,28 +255,28 @@ export default function Scheduling({
               <div className="bg-bg-weak-50 p-4 rounded-lg">
                 <div className="text-subheading-xs text-text-soft-400 uppercase">
                   PRECISA ALTERAR?
+                </div>
+                <div className="mt-4 flex gap-3">
+                  <Button.Root
+                    variant="error"
+                    mode="stroke"
+                    size="medium"
+                    className="w-full"
+                    onClick={() => updateSchedulingStatus(id, 'canceled')}
+                  >
+                    Cancelar
+                  </Button.Root>
+                  <Button.Root
+                    variant="neutral"
+                    mode="stroke"
+                    size="medium"
+                    className="w-full"
+                  >
+                    Reagendar
+                  </Button.Root>
+                </div>
               </div>
-              <div className="mt-4 flex gap-3">
-                <Button.Root
-                  variant="error"
-                  mode="stroke"
-                  size="medium"
-                  className="w-full"
-                  onClick={() => updateSchedulingStatus(id, 'canceled')}
-                >
-                  Cancelar
-                </Button.Root>
-                <Button.Root
-                  variant="neutral"
-                  mode="stroke"
-                  size="medium"
-                  className="w-full"
-                >
-                  Reagendar
-                </Button.Root>
-              </div>
-              </div>
-              </div>
+            </div>
           </div>
         </Drawer.Body>
       </Drawer.Content>
