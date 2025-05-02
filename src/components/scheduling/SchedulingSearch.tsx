@@ -27,7 +27,7 @@ export default function SchedulingSearch() {
   const { register } = useScheduling();
 
   return (
-    <div className="w-full">
+    <div className="w-full min-w-[250px]">
       <Input.Root>
         <Input.Wrapper>
           <Input.Icon as={RiSearch2Line} />

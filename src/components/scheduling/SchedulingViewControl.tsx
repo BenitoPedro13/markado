@@ -11,6 +11,7 @@ export default function SchedulingViewControl() {
     <SegmentedControl.Root 
       value={currentView} 
       onValueChange={(value) => setView(value as 'list' | 'calendar')}
+      className='min-w-[70px]'
     >
       <SegmentedControl.List>
         <SegmentedControl.Trigger value="list" className="gap-1">

@@ -1,6 +1,6 @@
 'use client';
 
-    import { createContext, useContext, ReactNode, useState, useEffect } from 'react';
+import { createContext, useContext, ReactNode, useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
 type SearchFormData = {
@@ -33,6 +33,8 @@ type SchedulingContextType = {
   setFilter: (filter: FilterType) => void;
   currentView: ViewType;
   setView: (view: ViewType) => void;
+  schedulings: Scheduling[];
+  setSchedulings: React.Dispatch<React.SetStateAction<Scheduling[]>>;
 };
 
 const initialSchedulings: Scheduling[] = [
@@ -193,7 +195,9 @@ export function SchedulingProvider({ children }: { children: ReactNode }) {
       currentFilter,
       setFilter,
       currentView,
-      setView
+      setView,
+      schedulings,
+      setSchedulings
     }}>
       {children}
     </SchedulingContext.Provider>

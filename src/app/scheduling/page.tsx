@@ -13,6 +13,7 @@ import SchedulingList from '@/components/scheduling/SchedulingList';
 import SchedulingFilter from '@/components/scheduling/SchedulingFilter';
 import SchedulingSearch from '@/components/scheduling/SchedulingSearch';
 import SchedulingViewControl from '@/components/scheduling/SchedulingViewControl';
+import { SchedulingSort } from '@/components/scheduling/SchedulingSort';
 
 function IconCmd(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -45,8 +46,9 @@ export default function ServicesPage() {
         <div className="w-full gap-8 p-8">
           <div className="flex justify-between">
             <SchedulingFilter />
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 w-fit">
               <SchedulingSearch />
+              <SchedulingSort />
               <SchedulingViewControl />
             </div>
           </div>
