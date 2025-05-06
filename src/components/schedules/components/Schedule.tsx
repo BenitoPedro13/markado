@@ -282,6 +282,7 @@ export const ScheduleComponent = <
   weekStart = 0,
   labels,
   userTimeFormat,
+  timezone = 'America/Sao_Paulo',
   className
 }: {
   name: TPath;
@@ -290,6 +291,7 @@ export const ScheduleComponent = <
   disabled?: boolean;
   labels?: ScheduleLabelsType;
   userTimeFormat: number | null;
+  timezone?: string;
   className?: {
     schedule?: string;
     scheduleDay?: string;
@@ -359,6 +361,7 @@ export const DayRanges = <TFieldValues extends FieldValues>({
   control,
   labels,
   userTimeFormat,
+  timezone,
   className
 }: {
   name: ArrayPath<TFieldValues>;
@@ -366,6 +369,7 @@ export const DayRanges = <TFieldValues extends FieldValues>({
   disabled?: boolean;
   labels?: ScheduleLabelsType;
   userTimeFormat: number | null;
+  timezone?: string;
   className?: {
     dayRanges?: string;
     timeRangeField?: string;
@@ -403,6 +407,7 @@ export const DayRanges = <TFieldValues extends FieldValues>({
                   <TimeRangeField
                     className={className?.timeRangeField}
                     userTimeFormat={userTimeFormat}
+                    timezone={timezone}
                     {...field}
                   />
                 );
@@ -491,13 +496,15 @@ const TimeRangeField = forwardRef<
     className?: string;
     disabled?: boolean;
     userTimeFormat: number | null;
+    timezone?: string;
   } & ControllerRenderProps
 >(({
   className,
   value,
   onChange,
   disabled,
-  userTimeFormat
+  userTimeFormat,
+  timezone
 }, ref) => {
   // this is a controlled component anyway given it uses LazySelect, so keep it RHF agnostic.
   
@@ -510,6 +517,7 @@ const TimeRangeField = forwardRef<
     <div ref={ref} className={classNames('flex flex-row gap-2 sm:gap-3', className)}>
       <LazySelect
         userTimeFormat={userTimeFormat}
+        timezone={timezone}
         className="block w-[90px] sm:w-[100px]"
         isDisabled={disabled}
         value={startDate}
@@ -528,6 +536,7 @@ const TimeRangeField = forwardRef<
       <span className="text-strong-950 w-2 self-center"> - </span>
       <LazySelect
         userTimeFormat={userTimeFormat}
+        timezone={timezone}
         className="block w-[90px] rounded-md sm:w-[100px]"
         isDisabled={disabled}
         value={endDate}
@@ -550,6 +559,7 @@ const LazySelect = ({
   userTimeFormat,
   menuPlacement,
   onChange,
+  timezone,
   ...props
 }: {
   value: ConfigType;
@@ -557,11 +567,12 @@ const LazySelect = ({
   max?: ConfigType;
   userTimeFormat: number | null;
   menuPlacement?: string;
+  timezone?: string;
   onChange?: (option: IOption) => void;
   [key: string]: any;
 }) => {
   // Lazy-loaded options, otherwise adding a field has a noticeable redraw delay.
-  const {options, filter} = useOptions(userTimeFormat);
+  const {options, filter} = useOptions(userTimeFormat, timezone);
   
   // Convert the Date value to a timestamp for comparison
   const valueTimestamp = value instanceof Date ? value.getTime() : dayjs(value).toDate().valueOf();
@@ -626,14 +637,17 @@ interface IOption {
  */
 /** Begin Time Increments For Select */
 const INCREMENT = Number(process.env.NEXT_AVAILABILITY_SCHEDULE_INTERVAL) || 15;
-const useOptions = (timeFormat: number | null) => {
+const useOptions = (timeFormat: number | null, timezone: string = 'America/Sao_Paulo') => {
   const [filteredOptions, setFilteredOptions] = useState<IOption[]>([]);
 
   const options = useMemo(() => {
-    const end = dayjs().utc().endOf('day');
+    // Create start and end times in user's timezone
+    const start = dayjs().tz(timezone).startOf('day');
+    const end = dayjs().tz(timezone).endOf('day');
+    
     const options: IOption[] = [];
     for (
-      let t = dayjs().utc().startOf('day');
+      let t = start;
       t.isBefore(end);
       t = t.add(
         INCREMENT + (!t.add(INCREMENT).isSame(t, 'day') ? -1 : 0),
@@ -642,20 +656,16 @@ const useOptions = (timeFormat: number | null) => {
     ) {
       options.push({
         value: t.toDate().valueOf(),
-        label: dayjs(t)
-          .utc()
-          .format(timeFormat === 12 ? 'h:mma' : 'HH:mm')
+        label: t.format(timeFormat === 12 ? 'h:mma' : 'HH:mm')
       });
     }
     // allow 23:59
     options.push({
       value: end.toDate().valueOf(),
-      label: dayjs(end)
-        .utc()
-        .format(timeFormat === 12 ? 'h:mma' : 'HH:mm')
+      label: end.format(timeFormat === 12 ? 'h:mma' : 'HH:mm')
     });
     return options;
-  }, [timeFormat]);
+  }, [timeFormat, timezone]);
 
   const filter = useCallback(
     ({
