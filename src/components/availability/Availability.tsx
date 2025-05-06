@@ -16,7 +16,7 @@ import Link from 'next/link';
 type AvailabilityProps = {
   title: string;
   schedule: string;
-  timezone: string;
+  timezone: string | null;
   isDefault?: boolean;
 };
 
@@ -46,10 +46,12 @@ export default function Availability({
               <Badge.Icon as={RiTimeLine} />
               {schedule}
             </Badge.Root>
-            <Badge.Root variant="light" color="gray" size="medium">
-              <Badge.Icon as={RiGlobalLine} />
-              {timezone}
-            </Badge.Root>
+            {timezone && (
+              <Badge.Root variant="light" color="gray" size="medium">
+                <Badge.Icon as={RiGlobalLine} />
+                {timezone}
+              </Badge.Root>
+            )}
           </div>
         </div>
 
