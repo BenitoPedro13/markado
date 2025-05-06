@@ -4,6 +4,7 @@ import {
   ZCreateAvailabilitySchema,
   ZUpdateAvailabilitySchema
 } from '../schemas/availability.schema';
+import {prisma} from '@/lib/prisma';
 
 export async function getAllAvailabilitiesHandler(ctx: Context) {
   if (!ctx.session?.user) {
@@ -13,12 +14,21 @@ export async function getAllAvailabilitiesHandler(ctx: Context) {
     });
   }
 
-  return ctx.prisma.availability.findMany({
+  return getAllAvailabilitiesByUserId(ctx.session.user.id)
+}
+
+export async function getAllAvailabilitiesByUserId(userId: string) {
+  return prisma.availability.findMany({
     where: {
-      userId: ctx.session.user.id
+      userId: userId
     },
     include: {
-      schedule: true
+      schedule: {
+        include: {
+          user: true,
+          availability: true
+        }
+      }
     }
   });
 }
