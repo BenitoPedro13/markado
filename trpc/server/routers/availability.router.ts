@@ -59,9 +59,20 @@ export const availabilityRouter = router({
   create: protectedProcedure
     .input(ZCreateAvailabilitySchema)
     .mutation(async ({ctx, input}) => {
+      // Get the schedule to access its timezone
+      const schedule = input.scheduleId ? await ctx.prisma.schedule.findFirst({
+        where: {
+          id: input.scheduleId,
+          userId: ctx.session?.user.id
+        }
+      }) : null;
+
+      // Use the schedule's timezone or default to America/Sao_Paulo
+      const timezone = schedule?.timeZone || 'America/Sao_Paulo';
+
       // Convert time strings to Date objects for database storage
-      const startDateTime = timeStringToDate(input.startTime);
-      const endDateTime = timeStringToDate(input.endTime);
+      const startDateTime = timeStringToDate(input.startTime, timezone);
+      const endDateTime = timeStringToDate(input.endTime, timezone);
 
       return ctx.prisma.availability.create({
         data: {
