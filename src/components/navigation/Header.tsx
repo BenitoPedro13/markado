@@ -29,6 +29,7 @@ import * as Tooltip from '@/components/align-ui/ui/tooltip';
 import { useRouter } from 'next/navigation';
 import { DatepickerRangeDemo } from '@/components/align-ui/daterange';
 import * as Input from '@/components/align-ui/ui/input';
+import { usePageContext } from '@/contexts/PageContext';
 
 type HeaderVariant = 'scheduling' | 'availability' | 'services' | 'reports' | 'settings';
 type HeaderMode = 'default' | 'inside';
@@ -56,8 +57,8 @@ function Header({
   selectedMenuItem
 }: HeaderProps) {
   const {notification} = useNotification();
+  const { isCreateModalOpen, setIsCreateModalOpen } = usePageContext();
   const [open, setOpen] = useState(false);
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [newName, setNewName] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState(title || '');
@@ -439,7 +440,7 @@ function Header({
                 const slug = newName.trim().toLowerCase().replace(/ /g, '-');
                 setIsCreateModalOpen(false);
                 setNewName('');
-                router.push(`/availability/${slug}`);
+                // router.push(`/availability/${slug}`);
               }}
             >
               Criar
