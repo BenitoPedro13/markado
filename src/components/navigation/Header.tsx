@@ -11,25 +11,12 @@ import {
   RiShare2Line,
   RiCopyleftFill,
   RiFileCopyFill,
-  RiCodeLine,
+  RiCodeLine, 
   RiSaveLine,
   RiSaveFill,
   RiSettings4Line,
-  RiUser3Line,
-  RiUser3Fill,
-  RiGlobalLine,
-  RiGlobalFill,
-  RiCalendarFill,
-  RiVideoLine,
-  RiVideoFill,
-  RiLockLine,
-  RiLockFill,
-  RiVipCrownLine,
-  RiVipCrownFill,
-  RiWalletLine,
-  RiWalletFill,
-  RiStoreLine,
-  RiStoreFill
+  RiPencilLine
+
 } from '@remixicon/react';
 import React, {useState} from 'react';
 import * as Button from '@/components/align-ui/ui/button';
@@ -41,6 +28,7 @@ import * as ButtonGroup from '@/components/align-ui/ui/button-group';
 import * as Tooltip from '@/components/align-ui/ui/tooltip';
 import { useRouter } from 'next/navigation';
 import { DatepickerRangeDemo } from '@/components/align-ui/daterange';
+import * as Input from '@/components/align-ui/ui/input';
 
 type HeaderVariant = 'scheduling' | 'availability' | 'services' | 'reports' | 'settings';
 type HeaderMode = 'default' | 'inside';
@@ -69,6 +57,10 @@ function Header({
 }: HeaderProps) {
   const {notification} = useNotification();
   const [open, setOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [newName, setNewName] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedTitle, setEditedTitle] = useState(title || '');
   const router = useRouter();
 
   if (mode === 'inside') {
@@ -80,7 +72,53 @@ function Header({
           </Button.Root>
           <div className="flex flex-col">
             <div className="text-text-strong-950 text-lg font-medium font-sans leading-normal">
-              {title || 'Configuração do Serviço'}
+              {title ? <div className="flex items-center gap-2">
+                {isEditing ? (
+                  <Input.Root>
+                    <Input.Input
+                      value={editedTitle}
+                      onChange={(e) => setEditedTitle(e.target.value)}
+                      onBlur={() => {
+                        setIsEditing(false);
+                        if (editedTitle.trim() && editedTitle !== title) {
+                          notification({
+                            title: 'Título atualizado!',
+                            description: 'O título foi atualizado com sucesso.',
+                            variant: 'stroke',
+                            status: 'success'
+                          });
+                        }
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          setIsEditing(false);
+                          if (editedTitle.trim() && editedTitle !== title) {
+                            notification({
+                              title: 'Título atualizado!',
+                              description: 'O título foi atualizado com sucesso.',
+                              variant: 'stroke',
+                              status: 'success'
+                            });
+                          }
+                        }
+                      }}
+                      autoFocus
+                    />
+                  </Input.Root>
+                ) : (
+                  <>
+                    <span>{editedTitle}</span>
+                    <Button.Root 
+                      variant="neutral" 
+                      mode="ghost" 
+                      size="small"
+                      onClick={() => setIsEditing(true)}
+                    >
+                      <Button.Icon as={RiPencilLine} />
+                    </Button.Root>
+                  </>
+                )}
+              </div> : 'Configuração do Serviço'}
             </div>
             {subtitle && (
               <div className="text-text-sub-600 text-paragraph-xs font-normal font-sans leading-tight">
@@ -247,7 +285,7 @@ function Header({
           description: 'Configure seus horários disponíveis para agendamentos.',
           buttons: (
             <div className="flex justify-start items-center gap-3 availability">
-              <FancyButton.Root variant="neutral">
+              <FancyButton.Root variant="neutral" onClick={() => setIsCreateModalOpen(true)}  >
                 <FancyButton.Icon as={RiAddLine} />
                 Criar Disponibilidade
               </FancyButton.Root>
@@ -371,6 +409,44 @@ function Header({
         </div>
       </div>
       <div className="flex justify-start items-center gap-3">{buttons}</div>
+      <Modal.Root open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
+        <Modal.Content className="max-w-[440px]">
+          <Modal.Body>
+            <div className="text-xl font-semibold mb-4">Adicionar nova disponibilidade</div>
+            <div className="mb-2 text-label-md">Nome</div>
+            <Input.Root>
+              <Input.Input
+                placeholder="Horas de Trabalho"
+                value={newName}
+                onChange={e => setNewName(e.target.value)}
+                autoFocus
+              />
+            </Input.Root>
+          </Modal.Body>
+          <Modal.Footer className="flex gap-2 justify-end">
+            <Modal.Close asChild>
+              <Button.Root variant="neutral" mode="stroke" size="small">
+                Fechar
+              </Button.Root>
+            </Modal.Close>
+            <Button.Root
+              variant="neutral"
+              size="small"
+              className="font-semibold"
+              disabled={!newName.trim()}
+              onClick={() => {
+                if (!newName.trim()) return;
+                const slug = newName.trim().toLowerCase().replace(/ /g, '-');
+                setIsCreateModalOpen(false);
+                setNewName('');
+                router.push(`/availability/${slug}`);
+              }}
+            >
+              Criar
+            </Button.Root>
+          </Modal.Footer>
+        </Modal.Content>
+      </Modal.Root>
     </div>
   );
 }

@@ -1,5 +1,3 @@
-'use client';
-
 import PageLayout from '@/components/PageLayout';
 import Header from '@/components/navigation/Header';
 import * as Divider from '@/components/align-ui/ui/divider';

@@ -117,7 +117,9 @@ export const groupAvailabilitiesBySchedule = <T extends ServerAvailabilityRespon
       scheduleName: scheduleInfo.name,
       timeZone: userTimezone,
       availability: formatAvailabilitySchedule(items, userTimezone),
-      isDefault: Boolean(scheduleInfo.user?.defaultScheduleId === scheduleInfo.id),
+      isDefault: Boolean(
+        scheduleInfo.user?.defaultScheduleId === Number(scheduleId)
+      )
     };
   }).filter(Boolean) as {
     scheduleId: number;
