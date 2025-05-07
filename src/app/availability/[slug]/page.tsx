@@ -1,9 +1,10 @@
-'use client';
-
 import PageLayout from '@/components/PageLayout';
 import Header from '@/components/navigation/Header';
 import * as Divider from '@/components/align-ui/ui/divider';
 import AvailabilityDetails from '@/components/availability/AvailabilityDetails';
+import {auth} from '@/auth';
+import {useRouter} from 'next/navigation';
+import {findDetailedScheduleById, getAvailabilityById} from '~/trpc/server/handlers/availability.handler';
 
 type Props = {
   params: {
@@ -11,17 +12,22 @@ type Props = {
   };
 };
 
-export default function AvailabilityDetailsPage({params}: Props) {
-    const title = decodeURIComponent(params.slug)
-      .split('-')
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
+export default async function AvailabilityDetailsPage({params}: Props) {
+  const session = await auth();
+
+  if (!session?.user.id) return;
+
+  const availabilityId = params.slug;
+
+  const availability = await findDetailedScheduleById({scheduleId: +availabilityId, userId: session.user.id});
+
+  const title = availability?.name;
 
   return (
     <PageLayout title="Disponibilidade">
-      <Header 
-        variant="availability" 
-        mode="inside" 
+      <Header
+        variant="availability"
+        mode="inside"
         title={title}
         subtitle="seg. - sex., 9:00 até 17:00"
       />
@@ -30,8 +36,8 @@ export default function AvailabilityDetailsPage({params}: Props) {
       </div>
 
       <div className="p-8">
-        <AvailabilityDetails title={title} />
+        <AvailabilityDetails title={title || ""} availability={availability} />
       </div>
     </PageLayout>
   );
-} 
+}
