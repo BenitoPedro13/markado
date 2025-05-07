@@ -12,6 +12,7 @@ import {
   ZUpdateAvailabilitySchema
 } from '../schemas/availability.schema';
 import {timeStringToDate} from '@/utils/time-utils';
+import { transformAvailability, transformDateOverrides, transformWorkingHours } from '~/trpc/server/utils/availability/findDetailedScheduleById';
 
 // Define a type for the update data that matches the Prisma schema
 type AvailabilityUpdateData = {
@@ -44,15 +45,75 @@ export const availabilityRouter = router({
   getById: protectedProcedure
     .input(z.object({id: z.number()}))
     .query(async ({ctx, input}) => {
-      return ctx.prisma.availability.findFirst({
+      return ctx.prisma.availability.findUnique({
         where: {
           id: input.id,
           userId: ctx.session?.user.id
         },
         include: {
-          schedule: true
+          schedule: {
+            include: {
+              user: true,
+              availability: true
+            }
+          }
         }
       });
+    }),
+
+  findDetailedScheduleById: protectedProcedure
+    .input(z.object({scheduleId: z.number(), timeZone: z.string()}))
+    .query(async ({ctx, input}) => {
+      const schedule = await ctx.prisma.schedule.findUnique({
+        where: {
+          id: input.scheduleId,
+          userId: ctx.session?.user.id
+        },
+        select: {
+          id: true,
+          userId: true,
+          name: true,
+          availability: true,
+          timeZone: true
+        }
+      });
+
+      if (!schedule) {
+        throw new Error('Schedule not found');
+      }
+
+      // const isCurrentUserPartOfTeam = hasReadPermissionsForUserId({
+      //   memberId: schedule?.userId,
+      //   userId
+      // });
+
+      // const isCurrentUserOwner = schedule?.userId === userId;
+
+      // if (!isCurrentUserPartOfTeam && !isCurrentUserOwner) {
+      //   throw new Error('UNAUTHORIZED');
+      // }
+
+      const timeZone = schedule.timeZone || input.timeZone;
+
+      const schedulesCount = await ctx.prisma.schedule.count({
+        where: {
+          userId: schedule.userId
+        }
+      });
+      // disabling utc casting while fetching WorkingHours
+      return {
+        id: schedule.id,
+        name: schedule.name,
+        // isManaged: schedule.userId !== userId,
+        workingHours: transformWorkingHours(schedule),
+        schedule: schedule.availability,
+        availability: transformAvailability(schedule),
+        timeZone,
+        dateOverrides: transformDateOverrides(schedule, timeZone),
+        // isDefault: !input.scheduleId || defaultScheduleId === schedule.id,
+        isLastSchedule: schedulesCount <= 1,
+        // readOnly: schedule.userId !== userId && !isManagedEventType
+      };
     }),
 
   // Create a new availability
@@ -60,12 +121,14 @@ export const availabilityRouter = router({
     .input(ZCreateAvailabilitySchema)
     .mutation(async ({ctx, input}) => {
       // Get the schedule to access its timezone
-      const schedule = input.scheduleId ? await ctx.prisma.schedule.findFirst({
-        where: {
-          id: input.scheduleId,
-          userId: ctx.session?.user.id
-        }
-      }) : null;
+      const schedule = input.scheduleId
+        ? await ctx.prisma.schedule.findFirst({
+            where: {
+              id: input.scheduleId,
+              userId: ctx.session?.user.id
+            }
+          })
+        : null;
 
       // Use the schedule's timezone or default to America/Sao_Paulo
       const timezone = schedule?.timeZone || 'America/Sao_Paulo';
@@ -112,25 +175,25 @@ export const availabilityRouter = router({
 
       // Create a properly typed update data object
       const updateData: AvailabilityUpdateData = {};
-      
+
       // Copy all fields except startTime and endTime
       if (input.data.days) {
         updateData.days = input.data.days;
       }
-      
+
       if (input.data.date) {
         updateData.date = new Date(input.data.date);
       }
-      
+
       if (input.data.scheduleId) {
         updateData.scheduleId = input.data.scheduleId;
       }
-      
+
       // Convert time strings to Date objects for database storage if provided
       if (input.data.startTime) {
         updateData.startTime = timeStringToDate(input.data.startTime);
       }
-      
+
       if (input.data.endTime) {
         updateData.endTime = timeStringToDate(input.data.endTime);
       }
