@@ -127,8 +127,10 @@ import {
 
 import {inferRouterOutputs} from '@trpc/server';
 import {AppRouter} from '~/trpc/server';
-import {useMemo, useState} from 'react';
-import {useRouter} from 'next/navigation';
+import { useMemo, useState} from 'react';
+import { useRouter } from 'next/navigation';
+import { usePageContext } from '@/contexts/PageContext';
+
 
 type RouterOutput = inferRouterOutputs<AppRouter>;
 
@@ -147,8 +149,19 @@ interface FormattedSchedule {
 export default function AvailabilityList({
   allAvailability
 }: AvailabilityListProps) {
-  const [availabilities, setAvailabilities] = useState<FormattedSchedule[]>([]);
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const { isCreateModalOpen, setIsCreateModalOpen } = usePageContext();
+  const [availabilities, setAvailabilities] = useState<FormattedSchedule[]>([
+    {
+     
+      // schedule: 'seg. - sex., 9:00 até 17:00', // valor padrão
+      timeZone: 'America/São_Paulo', // valor padrão
+      availability: 'new availability',
+      
+      scheduleId: Math.trunc(Math.random() * 1000),
+      scheduleName: 'Default Scheadule',
+      isDefault: true
+    }
+  ]);
   const [newName, setNewName] = useState('');
   const router = useRouter();
 
@@ -163,7 +176,9 @@ export default function AvailabilityList({
       isDefault: false
     };
 
-    setAvailabilities([...availabilities, newAvailability]);
+    setAvailabilities((oldState) => {
+      return [...oldState, newAvailability]
+    });
   };
 
   const handleDelete = (id: number) => {
@@ -191,41 +206,49 @@ export default function AvailabilityList({
       //   Sábado: {enabled: false, startTime: '09:00', endTime: '17:00'},
       //   Domingo: {enabled: false, startTime: '09:00', endTime: '17:00'}
       // }
-      scheduleId: (availabilities.length + 1) * Math.random(),
+      scheduleId: (availabilities.length + 1) * Math.random() * 1000,
       scheduleName: newName.trim(),
       isDefault: false
     };
-    setAvailabilities([...availabilities, newScheadule]);
+    setAvailabilities((oldState) => {
+      return [...oldState, newScheadule]
+    });
+    console.log('newScheadule', newScheadule);
+
     setIsCreateModalOpen(false);
     setNewName('');
     // router.push(`/availability/${slug}`);
   };
+
   // Format and group the server data by schedule
   const formattedSchedules = useMemo(() => {
     if (!allAvailability || !allAvailability.length) return [];
     // Use type assertion to handle type compatibility
-    const formatedInitialAllAvailabilities = groupAvailabilitiesBySchedule(allAvailability);
-    return [...availabilities, ...formatedInitialAllAvailabilities]
-  }, [allAvailability, availabilities]);
+    return groupAvailabilitiesBySchedule(allAvailability);
+  }, [allAvailability, ]);
 
   return (
     <>
       {' '}
       <div className="rounded-lg w-full border border-stroke-soft-200">
-        {/* {availabilities.map((availability) => (
-        <div key={availability.id}>
-          <Availability
-            key={availability.id}
-            title={availability.title}
-            schedule={availability.schedule}
-            timezone={availability.timezone}
-            isDefault={availability.isDefault}
-          />
-          {availability.id !== availabilities[availabilities.length - 1].id && (
-            <Divider.Root />
-          )}
-        </div>
-      ))} */}
+        {availabilities.map((data) => (
+          <div key={data.scheduleId}>
+            <Availability
+              id={data.scheduleId}
+              key={data.scheduleId}
+              title={data.scheduleName}
+              schedule={data.availability}
+              timezone={data.timeZone}
+              isDefault={data.isDefault}
+              onDelete={() => handleDelete(data.scheduleId)}
+              onDuplicate={() => handleDuplicate(data.scheduleId)}
+            />
+            {data.scheduleId !==
+              availabilities[availabilities.length - 1].scheduleId && (
+              <Divider.Root />
+            )}
+          </div>
+        ))}
 
         {formattedSchedules.map((data) => (
           <div key={data.scheduleId}>
