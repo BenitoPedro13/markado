@@ -5,6 +5,11 @@ import {
   ZUpdateAvailabilitySchema
 } from '../schemas/availability.schema';
 import {prisma} from '@/lib/prisma';
+import {
+  transformAvailability,
+  transformDateOverrides,
+  transformWorkingHours
+} from '../utils/availability/findDetailedScheduleById';
 
 export async function getAllAvailabilitiesHandler(ctx: Context) {
   if (!ctx.session?.user) {
@@ -14,7 +19,7 @@ export async function getAllAvailabilitiesHandler(ctx: Context) {
     });
   }
 
-  return getAllAvailabilitiesByUserId(ctx.session.user.id)
+  return getAllAvailabilitiesByUserId(ctx.session.user.id);
 }
 
 export async function getAllAvailabilitiesByUserId(userId: string) {
@@ -41,15 +46,7 @@ export async function getAvailabilityByIdHandler(ctx: Context, id: number) {
     });
   }
 
-  const availability = await ctx.prisma.availability.findFirst({
-    where: {
-      id,
-      userId: ctx.session.user.id
-    },
-    include: {
-      schedule: true
-    }
-  });
+  const availability = await getAvailabilityById(id);
 
   if (!availability) {
     throw new TRPCError({
@@ -59,6 +56,83 @@ export async function getAvailabilityByIdHandler(ctx: Context, id: number) {
   }
 
   return availability;
+}
+
+export async function getAvailabilityById(id: number) {
+  return prisma.availability.findUnique({
+    where: {
+      id
+    },
+    include: {
+      schedule: {
+        include: {
+          user: true,
+          availability: true
+        }
+      }
+    }
+  });
+}
+
+export async function findDetailedScheduleById({
+  scheduleId,
+  timeZone = 'America/Sao_Paulo',
+  userId
+}: {
+  scheduleId: number;
+  timeZone?: string;
+  userId: string;
+}) {
+  const schedule = await prisma.schedule.findUnique({
+    where: {
+      id: scheduleId,
+      userId: userId
+    },
+    select: {
+      id: true,
+      userId: true,
+      name: true,
+      availability: true,
+      timeZone: true
+    }
+  });
+
+  if (!schedule) {
+    throw new Error('Schedule not found');
+  }
+
+  // const isCurrentUserPartOfTeam = hasReadPermissionsForUserId({
+  //   memberId: schedule?.userId,
+  //   userId
+  // });
+
+  // const isCurrentUserOwner = schedule?.userId === userId;
+
+  // if (!isCurrentUserPartOfTeam && !isCurrentUserOwner) {
+  //   throw new Error('UNAUTHORIZED');
+  // }
+
+  const timezone = schedule.timeZone || timeZone;
+
+  const schedulesCount = await prisma.schedule.count({
+    where: {
+      userId: schedule.userId
+    }
+  });
+  // disabling utc casting while fetching WorkingHours
+  return {
+    id: schedule.id,
+    name: schedule.name,
+    // isManaged: schedule.userId !== userId,
+    workingHours: transformWorkingHours(schedule),
+    schedule: schedule.availability,
+    availability: transformAvailability(schedule),
+    timeZone: timezone,
+    dateOverrides: transformDateOverrides(schedule, timeZone),
+    // isDefault: !input.scheduleId || defaultScheduleId === schedule.id,
+    isLastSchedule: schedulesCount <= 1
+    // readOnly: schedule.userId !== userId && !isManagedEventType
+  };
 }
 
 export async function createAvailabilityHandler(
