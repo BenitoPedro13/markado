@@ -187,25 +187,10 @@ export default function AvailabilityList({
 
   const handleCreate = () => {
     if (!newName.trim()) return;
-    const slug = newName.trim().toLowerCase().replace(/ /g, '-');
     const newScheadule = {
-      // id: String(availabilities.length + 1),
-      // title: newName.trim(),
       schedule: 'seg. - sex., 9:00 até 17:00', // valor padrão
       timeZone: 'America/São_Paulo', // valor padrão
       availability: 'new availability',
-      // isDefault: false,
-      // status: 'active' as const,
-      // slug,
-      // schedules: {
-      //   'Segunda-feira': {enabled: true, startTime: '09:00', endTime: '17:00'},
-      //   'Terça-feira': {enabled: true, startTime: '09:00', endTime: '17:00'},
-      //   'Quarta-feira': {enabled: true, startTime: '09:00', endTime: '17:00'},
-      //   'Quinta-feira': {enabled: true, startTime: '09:00', endTime: '17:00'},
-      //   'Sexta-feira': {enabled: true, startTime: '09:00', endTime: '17:00'},
-      //   Sábado: {enabled: false, startTime: '09:00', endTime: '17:00'},
-      //   Domingo: {enabled: false, startTime: '09:00', endTime: '17:00'}
-      // }
       scheduleId: (availabilities.length + 1) * Math.random() * 1000,
       scheduleName: newName.trim(),
       isDefault: false
@@ -231,7 +216,7 @@ export default function AvailabilityList({
     <>
       {' '}
       <div className="rounded-lg w-full border border-stroke-soft-200">
-        {availabilities.map((data) => (
+        {/* {availabilities.map((data) => (
           <div key={data.scheduleId}>
             <Availability
               id={data.scheduleId}
@@ -248,7 +233,7 @@ export default function AvailabilityList({
               <Divider.Root />
             )}
           </div>
-        ))}
+        ))} */}
 
         {formattedSchedules.map((data) => (
           <div key={data.scheduleId}>
