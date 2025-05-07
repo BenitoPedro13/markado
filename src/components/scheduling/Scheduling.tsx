@@ -133,7 +133,7 @@ export default function Scheduling({
         <div className="flex items-center gap-3">
           {status === 'confirmed' ? (
             <>
-              {type === 'online' ? (
+              {type === 'online' && (
                 <Button.Root
                   variant="neutral"
                   mode="ghost"
@@ -142,11 +142,6 @@ export default function Scheduling({
                 >
                   <img src="/logos/Google Meet.svg" width={20} height={20} />
                   Entrar no Google Meet
-                </Button.Root>
-              ) : (
-                <Button.Root variant="neutral" mode="stroke" size="small">
-                  <Button.Icon as={RiMapPinLine} />
-                  Obter Rotas
                 </Button.Root>
               )}
               <Button.Root variant="neutral" mode="stroke" size="small">
