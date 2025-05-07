@@ -44,7 +44,7 @@ export default function Availability({
 
   return (
     <>
-      <Link href={`availability/${title.toLowerCase()}`} className="w-full">
+      <Link href={`availability/${id}`} className="w-full">
         <div className="p-4 flex hover:bg-bg-weak-50 transition-colors duration-200">
           {/* Leading */}
           <div className="w-full flex flex-col gap-2">
