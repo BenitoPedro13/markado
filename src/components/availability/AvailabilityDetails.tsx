@@ -88,8 +88,6 @@ export default function AvailabilityDetails({
 
   // if (isFetchingPending) return null;
 
-  console.log('schedules', schedule);
-
   return (
     <form className="space-y-6">
       <div className="space-y-4">
