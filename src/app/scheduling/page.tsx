@@ -46,7 +46,7 @@ export default function ServicesPage() {
         <div className="w-full gap-8 p-8">
           <div className="flex justify-between">
             <SchedulingFilter />
-            <div className="flex items-center gap-2 w-fit">
+            <div className="flex items-center justify-end gap-2">
               <SchedulingSearch />
               <SchedulingSort />
               <SchedulingViewControl />

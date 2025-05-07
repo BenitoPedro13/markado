@@ -30,10 +30,10 @@ export function SchedulingSort() {
         sortedSchedulings.sort((a, b) => b.title.localeCompare(a.title));
         break;
       case 'newest':
-        sortedSchedulings.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        sortedSchedulings.sort((a, b) => b.startTime.getTime() - a.startTime.getTime());
         break;
       case 'oldest':
-        sortedSchedulings.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        sortedSchedulings.sort((a, b) => a.startTime.getTime() - b.startTime.getTime());
         break;
     }
 

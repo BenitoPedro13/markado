@@ -9,27 +9,13 @@ import {
   RiArrowLeftSLine,
   RiDeleteBinLine,
   RiShare2Line,
-  RiCopyleftFill,
+
   RiFileCopyFill,
   RiCodeLine,
-  RiSaveLine,
+
   RiSaveFill,
   RiSettings4Line,
-  RiUser3Line,
-  RiUser3Fill,
-  RiGlobalLine,
-  RiGlobalFill,
-  RiCalendarFill,
-  RiVideoLine,
-  RiVideoFill,
-  RiLockLine,
-  RiLockFill,
-  RiVipCrownLine,
-  RiVipCrownFill,
-  RiWalletLine,
-  RiWalletFill,
-  RiStoreLine,
-  RiStoreFill
+
 } from '@remixicon/react';
 import React, {useState} from 'react';
 import * as Button from '@/components/align-ui/ui/button';

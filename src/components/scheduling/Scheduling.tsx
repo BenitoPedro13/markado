@@ -26,15 +26,16 @@ import {
   RiSendPlaneLine,
   RiSendPlane2Line
 } from '@remixicon/react';
+import * as Modal from '@/components/align-ui/ui/modal';
+import * as Textarea from '@/components/align-ui/ui/textarea';
+import {useState} from 'react';
 
 type SchedulingProps = {
   id: string;
   title: string;
   duration: number;
-  date: string;
-  weekDay: string;
-  time: string;
-  endTime: string;
+  startTime: Date;
+  endTime: Date;
   organizer: string;
   type: 'online' | 'presential';
   status: 'confirmed' | 'canceled';
@@ -44,26 +45,43 @@ export default function Scheduling({
   id,
   title,
   duration,
-  date,
-  weekDay,
-  time,
+  startTime,
   endTime,
   organizer,
   type,
   status
 }: SchedulingProps) {
   const {updateSchedulingStatus, deleteScheduling} = useScheduling();
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+  const [cancelMessage, setCancelMessage] = useState('');
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  const formatDate = (date: Date) => {
+    const weekDays = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
+    const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+    
+    return {
+      weekDay: weekDays[date.getDay()],
+      date: `${date.getDate()} de ${months[date.getMonth()]}`,
+      time: `${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}h`
+    };
+  };
+
+  const startDate = formatDate(startTime);
+  const endDate = formatDate(endTime);
+
+  const handleCancel = (message?: string) => {
+    updateSchedulingStatus(id, 'canceled');
+    setIsCancelModalOpen(false);
+    setCancelMessage('');
+    setIsDrawerOpen(false);
+  };
 
   return (
-    <Drawer.Root>
-      <Drawer.Trigger asChild>
-        <div
-          className="flex items-center justify-between  cursor-pointer p-4 hover:bg-bg-weak-50 transition-colors duration-200 bg-bg-white-0 rounded-lg shadow
-            "
-        >
-          {/* Lado Esquerdo */}
-          <div className="flex gap-8">
-            {/* Bloco do Título e Organizador */}
+    <Drawer.Root open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
+      <div className="flex items-center justify-between p-4 hover:bg-bg-weak-50 transition-colors duration-200 bg-bg-white-0 rounded-lg shadow">
+        <Drawer.Trigger asChild>
+          <div className="flex gap-8 cursor-pointer w-full">
             <div className="w-[250px]">
               <h3 className="text-paragraph-lg font-medium text-text-strong-950">
                 {title}
@@ -84,15 +102,17 @@ export default function Scheduling({
               </div>
             </div>
 
-            {/* Bloco da Data e Duração */}
             <div className="items-start">
               <div className="flex items-center gap-2 text-text-strong-950">
-                <span className="font-medium">{weekDay}</span>
-                <span>{date}</span>
+                <span className="font-medium">{startDate.weekDay}</span>
+                <span>{startDate.date}</span>
               </div>
               <div className="flex items-center gap-2 mt-2">
                 {status === 'confirmed' ? (
-                  <StatusBadge.Root className="text-label-sm" status="completed">
+                  <StatusBadge.Root
+                    className="text-label-sm"
+                    status="completed"
+                  >
                     <StatusBadge.Icon as={RiCheckboxCircleFill} />
                     Confirmado
                   </StatusBadge.Root>
@@ -103,77 +123,66 @@ export default function Scheduling({
                   </StatusBadge.Root>
                 )}
                 <span className="text-paragraph-sm text-text-sub-600">
-                  {time} até {endTime}
+                  {startDate.time} até {endDate.time}
                 </span>
               </div>
             </div>
           </div>
+        </Drawer.Trigger>
 
-          {/* Lado Direito - Ações */}
-          <div className="flex items-center gap-3">
-            {status === 'confirmed' ? (
-              <>
-                {type === 'online' ? (
-                  <Button.Root
-                    variant="neutral"
-                    mode="ghost"
-                    size="small"
-                    className="text-blue-400"
-              >
-                <img src="/logos/Google Meet.svg" width={20} height={20} />
-                Entrar no Google Meet
-              </Button.Root>
-            ) : (
-              <Button.Root
-                variant="neutral"
-                mode="stroke"
-                size="small"
-               
-              >
-                <Button.Icon as={RiMapPinLine} />
-                Obter Rotas
-              </Button.Root>
-            )}
-                <Button.Root variant="neutral" mode="stroke" size="small">
-                  Reagendar
+        <div className="flex items-center gap-3">
+          {status === 'confirmed' ? (
+            <>
+              {type === 'online' ? (
+                <Button.Root
+                  variant="neutral"
+                  mode="ghost"
+                  size="small"
+                  className="text-blue-400"
+                >
+                  <img src="/logos/Google Meet.svg" width={20} height={20} />
+                  Entrar no Google Meet
                 </Button.Root>
-                <Dropdown.Root>
-              <Dropdown.Trigger asChild>
+              ) : (
                 <Button.Root variant="neutral" mode="stroke" size="small">
-                  <Button.Icon as={RiMore2Fill} />
+                  <Button.Icon as={RiMapPinLine} />
+                  Obter Rotas
                 </Button.Root>
-              </Dropdown.Trigger>
-              <Dropdown.Content align="end" className="w-fit">
-                <Dropdown.Item>
-                  <Dropdown.ItemIcon as={RiMapPinLine} />
-                  Editar localização
-                </Dropdown.Item>
-                <Dropdown.Item>
-                  <Dropdown.ItemIcon as={RiUserAddLine} />
-                  Adicionar participantes
-                </Dropdown.Item>
-                <Dropdown.Item>
-                  <Dropdown.ItemIcon as={RiDeleteBinLine} />
-                  Cancelar agendamento
-                </Dropdown.Item>
-                <Dropdown.Item>
-                  <Dropdown.ItemIcon as={RiSendPlane2Line} />
-                  Solicitar reagendamento
-                </Dropdown.Item>
-              </Dropdown.Content>
-            </Dropdown.Root>
-              </>
-            ) : (
+              )}
               <Button.Root variant="neutral" mode="stroke" size="small">
-                <Button.Icon as={RiSendPlane2Line} />
-                Solicitar reagendamento
+                <Button.Icon as={RiTimeLine} />
+                Reagendar
               </Button.Root>
-            )}
-
-           
-          </div>
+              <Dropdown.Root>
+                <Dropdown.Trigger asChild>
+                  <Button.Root variant="neutral" mode="stroke" size="small">
+                    <Button.Icon as={RiMore2Fill} />
+                  </Button.Root>
+                </Dropdown.Trigger>
+                <Dropdown.Content align="end" className="w-fit">
+                  <Dropdown.Item>
+                    <Dropdown.ItemIcon as={RiMapPinLine} />
+                    Editar localização
+                  </Dropdown.Item>
+                  <Dropdown.Item>
+                    <Dropdown.ItemIcon as={RiUserAddLine} />
+                    Adicionar participantes
+                  </Dropdown.Item>
+                  <Dropdown.Item onClick={() => setIsCancelModalOpen(true)}>
+                    <Dropdown.ItemIcon as={RiDeleteBinLine} />
+                    Cancelar agendamento
+                  </Dropdown.Item>
+                </Dropdown.Content>
+              </Dropdown.Root>
+            </>
+          ) : (
+            <Button.Root variant="neutral" mode="stroke" size="small">
+              <Button.Icon as={RiTimeLine} />
+              Reagendar
+            </Button.Root>
+          )}
         </div>
-      </Drawer.Trigger>
+      </div>
       <Drawer.Content>
         <Drawer.Header>
           <Drawer.Title>Detalhe do agendamento</Drawer.Title>
@@ -183,10 +192,10 @@ export default function Scheduling({
             <Divider.Root variant="solid-text">Data e Hora</Divider.Root>
             <div className="rounded-lg px-6 py-4 space-y-2">
               <div className="text-title-h4 text-text-strong-950">
-                {time} até {endTime}
+                {startDate.time} até {endDate.time}
               </div>
               <div className="text-paragraph-md text-text-strong-950">
-                {weekDay}, {date}
+                {startDate.weekDay}, {startDate.date}
               </div>
             </div>
             <Divider.Root variant="solid-text">Convidado</Divider.Root>
@@ -262,7 +271,7 @@ export default function Scheduling({
                     mode="stroke"
                     size="medium"
                     className="w-full"
-                    onClick={() => updateSchedulingStatus(id, 'canceled')}
+                    onClick={() => setIsCancelModalOpen(true)}
                   >
                     Cancelar
                   </Button.Root>
@@ -280,6 +289,47 @@ export default function Scheduling({
           </div>
         </Drawer.Body>
       </Drawer.Content>
+
+      <Modal.Root open={isCancelModalOpen} onOpenChange={setIsCancelModalOpen}>
+        <Modal.Content>
+          <Modal.Header title="Motivo do cancelamento" />
+          <Modal.Body>
+            <div className="flex flex-col gap-2">
+              <textarea
+                className="w-full min-h-24 rounded-xl border border-stroke-soft-200 px-3 py-2.5 text-paragraph-sm text-text-strong-950 placeholder:text-text-soft-400 focus:outline-none focus:ring-2 focus:ring-stroke-strong-950"
+                placeholder="Por que você está cancelando?"
+                value={cancelMessage}
+                onChange={(e) => setCancelMessage(e.target.value)}
+                maxLength={500}
+              />
+              <div className="flex items-center gap-2 text-text-sub-600 text-paragraph-xs">
+                O motivo do cancelamento será compartilhado com os convidados
+              </div>
+            </div>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button.Root
+              variant="neutral"
+              mode="stroke"
+              size="medium"
+              className="w-full"
+              onClick={() => handleCancel()}
+            >
+              Não importa
+            </Button.Root>
+            <Button.Root
+              variant="error"
+              mode="filled"
+              size="medium"
+              className="w-full"
+              disabled={cancelMessage.trim().length === 0}
+              onClick={() => handleCancel(cancelMessage)}
+            >
+              Cancelar este evento
+            </Button.Root>
+          </Modal.Footer>
+        </Modal.Content>
+      </Modal.Root>
     </Drawer.Root>
   );
 }
