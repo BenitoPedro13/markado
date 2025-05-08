@@ -41,34 +41,38 @@ export const formatAvailabilitySchedule = (
 ): string => {
   if (!availabilities.length) return '';
 
-  // Sort availabilities by day
-  const sortedAvailabilities = [...availabilities].sort((a, b) => a.days[0] - b.days[0]);
+  // Group availabilities by day
+  const availabilitiesByDay: Record<number, ServerAvailabilityResponse[]> = {};
   
-  // Get start and end times from the first entry (assuming all entries have the same time)
-  const startTime = formatTimeWithTimezone(sortedAvailabilities[0].startTime, timezone);
-  const endTime = formatTimeWithTimezone(sortedAvailabilities[0].endTime, timezone);
+  availabilities.forEach(avail => {
+    const day = avail.days[0];
+    if (!availabilitiesByDay[day]) {
+      availabilitiesByDay[day] = [];
+    }
+    availabilitiesByDay[day].push(avail);
+  });
+
+  // Sort days
+  const sortedDays = Object.keys(availabilitiesByDay).map(Number).sort((a, b) => a - b);
   
   // Get consecutive day ranges
   const dayGroups: number[][] = [];
   let currentGroup: number[] = [];
   
-  sortedAvailabilities.forEach((avail, index) => {
-    const day = avail.days[0];
-    
-    if (index === 0 || day !== sortedAvailabilities[index - 1].days[0] + 1) {
+  sortedDays.forEach((day, index) => {
+    if (index === 0 || day !== sortedDays[index - 1] + 1) {
       if (currentGroup.length > 0) {
         dayGroups.push([...currentGroup]);
         currentGroup = [];
       }
     }
-    
     currentGroup.push(day);
     
-    if (index === sortedAvailabilities.length - 1) {
+    if (index === sortedDays.length - 1) {
       dayGroups.push([...currentGroup]);
     }
   });
-  
+
   // Format day ranges
   const dayRanges = dayGroups.map(group => {
     if (group.length === 1) {
@@ -77,10 +81,25 @@ export const formatAvailabilitySchedule = (
       return `${dayAbbreviations[group[0]]} - ${dayAbbreviations[group[group.length - 1]]}`;
     }
   });
+
+  // Get overall time range (earliest start to latest end)
+  const startTime = formatTimeWithTimezone(
+    availabilities.reduce((earliest, curr) => 
+      curr.startTime < earliest.startTime ? curr : earliest
+    ).startTime,
+    timezone
+  );
   
+  const endTime = formatTimeWithTimezone(
+    availabilities.reduce((latest, curr) => 
+      curr.endTime > latest.endTime ? curr : latest
+    ).endTime,
+    timezone
+  );
+
   // Join day ranges with commas
   const daysFormatted = dayRanges.join(', ');
-  
+
   // Return the full formatted string
   return `${daysFormatted}, ${startTime} até ${endTime}`;
 };
