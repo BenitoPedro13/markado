@@ -41,6 +41,7 @@ import * as ButtonGroup from '@/components/align-ui/ui/button-group';
 import * as Tooltip from '@/components/align-ui/ui/tooltip';
 import { useRouter } from 'next/navigation';
 import { DatepickerRangeDemo } from '@/components/align-ui/daterange';
+import CreateServiceModal from '@/components/services/CreateServiceModal';
 
 type HeaderVariant = 'scheduling' | 'availability' | 'services' | 'reports' | 'settings';
 type HeaderMode = 'default' | 'inside';
@@ -69,6 +70,7 @@ function Header({
 }: HeaderProps) {
   const {notification} = useNotification();
   const [open, setOpen] = useState(false);
+  const [isCreateServiceModalOpen, setIsCreateServiceModalOpen] = useState(false);
   const router = useRouter();
 
   if (mode === 'inside') {
@@ -266,7 +268,10 @@ function Header({
                 <Button.Icon as={RiLinksLine} />
                 Páginas de Serviços
               </Button.Root>
-              <FancyButton.Root variant="neutral">
+              <FancyButton.Root 
+                variant="neutral"
+                onClick={() => setIsCreateServiceModalOpen(true)}
+              >
                 <FancyButton.Icon as={RiAddLine} />
                 Criar Serviço
               </FancyButton.Root>
@@ -356,22 +361,28 @@ function Header({
   const {icon: headerIcon, title: variantTitle, description, buttons} = getHeaderContent();
 
   return (
-    <div className="w-full px-8 py-5 relative inline-flex justify-start items-center gap-3 overflow-hidden">
-      <div className="flex-1 flex justify-center items-start gap-3.5">
-        <div className="p-3 bg-bg-white-0 rounded-[999px] shadow-[0px_1px_2px_0px_rgba(10,13,20,0.03)] outline outline-1 outline-offset-[-1px] outline-stroke-soft-200 flex justify-center items-center overflow-hidden">
-          {headerIcon}
-        </div>
-        <div className="flex-1 inline-flex flex-col justify-start items-start gap-1">
-          <div className="self-stretch justify-start text-text-strong-950 text-lg font-medium font-sans leading-normal">
-            {variantTitle}
+    <>
+      <div className="w-full px-8 py-5 relative inline-flex justify-start items-center gap-3 overflow-hidden">
+        <div className="flex-1 flex justify-center items-start gap-3.5">
+          <div className="p-3 bg-bg-white-0 rounded-[999px] shadow-[0px_1px_2px_0px_rgba(10,13,20,0.03)] outline outline-1 outline-offset-[-1px] outline-stroke-soft-200 flex justify-center items-center overflow-hidden">
+            {headerIcon}
           </div>
-          <div className="self-stretch justify-start text-text-sub-600 text-sm font-normal font-sans leading-tight">
-            {description}
+          <div className="flex-1 inline-flex flex-col justify-start items-start gap-1">
+            <div className="self-stretch justify-start text-text-strong-950 text-lg font-medium font-sans leading-normal">
+              {variantTitle}
+            </div>
+            <div className="self-stretch justify-start text-text-sub-600 text-sm font-normal font-sans leading-tight">
+              {description}
+            </div>
           </div>
         </div>
+        <div className="flex justify-start items-center gap-3">{buttons}</div>
       </div>
-      <div className="flex justify-start items-center gap-3">{buttons}</div>
-    </div>
+      <CreateServiceModal 
+        open={isCreateServiceModalOpen} 
+        onOpenChange={setIsCreateServiceModalOpen} 
+      />
+    </>
   );
 }
 
