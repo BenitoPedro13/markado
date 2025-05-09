@@ -60,12 +60,6 @@ const mainItems: sidebarItem[] = [
     iconFill: <RiLinksFill />,
     label: 'Serviços',
     link: 'services'
-  },
-  {
-    iconLine: <RiDashboard3Line />,
-    iconFill: <RiDashboard3Fill />,
-    label: 'Relatórios',
-    link: 'reports'
   }
 ];
 

@@ -196,8 +196,8 @@ export default function Scheduling({
 
             <div className="items-start">
               <div className="flex items-center gap-2 text-text-strong-950">
-                <span>{startDate.date}</span>
-                <span className="font-medium">{startDate.weekDay}</span>
+                <span className="font-medium">{startDate.date}</span>
+                <span>{startDate.weekDay}</span>
               </div>
               <div className="flex items-center gap-2 mt-2">
                 {status === 'confirmed' ? (
