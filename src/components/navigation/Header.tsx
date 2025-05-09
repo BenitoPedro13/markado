@@ -219,10 +219,7 @@ function Header({
             'Visualize e gerencie todos os agendamentos do seu calendário.',
           buttons: (
             <div className="scheduling">
-              <FancyButton.Root variant="neutral">
-                <FancyButton.Icon as={RiAddLine} />
-                Novo Agendamento
-              </FancyButton.Root>
+             
             </div>
           )
         };
