@@ -41,6 +41,11 @@ type SchedulingProps = {
   status: 'confirmed' | 'canceled';
 };
 
+type Participant = {
+  name: string;
+  email: string;
+};
+
 export default function Scheduling({
   id,
   title,
@@ -55,6 +60,9 @@ export default function Scheduling({
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [cancelMessage, setCancelMessage] = useState('');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isAddParticipantsModalOpen, setIsAddParticipantsModalOpen] = useState(false);
+  const [participantEmails, setParticipantEmails] = useState(['']);
+  const [participants, setParticipants] = useState<Participant[]>([]);
 
   const formatDate = (date: Date) => {
     const weekDays = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
@@ -77,12 +85,41 @@ export default function Scheduling({
     setIsDrawerOpen(false);
   };
 
+  const handleAddEmailInput = () => {
+    setParticipantEmails([...participantEmails, '']);
+  };
+
+  const handleEmailChange = (index: number, value: string) => {
+    const newEmails = [...participantEmails];
+    newEmails[index] = value;
+    setParticipantEmails(newEmails);
+  };
+
+  const handleAddParticipants = () => {
+    const newParticipants = participantEmails
+      .filter(email => email.trim() !== '')
+      .map(email => ({
+        name: email.split('@')[0],
+        email: email
+      }));
+    
+    setParticipants([...participants, ...newParticipants]);
+    setIsAddParticipantsModalOpen(false);
+    setParticipantEmails(['']);
+  };
+
+  const getParticipantsText = () => {
+    if (participants.length === 0) return organizer;
+    if (participants.length === 1) return `${organizer}, ${participants[0].name}`;
+    return `${organizer} + ${participants.length} participantes`;
+  };
+
   return (
     <Drawer.Root open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
       <div className="flex items-center justify-between p-4 hover:bg-bg-weak-50 transition-colors duration-200 bg-bg-white-0 rounded-lg shadow">
         <Drawer.Trigger asChild>
           <div className="flex gap-8 cursor-pointer w-full">
-            <div className="w-[250px]">
+            <div className="w-[300px]">
               <h3 className="text-paragraph-lg font-medium text-text-strong-950">
                 {title}
               </h3>
@@ -98,7 +135,7 @@ export default function Scheduling({
                   />
                   {type === 'online' ? 'Online' : 'Presencial'}
                 </Badge.Root>
-                <span className="text-sm text-text-sub-600">{organizer}</span>
+                <span className="text-sm text-text-sub-600">{getParticipantsText()}</span>
               </div>
             </div>
 
@@ -159,7 +196,7 @@ export default function Scheduling({
                     <Dropdown.ItemIcon as={RiMapPinLine} />
                     Editar localização
                   </Dropdown.Item>
-                  <Dropdown.Item>
+                  <Dropdown.Item onClick={() => setIsAddParticipantsModalOpen(true)}>
                     <Dropdown.ItemIcon as={RiUserAddLine} />
                     Adicionar participantes
                   </Dropdown.Item>
@@ -212,6 +249,25 @@ export default function Scheduling({
                 </div>
               </div>
             </div>
+            {participants.length > 0 && (
+              <>
+                <Divider.Root variant="solid-text">Participantes adicionais</Divider.Root>
+                <div className="px-4 rounded-lg space-y-4">
+                  {participants.map((participant, index) => (
+                    <div key={index} className="flex items-center gap-3">
+                      <div className="bg-success-lighter text-success-base rounded-full size-10 flex items-center justify-center text-heading-sm">
+                        {participant.email.split('@')[0][0].toUpperCase()}
+                      </div>
+                      <div>
+                        <div className="text-paragraph-sm text-text-sub-600">
+                          {participant.email}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
             <Divider.Root variant="solid-text">Convidado</Divider.Root>
             <div className="px-4 rounded-lg space-y-2">
               <div className="space-y-4">
@@ -321,6 +377,56 @@ export default function Scheduling({
               onClick={() => handleCancel(cancelMessage)}
             >
               Cancelar este evento
+            </Button.Root>
+          </Modal.Footer>
+        </Modal.Content>
+      </Modal.Root>
+
+      <Modal.Root open={isAddParticipantsModalOpen} onOpenChange={setIsAddParticipantsModalOpen}>
+        <Modal.Content>
+          <Modal.Header title="Adicionar participantes" />
+          <Modal.Body>
+            <div className="flex flex-col gap-4">
+              {participantEmails.map((email, index) => (
+                <div key={index} className="flex gap-2">
+                  <input
+                    type="email"
+                    className="w-full rounded-xl border border-stroke-soft-200 px-3 py-2.5 text-paragraph-sm text-text-strong-950 placeholder:text-text-soft-400 focus:outline-none focus:ring-2 focus:ring-stroke-strong-950"
+                    placeholder="Digite o email do participante"
+                    value={email}
+                    onChange={(e) => handleEmailChange(index, e.target.value)}
+                  />
+                </div>
+              ))}
+              <Button.Root
+                variant="neutral"
+                mode="ghost"
+                size="small"
+                onClick={handleAddEmailInput}
+              >
+                <Button.Icon as={RiUserAddLine} />
+                Adicionar mais
+              </Button.Root>
+            </div>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button.Root
+              variant="neutral"
+              mode="stroke"
+              size="medium"
+              className="w-full"
+              onClick={() => setIsAddParticipantsModalOpen(false)}
+            >
+              Cancelar
+            </Button.Root>
+            <Button.Root
+              variant="primary"
+              mode="filled"
+              size="medium"
+              className="w-full"
+              onClick={handleAddParticipants}
+            >
+              Adicionar participantes
             </Button.Root>
           </Modal.Footer>
         </Modal.Content>
