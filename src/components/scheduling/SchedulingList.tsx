@@ -13,7 +13,15 @@ export default function SchedulingList() {
         <div key={scheduling.id}>
           <Scheduling
             key={scheduling.id}
-            {...scheduling}
+            id={scheduling.id}
+            title={scheduling.title}
+            duration={scheduling.duration}
+            startTime={scheduling.startTime}
+            endTime={scheduling.endTime}
+            organizer={scheduling.organizer}
+            type={scheduling.type}
+            status={scheduling.status}
+            location={scheduling.location}
           />
           <Divider.Root />  
         </div>
@@ -22,3 +30,4 @@ export default function SchedulingList() {
     </div>
   );
 } 
+

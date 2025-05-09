@@ -17,6 +17,7 @@ type Scheduling = {
   type: 'online' | 'presential';
   participants: string[];
   status: 'confirmed' | 'canceled';
+  location?: string;
 };
 
 type FilterType = 'todas' | 'confirmadas' | 'canceladas';
@@ -33,6 +34,7 @@ type SchedulingContextType = {
   setView: (view: ViewType) => void;
   schedulings: Scheduling[];
   setSchedulings: React.Dispatch<React.SetStateAction<Scheduling[]>>;
+  updateSchedulingType: (id: string, type: 'online' | 'presential', location?: string) => void;
 };
 
 const initialSchedulings: Scheduling[] = [
@@ -45,7 +47,8 @@ const initialSchedulings: Scheduling[] = [
     organizer: 'João',
     type: 'online',
     participants: ['Você', 'João'],
-    status: 'confirmed'
+    status: 'confirmed',
+    location: 'Google Meet'
   },
   {
     id: '2',
@@ -56,7 +59,8 @@ const initialSchedulings: Scheduling[] = [
     organizer: 'Marcus Dutra',
     type: 'online',
     participants: ['com Marcus Dutra'],
-    status: 'confirmed'
+    status: 'confirmed',
+    location: 'Google Meet'
   },
   {
     id: '3',
@@ -67,7 +71,8 @@ const initialSchedulings: Scheduling[] = [
     organizer: 'Lucas',
     type: 'online',
     participants: ['Você', 'Lucas'],
-    status: 'confirmed'
+    status: 'confirmed',
+    location: 'Google Meet'
   },
   {
     id: '4',
@@ -78,7 +83,8 @@ const initialSchedulings: Scheduling[] = [
     organizer: 'Mário',
     type: 'online',
     participants: ['Você', 'Mário'],
-    status: 'confirmed'
+    status: 'confirmed',
+    location: 'Google Meet'
   },
   {
     id: '5',
@@ -89,7 +95,8 @@ const initialSchedulings: Scheduling[] = [
     organizer: 'Dr. Silva',
     type: 'presential',
     participants: ['Dr. Silva'],
-    status: 'confirmed'
+    status: 'confirmed',
+    location: 'Av. Rio Branco, 156 - Centro, Rio de Janeiro - RJ, 20040-007'
   },
   {
     id: '6',
@@ -100,7 +107,8 @@ const initialSchedulings: Scheduling[] = [
     organizer: 'Dra. Ana',
     type: 'presential',
     participants: ['Dra. Ana'],
-    status: 'canceled'
+    status: 'canceled',
+    location: 'Rua do Ouvidor, 60 - Centro, Rio de Janeiro - RJ, 20040-030'
   },
   {
     id: '7',
@@ -111,7 +119,8 @@ const initialSchedulings: Scheduling[] = [
     organizer: 'Nutricionista Paula',
     type: 'presential',
     participants: ['Nutricionista Paula'],
-    status: 'confirmed'
+    status: 'confirmed',
+    location: 'Rua da Quitanda, 86 - Centro, Rio de Janeiro - RJ, 20011-030'
   }
 ];
 
@@ -170,6 +179,18 @@ export function SchedulingProvider({ children }: { children: ReactNode }) {
     setCurrentView(view);
   };
 
+  const updateSchedulingType = (id: string, type: 'online' | 'presential', location?: string) => {
+    setSchedulings(prevSchedulings => 
+      prevSchedulings.map(scheduling => 
+        scheduling.id === id ? { 
+          ...scheduling, 
+          type,
+          location: location || (type === 'online' ? 'Google Meet' : scheduling.location)
+        } : scheduling
+      )
+    );
+  };
+
   return (
     <SchedulingContext.Provider value={{ 
       filteredSchedulings, 
@@ -181,7 +202,8 @@ export function SchedulingProvider({ children }: { children: ReactNode }) {
       currentView,
       setView,
       schedulings,
-      setSchedulings
+      setSchedulings,
+      updateSchedulingType
     }}>
       {children}
     </SchedulingContext.Provider>
