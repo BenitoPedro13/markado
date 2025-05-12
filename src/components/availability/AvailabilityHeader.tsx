@@ -11,12 +11,11 @@ import {
   RiShare2Line,
   RiCopyleftFill,
   RiFileCopyFill,
-  RiCodeLine, 
+  RiCodeLine,
   RiSaveLine,
   RiSaveFill,
   RiSettings4Line,
   RiPencilLine
-
 } from '@remixicon/react';
 import React, {useState} from 'react';
 import * as Button from '@/components/align-ui/ui/button';
@@ -26,13 +25,18 @@ import * as Modal from '@/components/align-ui/ui/modal';
 import {useNotification} from '@/hooks/use-notification';
 import * as ButtonGroup from '@/components/align-ui/ui/button-group';
 import * as Tooltip from '@/components/align-ui/ui/tooltip';
-import { useRouter } from 'next/navigation';
-import { DatepickerRangeDemo } from '@/components/align-ui/daterange';
+import {useRouter} from 'next/navigation';
+import {DatepickerRangeDemo} from '@/components/align-ui/daterange';
 import * as Input from '@/components/align-ui/ui/input';
-import { usePageContext } from '@/contexts/PageContext';
-import { useAvailability } from '@/contexts/AvailabilityContext';
+import {usePageContext} from '@/contexts/PageContext';
+import {useAvailability} from '@/contexts/AvailabilityContext';
 
-type HeaderVariant = 'scheduling' | 'availability' | 'services' | 'reports' | 'settings';
+type HeaderVariant =
+  | 'scheduling'
+  | 'availability'
+  | 'services'
+  | 'reports'
+  | 'settings';
 type HeaderMode = 'default' | 'inside';
 
 type HeaderProps = {
@@ -58,12 +62,12 @@ function Header({
   selectedMenuItem
 }: HeaderProps) {
   const {notification} = useNotification();
-  const { isCreateModalOpen, setIsCreateModalOpen } = usePageContext();
+  const {isCreateModalOpen, setIsCreateModalOpen} = usePageContext();
   const [open, setOpen] = useState(false);
   const [newName, setNewName] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   // const {queries: {availability}, availabilityDetailsForm} = useAvailability();
-  const [editedTitle, setEditedTitle] = useState(title  || '');
+  const [editedTitle, setEditedTitle] = useState(title || '');
   const router = useRouter();
 
   const getHeaderContent = () => {
@@ -115,7 +119,10 @@ function Header({
           description: 'Configure seus horários disponíveis para agendamentos.',
           buttons: (
             <div className="flex justify-start items-center gap-3 availability">
-              <FancyButton.Root variant="neutral" onClick={() => setIsCreateModalOpen(true)}  >
+              <FancyButton.Root
+                variant="neutral"
+                onClick={() => setIsCreateModalOpen(true)}
+              >
                 <FancyButton.Icon as={RiAddLine} />
                 Criar Disponibilidade
               </FancyButton.Root>
@@ -126,8 +133,7 @@ function Header({
         return {
           icon: <RiLinksLine className="text-bg-strong-950" />,
           title: 'Serviços',
-          description:
-            'Crie serviços para os clientes agendarem',
+          description: 'Crie serviços para os clientes agendarem',
           buttons: (
             <div className="services flex gap-2">
               <Button.Root variant="neutral" mode="stroke">
@@ -225,58 +231,69 @@ function Header({
     return (
       <div className="w-full h-[88px] px-8 py-5 relative bg-bg-white-0 inline-flex justify-between items-center overflow-hidden">
         <div className="flex items-center gap-3">
-          <Button.Root variant="neutral" mode="stroke" size="small" onClick={() => router.back()}>
+          <Button.Root
+            variant="neutral"
+            mode="stroke"
+            size="small"
+            onClick={() => router.back()}
+          >
             <Button.Icon as={RiArrowLeftSLine} />
           </Button.Root>
           <div className="flex flex-col">
             <div className="text-text-strong-950 text-lg font-medium font-sans leading-normal">
-              {title ? <div className="flex items-center gap-2">
-                {isEditing ? (
-                  <Input.Root>
-                    <Input.Input
-                      value={editedTitle}
-                      onChange={(e) => setEditedTitle(e.target.value)}
-                      onBlur={() => {
-                        setIsEditing(false);
-                        if (editedTitle.trim() && editedTitle !== title) {
-                          notification({
-                            title: 'Título atualizado!',
-                            description: 'O título foi atualizado com sucesso.',
-                            variant: 'stroke',
-                            status: 'success'
-                          });
-                        }
-                      }}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
+              {title ? (
+                <div className="flex items-center gap-2">
+                  {isEditing ? (
+                    <Input.Root>
+                      <Input.Input
+                        value={editedTitle}
+                        onChange={(e) => setEditedTitle(e.target.value)}
+                        onBlur={() => {
                           setIsEditing(false);
                           if (editedTitle.trim() && editedTitle !== title) {
                             notification({
                               title: 'Título atualizado!',
-                              description: 'O título foi atualizado com sucesso.',
+                              description:
+                                'O título foi atualizado com sucesso.',
                               variant: 'stroke',
                               status: 'success'
                             });
                           }
-                        }
-                      }}
-                      autoFocus
-                    />
-                  </Input.Root>
-                ) : (
-                  <>
-                    <span>{editedTitle}</span>
-                    <Button.Root 
-                      variant="neutral" 
-                      mode="ghost" 
-                      size="small"
-                      onClick={() => setIsEditing(true)}
-                    >
-                      <Button.Icon as={RiPencilLine} />
-                    </Button.Root>
-                  </>
-                )}
-              </div> : 'Configuração do Serviço'}
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            setIsEditing(false);
+                            if (editedTitle.trim() && editedTitle !== title) {
+                              notification({
+                                title: 'Título atualizado!',
+                                description:
+                                  'O título foi atualizado com sucesso.',
+                                variant: 'stroke',
+                                status: 'success'
+                              });
+                            }
+                          }
+                        }}
+                        autoFocus
+                      />
+                    </Input.Root>
+                  ) : (
+                    <>
+                      <span>{editedTitle}</span>
+                      <Button.Root
+                        variant="neutral"
+                        mode="ghost"
+                        size="small"
+                        onClick={() => setIsEditing(true)}
+                      >
+                        <Button.Icon as={RiPencilLine} />
+                      </Button.Root>
+                    </>
+                  )}
+                </div>
+              ) : (
+                'Configuração do Serviço'
+              )}
             </div>
             {subtitle && (
               <div className="text-text-sub-600 text-paragraph-xs font-normal font-sans leading-tight">
@@ -321,9 +338,7 @@ function Header({
                         <ButtonGroup.Icon as={RiCodeLine} />
                       </ButtonGroup.Item>
                     </Tooltip.Trigger>
-                    <Tooltip.Content size="small">
-                      Criar embed
-                    </Tooltip.Content>
+                    <Tooltip.Content size="small">Criar embed</Tooltip.Content>
                   </Tooltip.Root>
                 </ButtonGroup.Root>
               </>
@@ -373,7 +388,7 @@ function Header({
           </div>
           <FancyButton.Root
             variant="neutral"
-            size='small'
+            size="small"
             onClick={() => {
               if ((window as any).submitServiceForm) {
                 (window as any).submitServiceForm();
@@ -394,7 +409,12 @@ function Header({
     );
   }
 
-  const {icon: headerIcon, title: variantTitle, description, buttons} = getHeaderContent();
+  const {
+    icon: headerIcon,
+    title: variantTitle,
+    description,
+    buttons
+  } = getHeaderContent();
 
   return (
     <div className="w-full px-8 py-5 relative inline-flex justify-start items-center gap-3 overflow-hidden">
@@ -415,13 +435,15 @@ function Header({
       <Modal.Root open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
         <Modal.Content className="max-w-[440px]">
           <Modal.Body>
-            <div className="text-xl font-semibold mb-4">Adicionar nova disponibilidade</div>
+            <div className="text-xl font-semibold mb-4">
+              Adicionar nova disponibilidade
+            </div>
             <div className="mb-2 text-label-md">Nome</div>
             <Input.Root>
               <Input.Input
                 placeholder="Horas de Trabalho"
                 value={newName}
-                onChange={e => setNewName(e.target.value)}
+                onChange={(e) => setNewName(e.target.value)}
                 autoFocus
               />
             </Input.Root>
