@@ -31,12 +31,12 @@ function IconCmd(props: React.SVGProps<SVGSVGElement>) {
 export default function ServicesPage() {
   return (
     <PageLayout title="Home">
-      <Header variant="services" />
-      <div className="px-8">
-        <Divider.Root />
-      </div>
-
       <ServicesProvider>
+        <Header variant="services" />
+        <div className="px-8">
+          <Divider.Root />
+        </div>
+
         <div className="gap-8 p-8 ">
           <div className="flex justify-between">
             <ServicesFilter />

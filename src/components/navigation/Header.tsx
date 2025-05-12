@@ -31,6 +31,7 @@ import { DatepickerRangeDemo } from '@/components/align-ui/daterange';
 import * as Input from '@/components/align-ui/ui/input';
 import { usePageContext } from '@/contexts/PageContext';
 import { useAvailability } from '@/contexts/AvailabilityContext';
+import CreateServiceModal from '@/components/services/CreateServiceModal';
 
 type HeaderVariant = 'scheduling' | 'availability' | 'services' | 'reports' | 'settings';
 type HeaderMode = 'default' | 'inside';
@@ -64,6 +65,7 @@ function Header({
   const [isEditing, setIsEditing] = useState(false);
   // const {queries: {availability}, availabilityDetailsForm} = useAvailability();
   const [editedTitle, setEditedTitle] = useState(title  || '');
+  const [isCreateServiceModalOpen, setIsCreateServiceModalOpen] = useState(false);
   const router = useRouter();
 
   const getHeaderContent = () => {
@@ -397,60 +399,28 @@ function Header({
   const {icon: headerIcon, title: variantTitle, description, buttons} = getHeaderContent();
 
   return (
-    <div className="w-full px-8 py-5 relative inline-flex justify-start items-center gap-3 overflow-hidden">
-      <div className="flex-1 flex justify-center items-start gap-3.5">
-        <div className="p-3 bg-bg-white-0 rounded-[999px] shadow-[0px_1px_2px_0px_rgba(10,13,20,0.03)] outline outline-1 outline-offset-[-1px] outline-stroke-soft-200 flex justify-center items-center overflow-hidden">
-          {headerIcon}
-        </div>
-        <div className="flex-1 inline-flex flex-col justify-start items-start gap-1">
-          <div className="self-stretch justify-start text-text-strong-950 text-lg font-medium font-sans leading-normal">
-            {variantTitle}
+    <>
+      <div className="w-full px-8 py-5 relative inline-flex justify-start items-center gap-3 overflow-hidden">
+        <div className="flex-1 flex justify-center items-start gap-3.5">
+          <div className="p-3 bg-bg-white-0 rounded-[999px] shadow-[0px_1px_2px_0px_rgba(10,13,20,0.03)] outline outline-1 outline-offset-[-1px] outline-stroke-soft-200 flex justify-center items-center overflow-hidden">
+            {headerIcon}
           </div>
-          <div className="self-stretch justify-start text-text-sub-600 text-sm font-normal font-sans leading-tight">
-            {description}
+          <div className="flex-1 inline-flex flex-col justify-start items-start gap-1">
+            <div className="self-stretch justify-start text-text-strong-950 text-lg font-medium font-sans leading-normal">
+              {variantTitle}
+            </div>
+            <div className="self-stretch justify-start text-text-sub-600 text-sm font-normal font-sans leading-tight">
+              {description}
+            </div>
           </div>
         </div>
+        <div className="flex justify-start items-center gap-3">{buttons}</div>
       </div>
-      <div className="flex justify-start items-center gap-3">{buttons}</div>
-      <Modal.Root open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
-        <Modal.Content className="max-w-[440px]">
-          <Modal.Body>
-            <div className="text-xl font-semibold mb-4">Adicionar nova disponibilidade</div>
-            <div className="mb-2 text-label-md">Nome</div>
-            <Input.Root>
-              <Input.Input
-                placeholder="Horas de Trabalho"
-                value={newName}
-                onChange={e => setNewName(e.target.value)}
-                autoFocus
-              />
-            </Input.Root>
-          </Modal.Body>
-          <Modal.Footer className="flex gap-2 justify-end">
-            <Modal.Close asChild>
-              <Button.Root variant="neutral" mode="stroke" size="small">
-                Fechar
-              </Button.Root>
-            </Modal.Close>
-            <Button.Root
-              variant="neutral"
-              size="small"
-              className="font-semibold"
-              disabled={!newName.trim()}
-              onClick={() => {
-                if (!newName.trim()) return;
-                const slug = newName.trim().toLowerCase().replace(/ /g, '-');
-                setIsCreateModalOpen(false);
-                setNewName('');
-                // router.push(`/availability/${slug}`);
-              }}
-            >
-              Criar
-            </Button.Root>
-          </Modal.Footer>
-        </Modal.Content>
-      </Modal.Root>
-    </div>
+      <CreateServiceModal 
+        open={isCreateServiceModalOpen} 
+        onOpenChange={setIsCreateServiceModalOpen} 
+      />
+    </>
   );
 }
 
