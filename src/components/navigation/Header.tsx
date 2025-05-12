@@ -9,13 +9,11 @@ import {
   RiArrowLeftSLine,
   RiDeleteBinLine,
   RiShare2Line,
-  RiCopyleftFill,
   RiFileCopyFill,
   RiCodeLine, 
-  RiSaveLine,
   RiSaveFill,
+  RiPencilLine,
   RiSettings4Line,
-  RiPencilLine
 
 } from '@remixicon/react';
 import React, {useState} from 'react';
