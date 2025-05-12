@@ -128,9 +128,6 @@ dependencies:
   googleapis:
     specifier: ^148.0.0
     version: 148.0.0
-  jest:
-    specifier: ^29.7.0
-    version: 29.7.0(@types/node@20.17.31)(ts-node@10.9.2)
   js-cookie:
     specifier: ^3.0.5
     version: 3.0.5
@@ -232,6 +229,9 @@ devDependencies:
   identity-obj-proxy:
     specifier: ^3.0.0
     version: 3.0.0
+  jest:
+    specifier: ^29.7.0
+    version: 29.7.0(@types/node@20.17.31)(ts-node@10.9.2)
   jest-environment-jsdom:
     specifier: ^29.7.0
     version: 29.7.0

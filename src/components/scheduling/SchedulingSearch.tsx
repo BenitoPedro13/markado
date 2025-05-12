@@ -1,13 +1,9 @@
-"use client"
+'use client';
 
-import PageLayout from '@/components/PageLayout';
-import {useTranslations} from 'next-intl';
-import Header from '@/components/navigation/Header';
-import * as Divider from '@/components/align-ui/ui/divider';
-import { ServicesProvider } from '@/contexts/ServicesContext';
-import ServicesList from '@/components/services/ServicesList';
-import ServicesSearch from '@/components/services/ServicesSearch';
-import ServicesFilter from '@/components/services/ServicesFilter';
+import * as Input from '@/components/align-ui/ui/input';
+import * as Kbd from '@/components/align-ui/ui/kbd';
+import {RiSearch2Line} from '@remixicon/react';
+import { useScheduling } from '@/contexts/SchedulingContext';
 
 function IconCmd(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -27,25 +23,21 @@ function IconCmd(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
-/** Services page of the website. */
-export default function ServicesPage() {
+export default function SchedulingSearch() {
+  const { register } = useScheduling();
+
   return (
-    <PageLayout title="Home">
-      <ServicesProvider>
-        <Header variant="services" />
-        <div className="px-8">
-          <Divider.Root />
-        </div>
-
-        <div className="gap-8 p-8 ">
-          <div className="flex justify-between">
-            <ServicesFilter />
-            <ServicesSearch />
-          </div>
-        </div>
-
-        <ServicesList />
-      </ServicesProvider>
-    </PageLayout>
+    <div className="w-full min-w-[250px]">
+      <Input.Root>
+        <Input.Wrapper>
+          <Input.Icon as={RiSearch2Line} />
+          <Input.Input 
+            placeholder="Pesquisar Agendamento..." 
+            {...register('search')}
+          />
+          
+        </Input.Wrapper>
+      </Input.Root>
+    </div>
   );
 } 

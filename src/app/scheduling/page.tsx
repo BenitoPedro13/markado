@@ -1,13 +1,19 @@
-"use client"
+'use client';
 
 import PageLayout from '@/components/PageLayout';
 import {useTranslations} from 'next-intl';
 import Header from '@/components/navigation/Header';
 import * as Divider from '@/components/align-ui/ui/divider';
-import { ServicesProvider } from '@/contexts/ServicesContext';
+import {ServicesProvider} from '@/contexts/ServicesContext';
 import ServicesList from '@/components/services/ServicesList';
 import ServicesSearch from '@/components/services/ServicesSearch';
 import ServicesFilter from '@/components/services/ServicesFilter';
+import {SchedulingProvider} from '@/contexts/SchedulingContext';
+import SchedulingList from '@/components/scheduling/SchedulingList';
+import SchedulingFilter from '@/components/scheduling/SchedulingFilter';
+import SchedulingSearch from '@/components/scheduling/SchedulingSearch';
+import SchedulingViewControl from '@/components/scheduling/SchedulingViewControl';
+import { SchedulingSort } from '@/components/scheduling/SchedulingSort';
 
 function IconCmd(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -31,21 +37,26 @@ function IconCmd(props: React.SVGProps<SVGSVGElement>) {
 export default function ServicesPage() {
   return (
     <PageLayout title="Home">
-      <ServicesProvider>
-        <Header variant="services" />
-        <div className="px-8">
-          <Divider.Root />
-        </div>
+      <Header variant="scheduling" />
+      <div className="px-8">
+        <Divider.Root />
+      </div>
 
-        <div className="gap-8 p-8 ">
+      <SchedulingProvider>
+        <div className="w-full gap-8 p-8">
           <div className="flex justify-between">
-            <ServicesFilter />
-            <ServicesSearch />
+            <SchedulingFilter />
+            <div className="flex items-center justify-end gap-2">
+              <SchedulingSearch />
+              <SchedulingSort />
+              <SchedulingViewControl />
+            </div>
           </div>
         </div>
-
-        <ServicesList />
-      </ServicesProvider>
+        <div className="w-full gap-8 px-8">
+          <SchedulingList />
+        </div>
+      </SchedulingProvider>
     </PageLayout>
   );
-} 
+}
