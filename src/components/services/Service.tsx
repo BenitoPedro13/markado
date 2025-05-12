@@ -3,14 +3,12 @@
 import React, {useState, useEffect} from 'react';
 import * as Badge from '@/components/align-ui/ui/badge';
 import {
-  RiCodeLine,
-  RiFileCopyFill,
-  RiFlashlightFill,
-  RiShare2Line,
   RiTimeLine,
   RiDeleteBinLine,
   RiMore2Fill,
-  RiPencilLine
+  RiPencilLine,
+  RiFileCopyLine,
+  RiLinksLine
 } from '@remixicon/react';
 
 import * as ButtonGroup from '@/components/align-ui/ui/button-group';
@@ -22,16 +20,26 @@ import * as Button from '@/components/align-ui/ui/button';
 import {useServices} from '@/contexts/ServicesContext';
 import {useRouter} from 'next/navigation';
 import Link from 'next/link';
-import { ServicesProps } from '@/data/services';
+import {ServicesProps} from '@/data/services';
 
-type ServiceProps = Pick<ServicesProps, 'title' | 'slug' | 'duration' | 'price' | 'status' | 'badgeColor'>;
+type ServiceProps = Pick<
+  ServicesProps,
+  'title' | 'slug' | 'duration' | 'price' | 'status' | 'badgeColor'
+>;
 
-function Service({title, slug, duration, price, status, badgeColor}: ServiceProps) {
+function Service({
+  title,
+  slug,
+  duration,
+  price,
+  status,
+  badgeColor
+}: ServiceProps) {
   const {updateServiceStatus} = useServices();
   const [isEnabled, setIsEnabled] = useState(status === 'active');
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const router = useRouter();
-  
+
   useEffect(() => {
     setIsEnabled(status === 'active');
   }, [status]);
@@ -70,16 +78,15 @@ function Service({title, slug, duration, price, status, badgeColor}: ServiceProp
     <>
       <div className="p-4 flex hover:bg-bg-weak-50 transition-colors duration-200">
         {/* Leading */}
-        <Link
-          href={`services/${slug}`}
-          className="w-full cursor-pointer"
-        >
+        <Link href={`services/${slug}`} className="w-full cursor-pointer">
           <div className="w-full flex flex-col gap-2">
             <div className="flex gap-2  items-center">
               <span className="text-paragraph-lg text-text-strong-950">
                 {title}
               </span>
-              <span className="text-paragraph-sm text-text-sub-600">/{slug}</span>
+              <span className="text-paragraph-sm text-text-sub-600">
+                /{slug}
+              </span>
             </div>
             <div className="flex gap-2 items-center">
               <Badge.Root variant="light" color={getBadgeColor()} size="medium">
@@ -96,26 +103,20 @@ function Service({title, slug, duration, price, status, badgeColor}: ServiceProp
         </Link>
 
         {/* Trailing */}
-        <div className="flex gap-2 items-center" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="flex gap-2 items-center"
+          onClick={(e) => e.stopPropagation()}
+        >
           <Switch.Root
             checked={isEnabled}
             onCheckedChange={handleSwitchChange}
           />
           <ButtonGroup.Root>
+            
             <Tooltip.Root>
               <Tooltip.Trigger asChild>
                 <ButtonGroup.Item>
-                  <ButtonGroup.Icon as={RiShare2Line} />
-                </ButtonGroup.Item>
-              </Tooltip.Trigger>
-              <Tooltip.Content size="small">
-                Compartilhar serviço
-              </Tooltip.Content>
-            </Tooltip.Root>
-            <Tooltip.Root>
-              <Tooltip.Trigger asChild>
-                <ButtonGroup.Item>
-                  <ButtonGroup.Icon as={RiFileCopyFill} />
+                  <ButtonGroup.Icon as={RiLinksLine} />
                 </ButtonGroup.Item>
               </Tooltip.Trigger>
               <Tooltip.Content size="small">
@@ -132,6 +133,10 @@ function Service({title, slug, duration, price, status, badgeColor}: ServiceProp
                 <Dropdown.Item onClick={() => setIsDeleteModalOpen(true)}>
                   <Dropdown.ItemIcon as={RiDeleteBinLine} />
                   Excluir serviço
+                </Dropdown.Item>
+                <Dropdown.Item>
+                  <Dropdown.ItemIcon as={RiFileCopyLine} />
+                  Duplicar serviço
                 </Dropdown.Item>
                 <Dropdown.Item>
                   <Dropdown.ItemIcon as={RiPencilLine} />
@@ -169,9 +174,9 @@ function Service({title, slug, duration, price, status, badgeColor}: ServiceProp
                 Cancelar
               </Button.Root>
             </Modal.Close>
-            <Button.Root 
-              variant="error" 
-              size="small" 
+            <Button.Root
+              variant="error"
+              size="small"
               className="w-full"
               onClick={handleDeleteService}
             >
