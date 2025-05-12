@@ -1,6 +1,7 @@
+import ServiceCalendarForm from '@/modules/scheduling/services/ServiceCalendarForm';
 
 const ServiceSchedulingPage = async () => {
-  return <></>;
+  return <ServiceCalendarForm />;
 };
 
 export default ServiceSchedulingPage;

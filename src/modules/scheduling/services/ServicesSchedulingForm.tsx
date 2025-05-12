@@ -2,16 +2,25 @@
 
 import * as Avatar from '@/components/align-ui/ui/avatar';
 import * as Badge from '@/components/align-ui/ui/badge';
-import {useScheduling} from '@/contexts/SchedulingContext';
-import {services as initialServices} from '@/data/services';
-import {cn} from '@/utils/cn';
-import {RiArrowRightSLine, RiTimeLine, RiFacebookLine, RiInstagramLine, RiTwitterXLine, RiLinkedinLine, RiGlobalLine, RiLinkedinFill, RiFacebookFill  } from '@remixicon/react';
-import Link from 'next/link';
-import { useBusiness } from '@/components/settings/business/Business';
-import { ServiceBadgeColor } from '@/types/service';
-import type { VariantProps } from '@/utils/tv';
 import { badgeVariants } from '@/components/align-ui/ui/badge';
 import * as Skeleton from '@/components/align-ui/ui/skeleton';
+import { useBusiness } from '@/components/settings/business/Business';
+import { useScheduling } from '@/contexts/SchedulingContext';
+import { services as initialServices } from '@/data/services';
+import { ServiceBadgeColor } from '@/types/service';
+import { cn } from '@/utils/cn';
+import type { VariantProps } from '@/utils/tv';
+import {
+  RiArrowRightSLine,
+  RiFacebookFill,
+  RiGlobalLine,
+  RiInstagramLine,
+  RiLinkedinFill,
+  RiTimeLine,
+  RiTwitterXLine
+} from '@remixicon/react';
+import Link from 'next/link';
+import { useEffect } from 'react';
 
 type BadgeColor = NonNullable<VariantProps<typeof badgeVariants>['color']>;
 
@@ -35,7 +44,9 @@ const formatPrice = (price: number): string => {
   }).format(price);
 };
 
-const mapServiceColorToBadgeColor = (color: ServiceBadgeColor | undefined): BadgeColor => {
+const mapServiceColorToBadgeColor = (
+  color: ServiceBadgeColor | undefined
+): BadgeColor => {
   switch (color) {
     case 'faded':
       return 'gray';
@@ -66,13 +77,25 @@ type ServicesSchedulingFormProps = {
   fullHeight?: boolean;
 };
 
-const ServicesSchedulingForm = ({ fullHeight = true }: ServicesSchedulingFormProps) => {
-  const {profileUser, isLoading, error} = useScheduling();
-  const { businessName, businessColor, businessDescription, socialLinks } = useBusiness();
+const ServicesSchedulingForm = ({
+  fullHeight = true
+}: ServicesSchedulingFormProps) => {
+  const {profileUser, isLoading, error, service, setService} = useScheduling();
+  const {businessName, businessColor, businessDescription, socialLinks} =
+    useBusiness();
+
+  useEffect(() => {
+    setService(null);
+  }, []);
 
   if (isLoading) {
     return (
-      <div className={cn("w-full flex flex-col justify-center items-center", fullHeight && "min-h-screen")}>
+      <div
+        className={cn(
+          'w-full flex flex-col justify-center items-center',
+          fullHeight && 'min-h-screen'
+        )}
+      >
         <main className="p-8 flex flex-col md:flex-row items-center md:items-start gap-6 w-full max-w-[624px]">
           <div className="w-full md:flex-1 flex flex-col items-center md:items-start gap-4">
             <Skeleton.Root className="w-12 h-12 rounded-full" />
@@ -111,17 +134,30 @@ const ServicesSchedulingForm = ({ fullHeight = true }: ServicesSchedulingFormPro
 
   if (error || !profileUser) {
     return (
-      <div className={cn("w-full flex flex-col justify-center items-center", fullHeight && "min-h-screen")}>
+      <div
+        className={cn(
+          'w-full flex flex-col justify-center items-center',
+          fullHeight && 'min-h-screen'
+        )}
+      >
         <p className="text-text-sub-600">Usuário não encontrado</p>
       </div>
     );
   }
 
   return (
-    <div className={cn("w-full flex flex-col justify-center items-center", fullHeight && "min-h-screen")}>
+    <div
+      className={cn(
+        'w-full flex flex-col justify-center items-center',
+        fullHeight && 'min-h-screen'
+      )}
+    >
       <main className="p-8 flex flex-col md:flex-row items-center md:items-start gap-6 w-full max-w-[624px]">
         <div className="w-full md:flex-1 flex flex-col items-center md:items-start gap-4">
-          <Avatar.Root size={'48'} fallbackText={businessName || profileUser.name || ''}>
+          <Avatar.Root
+            size={'48'}
+            fallbackText={businessName || profileUser.name || ''}
+          >
             <Avatar.Image
               src={profileUser.image || ''}
               alt={businessName || profileUser.name || 'User'}
@@ -138,27 +174,52 @@ const ServicesSchedulingForm = ({ fullHeight = true }: ServicesSchedulingFormPro
           {/** Social icons */}
           <div className="flex flex-row items-center gap-3">
             {socialLinks?.instagram && (
-              <a href={socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="text-text-sub-600 hover:text-text-strong-950 transition-colors">
+              <a
+                href={socialLinks.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-text-sub-600 hover:text-text-strong-950 transition-colors"
+              >
                 <RiInstagramLine size={20} />
               </a>
             )}
             {socialLinks?.linkedin && (
-              <a href={socialLinks.linkedin} target="_blank" rel="noopener noreferrer" className="text-text-sub-600 hover:text-text-strong-950 transition-colors">
+              <a
+                href={socialLinks.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-text-sub-600 hover:text-text-strong-950 transition-colors"
+              >
                 <RiLinkedinFill size={20} />
               </a>
             )}
             {socialLinks?.twitter && (
-              <a href={socialLinks.twitter} target="_blank" rel="noopener noreferrer" className="text-text-sub-600 hover:text-text-strong-950 transition-colors">
+              <a
+                href={socialLinks.twitter}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-text-sub-600 hover:text-text-strong-950 transition-colors"
+              >
                 <RiTwitterXLine size={20} />
               </a>
             )}
             {socialLinks?.facebook && (
-              <a href={socialLinks.facebook} target="_blank" rel="noopener noreferrer" className="text-text-sub-600 hover:text-text-strong-950 transition-colors">
+              <a
+                href={socialLinks.facebook}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-text-sub-600 hover:text-text-strong-950 transition-colors"
+              >
                 <RiFacebookFill size={20} />
               </a>
             )}
             {socialLinks?.website && (
-              <a href={socialLinks.website} target="_blank" rel="noopener noreferrer" className="text-text-sub-600 hover:text-text-strong-950 transition-colors">
+              <a
+                href={socialLinks.website}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-text-sub-600 hover:text-text-strong-950 transition-colors"
+              >
                 <RiGlobalLine size={20} />
               </a>
             )}
@@ -167,6 +228,7 @@ const ServicesSchedulingForm = ({ fullHeight = true }: ServicesSchedulingFormPro
         <div className="bg-bg-white-0 w-full md:min-w-[332px] md:flex-1 overflow-hidden flex flex-col rounded-3xl border border-stroke-soft-200">
           {initialServices.map((service, index) => (
             <Link
+              onClick={() => setService(service.slug)}
               key={service.slug}
               href={`/${profileUser.username}/${service.slug}`}
               className={cn(
@@ -180,7 +242,11 @@ const ServicesSchedulingForm = ({ fullHeight = true }: ServicesSchedulingFormPro
                   {service.title}
                 </h2>
                 <div className="flex items-center gap-2">
-                  <Badge.Root variant="light" color={mapServiceColorToBadgeColor(businessColor)} size="medium">
+                  <Badge.Root
+                    variant="light"
+                    color={mapServiceColorToBadgeColor(businessColor)}
+                    size="medium"
+                  >
                     <Badge.Icon as={RiTimeLine} />
                     {formatDuration(service.duration)}
                   </Badge.Root>

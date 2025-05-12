@@ -22,6 +22,10 @@ interface SchedulingContextData {
   profileUser: User | null;
   isLoading: boolean;
   error: Error | null;
+  selectedDate: Date | null;
+  setSelectedDate: (date: Date | null) => void;
+  service: string | null;
+  setService: (service: string | null) => void;
 }
 
 interface SchedulingProviderProps {
@@ -35,6 +39,8 @@ export function SchedulingProvider({ children, username }: SchedulingProviderPro
   const [profileUser, setProfileUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [service, setService] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -59,7 +65,11 @@ export function SchedulingProvider({ children, username }: SchedulingProviderPro
       value={{
         profileUser,
         isLoading,
-        error
+        error,
+        selectedDate,
+        setSelectedDate,
+        service,
+        setService
       }}
     >
       {children}
