@@ -30,11 +30,12 @@ import {DatepickerRangeDemo} from '@/components/align-ui/daterange';
 import * as Input from '@/components/align-ui/ui/input';
 import {usePageContext} from '@/contexts/PageContext';
 import {useAvailability} from '@/contexts/AvailabilityContext';
-import { useTRPC } from '@/utils/trpc';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { useTranslations } from 'next-intl';
-import { useLocale } from '@/hooks/use-locale';
+import {useTRPC} from '@/utils/trpc';
+import {useMutation, useQuery} from '@tanstack/react-query';
+import {useTranslations} from 'next-intl';
+import {useLocale} from '@/hooks/use-locale';
 import dayjs from 'dayjs';
+import {getQueryClient} from '@/app/get-query-client';
 
 type HeaderVariant =
   | 'scheduling'
@@ -76,19 +77,21 @@ function AvailabilityHeader({
       setIsCreateModalOpen,
       isDeleteModalOpen,
       setIsDeleteModalOpen,
-      newName,
-      setNewName,
       isEditing,
       setIsEditing
     },
     availabilityDetailsForm: {register, setValue, watch, getValues}
   } = useAvailability();
 
+  const [newName, setNewName] = useState('');
+  
   const {t, locale, isLocaleReady} = useLocale('Availability');
 
   const router = useRouter();
   const name = watch('name');
   const trpc = useTRPC();
+
+  const queryClient = getQueryClient();
 
   // Get the prefetched data using tRPC query
   const {data: availability} = useQuery(
@@ -108,12 +111,26 @@ function AvailabilityHeader({
   const updateScheduleMutation = useMutation(
     trpc.availability.updateDetailedAvailability.mutationOptions({
       onSuccess: () => {
-        // notification({
-        //   title: t('schedule_updated_success'),
-        //   variant: 'stroke',
-        //   id: 'schedule_updated_success'
-        // });
-        
+        // Invalidate both queries to ensure data is refreshed
+        queryClient.invalidateQueries({
+          queryKey: [
+            'availability',
+            'findDetailedScheduleById',
+            {
+              scheduleId: scheduleId || 0,
+              timeZone: 'America/Sao_Paulo'
+            }
+          ]
+        });
+
+        queryClient.invalidateQueries({
+          queryKey: [
+            ['availability', 'getAll'],
+            {
+              type: 'query'
+            }
+          ]
+        });
       },
       onError: (error) => {
         // notification({
@@ -409,8 +426,13 @@ function AvailabilityHeader({
             <Input.Root>
               <Input.Input
                 placeholder="Horas de Trabalho"
-                value={getValues('name')}
-                onChange={(e) => setValue('name', e.target.value)}
+                defaultValue={newName}
+                // value={}
+                onChange={(e) => {
+                  setNewName(e.target.value)
+                  console.log('newName', newName)
+                  console.log('e.target.value', e.target.value)
+                }}
                 autoFocus
               />
             </Input.Root>
@@ -425,15 +447,12 @@ function AvailabilityHeader({
               variant="neutral"
               size="small"
               className="font-semibold"
-              disabled={!getValues('name')?.trim()}
+              disabled={!newName?.trim()}
               onClick={() => {
-                if (!getValues('name')?.trim()) return;
-                const slug = getValues('name')
-                  ?.trim()
-                  .toLowerCase()
-                  .replace(/ /g, '-');
+                if (!newName?.trim()) return;
+                const slug = newName?.trim().toLowerCase().replace(/ /g, '-');
                 setIsCreateModalOpen(false);
-                setValue('name', '');
+                setNewName('');
                 // router.push(`/availability/${slug}`);
               }}
             >
