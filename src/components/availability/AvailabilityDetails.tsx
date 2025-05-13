@@ -50,16 +50,7 @@ export default function AvailabilityDetails({
     return null;
   }
 
-
-
-  // const schedule = scheduleData ?? availability;
-
-  // const form = useForm<AvailabilityFormValues>({
-  //   defaultValues: {
-  //     ...schedule,
-  //     schedule: schedule.availability || []
-  //   }
-  // });
+  
 
   if (!availability) {
     router.back();

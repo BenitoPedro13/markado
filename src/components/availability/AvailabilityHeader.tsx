@@ -34,6 +34,7 @@ import { useTRPC } from '@/utils/trpc';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { useLocale } from '@/hooks/use-locale';
+import dayjs from 'dayjs';
 
 type HeaderVariant =
   | 'scheduling'
@@ -90,16 +91,16 @@ function AvailabilityHeader({
   const trpc = useTRPC();
 
   // Get the prefetched data using tRPC query
-  const { data: availability } = useQuery(
+  const {data: availability} = useQuery(
     trpc.availability.findDetailedScheduleById.queryOptions(
-      { 
+      {
         scheduleId: scheduleId || 0,
         timeZone
       },
       {
         enabled: !!scheduleId,
         // This ensures we use the prefetched data
-        staleTime: Infinity,
+        staleTime: Infinity
       }
     )
   );
@@ -112,20 +113,38 @@ function AvailabilityHeader({
         //   variant: 'stroke',
         //   id: 'schedule_updated_success'
         // });
-        notification({
-          title: 'Alterações salvas!',
-          description: 'Seus updates foram salvos com sucesso.',
-          variant: 'stroke',
-          status: 'success'
-        });
+        
       },
       onError: (error) => {
-        notification({
-          title: t('schedule_updated_error'),
-          description: error.message,
-          variant: 'stroke',
-          id: 'schedule_updated_error'
-        });
+        // notification({
+        //   title: t('schedule_updated_error'),
+        //   description: error.message,
+        //   variant: 'stroke',
+        //   id: 'schedule_updated_error'
+        // });
+      }
+    })
+  );
+
+  // Update availability mutation
+  const updateAvailabilityMutation = useMutation(
+    trpc.availability.update.mutationOptions({
+      onSuccess: () => {
+        // notification({
+        //   title: t('availability_created_success'),
+        //   variant: 'stroke',
+        //   id: 'availability_created_success'
+        // });
+        console.log('availability created successfully');
+      },
+      onError: (error) => {
+        // notification({
+        //   title: t('availability_created_error'),
+        //   description: error.message,
+        //   variant: 'stroke',
+        //   id: 'availability_created_error'
+        // });
+        console.log('availability created error', error);
       }
     })
   );
@@ -138,6 +157,31 @@ function AvailabilityHeader({
       // Get form values from the Schedule component
       const scheduleValues = getValues();
 
+      // Convert the schedule format to availability format
+      const schedule = scheduleValues.schedule;
+
+      // Create availabilities for each day
+      for (let dayIndex = 0; dayIndex < schedule.length; dayIndex++) {
+        const timeRanges = schedule[dayIndex];
+        if (timeRanges && timeRanges.length > 0) {
+          for (const timeRange of timeRanges) {
+            // Format the time values as HH:MM strings to match the schema requirements
+            const startTime = dayjs(timeRange.start).format('HH:mm');
+            const endTime = dayjs(timeRange.end).format('HH:mm');
+
+            await updateAvailabilityMutation.mutateAsync({
+              id: scheduleValues.schedule,
+              data: {
+                days: [dayIndex],
+                startTime,
+                endTime,
+                scheduleId: scheduleValues.id
+              }
+            });
+          }
+        }
+      }
+
       // Create a schedule first
       const scheduleResult = await updateScheduleMutation.mutateAsync({
         id: scheduleValues.id,
@@ -147,40 +191,39 @@ function AvailabilityHeader({
         }
       });
 
+      const availabilityResult = await updateAvailabilityMutation.mutateAsync({
+        id: scheduleValues.id,
+        data: {
+          ...availability?.
+        }
+      });
+
       console.log('scheduleResult', scheduleResult);
 
-      // Convert the schedule format to availability format
-      // const schedule = scheduleValues.schedule;
-
-      // // Create availabilities for each day
-      // for (let dayIndex = 0; dayIndex < schedule.length; dayIndex++) {
-      //   const timeRanges = schedule[dayIndex];
-      //   if (timeRanges && timeRanges.length > 0) {
-      //     for (const timeRange of timeRanges) {
-      //       // Format the time values as HH:MM strings to match the schema requirements
-      //       const startTime = dayjs(timeRange.start).format('HH:mm');
-      //       const endTime = dayjs(timeRange.end).format('HH:mm');
-
-      //       await createAvailabilityMutation.mutateAsync({
-      //         days: [dayIndex],
-      //         startTime,
-      //         endTime,
-      //         scheduleId: scheduleResult.id
-      //       });
-      //     }
-      //   }
-      // }
-
+      if (scheduleResult.id && availabilityResult.id) {
+        notification({
+          title: 'Alterações salvas!',
+          description: 'Seus updates foram salvos com sucesso.',
+          variant: 'stroke',
+          status: 'success'
+        });
+      }
     } catch (error: any) {
       console.error('Error submitting availability form:', error);
-      // notification({
-      //   title: t('availability_created_error'),
-      //   description: error.message,
-      //   variant: 'stroke',
-      //   id: 'availability_created_error'
-      // });
+      notification({
+        title: t('schedule_updated_error'),
+        description: error.message,
+        variant: 'stroke',
+        id: 'schedule_updated_error'
+      });
     } finally {
       // setIsSubmitting(false);
+      notification({
+        title: 'Alterações salvas!',
+        description: 'Seus updates foram salvos com sucesso.',
+        variant: 'stroke',
+        status: 'success'
+      });
     }
   };
 
@@ -376,7 +419,6 @@ function AvailabilityHeader({
               //   (window as any).submitServiceForm();
               // }
               submit(e);
-              
             }}
           >
             <FancyButton.Icon as={RiSaveFill} />
@@ -439,7 +481,10 @@ function AvailabilityHeader({
               disabled={!getValues('name')?.trim()}
               onClick={() => {
                 if (!getValues('name')?.trim()) return;
-                const slug = getValues('name')?.trim().toLowerCase().replace(/ /g, '-');
+                const slug = getValues('name')
+                  ?.trim()
+                  .toLowerCase()
+                  .replace(/ /g, '-');
                 setIsCreateModalOpen(false);
                 setValue('name', '');
                 // router.push(`/availability/${slug}`);
