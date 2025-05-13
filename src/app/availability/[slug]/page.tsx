@@ -48,7 +48,7 @@ export default async function AvailabilityDetailsPage({params}: Props) {
   return (
     <PageLayout title="Disponibilidade">
       <HydrationBoundary state={dehydrate(queryClient)}>
-        <AvailabilityProvider initialAvailability={availability}>
+        <AvailabilityProvider initialAvailabilityDetails={availability} initialAllAvailability={null}>
           <AvailabilityHeader
             mode="inside"
             title={title}
@@ -61,9 +61,7 @@ export default async function AvailabilityDetailsPage({params}: Props) {
           </div>
 
           <div className="p-8">
-            <AvailabilityDetails
-              title={title || ''}
-            />
+            <AvailabilityDetails title={title || ''} />
           </div>
         </AvailabilityProvider>
       </HydrationBoundary>
