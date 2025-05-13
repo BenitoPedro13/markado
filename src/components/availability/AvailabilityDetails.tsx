@@ -42,15 +42,12 @@ export default function AvailabilityDetails({
   // availability
 }: AvailabilityDetailsProps) {
   const router = useRouter();
-  const trpc = useTRPC();
-  const {queries: {availability}, availabilityDetailsForm} = useAvailability();
+  const {queries: {availabilityDetails}, availabilityDetailsForm} = useAvailability();
 
-  if (!availability) {
+  if (!availabilityDetails) {
     router.back();
     return null;
   }
-
-  // if (isFetchingPending) return null;
 
   return (
     <form className="space-y-6">
