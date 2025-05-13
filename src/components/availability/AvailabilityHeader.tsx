@@ -106,7 +106,7 @@ function AvailabilityHeader({
   );
 
   const updateScheduleMutation = useMutation(
-    trpc.schedule.update.mutationOptions({
+    trpc.availability.updateDetailedAvailability.mutationOptions({
       onSuccess: () => {
         // notification({
         //   title: t('schedule_updated_success'),
@@ -126,29 +126,6 @@ function AvailabilityHeader({
     })
   );
 
-  // Update availability mutation
-  const updateAvailabilityMutation = useMutation(
-    trpc.availability.update.mutationOptions({
-      onSuccess: () => {
-        // notification({
-        //   title: t('availability_created_success'),
-        //   variant: 'stroke',
-        //   id: 'availability_created_success'
-        // });
-        console.log('availability created successfully');
-      },
-      onError: (error) => {
-        // notification({
-        //   title: t('availability_created_error'),
-        //   description: error.message,
-        //   variant: 'stroke',
-        //   id: 'availability_created_error'
-        // });
-        console.log('availability created error', error);
-      }
-    })
-  );
-
   const submit = async (e: FormEvent<HTMLButtonElement>) => {
     e.preventDefault();
     // setIsSubmitting(true);
@@ -157,50 +134,20 @@ function AvailabilityHeader({
       // Get form values from the Schedule component
       const scheduleValues = getValues();
 
-      // Convert the schedule format to availability format
-      const schedule = scheduleValues.schedule;
-
-      // Create availabilities for each day
-      for (let dayIndex = 0; dayIndex < schedule.length; dayIndex++) {
-        const timeRanges = schedule[dayIndex];
-        if (timeRanges && timeRanges.length > 0) {
-          for (const timeRange of timeRanges) {
-            // Format the time values as HH:MM strings to match the schema requirements
-            const startTime = dayjs(timeRange.start).format('HH:mm');
-            const endTime = dayjs(timeRange.end).format('HH:mm');
-
-            await updateAvailabilityMutation.mutateAsync({
-              id: scheduleValues.schedule,
-              data: {
-                days: [dayIndex],
-                startTime,
-                endTime,
-                scheduleId: scheduleValues.id
-              }
-            });
-          }
-        }
-      }
-
-      // Create a schedule first
       const scheduleResult = await updateScheduleMutation.mutateAsync({
         id: scheduleValues.id,
         data: {
-          name: scheduleValues.name,
-          timeZone: scheduleValues.timeZone
-        }
-      });
-
-      const availabilityResult = await updateAvailabilityMutation.mutateAsync({
-        id: scheduleValues.id,
-        data: {
-          ...availability?.
+          schedule: scheduleValues.schedule,
+          scheduleId: scheduleValues.id,
+          isDefault: scheduleValues.isDefault,
+          timeZone: scheduleValues.timeZone,
+          name: scheduleValues.name
         }
       });
 
       console.log('scheduleResult', scheduleResult);
 
-      if (scheduleResult.id && availabilityResult.id) {
+      if (scheduleResult.schedule.id) {
         notification({
           title: 'Alterações salvas!',
           description: 'Seus updates foram salvos com sucesso.',
