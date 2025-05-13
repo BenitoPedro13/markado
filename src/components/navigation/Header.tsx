@@ -29,7 +29,7 @@ import { DatepickerRangeDemo } from '@/components/align-ui/daterange';
 import * as Input from '@/components/align-ui/ui/input';
 import { usePageContext } from '@/contexts/PageContext';
 import { useAvailability } from '@/contexts/AvailabilityContext';
-import CreateServiceModal from '@/components/services/CreateServiceModal';
+// import CreateServiceModal from '@/components/services/CreateServiceModal';
 
 type HeaderVariant = 'scheduling' | 'availability' | 'services' | 'reports' | 'settings';
 type HeaderMode = 'default' | 'inside';
@@ -414,10 +414,10 @@ function Header({
         </div>
         <div className="flex justify-start items-center gap-3">{buttons}</div>
       </div>
-      <CreateServiceModal 
+      {/* <CreateServiceModal 
         open={isCreateServiceModalOpen} 
         onOpenChange={setIsCreateServiceModalOpen} 
-      />
+      /> */}
     </>
   );
 }
