@@ -426,12 +426,9 @@ function AvailabilityHeader({
             <Input.Root>
               <Input.Input
                 placeholder="Horas de Trabalho"
-                defaultValue={newName}
-                // value={}
+                value={newName}
                 onChange={(e) => {
                   setNewName(e.target.value)
-                  console.log('newName', newName)
-                  console.log('e.target.value', e.target.value)
                 }}
                 autoFocus
               />

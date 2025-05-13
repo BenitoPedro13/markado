@@ -9,7 +9,6 @@ import * as Button from '@/components/align-ui/ui/button';
 import * as Input from '@/components/align-ui/ui/input';
 // import { useRouter } from 'next/navigation';
 
-
 import * as Divider from '@/components/align-ui/ui/divider';
 import {
   groupAvailabilitiesBySchedule,
@@ -60,7 +59,7 @@ export default function AvailabilityList({
   // Get the prefetched data using tRPC query
   const {data: allAvailability, isPending: isFetchingAllAvailability} =
     useQuery(trpc.availability.getAll.queryOptions());
-    
+
   const handleDuplicate = (id: number) => {
     const availabilityToDuplicate = availabilities.find(
       (a) => a.scheduleId === id
@@ -117,10 +116,8 @@ export default function AvailabilityList({
   }, [initialAllAvailability, allAvailability, isFetchingAllAvailability]);
 
   return (
-    <>
-      {' '}
-      <div className="rounded-lg w-full border border-stroke-soft-200">
-        {/* {availabilities.map((data) => (
+    <div className="rounded-lg w-full border border-stroke-soft-200">
+      {/* {availabilities.map((data) => (
           <div key={data.scheduleId}>
             <Availability
               id={data.scheduleId}
@@ -139,60 +136,23 @@ export default function AvailabilityList({
           </div>
         ))} */}
 
-        {formattedSchedules.map((data) => (
-          <div key={data.scheduleId}>
-            <Availability
-              id={data.scheduleId}
-              key={data.scheduleId}
-              title={data.scheduleName}
-              schedule={data.availability}
-              timezone={data.timeZone}
-              isDefault={data.isDefault}
-              onDelete={() => handleDelete(data.scheduleId)}
-              onDuplicate={() => handleDuplicate(data.scheduleId)}
-            />
-            {data !== formattedSchedules[formattedSchedules.length - 1] && (
-              <Divider.Root />
-            )}
-          </div>
-        ))}
-      </div>
-      {/* <Modal.Root open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
-        <Modal.Content className="max-w-[440px]">
-          <Modal.Body>
-            <div className="text-xl font-semibold mb-4">
-              Adicionar nova disponibilidade
-            </div>
-            <div className="mb-2 text-label-md">Nome</div>
-            <Input.Root>
-              <Input.Input
-                placeholder="Horas de Trabalho"
-                value={newName}
-                onChange={(e) => setNewName(e.target.value)}
-                autoFocus
-              />
-            </Input.Root>
-          </Modal.Body>
-          <Modal.Footer className="flex gap-2 justify-end">
-            <Modal.Close asChild>
-              <Button.Root variant="neutral" mode="stroke" size="small">
-                Fechar
-              </Button.Root>
-            </Modal.Close>
-            <Button.Root
-              variant="neutral"
-              size="small"
-              className="font-semibold"
-              disabled={!newName.trim()}
-              onClick={handleCreate}
-            >
-              Criar
-            </Button.Root>
-          </Modal.Footer>
-        </Modal.Content>
-      </Modal.Root> */}
-    </>
-
-    // </div>
+      {formattedSchedules.map((data) => (
+        <div key={data.scheduleId}>
+          <Availability
+            id={data.scheduleId}
+            key={data.scheduleId}
+            title={data.scheduleName}
+            schedule={data.availability}
+            timezone={data.timeZone}
+            isDefault={data.isDefault}
+            onDelete={() => handleDelete(data.scheduleId)}
+            onDuplicate={() => handleDuplicate(data.scheduleId)}
+          />
+          {data !== formattedSchedules[formattedSchedules.length - 1] && (
+            <Divider.Root />
+          )}
+        </div>
+      ))}
+    </div>
   );
 }
