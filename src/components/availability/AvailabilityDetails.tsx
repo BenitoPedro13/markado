@@ -50,13 +50,6 @@ export default function AvailabilityDetails({
     return null;
   }
 
-  
-
-  if (!availability) {
-    router.back();
-    return null;
-  }
-
   // if (isFetchingPending) return null;
 
   return (
