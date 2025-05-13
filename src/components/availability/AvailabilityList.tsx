@@ -9,116 +9,7 @@ import * as Button from '@/components/align-ui/ui/button';
 import * as Input from '@/components/align-ui/ui/input';
 // import { useRouter } from 'next/navigation';
 
-// export default function AvailabilityList() {
-//   const [availabilities, setAvailabilities] = useState(initialAvailabilities);
-//   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-//   const [newName, setNewName] = useState('');
-//   const router = useRouter();
 
-//   const handleDuplicate = (id: string) => {
-//     const availabilityToDuplicate = availabilities.find(a => a.id === id);
-//     if (!availabilityToDuplicate) return;
-
-//     const newAvailability = {
-//       ...availabilityToDuplicate,
-//       id: String(availabilities.length + 1),
-//       title: `${availabilityToDuplicate.title} (Cópia)`,
-//       isDefault: false
-//     };
-
-//     setAvailabilities([...availabilities, newAvailability]);
-//   };
-
-//   const handleDelete = (id: string) => {
-//     setAvailabilities(availabilities.filter(a => a.id !== id));
-//   };
-
-//   const handleCreate = () => {
-//     if (!newName.trim()) return;
-//     const slug = newName.trim().toLowerCase().replace(/ /g, '-');
-//     const newAvailability = {
-//       id: String(availabilities.length + 1),
-//       title: newName.trim(),
-//       schedule: 'seg. - sex., 9:00 até 17:00', // valor padrão
-//       timezone: 'America/São_Paulo', // valor padrão
-//       isDefault: false,
-//       status: 'active' as const,
-//       slug,
-//       schedules: {
-//         'Segunda-feira': { enabled: true, startTime: '09:00', endTime: '17:00' },
-//         'Terça-feira': { enabled: true, startTime: '09:00', endTime: '17:00' },
-//         'Quarta-feira': { enabled: true, startTime: '09:00', endTime: '17:00' },
-//         'Quinta-feira': { enabled: true, startTime: '09:00', endTime: '17:00' },
-//         'Sexta-feira': { enabled: true, startTime: '09:00', endTime: '17:00' },
-//         'Sábado': { enabled: false, startTime: '09:00', endTime: '17:00' },
-//         'Domingo': { enabled: false, startTime: '09:00', endTime: '17:00' }
-//       }
-//     };
-//     setAvailabilities([...availabilities, newAvailability]);
-//     setIsCreateModalOpen(false);
-//     setNewName('');
-//     router.push(`/availability/${slug}`);
-//   };
-
-//   return (
-//     <>
-
-//       <div className="rounded-lg w-full border border-stroke-soft-200">
-//         {availabilities.map((availability) => (
-//           <div key={availability.id}>
-//             <Availability
-//               key={availability.id}
-//               id={availability.id}
-//               title={availability.title}
-//               schedule={availability.schedule}
-//               timezone={availability.timezone}
-//               isDefault={availability.isDefault}
-//               onDuplicate={handleDuplicate}
-//               onDelete={handleDelete}
-//             />
-//             {availability.id !== availabilities[availabilities.length - 1].id && (
-//               <Divider.Root />
-//             )}
-//           </div>
-//         ))}
-//       </div>
-//       <Modal.Root open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
-//         <Modal.Content className="max-w-[440px]">
-//           <Modal.Body>
-//             <div className="text-xl font-semibold mb-4">Adicionar nova disponibilidade</div>
-//             <div className="mb-2 text-label-md">Nome</div>
-//             <Input.Root>
-//               <Input.Input
-//                 placeholder="Horas de Trabalho"
-//                 value={newName}
-//                 onChange={e => setNewName(e.target.value)}
-//                 autoFocus
-//               />
-//             </Input.Root>
-//           </Modal.Body>
-//           <Modal.Footer className="flex gap-2 justify-end">
-//             <Modal.Close asChild>
-//               <Button.Root variant="neutral" mode="stroke" size="small">
-//                 Fechar
-//               </Button.Root>
-//             </Modal.Close>
-//             <Button.Root
-//               variant="neutral"
-//               size="small"
-//               className="font-semibold"
-//               disabled={!newName.trim()}
-//               onClick={handleCreate}
-//             >
-//               Criar
-//             </Button.Root>
-//           </Modal.Footer>
-//         </Modal.Content>
-//       </Modal.Root>
-//     </>
-//   );
-// }
-
-// import {availabilities} from '@/data/availability';
 import * as Divider from '@/components/align-ui/ui/divider';
 import {
   groupAvailabilitiesBySchedule,
@@ -127,15 +18,16 @@ import {
 
 import {inferRouterOutputs} from '@trpc/server';
 import {AppRouter} from '~/trpc/server';
-import { useMemo, useState} from 'react';
-import { useRouter } from 'next/navigation';
-import { usePageContext } from '@/contexts/PageContext';
-
+import {useMemo, useState} from 'react';
+import {useRouter} from 'next/navigation';
+import {usePageContext} from '@/contexts/PageContext';
+import {useTRPC} from '@/utils/trpc';
+import {useQuery} from '@tanstack/react-query';
 
 type RouterOutput = inferRouterOutputs<AppRouter>;
 
 interface AvailabilityListProps {
-  allAvailability: RouterOutput['availability']['getAll'];
+  initialAllAvailability: RouterOutput['availability']['getAll'];
 }
 
 interface FormattedSchedule {
@@ -147,26 +39,32 @@ interface FormattedSchedule {
 }
 
 export default function AvailabilityList({
-  allAvailability
+  initialAllAvailability
 }: AvailabilityListProps) {
-  const { isCreateModalOpen, setIsCreateModalOpen } = usePageContext();
+  const {isCreateModalOpen, setIsCreateModalOpen} = usePageContext();
   const [availabilities, setAvailabilities] = useState<FormattedSchedule[]>([
     {
-     
       // schedule: 'seg. - sex., 9:00 até 17:00', // valor padrão
       timeZone: 'America/São_Paulo', // valor padrão
       availability: 'new availability',
-      
+
       scheduleId: Math.trunc(Math.random() * 1000),
       scheduleName: 'Default Scheadule',
       isDefault: true
     }
   ]);
-  const [newName, setNewName] = useState('');
+  // const [newName, setNewName] = useState('');
   const router = useRouter();
+  const trpc = useTRPC();
 
+  // Get the prefetched data using tRPC query
+  const {data: allAvailability, isPending: isFetchingAllAvailability} =
+    useQuery(trpc.availability.getAll.queryOptions());
+    
   const handleDuplicate = (id: number) => {
-    const availabilityToDuplicate = availabilities.find((a) => a.scheduleId === id);
+    const availabilityToDuplicate = availabilities.find(
+      (a) => a.scheduleId === id
+    );
     if (!availabilityToDuplicate) return;
 
     const newAvailability = {
@@ -177,7 +75,7 @@ export default function AvailabilityList({
     };
 
     setAvailabilities((oldState) => {
-      return [...oldState, newAvailability]
+      return [...oldState, newAvailability];
     });
   };
 
@@ -185,32 +83,38 @@ export default function AvailabilityList({
     setAvailabilities(availabilities.filter((a) => a.scheduleId !== id));
   };
 
-  const handleCreate = () => {
-    if (!newName.trim()) return;
-    const newScheadule = {
-      schedule: 'seg. - sex., 9:00 até 17:00', // valor padrão
-      timeZone: 'America/São_Paulo', // valor padrão
-      availability: 'new availability',
-      scheduleId: (availabilities.length + 1) * Math.random() * 1000,
-      scheduleName: newName.trim(),
-      isDefault: false
-    };
-    setAvailabilities((oldState) => {
-      return [...oldState, newScheadule]
-    });
-    console.log('newScheadule', newScheadule);
+  // const handleCreate = () => {
+  //   if (!newName.trim()) return;
+  //   const newScheadule = {
+  //     schedule: 'seg. - sex., 9:00 até 17:00', // valor padrão
+  //     timeZone: 'America/São_Paulo', // valor padrão
+  //     availability: 'new availability',
+  //     scheduleId: (availabilities.length + 1) * Math.random() * 1000,
+  //     scheduleName: newName.trim(),
+  //     isDefault: false
+  //   };
+  //   setAvailabilities((oldState) => {
+  //     return [...oldState, newScheadule];
+  //   });
+  //   console.log('newScheadule', newScheadule);
 
-    setIsCreateModalOpen(false);
-    setNewName('');
-    // router.push(`/availability/${slug}`);
-  };
+  //   setIsCreateModalOpen(false);
+  //   setNewName('');
+  //   // router.push(`/availability/${slug}`);
+  // };
 
   // Format and group the server data by schedule
   const formattedSchedules = useMemo(() => {
-    if (!allAvailability || !allAvailability.length) return [];
-    // Use type assertion to handle type compatibility
+    if (!initialAllAvailability || !initialAllAvailability.length) {
+      return [];
+    }
+
+    if (isFetchingAllAvailability || !allAvailability) {
+      return groupAvailabilitiesBySchedule(initialAllAvailability);
+    }
+
     return groupAvailabilitiesBySchedule(allAvailability);
-  }, [allAvailability, ]);
+  }, [initialAllAvailability, allAvailability, isFetchingAllAvailability]);
 
   return (
     <>
@@ -253,7 +157,7 @@ export default function AvailabilityList({
           </div>
         ))}
       </div>
-      <Modal.Root open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
+      {/* <Modal.Root open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
         <Modal.Content className="max-w-[440px]">
           <Modal.Body>
             <div className="text-xl font-semibold mb-4">
@@ -286,7 +190,7 @@ export default function AvailabilityList({
             </Button.Root>
           </Modal.Footer>
         </Modal.Content>
-      </Modal.Root>
+      </Modal.Root> */}
     </>
 
     // </div>
