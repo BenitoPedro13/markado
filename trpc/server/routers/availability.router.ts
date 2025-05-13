@@ -22,6 +22,7 @@ import {
 } from '~/trpc/server/utils/availability/findDetailedScheduleById';
 import { getAvailabilityFromSchedule } from '@/lib/availability';
 import { TRPCError } from '@trpc/server';
+import { getAllAvailabilitiesHandler } from '../handlers/availability.handler';
 
 // Define a type for the update data that matches the Prisma schema
 type AvailabilityUpdateData = {
@@ -35,19 +36,7 @@ type AvailabilityUpdateData = {
 export const availabilityRouter = router({
   // Get all availabilities for the current user
   getAll: protectedProcedure.query(async ({ctx}) => {
-    return ctx.prisma.availability.findMany({
-      where: {
-        userId: ctx.session?.user.id
-      },
-      include: {
-        schedule: {
-          include: {
-            user: true,
-            availability: true
-          }
-        }
-      }
-    });
+    return getAllAvailabilitiesHandler(ctx)
   }),
 
   // Get availability by ID
