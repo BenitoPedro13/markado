@@ -43,30 +43,23 @@ export default function AvailabilityDetails({
 }: AvailabilityDetailsProps) {
   const router = useRouter();
   const trpc = useTRPC();
-  const {queries: {availability}} = useAvailability();
+  const {queries: {availability}, availabilityDetailsForm} = useAvailability();
 
   if (!availability) {
     router.back();
     return null;
   }
 
-  const {data: scheduleData, isPending: isFetchingPending} = useQuery(
-    trpc.availability.findDetailedScheduleById.queryOptions(
-      {scheduleId: availability.id, timeZone: availability.timeZone},
-      {
-        enabled: !!availability.id && !availability
-      }
-    )
-  );
 
-  const schedule = availability ?? scheduleData;
 
-  const form = useForm<AvailabilityFormValues>({
-    defaultValues: {
-      ...schedule,
-      schedule: schedule.availability || []
-    }
-  });
+  // const schedule = scheduleData ?? availability;
+
+  // const form = useForm<AvailabilityFormValues>({
+  //   defaultValues: {
+  //     ...schedule,
+  //     schedule: schedule.availability || []
+  //   }
+  // });
 
   if (!availability) {
     router.back();
@@ -79,9 +72,9 @@ export default function AvailabilityDetails({
     <form className="space-y-6">
       <div className="space-y-4">
         <div className="text-title-h6">Horários</div>
-        
-        <FormProvider {...form}>
-          <Schedule control={form.control} name="schedule" weekStart={1} />
+
+        <FormProvider {...availabilityDetailsForm}>
+          <Schedule control={availabilityDetailsForm.control} name="schedule" weekStart={1} />
         </FormProvider>
       </div>
 
