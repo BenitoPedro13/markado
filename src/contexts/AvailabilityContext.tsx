@@ -6,7 +6,7 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import { useQuery } from '@tanstack/react-query';
 import {inferRouterOutputs} from '@trpc/server';
 import {createContext, useContext, useEffect, useMemo, useState} from 'react';
-import {useForm, UseFormReturn} from 'react-hook-form';
+import {FormProvider, useForm, UseFormReturn} from 'react-hook-form';
 import {z} from 'zod';
 import { useTRPC } from '@/utils/trpc';
 import {AppRouter} from '~/trpc/server';
@@ -117,7 +117,7 @@ export function AvailabilityProvider({
 
   return (
     <AvailabilityContext.Provider value={value}>
-      {children}
+      <FormProvider {...scheduleForm}>{children}</FormProvider>
     </AvailabilityContext.Provider>
   );
 }
