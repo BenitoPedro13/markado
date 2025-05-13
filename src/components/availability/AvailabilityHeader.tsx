@@ -36,6 +36,7 @@ import {useTranslations} from 'next-intl';
 import {useLocale} from '@/hooks/use-locale';
 import dayjs from 'dayjs';
 import {getQueryClient} from '@/app/get-query-client';
+import {DEFAULT_SCHEDULE} from '@/lib/availability';
 
 type HeaderVariant =
   | 'scheduling'
@@ -84,7 +85,7 @@ function AvailabilityHeader({
   } = useAvailability();
 
   const [newName, setNewName] = useState('');
-  
+
   const {t, locale, isLocaleReady} = useLocale('Availability');
 
   const router = useRouter();
@@ -111,7 +112,6 @@ function AvailabilityHeader({
   const updateScheduleMutation = useMutation(
     trpc.availability.updateDetailedAvailability.mutationOptions({
       onSuccess: () => {
-        // Invalidate both queries to ensure data is refreshed
         queryClient.invalidateQueries({
           queryKey: [
             'availability',
@@ -143,7 +143,51 @@ function AvailabilityHeader({
     })
   );
 
-  const submit = async (e: FormEvent<HTMLButtonElement>) => {
+  const createScheduleMutation = useMutation(
+    trpc.schedule.create.mutationOptions({
+      onSuccess: () => {
+        notification({
+          title: t('schedule_created_success'),
+          variant: 'stroke',
+          id: 'schedule_created_success',
+          status: 'success'
+        });
+      },
+      onError: (error) => {
+        notification({
+          title: t('schedule_created_error'),
+          description: error.message,
+          variant: 'stroke',
+          id: 'schedule_created_error',
+          status: 'error'
+        });
+      }
+    })
+  );
+
+  const createAvailabilityMutation = useMutation(
+    trpc.availability.create.mutationOptions({
+      onSuccess: () => {
+        // notification({
+        //   title: t('availability_created_success'),
+        //   variant: 'stroke',
+        //   id: 'availability_created_success'
+        // });
+        console.log('availability created successfully');
+      },
+      onError: (error) => {
+        // notification({
+        //   title: t('availability_created_error'),
+        //   description: error.message,
+        //   variant: 'stroke',
+        //   id: 'availability_created_error'
+        // });
+        console.log('availability created error', error);
+      }
+    })
+  );
+
+  const submitUpdateSchedule = async (e: FormEvent<HTMLButtonElement>) => {
     e.preventDefault();
     // setIsSubmitting(true);
 
@@ -188,6 +232,79 @@ function AvailabilityHeader({
         variant: 'stroke',
         status: 'success'
       });
+    }
+  };
+
+  const submitCreateSchedule = async (e: FormEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    // setIsSubmitting(true);
+
+    try {
+      // Get form values from the Schedule component
+      const scheduleValues = DEFAULT_SCHEDULE;
+
+      // Create a schedule first
+      const scheduleResult = await createScheduleMutation.mutateAsync({
+        name: newName,
+        timeZone:
+          Intl.DateTimeFormat().resolvedOptions().timeZone ||
+          'America/Sao_Paulo'
+      });
+
+      // Convert the schedule format to availability format
+      const schedule = scheduleValues;
+
+      // Create availabilities for each day
+      for (let dayIndex = 0; dayIndex < schedule.length; dayIndex++) {
+        const timeRanges = schedule[dayIndex];
+        if (timeRanges && timeRanges.length > 0) {
+          for (const timeRange of timeRanges) {
+            // Format the time values as HH:MM strings to match the schema requirements
+            const startTime = dayjs(timeRange.start).format('HH:mm');
+            const endTime = dayjs(timeRange.end).format('HH:mm');
+
+            await createAvailabilityMutation.mutateAsync({
+              days: [dayIndex],
+              startTime,
+              endTime,
+              scheduleId: scheduleResult.id
+            });
+          }
+        }
+      }
+
+      queryClient.invalidateQueries({
+        queryKey: [
+          ['availability', 'getAll'],
+          {
+            type: 'query'
+          }
+        ]
+      });
+
+      // Clear the edit_mode cookie if it exists
+      // clearEditMode();
+
+      // Set the availability step completion cookie
+      // setStepComplete('availability');
+
+      router.push(`/availability/${scheduleResult.id}`);
+
+      notification({
+        title: t('schedule_created_success'),
+        variant: 'stroke',
+        id: 'schedule_created_success'
+      });
+    } catch (error: any) {
+      console.error('Error submitting availability form:', error);
+      notification({
+        title: t('availability_created_error'),
+        description: error.message,
+        variant: 'stroke',
+        id: 'availability_created_error'
+      });
+    } finally {
+      // setIsSubmitting(false);
     }
   };
 
@@ -382,7 +499,7 @@ function AvailabilityHeader({
               // if ((window as any).submitServiceForm) {
               //   (window as any).submitServiceForm();
               // }
-              submit(e);
+              submitUpdateSchedule(e);
             }}
           >
             <FancyButton.Icon as={RiSaveFill} />
@@ -428,7 +545,7 @@ function AvailabilityHeader({
                 placeholder="Horas de Trabalho"
                 value={newName}
                 onChange={(e) => {
-                  setNewName(e.target.value)
+                  setNewName(e.target.value);
                 }}
                 autoFocus
               />
@@ -445,9 +562,10 @@ function AvailabilityHeader({
               size="small"
               className="font-semibold"
               disabled={!newName?.trim()}
-              onClick={() => {
+              onClick={async(e) => {
                 if (!newName?.trim()) return;
-                const slug = newName?.trim().toLowerCase().replace(/ /g, '-');
+                // const slug = newName?.trim().toLowerCase().replace(/ /g, '-');
+                await submitCreateSchedule(e)
                 setIsCreateModalOpen(false);
                 setNewName('');
                 // router.push(`/availability/${slug}`);
