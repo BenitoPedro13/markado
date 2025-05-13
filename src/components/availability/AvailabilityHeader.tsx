@@ -30,6 +30,8 @@ import {DatepickerRangeDemo} from '@/components/align-ui/daterange';
 import * as Input from '@/components/align-ui/ui/input';
 import {usePageContext} from '@/contexts/PageContext';
 import {useAvailability} from '@/contexts/AvailabilityContext';
+import { useTRPC } from '@/utils/trpc';
+import { useQuery } from '@tanstack/react-query';
 
 type HeaderVariant =
   | 'scheduling'
@@ -40,7 +42,6 @@ type HeaderVariant =
 type HeaderMode = 'default' | 'inside';
 
 type HeaderProps = {
-  variant?: HeaderVariant;
   mode?: HeaderMode;
   title?: string;
   subtitle?: string;
@@ -51,24 +52,55 @@ type HeaderProps = {
     iconLine: React.ElementType;
     iconFill: React.ElementType;
   };
+  scheduleId?: number;
+  timeZone?: string;
 };
 
-function Header({
-  variant = 'scheduling',
+function AvailabilityHeader({
   mode = 'default',
   title,
   subtitle,
   icon,
-  selectedMenuItem
+  selectedMenuItem,
+  scheduleId,
+  timeZone = 'America/Sao_Paulo'
 }: HeaderProps) {
   const {notification} = useNotification();
-  const {isCreateModalOpen, setIsCreateModalOpen} = usePageContext();
-  const [open, setOpen] = useState(false);
-  const [newName, setNewName] = useState('');
-  const [isEditing, setIsEditing] = useState(false);
-  // const {queries: {availability}, availabilityDetailsForm} = useAvailability();
-  const [editedTitle, setEditedTitle] = useState(title || '');
+  const {
+    // queries: {availability},
+    state: {
+      isCreateModalOpen,
+      setIsCreateModalOpen,
+      isDeleteModalOpen,
+      setIsDeleteModalOpen,
+      newName,
+      setNewName,
+      isEditing,
+      setIsEditing
+    },
+    availabilityDetailsForm: {register, setValue, watch}
+  } = useAvailability();
+
   const router = useRouter();
+  const name = watch('name');
+  const trpc = useTRPC();
+
+  // Get the prefetched data using tRPC query
+  const { data: availability } = useQuery(
+    trpc.availability.findDetailedScheduleById.queryOptions(
+      { 
+        scheduleId: scheduleId || 0,
+        timeZone
+      },
+      {
+        enabled: !!scheduleId,
+        // This ensures we use the prefetched data
+        staleTime: Infinity,
+      }
+    )
+  );
+
+  console.log('[AvailabilityHeader] availability', availability);
 
   const getHeaderContent = () => {
     if (selectedMenuItem) {
@@ -82,103 +114,22 @@ function Header({
       };
     }
 
-    switch (variant) {
-      case 'settings':
-        return {
-          icon: icon || <RiSettings4Line className="text-bg-strong-950" />,
-          title: 'Configurações',
-          description: 'Gerencie as configurações do seu projeto.',
-          buttons: (
-            <div className="settings">
-              <FancyButton.Root variant="neutral">
-                <FancyButton.Icon as={RiSaveFill} />
-                Salvar
-              </FancyButton.Root>
-            </div>
-          )
-        };
-      case 'scheduling':
-        return {
-          icon: <RiCalendarLine className="text-bg-strong-950" />,
-          title: 'Agendamentos',
-          description:
-            'Visualize e gerencie todos os agendamentos do seu calendário.',
-          buttons: (
-            <div className="scheduling">
-              <FancyButton.Root variant="neutral">
-                <FancyButton.Icon as={RiAddLine} />
-                Novo Agendamento
-              </FancyButton.Root>
-            </div>
-          )
-        };
-      case 'availability':
-        return {
-          icon: <RiTimeLine className="text-bg-strong-950" />,
-          title: 'Disponibilidade',
-          description: 'Configure seus horários disponíveis para agendamentos.',
-          buttons: (
-            <div className="flex justify-start items-center gap-3 availability">
-              <FancyButton.Root
-                variant="neutral"
-                onClick={() => setIsCreateModalOpen(true)}
-              >
-                <FancyButton.Icon as={RiAddLine} />
-                Criar Disponibilidade
-              </FancyButton.Root>
-            </div>
-          )
-        };
-      case 'services':
-        return {
-          icon: <RiLinksLine className="text-bg-strong-950" />,
-          title: 'Serviços',
-          description: 'Crie serviços para os clientes agendarem',
-          buttons: (
-            <div className="services flex gap-2">
-              <Button.Root variant="neutral" mode="stroke">
-                <Button.Icon as={RiLinksLine} />
-                Páginas de Serviços
-              </Button.Root>
-              <FancyButton.Root variant="neutral">
-                <FancyButton.Icon as={RiAddLine} />
-                Criar Serviço
-              </FancyButton.Root>
-            </div>
-          )
-        };
-      case 'reports':
-        return {
-          icon: <RiDashboard3Line className="text-bg-strong-950" />,
-          title: 'Relatórios',
-          description:
-            'Visualize estatísticas e relatórios sobre seus agendamentos.',
-          buttons: (
-            <div className="reports">
-              <DatepickerRangeDemo />
-            </div>
-          )
-        };
-      default:
-        return {
-          icon: <RiCalendarLine className="text-bg-strong-950" />,
-          title: 'Agendamentos',
-          description:
-            'Visualize e gerencie todos os agendamentos do seu calendário.',
-          buttons: (
-            <div className="scheduling">
-              <Button.Root variant="neutral" mode="stroke">
-                <Button.Icon as={RiCalendarLine} />
-                Calendário
-              </Button.Root>
-              <FancyButton.Root variant="neutral">
-                <FancyButton.Icon as={RiAddLine} />
-                Novo Agendamento
-              </FancyButton.Root>
-            </div>
-          )
-        };
-    }
+    return {
+      icon: <RiTimeLine className="text-bg-strong-950" />,
+      title: 'Disponibilidade',
+      description: 'Configure seus horários disponíveis para agendamentos.',
+      buttons: (
+        <div className="flex justify-start items-center gap-3 availability">
+          <FancyButton.Root
+            variant="neutral"
+            onClick={() => setIsCreateModalOpen(true)}
+          >
+            <FancyButton.Icon as={RiAddLine} />
+            Criar Disponibilidade
+          </FancyButton.Root>
+        </div>
+      )
+    };
   };
 
   const getDescriptionForMenuItem = (value: string) => {
@@ -241,16 +192,18 @@ function Header({
           </Button.Root>
           <div className="flex flex-col">
             <div className="text-text-strong-950 text-lg font-medium font-sans leading-normal">
-              {title ? (
+              {availability?.name ? (
                 <div className="flex items-center gap-2">
                   {isEditing ? (
                     <Input.Root>
                       <Input.Input
-                        value={editedTitle}
-                        onChange={(e) => setEditedTitle(e.target.value)}
+                        {...register('name')}
                         onBlur={() => {
                           setIsEditing(false);
-                          if (editedTitle.trim() && editedTitle !== title) {
+                          if (
+                            name?.trim() &&
+                            name !== availability?.name
+                          ) {
                             notification({
                               title: 'Título atualizado!',
                               description:
@@ -263,7 +216,10 @@ function Header({
                         onKeyDown={(e) => {
                           if (e.key === 'Enter') {
                             setIsEditing(false);
-                            if (editedTitle.trim() && editedTitle !== title) {
+                            if (
+                              name?.trim() &&
+                              name !== availability?.name
+                            ) {
                               notification({
                                 title: 'Título atualizado!',
                                 description:
@@ -279,7 +235,7 @@ function Header({
                     </Input.Root>
                   ) : (
                     <>
-                      <span>{editedTitle}</span>
+                      <span>{name}</span>
                       <Button.Root
                         variant="neutral"
                         mode="ghost"
@@ -304,51 +260,20 @@ function Header({
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 text-text-sub-600 text-paragraph-xs font-normal font-sans leading-tight w-fit">
-            {variant === 'availability' && 'Definir padrão'}
+            {selectedMenuItem?.value === 'availability' && 'Definir padrão'}
             <Switch.Root />
           </div>
           <div className="flex items-center gap-2">
-            {variant === 'availability' && <></>}
-            {variant === 'services' && (
-              <>
-                <ButtonGroup.Root>
-                  <Tooltip.Root>
-                    <Tooltip.Trigger asChild>
-                      <ButtonGroup.Item>
-                        <ButtonGroup.Icon as={RiShare2Line} />
-                      </ButtonGroup.Item>
-                    </Tooltip.Trigger>
-                    <Tooltip.Content size="small">
-                      Compartilhar serviço
-                    </Tooltip.Content>
-                  </Tooltip.Root>
-                  <Tooltip.Root>
-                    <Tooltip.Trigger asChild>
-                      <ButtonGroup.Item>
-                        <ButtonGroup.Icon as={RiFileCopyFill} />
-                      </ButtonGroup.Item>
-                    </Tooltip.Trigger>
-                    <Tooltip.Content size="small">
-                      Copiar link do serviço
-                    </Tooltip.Content>
-                  </Tooltip.Root>
-                  <Tooltip.Root>
-                    <Tooltip.Trigger asChild>
-                      <ButtonGroup.Item>
-                        <ButtonGroup.Icon as={RiCodeLine} />
-                      </ButtonGroup.Item>
-                    </Tooltip.Trigger>
-                    <Tooltip.Content size="small">Criar embed</Tooltip.Content>
-                  </Tooltip.Root>
-                </ButtonGroup.Root>
-              </>
-            )}
-            <Modal.Root open={open} onOpenChange={setOpen}>
+            {selectedMenuItem?.value === 'availability' && <></>}
+            <Modal.Root
+              open={isDeleteModalOpen}
+              onOpenChange={setIsDeleteModalOpen}
+            >
               <Modal.Trigger asChild>
                 <Button.Root
                   variant="neutral"
                   mode="stroke"
-                  onClick={() => setOpen(true)}
+                  onClick={() => setIsDeleteModalOpen(true)}
                 >
                   <Button.Icon as={RiDeleteBinLine} />
                   Apagar
@@ -476,4 +401,4 @@ function Header({
   );
 }
 
-export default Header;
+export default AvailabilityHeader;
