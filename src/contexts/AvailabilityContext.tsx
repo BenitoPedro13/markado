@@ -1,14 +1,14 @@
 'use client';
 
-import { DEFAULT_SCHEDULE } from '@/lib/availability';
+import {DEFAULT_SCHEDULE} from '@/lib/availability';
 import {TimeRange} from '@/types/scheadule';
 import {zodResolver} from '@hookform/resolvers/zod';
-import { useQuery } from '@tanstack/react-query';
+import {useQuery} from '@tanstack/react-query';
 import {inferRouterOutputs} from '@trpc/server';
 import {createContext, useContext, useEffect, useMemo, useState} from 'react';
 import {FormProvider, useForm, UseFormReturn} from 'react-hook-form';
 import {z} from 'zod';
-import { useTRPC } from '@/utils/trpc';
+import {useTRPC} from '@/utils/trpc';
 import {AppRouter} from '~/trpc/server';
 
 const updateAvailabilityFormSchema = z.object({
@@ -25,6 +25,7 @@ export type UpdateAvailabilityFormData = z.infer<
 
 type AvailabilityById =
   inferRouterOutputs<AppRouter>['availability']['findDetailedScheduleById'];
+type AvailabilityList = inferRouterOutputs<AppRouter>['availability']['getAll'];
 
 type AvailabilityContextType = {
   state: {
@@ -32,13 +33,12 @@ type AvailabilityContextType = {
     setIsCreateModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
     isDeleteModalOpen: boolean;
     setIsDeleteModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-    newName: string;
-    setNewName: React.Dispatch<React.SetStateAction<string>>;
     isEditing: boolean;
     setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
   };
   queries: {
-    availability: AvailabilityById | null;
+    availabilityDetails: AvailabilityById | null;
+    allAvailability: AvailabilityList | null;
   };
   availabilityDetailsForm: UseFormReturn<UpdateAvailabilityFormData>;
 };
@@ -47,40 +47,46 @@ const AvailabilityContext = createContext<AvailabilityContextType | null>(null);
 
 type AvailabilityProviderProps = {
   children: React.ReactNode;
-  initialAvailability: AvailabilityById | null;
+  initialAvailabilityDetails: AvailabilityById | null;
+  initialAllAvailability: AvailabilityList | null;
 };
 
 export function AvailabilityProvider({
   children,
-  initialAvailability
+  initialAvailabilityDetails,
+  initialAllAvailability
 }: AvailabilityProviderProps) {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [newName, setNewName] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const trpc = useTRPC();
 
   const {data: availability, isPending: isFetchingPending} = useQuery(
     trpc.availability.findDetailedScheduleById.queryOptions(
       {
-        scheduleId: initialAvailability?.id || 0,
-        timeZone: initialAvailability?.timeZone || 'America/Sao_Paulo'
+        scheduleId: initialAvailabilityDetails?.id || 0,
+        timeZone: initialAvailabilityDetails?.timeZone || 'America/Sao_Paulo'
       },
       {
-        enabled: !!initialAvailability?.id && !initialAvailability
+        enabled: !!initialAvailabilityDetails?.id && !initialAvailabilityDetails
       }
     )
   );
+
+  const {data: allAvailability, isPending: isFetchingAllAvailability} =
+    useQuery(
+      trpc.availability.getAll.queryOptions()
+    );
 
   // Schedule form for availability scheduling
   const scheduleForm = useForm<UpdateAvailabilityFormData>({
     resolver: zodResolver(updateAvailabilityFormSchema),
     defaultValues: {
-      id: initialAvailability?.id || 0,
-      name: initialAvailability?.name || '',
-      schedule: initialAvailability?.availability,
-      timeZone: initialAvailability?.timeZone || '',
-      isDefault: initialAvailability?.isLastSchedule || false
+      id: initialAvailabilityDetails?.id || 0,
+      name: initialAvailabilityDetails?.name || '',
+      schedule: initialAvailabilityDetails?.availability,
+      timeZone: initialAvailabilityDetails?.timeZone || '',
+      isDefault: initialAvailabilityDetails?.isLastSchedule || false
     }
   });
 
@@ -91,13 +97,12 @@ export function AvailabilityProvider({
         setIsCreateModalOpen,
         isDeleteModalOpen,
         setIsDeleteModalOpen,
-        newName,
-        setNewName,
         isEditing,
         setIsEditing
       },
       queries: {
-        availability: initialAvailability ?? (availability ?? null),
+        availabilityDetails: availability ?? initialAvailabilityDetails,
+        allAvailability: allAvailability ?? initialAllAvailability
       },
       availabilityDetailsForm: scheduleForm
     }),
@@ -108,8 +113,6 @@ export function AvailabilityProvider({
       setIsCreateModalOpen,
       isDeleteModalOpen,
       setIsDeleteModalOpen,
-      newName,
-      setNewName,
       isEditing,
       setIsEditing
     ]
