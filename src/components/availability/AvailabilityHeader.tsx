@@ -17,7 +17,7 @@ import {
   RiSettings4Line,
   RiPencilLine
 } from '@remixicon/react';
-import React, {useState} from 'react';
+import React, {FormEvent, useState} from 'react';
 import * as Button from '@/components/align-ui/ui/button';
 import * as FancyButton from '@/components/align-ui/ui/fancy-button';
 import * as Switch from '@/components/align-ui/ui/switch';
@@ -31,7 +31,9 @@ import * as Input from '@/components/align-ui/ui/input';
 import {usePageContext} from '@/contexts/PageContext';
 import {useAvailability} from '@/contexts/AvailabilityContext';
 import { useTRPC } from '@/utils/trpc';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
+import { useLocale } from '@/hooks/use-locale';
 
 type HeaderVariant =
   | 'scheduling'
@@ -78,8 +80,10 @@ function AvailabilityHeader({
       isEditing,
       setIsEditing
     },
-    availabilityDetailsForm: {register, setValue, watch}
+    availabilityDetailsForm: {register, setValue, watch, getValues}
   } = useAvailability();
+
+  const {t, locale, isLocaleReady} = useLocale('Availability');
 
   const router = useRouter();
   const name = watch('name');
@@ -100,7 +104,85 @@ function AvailabilityHeader({
     )
   );
 
-  console.log('[AvailabilityHeader] availability', availability);
+  const updateScheduleMutation = useMutation(
+    trpc.schedule.update.mutationOptions({
+      onSuccess: () => {
+        // notification({
+        //   title: t('schedule_updated_success'),
+        //   variant: 'stroke',
+        //   id: 'schedule_updated_success'
+        // });
+        notification({
+          title: 'Alterações salvas!',
+          description: 'Seus updates foram salvos com sucesso.',
+          variant: 'stroke',
+          status: 'success'
+        });
+      },
+      onError: (error) => {
+        notification({
+          title: t('schedule_updated_error'),
+          description: error.message,
+          variant: 'stroke',
+          id: 'schedule_updated_error'
+        });
+      }
+    })
+  );
+
+  const submit = async (e: FormEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    // setIsSubmitting(true);
+
+    try {
+      // Get form values from the Schedule component
+      const scheduleValues = getValues();
+
+      // Create a schedule first
+      const scheduleResult = await updateScheduleMutation.mutateAsync({
+        id: scheduleValues.id,
+        data: {
+          name: scheduleValues.name,
+          timeZone: scheduleValues.timeZone
+        }
+      });
+
+      console.log('scheduleResult', scheduleResult);
+
+      // Convert the schedule format to availability format
+      // const schedule = scheduleValues.schedule;
+
+      // // Create availabilities for each day
+      // for (let dayIndex = 0; dayIndex < schedule.length; dayIndex++) {
+      //   const timeRanges = schedule[dayIndex];
+      //   if (timeRanges && timeRanges.length > 0) {
+      //     for (const timeRange of timeRanges) {
+      //       // Format the time values as HH:MM strings to match the schema requirements
+      //       const startTime = dayjs(timeRange.start).format('HH:mm');
+      //       const endTime = dayjs(timeRange.end).format('HH:mm');
+
+      //       await createAvailabilityMutation.mutateAsync({
+      //         days: [dayIndex],
+      //         startTime,
+      //         endTime,
+      //         scheduleId: scheduleResult.id
+      //       });
+      //     }
+      //   }
+      // }
+
+    } catch (error: any) {
+      console.error('Error submitting availability form:', error);
+      // notification({
+      //   title: t('availability_created_error'),
+      //   description: error.message,
+      //   variant: 'stroke',
+      //   id: 'availability_created_error'
+      // });
+    } finally {
+      // setIsSubmitting(false);
+    }
+  };
 
   const getHeaderContent = () => {
     if (selectedMenuItem) {
@@ -200,34 +282,10 @@ function AvailabilityHeader({
                         {...register('name')}
                         onBlur={() => {
                           setIsEditing(false);
-                          if (
-                            name?.trim() &&
-                            name !== availability?.name
-                          ) {
-                            notification({
-                              title: 'Título atualizado!',
-                              description:
-                                'O título foi atualizado com sucesso.',
-                              variant: 'stroke',
-                              status: 'success'
-                            });
-                          }
                         }}
                         onKeyDown={(e) => {
                           if (e.key === 'Enter') {
                             setIsEditing(false);
-                            if (
-                              name?.trim() &&
-                              name !== availability?.name
-                            ) {
-                              notification({
-                                title: 'Título atualizado!',
-                                description:
-                                  'O título foi atualizado com sucesso.',
-                                variant: 'stroke',
-                                status: 'success'
-                              });
-                            }
                           }
                         }}
                         autoFocus
@@ -264,7 +322,6 @@ function AvailabilityHeader({
             <Switch.Root />
           </div>
           <div className="flex items-center gap-2">
-            {selectedMenuItem?.value === 'availability' && <></>}
             <Modal.Root
               open={isDeleteModalOpen}
               onOpenChange={setIsDeleteModalOpen}
@@ -314,16 +371,12 @@ function AvailabilityHeader({
           <FancyButton.Root
             variant="neutral"
             size="small"
-            onClick={() => {
-              if ((window as any).submitServiceForm) {
-                (window as any).submitServiceForm();
-              }
-              notification({
-                title: 'Alterações salvas!',
-                description: 'Seus updates foram salvos com sucesso.',
-                variant: 'stroke',
-                status: 'success'
-              });
+            onClick={(e) => {
+              // if ((window as any).submitServiceForm) {
+              //   (window as any).submitServiceForm();
+              // }
+              submit(e);
+              
             }}
           >
             <FancyButton.Icon as={RiSaveFill} />
@@ -367,8 +420,8 @@ function AvailabilityHeader({
             <Input.Root>
               <Input.Input
                 placeholder="Horas de Trabalho"
-                value={newName}
-                onChange={(e) => setNewName(e.target.value)}
+                value={getValues('name')}
+                onChange={(e) => setValue('name', e.target.value)}
                 autoFocus
               />
             </Input.Root>
@@ -383,12 +436,12 @@ function AvailabilityHeader({
               variant="neutral"
               size="small"
               className="font-semibold"
-              disabled={!newName.trim()}
+              disabled={!getValues('name')?.trim()}
               onClick={() => {
-                if (!newName.trim()) return;
-                const slug = newName.trim().toLowerCase().replace(/ /g, '-');
+                if (!getValues('name')?.trim()) return;
+                const slug = getValues('name')?.trim().toLowerCase().replace(/ /g, '-');
                 setIsCreateModalOpen(false);
-                setNewName('');
+                setValue('name', '');
                 // router.push(`/availability/${slug}`);
               }}
             >
