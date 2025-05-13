@@ -4,8 +4,14 @@ import * as Divider from '@/components/align-ui/ui/divider';
 import AvailabilityList from '@/components/availability/AvailabilityList';
 import {redirect} from 'next/navigation';
 import {auth} from '@/auth';
-import {getAllAvailabilitiesByUserId} from '~/trpc/server/handlers/availability.handler';
-import { AvailabilityProvider } from '@/contexts/AvailabilityContext';
+import {
+  findDetailedScheduleById,
+  getAllAvailabilitiesByUserId
+} from '~/trpc/server/handlers/availability.handler';
+import {AvailabilityProvider} from '@/contexts/AvailabilityContext';
+import {getQueryClient} from '@/app/get-query-client';
+import {dehydrate} from '@tanstack/react-query';
+import {HydrationBoundary} from '@tanstack/react-query';
 
 /** Availability page of the website. */
 export default async function AvailabilityPage() {
@@ -17,22 +23,40 @@ export default async function AvailabilityPage() {
     redirect('/sign-in');
   }
 
+  // Create a new QueryClient for this request
+  const queryClient = getQueryClient();
+
+  // Prefetch the data
+  await queryClient.prefetchQuery({
+    queryKey: [
+      'availability',
+      'getAllAvailabilitiesByUserId',
+      userId
+    ],
+    queryFn: () => getAllAvailabilitiesByUserId(userId)
+  });
+
   const allAvailability = await getAllAvailabilitiesByUserId(userId);
 
   console.log('[AvailabilityPage] allAvailability', allAvailability);
 
   return (
     <PageLayout title="Disponibilidade">
-      <AvailabilityProvider initialAvailability={null}>
-        <AvailabilityHeader />
-        <div className="px-8">
-          <Divider.Root />
-        </div>
+      <HydrationBoundary state={dehydrate(queryClient)}>
+        <AvailabilityProvider
+          initialAllAvailability={allAvailability}
+          initialAvailabilityDetails={null}
+        >
+          <AvailabilityHeader />
+          <div className="px-8">
+            <Divider.Root />
+          </div>
 
-        <div className="p-8">
-          <AvailabilityList allAvailability={allAvailability} />
-        </div>
-      </AvailabilityProvider>
+          <div className="p-8">
+            <AvailabilityList initialAllAvailability={allAvailability} />
+          </div>
+        </AvailabilityProvider>
+      </HydrationBoundary>
     </PageLayout>
   );
 }
