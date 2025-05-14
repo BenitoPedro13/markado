@@ -12,6 +12,7 @@ import {AvailabilityProvider} from '@/contexts/AvailabilityContext';
 import {getQueryClient} from '@/app/get-query-client';
 import {dehydrate} from '@tanstack/react-query';
 import {HydrationBoundary} from '@tanstack/react-query';
+import { getMeByUserId } from '~/trpc/server/handlers/user.handler';
 
 /** Availability page of the website. */
 export default async function AvailabilityPage() {
@@ -29,16 +30,22 @@ export default async function AvailabilityPage() {
   // Prefetch the data
   await queryClient.prefetchQuery({
     queryKey: [
-      'availability',
-      'getAllAvailabilitiesByUserId',
-      userId
+      ['availability', 'getAll'],
+      {
+        type: 'query'
+      }
     ],
     queryFn: () => getAllAvailabilitiesByUserId(userId)
   });
 
-  const allAvailability = await getAllAvailabilitiesByUserId(userId);
+  // Prefetch the data
+  await queryClient.prefetchQuery({
+    queryKey: ['me'],
+    queryFn: () => getMeByUserId(userId)
+  });
 
-  console.log('[AvailabilityPage] allAvailability', allAvailability);
+  const allAvailability = await getAllAvailabilitiesByUserId(userId);
+  const me = await getMeByUserId(userId);
 
   return (
     <PageLayout title="Disponibilidade">
@@ -46,6 +53,7 @@ export default async function AvailabilityPage() {
         <AvailabilityProvider
           initialAllAvailability={allAvailability}
           initialAvailabilityDetails={null}
+          initialMe={me}
         >
           <AvailabilityHeader />
           <div className="px-8">
