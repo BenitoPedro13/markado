@@ -6,6 +6,8 @@ import {AppRouter} from '~/trpc/server';
 type RouterOutput = inferRouterOutputs<AppRouter>;
 
 export type ServerAvailabilityResponse = RouterOutput['availability']['getAll'][number];
+export type ServerDetailedAvailabilityResponse =
+  RouterOutput['availability']['findDetailedScheduleById']
 
 // Map day numbers to Portuguese abbreviations
 const dayAbbreviations: Record<number, string> = {
@@ -105,6 +107,62 @@ export const formatAvailabilitySchedule = (
 };
 
 /**
+ * Formats the weekly schedule from a detailed schedule object (findDetailedScheduleById)
+ * @param detailed The full object returned by findDetailedScheduleById
+ * @returns A string like "seg. - sex., 9:00 até 17:00"
+ */
+export function formatScheduleFromDetailed(
+  detailed: ServerDetailedAvailabilityResponse
+): string {
+  const { availability, timeZone } = detailed;
+  if (!availability || !availability.length) return '';
+
+  // Collect all days with their time ranges
+  const daysWithRanges: { day: number; ranges: { start: Date; end: Date }[] }[] = [];
+  for (let day = 0; day < availability.length; day++) {
+    if (availability[day] && availability[day].length > 0) {
+      daysWithRanges.push({ day: day + 1, ranges: availability[day] }); // +1 to match dayAbbreviations
+    }
+  }
+  if (!daysWithRanges.length) return '';
+
+  // Group days by identical time ranges
+  const groupKey = (ranges: { start: Date; end: Date }[]) =>
+    ranges
+      .map(r => `${r.start.toISOString()}-${r.end.toISOString()}`)
+      .join('|');
+
+  const groups: { key: string; days: number[]; ranges: { start: Date; end: Date }[] }[] = [];
+  daysWithRanges.forEach(({ day, ranges }) => {
+    const key = groupKey(ranges);
+    const lastGroup = groups[groups.length - 1];
+    if (lastGroup && lastGroup.key === key) {
+      lastGroup.days.push(day);
+    } else {
+      groups.push({ key, days: [day], ranges });
+    }
+  });
+
+  // Format each group
+  const formattedGroups = groups.map(group => {
+    // Format day range
+    let dayLabel = '';
+    if (group.days.length === 1) {
+      dayLabel = dayAbbreviations[group.days[0]];
+    } else {
+      dayLabel = `${dayAbbreviations[group.days[0]]} - ${dayAbbreviations[group.days[group.days.length - 1]]}`;
+    }
+    // Format time ranges
+    const timeLabel = group.ranges
+      .map(r => `${formatTimeWithTimezone(r.start, timeZone)} até ${formatTimeWithTimezone(r.end, timeZone)}`)
+      .join(', ');
+    return `${dayLabel}, ${timeLabel}`;
+  });
+
+  return formattedGroups.join(' | ');
+} 
+
+/**
  * Groups availabilities by scheduleId
  * This function can handle any structure as long as it has scheduleId, days, 
  * startTime, endTime and schedule properties
@@ -149,4 +207,4 @@ export const groupAvailabilitiesBySchedule = <T extends ServerAvailabilityRespon
   }[];
   
   return result;
-}; 
+};
