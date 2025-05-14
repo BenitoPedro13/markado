@@ -10,6 +10,9 @@ import {FormProvider, useForm, UseFormReturn} from 'react-hook-form';
 import {z} from 'zod';
 import {useTRPC} from '@/utils/trpc';
 import {AppRouter} from '~/trpc/server';
+import useMeQuery from '@/hooks/use-me-query';
+import { useSessionStore } from '@/providers/session-store-provider';
+import { Me } from '@/app/settings/page';
 
 const updateAvailabilityFormSchema = z.object({
   id: z.number(),
@@ -39,6 +42,7 @@ type AvailabilityContextType = {
   queries: {
     availabilityDetails: AvailabilityById | null;
     allAvailability: AvailabilityList | null;
+    initialMe: Me | null;
   };
   availabilityDetailsForm: UseFormReturn<UpdateAvailabilityFormData>;
 };
@@ -49,12 +53,14 @@ type AvailabilityProviderProps = {
   children: React.ReactNode;
   initialAvailabilityDetails: AvailabilityById | null;
   initialAllAvailability: AvailabilityList | null;
+  initialMe: Me | null;
 };
 
 export function AvailabilityProvider({
   children,
   initialAvailabilityDetails,
-  initialAllAvailability
+  initialAllAvailability,
+  initialMe
 }: AvailabilityProviderProps) {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -86,8 +92,9 @@ export function AvailabilityProvider({
       name: initialAvailabilityDetails?.name || '',
       schedule: initialAvailabilityDetails?.availability,
       timeZone: initialAvailabilityDetails?.timeZone || '',
-      isDefault: initialAvailabilityDetails?.isLastSchedule || false
-    }
+      isDefault:
+        initialMe?.defaultScheduleId === initialAvailabilityDetails?.id
+    },
   });
 
   const value = useMemo<AvailabilityContextType>(
@@ -98,9 +105,10 @@ export function AvailabilityProvider({
         isDeleteModalOpen,
         setIsDeleteModalOpen,
         isEditing,
-        setIsEditing
+        setIsEditing,
       },
       queries: {
+        initialMe,
         availabilityDetails: availability ?? initialAvailabilityDetails,
         allAvailability: allAvailability ?? initialAllAvailability
       },
@@ -114,13 +122,16 @@ export function AvailabilityProvider({
       isDeleteModalOpen,
       setIsDeleteModalOpen,
       isEditing,
-      setIsEditing
+      setIsEditing,
+      initialAvailabilityDetails,
+      initialAllAvailability,
+      initialMe
     ]
   );
 
   return (
     <AvailabilityContext.Provider value={value}>
-      <FormProvider {...scheduleForm}>{children}</FormProvider>
+      <FormProvider {...value.availabilityDetailsForm}>{children}</FormProvider>
     </AvailabilityContext.Provider>
   );
 }
