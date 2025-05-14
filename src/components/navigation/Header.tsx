@@ -28,7 +28,7 @@ import { useRouter } from 'next/navigation';
 import { DatepickerRangeDemo } from '@/components/align-ui/daterange';
 import * as Input from '@/components/align-ui/ui/input';
 import { usePageContext } from '@/contexts/PageContext';
-import { useAvailability } from '@/contexts/AvailabilityContext';
+import { useAvailability } from '@/contexts/availability/AvailabilityContext';
 // import CreateServiceModal from '@/components/services/CreateServiceModal';
 
 type HeaderVariant = 'scheduling' | 'availability' | 'services' | 'reports' | 'settings';
