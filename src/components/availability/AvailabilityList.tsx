@@ -40,7 +40,6 @@ interface FormattedSchedule {
 export default function AvailabilityList({
   initialAllAvailability
 }: AvailabilityListProps) {
-  const {isCreateModalOpen, setIsCreateModalOpen} = usePageContext();
   const [availabilities, setAvailabilities] = useState<FormattedSchedule[]>([
     {
       // schedule: 'seg. - sex., 9:00 até 17:00', // valor padrão
@@ -108,12 +107,8 @@ export default function AvailabilityList({
       return [];
     }
 
-    if (isFetchingAllAvailability || !allAvailability) {
-      return groupAvailabilitiesBySchedule(initialAllAvailability);
-    }
-
-    return groupAvailabilitiesBySchedule(allAvailability);
-  }, [initialAllAvailability, allAvailability, isFetchingAllAvailability]);
+    return groupAvailabilitiesBySchedule(initialAllAvailability);
+  }, [initialAllAvailability]);
 
   return (
     <div className="rounded-lg w-full border border-stroke-soft-200">
