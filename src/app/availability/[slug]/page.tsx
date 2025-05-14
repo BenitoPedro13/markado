@@ -8,6 +8,7 @@ import { AvailabilityProvider } from '@/contexts/AvailabilityContext';
 import AvailabilityHeader from '@/components/availability/AvailabilityHeader';
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
 import { getQueryClient } from '@/app/get-query-client';
+import { getMeByUserId } from '~/trpc/server/handlers/user.handler';
 
 type Props = {
   params: {
@@ -18,7 +19,9 @@ type Props = {
 export default async function AvailabilityDetailsPage({params}: Props) {
   const session = await auth();
 
-  if (!session?.user.id) return;
+  const userId = session?.user?.id;
+
+  if (!userId) return;
 
   const availabilityId = params.slug;
 
@@ -27,28 +30,44 @@ export default async function AvailabilityDetailsPage({params}: Props) {
 
   // Prefetch the data
   await queryClient.prefetchQuery({
-    queryKey: ['availability', 'findDetailedScheduleById', { 
-      scheduleId: +availabilityId, 
-      timeZone: 'America/Sao_Paulo'
-    }],
-    queryFn: () => findDetailedScheduleById({
-      scheduleId: +availabilityId,
-      userId: session.user.id,
-      timeZone: 'America/Sao_Paulo'
-    })
+    queryKey: [
+      'availability',
+      'findDetailedScheduleById',
+      {
+        scheduleId: +availabilityId,
+        timeZone: 'America/Sao_Paulo'
+      }
+    ],
+    queryFn: () =>
+      findDetailedScheduleById({
+        scheduleId: +availabilityId,
+        userId: userId,
+        timeZone: 'America/Sao_Paulo'
+      })
+  });
+
+  // Prefetch the data
+  await queryClient.prefetchQuery({
+    queryKey: ['me'],
+    queryFn: () => getMeByUserId(userId)
   });
 
   const availability = await findDetailedScheduleById({
     scheduleId: +availabilityId,
-    userId: session.user.id
+    userId: userId
   });
+  const me = await getMeByUserId(userId);
 
   const title = availability?.name;
 
   return (
     <PageLayout title="Disponibilidade">
       <HydrationBoundary state={dehydrate(queryClient)}>
-        <AvailabilityProvider initialAvailabilityDetails={availability} initialAllAvailability={null}>
+        <AvailabilityProvider
+          initialAvailabilityDetails={availability}
+          initialAllAvailability={null}
+          initialMe={me}
+        >
           <AvailabilityHeader
             mode="inside"
             title={title}
