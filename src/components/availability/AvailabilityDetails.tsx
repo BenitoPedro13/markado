@@ -1,26 +1,27 @@
 'use client';
 
-import React, {useState, useEffect} from 'react';
-import * as Switch from '@/components/align-ui/ui/switch';
-import * as Input from '@/components/align-ui/ui/input';
-import * as Button from '@/components/align-ui/ui/button';
-import * as Select from '@/components/align-ui/ui/select';
-import {availabilities, DaySchedule} from '@/data/availability';
-import {RiDeleteBinLine, RiAddLine} from '@remixicon/react';
+import React from 'react';
+// import * as Switch from '@/components/align-ui/ui/switch';
+// import * as Input from '@/components/align-ui/ui/input';
+// import * as Button from '@/components/align-ui/ui/button';
+// import * as Select from '@/components/align-ui/ui/select';
+// import {availabilities, DaySchedule} from '@/data/availability';
+// import {RiDeleteBinLine, RiAddLine} from '@remixicon/react';
 import * as Divider from '@/components/align-ui/ui/divider';
 
 import {AppRouter} from '~/trpc/server';
 import {inferRouterOutputs} from '@trpc/server';
 import {useRouter} from 'next/navigation';
 import {FormProvider, useForm} from 'react-hook-form';
-import {SignUpScheduleFormData} from '@/contexts/SignUpContext';
-import {DEFAULT_SCHEDULE} from '@/lib/availability';
+// import {SignUpScheduleFormData} from '@/contexts/SignUpContext';
+// import {DEFAULT_SCHEDULE} from '@/lib/availability';
 import type {Schedule as ScheduleType, TimeRange} from '@/types/scheadule';
 import Schedule from '../schedules/components/Schedule';
-import {useTRPC} from '@/utils/trpc';
-import {useQuery} from '@tanstack/react-query';
-import {useAvailability} from '@/contexts/AvailabilityContext';
+// import {useTRPC} from '@/utils/trpc';
+// import {useQuery} from '@tanstack/react-query';
+// import {useAvailability} from '@/contexts/availability/AvailabilityContext';
 import TimezoneSelectWithStyle from '@/components/TimezoneSelectWithStyle';
+import { useAvailabilityDetails } from '@/contexts/availability/availabilityDetails/AvailabilityContext';
 
 type AvailabilityById =
   inferRouterOutputs<AppRouter>['availability']['findDetailedScheduleById'];
@@ -46,7 +47,7 @@ export default function AvailabilityDetails({
   const {
     queries: {availabilityDetails},
     availabilityDetailsForm
-  } = useAvailability();
+  } = useAvailabilityDetails();
 
   if (!availabilityDetails) {
     router.back();
@@ -63,6 +64,7 @@ export default function AvailabilityDetails({
             control={availabilityDetailsForm.control}
             name="schedule"
             weekStart={1}
+            timezone={availabilityDetails.timeZone}
           />
         </FormProvider>
       </div>
