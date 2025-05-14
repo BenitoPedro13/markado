@@ -1,14 +1,16 @@
+export const dynamic = 'force-dynamic';
+
 import PageLayout from '@/components/PageLayout';
 import Header from '@/components/navigation/Header';
 import * as Divider from '@/components/align-ui/ui/divider';
 import AvailabilityDetails from '@/components/availability/AvailabilityDetails';
 import {auth} from '@/auth';
 import {findDetailedScheduleById} from '~/trpc/server/handlers/availability.handler';
-import { AvailabilityProvider } from '@/contexts/AvailabilityContext';
+import {AvailabilityProvider} from '@/contexts/AvailabilityContext';
 import AvailabilityHeader from '@/components/availability/AvailabilityHeader';
-import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
-import { getQueryClient } from '@/app/get-query-client';
-import { getMeByUserId } from '~/trpc/server/handlers/user.handler';
+import {dehydrate, HydrationBoundary, QueryClient} from '@tanstack/react-query';
+import {getQueryClient} from '@/app/get-query-client';
+import {getMeByUserId} from '~/trpc/server/handlers/user.handler';
 
 type Props = {
   params: {
@@ -26,31 +28,31 @@ export default async function AvailabilityDetailsPage({params}: Props) {
   const availabilityId = params.slug;
 
   // Create a new QueryClient for this request
-  const queryClient = getQueryClient();
+  // const queryClient = getQueryClient();
 
-  // Prefetch the data
-  await queryClient.prefetchQuery({
-    queryKey: [
-      'availability',
-      'findDetailedScheduleById',
-      {
-        scheduleId: +availabilityId,
-        timeZone: 'America/Sao_Paulo'
-      }
-    ],
-    queryFn: () =>
-      findDetailedScheduleById({
-        scheduleId: +availabilityId,
-        userId: userId,
-        timeZone: 'America/Sao_Paulo'
-      })
-  });
+  // // Prefetch the data
+  // await queryClient.prefetchQuery({
+  //   queryKey: [
+  //     'availability',
+  //     'findDetailedScheduleById',
+  //     {
+  //       scheduleId: +availabilityId,
+  //       timeZone: 'America/Sao_Paulo'
+  //     }
+  //   ],
+  //   queryFn: () =>
+  //     findDetailedScheduleById({
+  //       scheduleId: +availabilityId,
+  //       userId: userId,
+  //       timeZone: 'America/Sao_Paulo'
+  //     })
+  // });
 
-  // Prefetch the data
-  await queryClient.prefetchQuery({
-    queryKey: ['me'],
-    queryFn: () => getMeByUserId(userId)
-  });
+  // // Prefetch the data
+  // await queryClient.prefetchQuery({
+  //   queryKey: ['me'],
+  //   queryFn: () => getMeByUserId(userId)
+  // });
 
   const availability = await findDetailedScheduleById({
     scheduleId: +availabilityId,
@@ -62,7 +64,7 @@ export default async function AvailabilityDetailsPage({params}: Props) {
 
   return (
     <PageLayout title="Disponibilidade">
-      <HydrationBoundary state={dehydrate(queryClient)}>
+      {/* <HydrationBoundary state={dehydrate(queryClient)}> */}
         <AvailabilityProvider
           initialAvailabilityDetails={availability}
           initialAllAvailability={null}
@@ -83,7 +85,7 @@ export default async function AvailabilityDetailsPage({params}: Props) {
             <AvailabilityDetails title={title || ''} />
           </div>
         </AvailabilityProvider>
-      </HydrationBoundary>
+      {/* </HydrationBoundary> */}
     </PageLayout>
   );
 }
