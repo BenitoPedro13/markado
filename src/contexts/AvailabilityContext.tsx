@@ -13,6 +13,7 @@ import {AppRouter} from '~/trpc/server';
 import useMeQuery from '@/hooks/use-me-query';
 import { useSessionStore } from '@/providers/session-store-provider';
 import { Me } from '@/app/settings/page';
+import { usePathname } from 'next/navigation';
 
 const updateAvailabilityFormSchema = z.object({
   id: z.number(),
@@ -38,6 +39,8 @@ type AvailabilityContextType = {
     setIsDeleteModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
     isEditing: boolean;
     setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
+    // isAvailabilityPending: boolean;
+    // isAllAvailabilityPending: boolean;
   };
   queries: {
     availabilityDetails: AvailabilityById | null;
@@ -67,22 +70,28 @@ export function AvailabilityProvider({
   const [isEditing, setIsEditing] = useState(false);
   const trpc = useTRPC();
 
-  const {data: availability, isPending: isFetchingPending} = useQuery(
-    trpc.availability.findDetailedScheduleById.queryOptions(
-      {
-        scheduleId: initialAvailabilityDetails?.id || 0,
-        timeZone: initialAvailabilityDetails?.timeZone || 'America/Sao_Paulo'
-      },
-      {
-        enabled: !!initialAvailabilityDetails?.id && !initialAvailabilityDetails
-      }
-    )
-  );
+  const pathname = usePathname();
 
-  const {data: allAvailability, isPending: isFetchingAllAvailability} =
-    useQuery(
-      trpc.availability.getAll.queryOptions()
-    );
+  // const {data: availability, isPending: isAvailabilityPending} = useQuery(
+  //   trpc.availability.findDetailedScheduleById.queryOptions(
+  //     {
+  //       scheduleId: initialAvailabilityDetails?.id || 0,
+  //       timeZone: initialAvailabilityDetails?.timeZone || 'America/Sao_Paulo'
+  //     },
+  //     {
+  //       refetchOnMount: true,
+  //       refetchOnWindowFocus: true
+  //     }
+  //   )
+  // );
+
+  // const {data: allAvailability, isPending: isAllAvailabilityPending} =
+  //   useQuery(
+  //     trpc.availability.getAll.queryOptions(undefined, {
+  //       refetchOnMount: true,
+  //       refetchOnWindowFocus: true,
+  //     })
+  //   );
 
   // Schedule form for availability scheduling
   const scheduleForm = useForm<UpdateAvailabilityFormData>({
@@ -106,16 +115,18 @@ export function AvailabilityProvider({
         setIsDeleteModalOpen,
         isEditing,
         setIsEditing,
+        // isAvailabilityPending,
+        // isAllAvailabilityPending
       },
       queries: {
         initialMe,
-        availabilityDetails: availability ?? initialAvailabilityDetails,
-        allAvailability: allAvailability ?? initialAllAvailability
+        availabilityDetails: initialAvailabilityDetails,
+        allAvailability: initialAllAvailability
       },
       availabilityDetailsForm: scheduleForm
     }),
     [
-      availability,
+      pathname,
       scheduleForm,
       isCreateModalOpen,
       setIsCreateModalOpen,
