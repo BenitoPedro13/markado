@@ -59,30 +59,8 @@ export function AvailabilityDetailsProvider({
 }: AvailabilityDetailsProviderProps) {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const trpc = useTRPC();
 
   const pathname = usePathname();
-
-  // const {data: availability, isPending: isAvailabilityPending} = useQuery(
-  //   trpc.availability.findDetailedScheduleById.queryOptions(
-  //     {
-  //       scheduleId: initialAvailabilityDetails?.id || 0,
-  //       timeZone: initialAvailabilityDetails?.timeZone || 'America/Sao_Paulo'
-  //     },
-  //     {
-  //       refetchOnMount: true,
-  //       refetchOnWindowFocus: true
-  //     }
-  //   )
-  // );
-
-  // const {data: allAvailability, isPending: isAllAvailabilityPending} =
-  //   useQuery(
-  //     trpc.availability.getAll.queryOptions(undefined, {
-  //       refetchOnMount: true,
-  //       refetchOnWindowFocus: true,
-  //     })
-  //   );
 
   // Schedule form for availability scheduling
   const scheduleForm = useForm<UpdateAvailabilityDetailsFormData>({
