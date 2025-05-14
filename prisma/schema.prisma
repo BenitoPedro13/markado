@@ -156,7 +156,7 @@ model Availability {
   startTime  DateTime  @db.Time
   endTime    DateTime  @db.Time
   date       DateTime? @db.Date
-  schedule   Schedule? @relation(fields: [scheduleId], references: [id])
+  schedule   Schedule? @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
   scheduleId Int?
 
   @@index([userId])
