@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import PageLayout from '@/components/PageLayout';
 import AvailabilityHeader from '@/components/availability/AvailabilityHeader';
 import * as Divider from '@/components/align-ui/ui/divider';
@@ -12,7 +14,7 @@ import {AvailabilityProvider} from '@/contexts/AvailabilityContext';
 import {getQueryClient} from '@/app/get-query-client';
 import {dehydrate} from '@tanstack/react-query';
 import {HydrationBoundary} from '@tanstack/react-query';
-import { getMeByUserId } from '~/trpc/server/handlers/user.handler';
+import {getMeByUserId} from '~/trpc/server/handlers/user.handler';
 
 /** Availability page of the website. */
 export default async function AvailabilityPage() {
@@ -24,32 +26,32 @@ export default async function AvailabilityPage() {
     redirect('/sign-in');
   }
 
-  // Create a new QueryClient for this request
-  const queryClient = getQueryClient();
+  // // Create a new QueryClient for this request
+  // const queryClient = getQueryClient();
 
-  // Prefetch the data
-  await queryClient.prefetchQuery({
-    queryKey: [
-      ['availability', 'getAll'],
-      {
-        type: 'query'
-      }
-    ],
-    queryFn: () => getAllAvailabilitiesByUserId(userId)
-  });
+  // // Prefetch the data
+  // await queryClient.prefetchQuery({
+  //   queryKey: [
+  //     ['availability', 'getAll'],
+  //     {
+  //       type: 'query'
+  //     }
+  //   ],
+  //   queryFn: () => getAllAvailabilitiesByUserId(userId)
+  // });
 
-  // Prefetch the data
-  await queryClient.prefetchQuery({
-    queryKey: ['me'],
-    queryFn: () => getMeByUserId(userId)
-  });
+  // // Prefetch the data
+  // await queryClient.prefetchQuery({
+  //   queryKey: ['me'],
+  //   queryFn: () => getMeByUserId(userId)
+  // });
 
   const allAvailability = await getAllAvailabilitiesByUserId(userId);
   const me = await getMeByUserId(userId);
 
   return (
     <PageLayout title="Disponibilidade">
-      <HydrationBoundary state={dehydrate(queryClient)}>
+      {/* <HydrationBoundary state={dehydrate(queryClient)}> */}
         <AvailabilityProvider
           initialAllAvailability={allAvailability}
           initialAvailabilityDetails={null}
@@ -64,7 +66,7 @@ export default async function AvailabilityPage() {
             <AvailabilityList initialAllAvailability={allAvailability} />
           </div>
         </AvailabilityProvider>
-      </HydrationBoundary>
+      {/* </HydrationBoundary> */}
     </PageLayout>
   );
 }
