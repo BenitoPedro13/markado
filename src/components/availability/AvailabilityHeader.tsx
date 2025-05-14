@@ -90,6 +90,7 @@ function AvailabilityHeader({
 
   const router = useRouter();
   const name = watch('name');
+  const isDefault = watch('isDefault');
   const trpc = useTRPC();
 
   const queryClient = getQueryClient();
@@ -187,6 +188,25 @@ function AvailabilityHeader({
     })
   );
 
+  const deleteScheduleMutation = useMutation(
+    trpc.schedule.delete.mutationOptions({
+      onSuccess: () => {
+        console.log('schedule deleted successfully');
+
+        queryClient.invalidateQueries({
+          queryKey: [
+            ['availability', 'getAll'],
+            {
+              type: 'query'
+            }
+          ]
+        });
+
+        router.push('/availability');
+      }
+    })
+  );
+
   const submitUpdateSchedule = async (e: FormEvent<HTMLButtonElement>) => {
     e.preventDefault();
     // setIsSubmitting(true);
@@ -215,6 +235,8 @@ function AvailabilityHeader({
           variant: 'stroke',
           status: 'success'
         });
+
+        router.push(`/availability`);
       }
     } catch (error: any) {
       console.error('Error submitting availability form:', error);
@@ -305,6 +327,28 @@ function AvailabilityHeader({
       });
     } finally {
       // setIsSubmitting(false);
+    }
+  };
+
+  const submitDeleteSchedule = async (e: FormEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    try {
+      if (!scheduleId) {
+        throw new Error('Schedule ID is required');
+      }
+
+      await deleteScheduleMutation.mutateAsync({
+        id: scheduleId || 0
+      });
+
+      notification({
+        title: t('schedule_deleted_success'),
+        variant: 'stroke',
+        id: 'schedule_deleted_success',
+        status: 'success'
+      });
+    } catch (error) {
+      console.error('Error deleting schedule:', error);
     }
   };
 
@@ -442,9 +486,11 @@ function AvailabilityHeader({
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 text-text-sub-600 text-paragraph-xs font-normal font-sans leading-tight w-fit">
-            {selectedMenuItem?.value === 'availability' && 'Definir padrão'}
-            <Switch.Root />
-          </div>
+            Definir padrão
+            <Switch.Root defaultChecked={isDefault} onCheckedChange={(checked) => {
+              setValue('isDefault', checked);
+            }} />
+          </div> 
           <div className="flex items-center gap-2">
             <Modal.Root
               open={isDeleteModalOpen}
@@ -485,7 +531,7 @@ function AvailabilityHeader({
                       Cancelar
                     </Button.Root>
                   </Modal.Close>
-                  <Button.Root variant="error" size="small" className="w-full">
+                  <Button.Root variant="error" size="small" className="w-full" onClick={submitDeleteSchedule}>
                     Apagar
                   </Button.Root>
                 </Modal.Footer>
