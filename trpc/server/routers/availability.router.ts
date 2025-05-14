@@ -23,6 +23,7 @@ import {
 import { getAvailabilityFromSchedule } from '@/lib/availability';
 import { TRPCError } from '@trpc/server';
 import { getAllAvailabilitiesHandler } from '../handlers/availability.handler';
+import { revalidatePath } from 'next/cache';
 
 // Define a type for the update data that matches the Prisma schema
 type AvailabilityUpdateData = {
@@ -135,6 +136,11 @@ export const availabilityRouter = router({
       const startDateTime = timeStringToDate(input.startTime, timezone);
       const endDateTime = timeStringToDate(input.endTime, timezone);
 
+      revalidatePath('/availability');
+      if (input.scheduleId) {
+        revalidatePath(`/availability/${input.scheduleId}`);
+      }
+
       return ctx.prisma.availability.create({
         data: {
           ...input,
@@ -162,7 +168,8 @@ export const availabilityRouter = router({
         where: {
           id: input.id,
           userId: ctx.session?.user.id
-        }
+        },
+        include: { schedule: true }
       });
 
       if (!existingAvailability) {
@@ -196,6 +203,11 @@ export const availabilityRouter = router({
         updateData.endTime = timeStringToDate(input.data.endTime);
       }
 
+      revalidatePath('/availability');
+      if (existingAvailability.scheduleId) {
+        revalidatePath(`/availability/${existingAvailability.scheduleId}`);
+      }
+
       return ctx.prisma.availability.update({
         where: {
           id: input.id
@@ -217,7 +229,7 @@ export const availabilityRouter = router({
     .mutation(async ({input, ctx}) => {
       const {user} = ctx;
 
-      if(!user) {
+      if (!user) {
         throw new TRPCError({
           code: 'UNAUTHORIZED'
         });
@@ -320,7 +332,7 @@ export const availabilityRouter = router({
           userId: true,
           name: true,
           availability: true,
-          timeZone: true,
+          timeZone: true
           // eventType: {
           //   select: {
           //     id: true,
@@ -331,6 +343,9 @@ export const availabilityRouter = router({
       });
 
       const userAvailability = transformScheduleToAvailability(schedule);
+
+      revalidatePath('/availability'); // revalidate the list page
+      revalidatePath(`/availability/${schedule.id}`); // revalidate the details page
 
       return {
         schedule,
@@ -355,13 +370,19 @@ export const availabilityRouter = router({
         where: {
           id: input.id,
           userId: ctx.session?.user.id
-        }
+        },
+        include: { schedule: true }
       });
 
       if (!existingAvailability) {
         throw new Error(
           "Availability not found or you don't have permission to delete it"
         );
+      }
+
+      revalidatePath('/availability');
+      if (existingAvailability.scheduleId) {
+        revalidatePath(`/availability/${existingAvailability.scheduleId}`);
       }
 
       return ctx.prisma.availability.delete({
