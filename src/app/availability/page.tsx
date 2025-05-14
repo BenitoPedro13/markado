@@ -10,7 +10,7 @@ import {
   findDetailedScheduleById,
   getAllAvailabilitiesByUserId
 } from '~/trpc/server/handlers/availability.handler';
-import {AvailabilityProvider} from '@/contexts/AvailabilityContext';
+import {AvailabilityProvider} from '@/contexts/availability/AvailabilityContext';
 import {getQueryClient} from '@/app/get-query-client';
 import {dehydrate} from '@tanstack/react-query';
 import {HydrationBoundary} from '@tanstack/react-query';
@@ -54,7 +54,6 @@ export default async function AvailabilityPage() {
       {/* <HydrationBoundary state={dehydrate(queryClient)}> */}
         <AvailabilityProvider
           initialAllAvailability={allAvailability}
-          initialAvailabilityDetails={null}
           initialMe={me}
         >
           <AvailabilityHeader />
