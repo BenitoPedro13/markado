@@ -81,6 +81,7 @@ export const ScheduleDay = <TFieldValues extends FieldValues>({
   weekday,
   control,
   CopyButton,
+  timezone,
   disabled,
   labels,
   userTimeFormat,
@@ -88,6 +89,7 @@ export const ScheduleDay = <TFieldValues extends FieldValues>({
 }: {
   name: ArrayPath<TFieldValues>;
   weekday: string;
+  timezone: string;
   control: Control<TFieldValues>;
   CopyButton?: JSX.Element;
   disabled?: boolean;
@@ -164,6 +166,7 @@ export const ScheduleDay = <TFieldValues extends FieldValues>({
         {fields && fields.length > 0 && (
           <div className="flex sm:gap-2">
             <DayRanges
+              timezone={timezone}
               userTimeFormat={userTimeFormat}
               labels={labels}
               control={effectiveControl}
@@ -248,14 +251,16 @@ const Schedule = <
   disabled?: boolean;
   labels?: ScheduleLabelsType;
   userTimeFormat?: number | null;
+  timezone?: string;
 }) => {
-  const query = useMeQuery();
   // const { timeFormat } = query.data || { timeFormat: null };
   // const { t } = useLocale();
   const formContext = useFormContext<TFieldValues>();
 
   // Use the provided control or fall back to the form context
   const effectiveControl = props.control || formContext?.control;
+
+  const timezone = props.timezone || "America/Sao_Paulo";
 
   // If we don't have a valid control, we can't proceed
   if (!effectiveControl) {
@@ -268,6 +273,7 @@ const Schedule = <
       userTimeFormat={null}
       {...props}
       control={effectiveControl}
+      timezone={timezone}
     />
   );
 };
@@ -340,6 +346,7 @@ export const ScheduleComponent = <
               key={weekday}
               weekday={weekday}
               control={effectiveControl}
+              timezone={timezone}
               // CopyButton={
               //   <CopyButton
               //     weekStart={weekStart}
