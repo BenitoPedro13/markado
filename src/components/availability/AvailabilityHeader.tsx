@@ -72,7 +72,7 @@ function AvailabilityHeader({
 }: HeaderProps) {
   const {notification} = useNotification();
   const {
-    // queries: {availability},
+    queries: {availabilityDetails: availability},
     state: {
       isCreateModalOpen,
       setIsCreateModalOpen,
@@ -81,7 +81,7 @@ function AvailabilityHeader({
       isEditing,
       setIsEditing
     },
-    availabilityDetailsForm: {register, setValue, watch, getValues}
+    availabilityDetailsForm: {register, setValue, watch, getValues, reset}
   } = useAvailability();
 
   const [newName, setNewName] = useState('');
@@ -95,31 +95,29 @@ function AvailabilityHeader({
 
   const queryClient = getQueryClient();
 
-  // Get the prefetched data using tRPC query
-  const {data: availability} = useQuery(
-    trpc.availability.findDetailedScheduleById.queryOptions(
-      {
-        scheduleId: scheduleId || 0,
-        timeZone
-      },
-      {
-        enabled: !!scheduleId,
-        // This ensures we use the prefetched data
-        staleTime: Infinity
-      }
-    )
-  );
+  // // Get the prefetched data using tRPC query
+  // const {data: availability} = useQuery(
+  //   trpc.availability.findDetailedScheduleById.queryOptions(
+  //     {
+  //       scheduleId: scheduleId || 0,
+  //       timeZone
+  //     },
+  //     {
+  //       enabled: !!scheduleId,
+  //       // This ensures we use the prefetched data
+  //       staleTime: Infinity
+  //     }
+  //   )
+  // );
 
   const updateScheduleMutation = useMutation(
     trpc.availability.updateDetailedAvailability.mutationOptions({
       onSuccess: () => {
         queryClient.invalidateQueries({
           queryKey: [
-            'availability',
-            'findDetailedScheduleById',
+            ['availability', 'findDetailedScheduleById'],
             {
-              scheduleId: scheduleId || 0,
-              timeZone: 'America/Sao_Paulo'
+              type: 'query'
             }
           ]
         });
@@ -132,6 +130,8 @@ function AvailabilityHeader({
             }
           ]
         });
+
+        reset();
       },
       onError: (error) => {
         // notification({
@@ -225,8 +225,6 @@ function AvailabilityHeader({
           name: scheduleValues.name
         }
       });
-
-      console.log('scheduleResult', scheduleResult);
 
       if (scheduleResult.schedule.id) {
         notification({
@@ -436,7 +434,7 @@ function AvailabilityHeader({
             variant="neutral"
             mode="stroke"
             size="small"
-            onClick={() => router.back()}
+            onClick={() => router.push('/availability')}
           >
             <Button.Icon as={RiArrowLeftSLine} />
           </Button.Root>
