@@ -144,7 +144,13 @@ export default function AvailabilityList({
             title={data.scheduleName}
             schedule={data.availability}
             timezone={data.timeZone}
-            isDefault={data.isDefault}
+            isDefault={
+              allAvailability
+                ? allAvailability[0].schedule?.user.defaultScheduleId ===
+                  data.scheduleId
+                : initialAllAvailability[0].schedule?.user.defaultScheduleId ===
+                  data.scheduleId
+            }
             onDelete={() => handleDelete(data.scheduleId)}
             onDuplicate={() => handleDuplicate(data.scheduleId)}
           />
