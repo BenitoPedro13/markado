@@ -19,7 +19,8 @@ import type {Schedule as ScheduleType, TimeRange} from '@/types/scheadule';
 import Schedule from '../schedules/components/Schedule';
 import {useTRPC} from '@/utils/trpc';
 import {useQuery} from '@tanstack/react-query';
-import { useAvailability } from '@/contexts/AvailabilityContext';
+import {useAvailability} from '@/contexts/AvailabilityContext';
+import TimezoneSelectWithStyle from '@/components/TimezoneSelectWithStyle';
 
 type AvailabilityById =
   inferRouterOutputs<AppRouter>['availability']['findDetailedScheduleById'];
@@ -38,11 +39,14 @@ export type AvailabilityFormValues = {
 };
 
 export default function AvailabilityDetails({
-  title,
+  title
   // availability
 }: AvailabilityDetailsProps) {
   const router = useRouter();
-  const {queries: {availabilityDetails}, availabilityDetailsForm} = useAvailability();
+  const {
+    queries: {availabilityDetails},
+    availabilityDetailsForm
+  } = useAvailability();
 
   if (!availabilityDetails) {
     router.back();
@@ -55,7 +59,11 @@ export default function AvailabilityDetails({
         <div className="text-title-h6">Horários</div>
 
         <FormProvider {...availabilityDetailsForm}>
-          <Schedule control={availabilityDetailsForm.control} name="schedule" weekStart={1} />
+          <Schedule
+            control={availabilityDetailsForm.control}
+            name="schedule"
+            weekStart={1}
+          />
         </FormProvider>
       </div>
 
@@ -65,7 +73,7 @@ export default function AvailabilityDetails({
         <div className="text-title-h6">Avançado</div>
         <div className="space-y-2">
           <div className="text-sm text-text-sub-600">Fuso Horário</div>
-          <Select.Root defaultValue="America/São_Paulo">
+          {/* <Select.Root defaultValue="America/São_Paulo">
             <Select.Trigger className="w-64">
               <Select.Value placeholder="Selecione um fuso horário" />
             </Select.Trigger>
@@ -74,7 +82,18 @@ export default function AvailabilityDetails({
                 América/São Paulo
               </Select.Item>
             </Select.Content>
-          </Select.Root>
+          </Select.Root> */}
+          <TimezoneSelectWithStyle
+            value={availabilityDetailsForm.watch('timeZone')}
+            onChange={(value) => {
+              availabilityDetailsForm.setValue('timeZone', value);
+              // availabilityDetailsForm.trigger();
+            }}
+            className="max-w-64"
+            hint={false}
+            autoDetect={!availabilityDetails?.timeZone}
+            defaultValue={availabilityDetails?.timeZone || 'America/Sao_Paulo'}
+          />
         </div>
       </div>
     </form>
