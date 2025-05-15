@@ -22,8 +22,6 @@ export default function AvailabilityListPage() {
     queries: {allAvailability}
   } = useAvailability();
 
-
-
   const {t} = useLocale('Availability');
 
   const formRef = useRef<HTMLFormElement>(null);
@@ -45,36 +43,37 @@ export default function AvailabilityListPage() {
     <form
       ref={formRef}
       action={async (formData) => {
-        const name = formData.get('name');
-        if (!name) return;
+        try {
+          const name = formData.get('name');
+          if (!name) return;
 
-        const nameValue = name.toString().trim();
+          const nameValue = name.toString().trim();
 
-        if (!nameValue) return;
+          if (!nameValue) return;
 
-        addOptimisticAvailabilityList({
-          scheduleId: Math.trunc(Math.random() * 1000),
-          scheduleName: nameValue,
-          timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone ||
-          'America/Sao_Paulo',
-          availability: 'seg. - sex., 9:00 até 17:00',
-          isDefault: false
-        });
+          addOptimisticAvailabilityList({
+            scheduleId: Math.trunc(Math.random() * 1000),
+            scheduleName: nameValue,
+            timeZone:
+              Intl.DateTimeFormat().resolvedOptions().timeZone ||
+              'America/Sao_Paulo',
+            availability: 'seg. - sex., 9:00 até 17:00',
+            isDefault: false
+          });
 
-        const res = await submitCreateSchedule(nameValue);
+          const res = await submitCreateSchedule(nameValue);
 
-        console.log('response', res);
+          console.log('response', res);
 
-        // router.push(`/availability/${scheduleResult.id}`);
+          // router.push(`/availability/${scheduleResult.id}`);
 
-        notification({
-          title: t('schedule_created_success'),
-          variant: 'stroke',
-          id: 'schedule_created_success',
-          status: 'success'
-        });
-
-        setIsCreateModalOpen(false);
+          notification({
+            title: t('schedule_created_success'),
+            variant: 'stroke',
+            id: 'schedule_created_success',
+            status: 'success'
+          });
+        } catch (error) {}
       }}
     >
       <AvailabilityHeader />
