@@ -38,6 +38,7 @@ import {getQueryClient} from '@/app/get-query-client';
 import {DEFAULT_SCHEDULE} from '@/lib/availability';
 import {useAvailability} from '@/contexts/availability/AvailabilityContext';
 import {submitCreateSchedule} from '~/trpc/server/handlers/schedule.handler';
+import { useFormStatus } from 'react-dom';
 
 type HeaderVariant =
   | 'scheduling'
@@ -60,10 +61,14 @@ type HeaderProps = {
   };
   scheduleId?: number;
   timeZone?: string;
+  formRef?: React.RefObject<HTMLFormElement>;
 };
 
-function AvailabilityHeader({selectedMenuItem}: HeaderProps) {
+function AvailabilityHeader({selectedMenuItem, formRef}: HeaderProps) {
   // const {notification} = useNotification();
+  const {action, data, pending, method} = useFormStatus();
+
+
 
   const {
     state: {isCreateModalOpen, setIsCreateModalOpen}
@@ -196,6 +201,8 @@ function AvailabilityHeader({selectedMenuItem}: HeaderProps) {
   //   }
   // };
 
+  if(!action) return null;
+
   const getHeaderContent = () => {
     return {
       icon: <RiTimeLine className="text-bg-strong-950" />,
@@ -240,51 +247,55 @@ function AvailabilityHeader({selectedMenuItem}: HeaderProps) {
       <div className="flex justify-start items-center gap-3">{buttons}</div>
       <Modal.Root open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
         <Modal.Content className="max-w-[440px]">
-          <Modal.Header className="flex justify-start items-center gap-3">
-            <Modal.Title className="text-text-strong-950 text-lg font-semibold">
-              Criar Disponibilidade
-            </Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <div className="mb-2 text-label-md">Nome</div>
-            <Input.Root>
-              <Input.Input
-                name="name"
-                type="text"
-                placeholder="Horas de Trabalho"
-                // value={newName}
-                // onChange={(e) => {
-                //   setNewName(e.target.value);
-                // }}
-                required
-                autoFocus
-              />
-            </Input.Root>
-          </Modal.Body>
-          <Modal.Footer className="flex gap-2 justify-end">
-            <Modal.Close asChild>
-              <Button.Root variant="neutral" mode="stroke" size="small">
-                Fechar
+          <form ref={formRef} action={action}>
+            <Modal.Header className="flex justify-start items-center gap-3">
+              <Modal.Title className="text-text-strong-950 text-lg font-semibold">
+                Criar Disponibilidade
+              </Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <div className="mb-2 text-label-md">Nome</div>
+              <Input.Root>
+                <Input.Input
+                  id="name"
+                  name="name"
+                  type="text"
+                  placeholder="Horas de Trabalho"
+                  // value={newName}
+                  // onChange={(e) => {
+                  //   setNewName(e.target.value);
+                  // }}
+                  required
+                  autoFocus
+                />
+              </Input.Root>
+            </Modal.Body>
+            <Modal.Footer className="flex gap-2 justify-end">
+              <Modal.Close asChild>
+                <Button.Root variant="neutral" mode="stroke" size="small">
+                  Fechar
+                </Button.Root>
+              </Modal.Close>
+              <Button.Root
+                variant="neutral"
+                size="small"
+                className="font-semibold"
+                // type='submit'
+                // disabled={!newName?.trim()}
+                onClick={async (e) => {
+                  // if (!newName?.trim()) return;
+                  // // const slug = newName?.trim().toLowerCase().replace(/ /g, '-');
+                  // await submitCreateSchedule(e);
+                  formRef?.current?.requestSubmit();
+                  setIsCreateModalOpen(false);
+                  // setNewName('');
+                  // router.push(`/availability/${slug}`);
+                }}
+              >
+                Criar
               </Button.Root>
-            </Modal.Close>
-            <Button.Root
-              variant="neutral"
-              size="small"
-              className="font-semibold"
-              // disabled={!newName?.trim()}
-              onClick={async (e) => {
-                // if (!newName?.trim()) return;
-                // // const slug = newName?.trim().toLowerCase().replace(/ /g, '-');
-                // await submitCreateSchedule(e);
-                setIsCreateModalOpen(false);
-                // setNewName('');
-                // router.push(`/availability/${slug}`);
-              }}
-            >
-              Criar
-            </Button.Root>
-          </Modal.Footer>
-          {/* </form> */}
+            </Modal.Footer>
+          </form>
         </Modal.Content>
       </Modal.Root>
     </div>

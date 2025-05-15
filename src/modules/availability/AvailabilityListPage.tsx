@@ -45,6 +45,7 @@ export default function AvailabilityListPage() {
       action={async (formData) => {
         try {
           const name = formData.get('name');
+          console.log('formData', formData);
           if (!name) return;
 
           const nameValue = name.toString().trim();
@@ -60,6 +61,7 @@ export default function AvailabilityListPage() {
             availability: 'seg. - sex., 9:00 até 17:00',
             isDefault: false
           });
+          setIsCreateModalOpen(false);
 
           const res = await submitCreateSchedule(nameValue);
 
@@ -76,7 +78,7 @@ export default function AvailabilityListPage() {
         } catch (error) {}
       }}
     >
-      <AvailabilityHeader />
+      <AvailabilityHeader formRef={formRef} />
       <div className="px-8">
         <Divider.Root />
       </div>
