@@ -5,7 +5,14 @@ import {TimeRange} from '@/types/scheadule';
 import {zodResolver} from '@hookform/resolvers/zod';
 import {useQuery} from '@tanstack/react-query';
 import {inferRouterOutputs} from '@trpc/server';
-import {createContext, useContext, useEffect, useMemo, useState} from 'react';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useOptimistic,
+  useState
+} from 'react';
 import {FormProvider, useForm, UseFormReturn} from 'react-hook-form';
 import {z} from 'zod';
 import {useTRPC} from '@/utils/trpc';
@@ -14,7 +21,10 @@ import useMeQuery from '@/hooks/use-me-query';
 import {useSessionStore} from '@/providers/session-store-provider';
 import {Me} from '@/app/settings/page';
 import {usePathname} from 'next/navigation';
-import {groupAvailabilitiesBySchedule, TFormatedAvailabilitiesBySchedule} from '@/utils/formatAvailability';
+import {
+  groupAvailabilitiesBySchedule,
+  TFormatedAvailabilitiesBySchedule
+} from '@/utils/formatAvailability';
 
 const updateAvailabilityFormSchema = z.object({
   id: z.number(),
@@ -39,10 +49,18 @@ type AvailabilityContextType = {
   state: {
     isCreateModalOpen: boolean;
     setIsCreateModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    newName: string;
+    setNewName: React.Dispatch<React.SetStateAction<string>>;
   };
   queries: {
     allAvailability: TFormatedAvailabilitiesBySchedule[] | null;
     initialMe: Me | null;
+  };
+  optimistic: {
+    optimisticAvailabilityList: TFormatedAvailabilitiesBySchedule[];
+    addOptimisticAvailabilityList: (
+      action: TFormatedAvailabilitiesBySchedule
+    ) => void;
   };
 };
 
@@ -60,40 +78,56 @@ export function AvailabilityProvider({
   initialMe
 }: AvailabilityProviderProps) {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  // const trpc = useTRPC();
+  const [newName, setNewName] = useState<string>('');
 
-  const pathname = usePathname();
+  const [optimisticAvailabilityList, addOptimisticAvailabilityList] =
+    useOptimistic(
+      groupAvailabilitiesBySchedule(initialAllAvailability ?? []),
+      (
+        state: TFormatedAvailabilitiesBySchedule[] | null,
+        newAvailability: TFormatedAvailabilitiesBySchedule
+      ) => {
+        if (!state) return [] as TFormatedAvailabilitiesBySchedule[];
 
-  const formattedSchedules = useMemo(() => {
+        return [...state, newAvailability];
+      }
+    );
+
+  const value = useMemo<AvailabilityContextType>(() => {
+    let formattedSchedules: TFormatedAvailabilitiesBySchedule[] | null = null;
+
     if (!initialAllAvailability || !initialAllAvailability.length) {
-      return [];
+      formattedSchedules = [];
+    } else {
+      formattedSchedules = groupAvailabilitiesBySchedule(
+        initialAllAvailability
+      );
     }
 
-    return groupAvailabilitiesBySchedule(initialAllAvailability);
-  }, [initialAllAvailability]);
-
-  const value = useMemo<AvailabilityContextType>(
-    () => ({
+    return {
       state: {
         isCreateModalOpen,
-        setIsCreateModalOpen
+        setIsCreateModalOpen,
+        newName,
+        setNewName
       },
       queries: {
         initialMe,
-        allAvailability:
-          !initialAllAvailability || !initialAllAvailability.length
-            ? []
-            : groupAvailabilitiesBySchedule(initialAllAvailability)
+        allAvailability: formattedSchedules
+      },
+      optimistic: {
+        optimisticAvailabilityList,
+        addOptimisticAvailabilityList
       }
-    }),
-    [
-      pathname,
-      isCreateModalOpen,
-      setIsCreateModalOpen,
-      initialAllAvailability,
-      initialMe
-    ]
-  );
+    };
+  }, [
+    isCreateModalOpen,
+    setIsCreateModalOpen,
+    initialAllAvailability,
+    initialMe,
+    newName,
+    setNewName
+  ]);
 
   return (
     <AvailabilityContext.Provider value={value}>
