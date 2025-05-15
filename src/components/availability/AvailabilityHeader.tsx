@@ -16,12 +16,12 @@ import {
   RiPencilLine,
   RiCloseLine
 } from '@remixicon/react';
-import React, {FormEvent, useRef, useState} from 'react';
+import React, {FormEvent, useOptimistic, useRef, useState} from 'react';
 import * as Button from '@/components/align-ui/ui/button';
 import * as FancyButton from '@/components/align-ui/ui/fancy-button';
 import * as Switch from '@/components/align-ui/ui/switch';
 import * as Modal from '@/components/align-ui/ui/modal';
-import {useNotification} from '@/hooks/use-notification';
+import {notification, useNotification} from '@/hooks/use-notification';
 import * as ButtonGroup from '@/components/align-ui/ui/button-group';
 import * as Tooltip from '@/components/align-ui/ui/tooltip';
 import {useRouter} from 'next/navigation';
@@ -38,7 +38,8 @@ import {getQueryClient} from '@/app/get-query-client';
 import {DEFAULT_SCHEDULE} from '@/lib/availability';
 import {useAvailability} from '@/contexts/availability/AvailabilityContext';
 import {submitCreateSchedule} from '~/trpc/server/handlers/schedule.handler';
-import { useFormStatus } from 'react-dom';
+import {useFormStatus} from 'react-dom';
+import {TFormatedAvailabilitiesBySchedule} from '@/utils/formatAvailability';
 
 type HeaderVariant =
   | 'scheduling'
@@ -64,15 +65,19 @@ type HeaderProps = {
   formRef?: React.RefObject<HTMLFormElement>;
 };
 
-function AvailabilityHeader({selectedMenuItem, formRef}: HeaderProps) {
+function AvailabilityHeader({selectedMenuItem}: HeaderProps) {
   // const {notification} = useNotification();
-  const {action, data, pending, method} = useFormStatus();
-
-
 
   const {
-    state: {isCreateModalOpen, setIsCreateModalOpen}
+    state: {setIsCreateModalOpen, newName, setNewName, isCreateModalOpen},
+    optimistic: {addOptimisticAvailabilityList}
   } = useAvailability();
+
+  const {t} = useLocale('Availability');
+
+  const formRef = useRef<HTMLFormElement>(null);
+
+
 
   // const {t, locale, isLocaleReady} = useLocale('Availability');
 
@@ -201,8 +206,6 @@ function AvailabilityHeader({selectedMenuItem, formRef}: HeaderProps) {
   //   }
   // };
 
-  if(!action) return null;
-
   const getHeaderContent = () => {
     return {
       icon: <RiTimeLine className="text-bg-strong-950" />,
@@ -212,6 +215,7 @@ function AvailabilityHeader({selectedMenuItem, formRef}: HeaderProps) {
         <div className="flex justify-start items-center gap-3 availability">
           <FancyButton.Root
             variant="neutral"
+            type="button"
             onClick={() => setIsCreateModalOpen(true)}
           >
             <FancyButton.Icon as={RiAddLine} />
@@ -247,7 +251,40 @@ function AvailabilityHeader({selectedMenuItem, formRef}: HeaderProps) {
       <div className="flex justify-start items-center gap-3">{buttons}</div>
       <Modal.Root open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
         <Modal.Content className="max-w-[440px]">
-          <form ref={formRef} action={action}>
+          <form
+            ref={formRef}
+            action={async (formData) => {
+              try {
+                const nameValue = newName.trim();
+                console.log(nameValue);
+
+                if (!nameValue) return;
+
+                addOptimisticAvailabilityList({
+                  scheduleId: Math.trunc(Math.random() * 1000),
+                  scheduleName: nameValue,
+                  timeZone:
+                    Intl.DateTimeFormat().resolvedOptions().timeZone ||
+                    'America/Sao_Paulo',
+                  availability: 'seg. - sex., 9:00 até 17:00',
+                  isDefault: false
+                });
+
+                const res = await submitCreateSchedule(nameValue);
+
+                setNewName('');
+
+                // router.push(`/availability/${scheduleResult.id}`);
+
+                notification({
+                  title: t('schedule_created_success'),
+                  variant: 'stroke',
+                  id: 'schedule_created_success',
+                  status: 'success'
+                });
+              } catch (error) {}
+            }}
+          >
             <Modal.Header className="flex justify-start items-center gap-3">
               <Modal.Title className="text-text-strong-950 text-lg font-semibold">
                 Criar Disponibilidade
@@ -261,10 +298,10 @@ function AvailabilityHeader({selectedMenuItem, formRef}: HeaderProps) {
                   name="name"
                   type="text"
                   placeholder="Horas de Trabalho"
-                  // value={newName}
-                  // onChange={(e) => {
-                  //   setNewName(e.target.value);
-                  // }}
+                  value={newName}
+                  onChange={(e) => {
+                    setNewName(e.target.value);
+                  }}
                   required
                   autoFocus
                 />
@@ -280,13 +317,13 @@ function AvailabilityHeader({selectedMenuItem, formRef}: HeaderProps) {
                 variant="neutral"
                 size="small"
                 className="font-semibold"
-                // type='submit'
+                // type="submit"
                 // disabled={!newName?.trim()}
                 onClick={async (e) => {
                   // if (!newName?.trim()) return;
                   // // const slug = newName?.trim().toLowerCase().replace(/ /g, '-');
                   // await submitCreateSchedule(e);
-                  formRef?.current?.requestSubmit();
+                  // formRef?.current?.requestSubmit();
                   setIsCreateModalOpen(false);
                   // setNewName('');
                   // router.push(`/availability/${slug}`);
