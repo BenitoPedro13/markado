@@ -18,66 +18,15 @@ import {TFormatedAvailabilitiesBySchedule} from '@/utils/formatAvailability';
 
 export default function AvailabilityListPage() {
   const {
-    state: {setIsCreateModalOpen},
-    queries: {allAvailability}
+    optimistic: {optimisticAvailabilityList}
   } = useAvailability();
 
-  const {t} = useLocale('Availability');
+  // const {t} = useLocale('Availability');
 
   const formRef = useRef<HTMLFormElement>(null);
 
-  const [optimisticAvailabilityList, addOptimisticAvailabilityList] =
-    useOptimistic(
-      allAvailability,
-      (
-        state: TFormatedAvailabilitiesBySchedule[] | null,
-        newAvailability: TFormatedAvailabilitiesBySchedule
-      ) => {
-        if (!state) return [] as TFormatedAvailabilitiesBySchedule[];
-
-        return [...state, newAvailability];
-      }
-    );
-
   return (
-    <form
-      ref={formRef}
-      action={async (formData) => {
-        try {
-          const name = formData.get('name');
-          console.log('formData', formData);
-          if (!name) return;
-
-          const nameValue = name.toString().trim();
-
-          if (!nameValue) return;
-
-          addOptimisticAvailabilityList({
-            scheduleId: Math.trunc(Math.random() * 1000),
-            scheduleName: nameValue,
-            timeZone:
-              Intl.DateTimeFormat().resolvedOptions().timeZone ||
-              'America/Sao_Paulo',
-            availability: 'seg. - sex., 9:00 até 17:00',
-            isDefault: false
-          });
-          setIsCreateModalOpen(false);
-
-          const res = await submitCreateSchedule(nameValue);
-
-          console.log('response', res);
-
-          // router.push(`/availability/${scheduleResult.id}`);
-
-          notification({
-            title: t('schedule_created_success'),
-            variant: 'stroke',
-            id: 'schedule_created_success',
-            status: 'success'
-          });
-        } catch (error) {}
-      }}
-    >
+    <>
       <AvailabilityHeader formRef={formRef} />
       <div className="px-8">
         <Divider.Root />
@@ -86,6 +35,6 @@ export default function AvailabilityListPage() {
       <div className="p-8">
         <AvailabilityList initialAllAvailability={optimisticAvailabilityList} />
       </div>
-    </form>
+    </>
   );
 }
