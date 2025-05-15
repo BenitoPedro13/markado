@@ -274,11 +274,10 @@ function AvailabilityHeader({selectedMenuItem}: HeaderProps) {
                   notification({
                     title: t('schedule_created_success'),
                     variant: 'stroke',
-                    id: 'schedule_created_success',
+                    // id: 'schedule_created_success',
                     status: 'success'
                   });
                   // router.push(`/availability/${scheduleResult.id}`);
-                  // return;
                 }
               } catch (error) {}
             }}
