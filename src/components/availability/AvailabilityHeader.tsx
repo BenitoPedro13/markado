@@ -21,7 +21,7 @@ import * as Button from '@/components/align-ui/ui/button';
 import * as FancyButton from '@/components/align-ui/ui/fancy-button';
 import * as Switch from '@/components/align-ui/ui/switch';
 import * as Modal from '@/components/align-ui/ui/modal';
-import {notification, useNotification} from '@/hooks/use-notification';
+import {useNotification} from '@/hooks/use-notification';
 import * as ButtonGroup from '@/components/align-ui/ui/button-group';
 import * as Tooltip from '@/components/align-ui/ui/tooltip';
 import {useRouter} from 'next/navigation';
@@ -66,7 +66,7 @@ type HeaderProps = {
 };
 
 function AvailabilityHeader({selectedMenuItem}: HeaderProps) {
-  // const {notification} = useNotification();
+  const {notification} = useNotification();
 
   const {
     state: {setIsCreateModalOpen, newName, setNewName, isCreateModalOpen},
@@ -77,11 +77,9 @@ function AvailabilityHeader({selectedMenuItem}: HeaderProps) {
 
   const formRef = useRef<HTMLFormElement>(null);
 
-
-
   // const {t, locale, isLocaleReady} = useLocale('Availability');
 
-  // const router = useRouter();
+  const router = useRouter();
   // const trpc = useTRPC();
   // const formRef = useRef<HTMLFormElement>(null);
 
@@ -254,34 +252,34 @@ function AvailabilityHeader({selectedMenuItem}: HeaderProps) {
           <form
             ref={formRef}
             action={async (formData) => {
+              const nameValue = newName.trim();
+              console.log(nameValue);
+
+              if (!nameValue) return;
+
+              addOptimisticAvailabilityList({
+                scheduleId: Math.trunc(Math.random() * 1000),
+                scheduleName: nameValue,
+                timeZone: 'America/Sao_Paulo',
+                availability: 'seg. - sex., 9:00 até 17:00',
+                isDefault: false
+              });
+
               try {
-                const nameValue = newName.trim();
-                console.log(nameValue);
-
-                if (!nameValue) return;
-
-                addOptimisticAvailabilityList({
-                  scheduleId: Math.trunc(Math.random() * 1000),
-                  scheduleName: nameValue,
-                  timeZone:
-                    Intl.DateTimeFormat().resolvedOptions().timeZone ||
-                    'America/Sao_Paulo',
-                  availability: 'seg. - sex., 9:00 até 17:00',
-                  isDefault: false
-                });
-
-                const res = await submitCreateSchedule(nameValue);
+                const scheduleResult = await submitCreateSchedule(nameValue);
 
                 setNewName('');
 
-                // router.push(`/availability/${scheduleResult.id}`);
-
-                notification({
-                  title: t('schedule_created_success'),
-                  variant: 'stroke',
-                  id: 'schedule_created_success',
-                  status: 'success'
-                });
+                if (scheduleResult) {
+                  notification({
+                    title: t('schedule_created_success'),
+                    variant: 'stroke',
+                    id: 'schedule_created_success',
+                    status: 'success'
+                  });
+                  // router.push(`/availability/${scheduleResult.id}`);
+                  // return;
+                }
               } catch (error) {}
             }}
           >
