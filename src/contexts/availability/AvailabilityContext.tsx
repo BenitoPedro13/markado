@@ -11,9 +11,10 @@ import {z} from 'zod';
 import {useTRPC} from '@/utils/trpc';
 import {AppRouter} from '~/trpc/server';
 import useMeQuery from '@/hooks/use-me-query';
-import { useSessionStore } from '@/providers/session-store-provider';
-import { Me } from '@/app/settings/page';
-import { usePathname } from 'next/navigation';
+import {useSessionStore} from '@/providers/session-store-provider';
+import {Me} from '@/app/settings/page';
+import {usePathname} from 'next/navigation';
+import {groupAvailabilitiesBySchedule, TFormatedAvailabilitiesBySchedule} from '@/utils/formatAvailability';
 
 const updateAvailabilityFormSchema = z.object({
   id: z.number(),
@@ -29,7 +30,10 @@ export type UpdateAvailabilityFormData = z.infer<
 
 type AvailabilityById =
   inferRouterOutputs<AppRouter>['availability']['findDetailedScheduleById'];
-type AvailabilityList = inferRouterOutputs<AppRouter>['availability']['getAll'];
+export type TAvailabilityList =
+  inferRouterOutputs<AppRouter>['availability']['getAll'];
+
+export type TAvailabilityListItem = TAvailabilityList[number];
 
 type AvailabilityContextType = {
   state: {
@@ -37,7 +41,7 @@ type AvailabilityContextType = {
     setIsCreateModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   };
   queries: {
-    allAvailability: AvailabilityList | null;
+    allAvailability: TFormatedAvailabilitiesBySchedule[] | null;
     initialMe: Me | null;
   };
 };
@@ -46,7 +50,7 @@ const AvailabilityContext = createContext<AvailabilityContextType | null>(null);
 
 type AvailabilityProviderProps = {
   children: React.ReactNode;
-  initialAllAvailability: AvailabilityList | null;
+  initialAllAvailability: TAvailabilityList | null;
   initialMe: Me | null;
 };
 
@@ -60,36 +64,26 @@ export function AvailabilityProvider({
 
   const pathname = usePathname();
 
-  // const {data: availability, isPending: isAvailabilityPending} = useQuery(
-  //   trpc.availability.findDetailedScheduleById.queryOptions(
-  //     {
-  //       scheduleId: initialAvailabilityDetails?.id || 0,
-  //       timeZone: initialAvailabilityDetails?.timeZone || 'America/Sao_Paulo'
-  //     },
-  //     {
-  //       refetchOnMount: true,
-  //       refetchOnWindowFocus: true
-  //     }
-  //   )
-  // );
+  const formattedSchedules = useMemo(() => {
+    if (!initialAllAvailability || !initialAllAvailability.length) {
+      return [];
+    }
 
-  // const {data: allAvailability, isPending: isAllAvailabilityPending} =
-  //   useQuery(
-  //     trpc.availability.getAll.queryOptions(undefined, {
-  //       refetchOnMount: true,
-  //       refetchOnWindowFocus: true,
-  //     })
-  //   );
+    return groupAvailabilitiesBySchedule(initialAllAvailability);
+  }, [initialAllAvailability]);
 
   const value = useMemo<AvailabilityContextType>(
     () => ({
       state: {
         isCreateModalOpen,
-        setIsCreateModalOpen,
+        setIsCreateModalOpen
       },
       queries: {
         initialMe,
-        allAvailability: initialAllAvailability
+        allAvailability:
+          !initialAllAvailability || !initialAllAvailability.length
+            ? []
+            : groupAvailabilitiesBySchedule(initialAllAvailability)
       }
     }),
     [
