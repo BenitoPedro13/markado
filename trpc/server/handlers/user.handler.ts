@@ -1,3 +1,5 @@
+'use server';
+
 import {prisma} from '@/lib/prisma';
 import {TRPCError} from '@trpc/server';
 import {hash} from 'bcryptjs';
