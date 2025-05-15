@@ -12,7 +12,8 @@ import * as Input from '@/components/align-ui/ui/input';
 import * as Divider from '@/components/align-ui/ui/divider';
 import {
   groupAvailabilitiesBySchedule,
-  ServerAvailabilityResponse
+  ServerAvailabilityResponse,
+  TFormatedAvailabilitiesBySchedule
 } from '@/utils/formatAvailability';
 
 import {inferRouterOutputs} from '@trpc/server';
@@ -26,7 +27,7 @@ import {useQuery} from '@tanstack/react-query';
 type RouterOutput = inferRouterOutputs<AppRouter>;
 
 interface AvailabilityListProps {
-  initialAllAvailability: RouterOutput['availability']['getAll'];
+  initialAllAvailability: TFormatedAvailabilitiesBySchedule[] | null;
 }
 
 interface FormattedSchedule {
@@ -56,8 +57,8 @@ export default function AvailabilityList({
   const trpc = useTRPC();
 
   // Get the prefetched data using tRPC query
-  const {data: allAvailability, isPending: isFetchingAllAvailability} =
-    useQuery(trpc.availability.getAll.queryOptions());
+  // const {data: allAvailability, isPending: isFetchingAllAvailability} =
+  //   useQuery(trpc.availability.getAll.queryOptions());
 
   const handleDuplicate = (id: number) => {
     const availabilityToDuplicate = availabilities.find(
@@ -102,13 +103,13 @@ export default function AvailabilityList({
   // };
 
   // Format and group the server data by schedule
-  const formattedSchedules = useMemo(() => {
-    if (!initialAllAvailability || !initialAllAvailability.length) {
-      return [];
-    }
 
-    return groupAvailabilitiesBySchedule(initialAllAvailability);
-  }, [initialAllAvailability]);
+
+  if (!initialAllAvailability) return null
+
+  // const formattedSchedules = groupAvailabilitiesBySchedule(
+  //   initialAllAvailability
+  // );
 
   return (
     <div className="rounded-lg w-full border border-stroke-soft-200">
@@ -131,7 +132,7 @@ export default function AvailabilityList({
           </div>
         ))} */}
 
-      {formattedSchedules.map((data) => (
+      {initialAllAvailability.map((data) => (
         <div key={data.scheduleId}>
           <Availability
             id={data.scheduleId}
@@ -139,17 +140,11 @@ export default function AvailabilityList({
             title={data.scheduleName}
             schedule={data.availability}
             timezone={data.timeZone}
-            isDefault={
-              allAvailability
-                ? allAvailability[0].schedule?.user.defaultScheduleId ===
-                  data.scheduleId
-                : initialAllAvailability[0].schedule?.user.defaultScheduleId ===
-                  data.scheduleId
-            }
+            isDefault={data.isDefault}
             onDelete={() => handleDelete(data.scheduleId)}
             onDuplicate={() => handleDuplicate(data.scheduleId)}
           />
-          {data !== formattedSchedules[formattedSchedules.length - 1] && (
+          {data !== initialAllAvailability[initialAllAvailability.length - 1] && (
             <Divider.Root />
           )}
         </div>
