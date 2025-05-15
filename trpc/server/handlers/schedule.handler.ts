@@ -1,4 +1,4 @@
-"use server"
+'use server';
 
 import {TRPCError} from '@trpc/server';
 import {Context} from '../context';
@@ -6,21 +6,13 @@ import {
   ZCreateScheduleSchema,
   ZUpdateScheduleSchema
 } from '../schemas/availability.schema';
-import { revalidatePath } from 'next/cache';
-import { DEFAULT_SCHEDULE } from '@/lib/availability';
-import { auth } from '@/auth';
+import {revalidatePath} from 'next/cache';
+import {DEFAULT_SCHEDULE} from '@/lib/availability';
+import {auth} from '@/auth';
 
-import { prisma } from '@/lib/prisma';
+import {prisma} from '@/lib/prisma';
 import dayjs from '@/lib/dayjs';
-import { createAvailabilityHandler } from '~/trpc/server/handlers/availability.handler';
-
-// Add this helper at the top of the file
-const withDelay = async <T>(fn: () => Promise<T>, delay = 1000): Promise<T> => {
-  console.log(`Delaying function execution for ${delay}ms...`);
-  await new Promise(resolve => setTimeout(resolve, delay));
-  console.log(`Function execution resumed after ${delay}ms`);
-  return fn();
-};
+import {createAvailabilityHandler} from '~/trpc/server/handlers/availability.handler';
 
 export async function getAllSchedulesHandler(ctx: Context) {
   if (!ctx.session?.user) {
@@ -71,7 +63,7 @@ export async function getScheduleByIdHandler(ctx: Context, id: number) {
 export async function createScheduleHandler(
   input: typeof ZCreateScheduleSchema._type
 ) {
-  const session = await auth()
+  const session = await auth();
   if (!session) {
     throw new TRPCError({
       code: 'UNAUTHORIZED',
@@ -79,127 +71,114 @@ export async function createScheduleHandler(
     });
   }
 
-  if(!session.user) {
+  if (!session.user) {
     throw new TRPCError({
       code: 'UNAUTHORIZED',
       message: 'Not authenticated'
     });
   }
 
-  console.log(
-    `[TRPC] Creating schedule for user ${session.user.id}:`,
-    input
-  );
+  console.log(`[TRPC] Creating schedule for user ${session.user.id}:`, input);
 
   // Wrap the Prisma call with delay
-  const res = await withDelay(() => 
-    prisma.schedule.create({
-      data: {
-        ...input,
-        userId: session?.user.id
-      },
-      include: {
-        availability: true
-      }
-    })
-  );
+  const res = prisma.schedule.create({
+    data: {
+      ...input,
+      userId: session?.user.id
+    },
+    include: {
+      availability: true
+    }
+  });
 
   revalidatePath('/availability');
 
   return res;
 }
 
-export const submitCreateSchedule = async (
-    newName: string
-  ) => {
-    // e.preventDefault();
-    // setIsSubmitting(true);
-    console.log('newName', newName);
-    try {
-      // Get form values from the Schedule component
-      const scheduleValues = DEFAULT_SCHEDULE;
+export const submitCreateSchedule = async (newName: string) => {
+  try {
+    // Get form values from the Schedule component
+    const scheduleValues = DEFAULT_SCHEDULE;
 
-      // Create a schedule first
-      // const scheduleResult = await createScheduleMutation.mutateAsync({
-      //   name: newName,
-      //   timeZone:
-      //     Intl.DateTimeFormat().resolvedOptions().timeZone ||
-      //     'America/Sao_Paulo'
-      // });
+    // Create a schedule first
+    // const scheduleResult = await createScheduleMutation.mutateAsync({
+    //   name: newName,
+    //   timeZone:
+    //     Intl.DateTimeFormat().resolvedOptions().timeZone ||
+    //     'America/Sao_Paulo'
+    // });
 
-      setTimeout(() => console.log("awaited 1sec"), 1000)
+    const scheduleResult = await createScheduleHandler({
+      name: newName,
+      timeZone:
+        Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Sao_Paulo'
+    });
 
-      const scheduleResult = await createScheduleHandler({
-        name: 1 as unknown as string,
-        timeZone:
-          Intl.DateTimeFormat().resolvedOptions().timeZone ||
-          'America/Sao_Paulo'
-      });
+    // Convert the schedule format to availability format
+    const schedule = scheduleValues;
 
-      // Convert the schedule format to availability format
-      const schedule = scheduleValues;
+    // Create availabilities for each day
+    for (let dayIndex = 0; dayIndex < schedule.length; dayIndex++) {
+      const timeRanges = schedule[dayIndex];
+      if (timeRanges && timeRanges.length > 0) {
+        for (const timeRange of timeRanges) {
+          // Format the time values as HH:MM strings to match the schema requirements
+          const startTime = dayjs(timeRange.start).format('HH:mm');
+          const endTime = dayjs(timeRange.end).format('HH:mm');
 
-      // Create availabilities for each day
-      for (let dayIndex = 0; dayIndex < schedule.length; dayIndex++) {
-        const timeRanges = schedule[dayIndex];
-        if (timeRanges && timeRanges.length > 0) {
-          for (const timeRange of timeRanges) {
-            // Format the time values as HH:MM strings to match the schema requirements
-            const startTime = dayjs(timeRange.start).format('HH:mm');
-            const endTime = dayjs(timeRange.end).format('HH:mm');
+          // await createAvailabilityMutation.mutateAsync({
+          //   days: [dayIndex],
+          //   startTime,
+          //   endTime,
+          //   scheduleId: scheduleResult.id
+          // });
 
-            // await createAvailabilityMutation.mutateAsync({
-            //   days: [dayIndex],
-            //   startTime,
-            //   endTime,
-            //   scheduleId: scheduleResult.id
-            // });
-
-            await createAvailabilityHandler({
-              days: [dayIndex],
-              startTime,
-              endTime,
-              scheduleId: scheduleResult.id
-            });
-          }
+          await createAvailabilityHandler({
+            days: [dayIndex],
+            startTime,
+            endTime,
+            scheduleId: scheduleResult.id
+          });
         }
       }
-
-      return scheduleResult;
-
-      // queryClient.invalidateQueries({
-      //   queryKey: [
-      //     ['availability', 'getAll'],
-      //     {
-      //       type: 'query'
-      //     }
-      //   ]
-      // });
-
-      // Clear the edit_mode cookie if it exists
-      // clearEditMode();
-
-      // Set the availability step completion cookie
-      // setStepComplete('availability');
-
-      // router.push(`/availability/${scheduleResult.id}`);
-
-      // notification({
-      //   title: t('schedule_created_success'),
-      //   variant: 'stroke',
-      //   id: 'schedule_created_success'
-      // });
-    } catch (error: any) {
-      console.error('Error submitting availability form:', error);
-      // notification({
-      //   title: t('availability_created_error'),
-      //   description: error.message,
-      //   variant: 'stroke',
-      //   id: 'availability_created_error'
-      // });
-    } finally {
-      // setIsSubmitting(false);
     }
+
+    return scheduleResult;
+
+    // queryClient.invalidateQueries({
+    //   queryKey: [
+    //     ['availability', 'getAll'],
+    //     {
+    //       type: 'query'
+    //     }
+    //   ]
+    // });
+
+    // Clear the edit_mode cookie if it exists
+    // clearEditMode();
+
+    // Set the availability step completion cookie
+    // setStepComplete('availability');
+
+    // router.push(`/availability/${scheduleResult.id}`);
+
+    // notification({
+    //   title: t('schedule_created_success'),
+    //   variant: 'stroke',
+    //   id: 'schedule_created_success'
+    // });
+  } catch (error: any) {
+    console.error('Error submitting availability form:', error);
+    // notification({
+    //   title: t('availability_created_error'),
+    //   description: error.message,
+    //   variant: 'stroke',
+    //   id: 'availability_created_error'
+    // });
+  } finally {
+    // setIsSubmitting(false);
+  }
 };
 
 export async function updateScheduleHandler(
