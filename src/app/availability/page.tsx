@@ -15,6 +15,7 @@ import {getQueryClient} from '@/app/get-query-client';
 import {dehydrate} from '@tanstack/react-query';
 import {HydrationBoundary} from '@tanstack/react-query';
 import {getMeByUserId} from '~/trpc/server/handlers/user.handler';
+import AvailabilityListPage from '@/modules/availability/AvailabilityListPage';
 
 /** Availability page of the website. */
 export default async function AvailabilityPage() {
@@ -56,14 +57,7 @@ export default async function AvailabilityPage() {
           initialAllAvailability={allAvailability}
           initialMe={me}
         >
-          <AvailabilityHeader />
-          <div className="px-8">
-            <Divider.Root />
-          </div>
-
-          <div className="p-8">
-            <AvailabilityList initialAllAvailability={allAvailability} />
-          </div>
+          <AvailabilityListPage />
         </AvailabilityProvider>
       {/* </HydrationBoundary> */}
     </PageLayout>
