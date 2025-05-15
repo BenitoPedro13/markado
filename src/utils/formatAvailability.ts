@@ -167,44 +167,50 @@ export function formatScheduleFromDetailed(
  * This function can handle any structure as long as it has scheduleId, days, 
  * startTime, endTime and schedule properties
  */
-export const groupAvailabilitiesBySchedule = <T extends ServerAvailabilityResponse>(availabilities: T[]) => {
+export type TFormatedAvailabilitiesBySchedule = {
+  scheduleId: number;
+  scheduleName: string;
+  timeZone: string;
+  availability: string;
+  isDefault: boolean;
+};
+
+export const groupAvailabilitiesBySchedule = <T extends ServerAvailabilityResponse>(
+  availabilities: T[]
+): TFormatedAvailabilitiesBySchedule[] => {
   if (!availabilities.length) return [];
-  
+
   const grouped: Record<string, T[]> = {};
-  
-  availabilities.forEach(avail => {
+
+  availabilities.forEach((avail) => {
     if (!avail.scheduleId) return;
-    
+
     const scheduleIdStr = String(avail.scheduleId);
     if (!grouped[scheduleIdStr]) {
       grouped[scheduleIdStr] = [];
     }
     grouped[scheduleIdStr].push(avail);
   });
-  
-  const result = Object.entries(grouped).map(([scheduleId, items]) => {
-    const scheduleInfo = items[0].schedule;
-    if (!scheduleInfo) return null;
-    
-    // Use the user's timezone from the schedule
-    const userTimezone = scheduleInfo.timeZone || 'America/Sao_Paulo';
-    
-    return {
-      scheduleId: Number(scheduleId),
-      scheduleName: scheduleInfo.name,
-      timeZone: userTimezone,
-      availability: formatAvailabilitySchedule(items, userTimezone),
-      isDefault: Boolean(
-        scheduleInfo.user?.defaultScheduleId === Number(scheduleId)
-      )
-    };
-  }).filter(Boolean) as {
-    scheduleId: number;
-    scheduleName: string;
-    timeZone: string;
-    availability: string;
-    isDefault: boolean;
-  }[];
-  
+
+  const result = Object.entries(grouped)
+    .map(([scheduleId, items]) => {
+      const scheduleInfo = items[0].schedule;
+      if (!scheduleInfo) return null;
+
+      // Use the user's timezone from the schedule
+      const userTimezone = scheduleInfo.timeZone || 'America/Sao_Paulo';
+
+      return {
+        scheduleId: Number(scheduleId),
+        scheduleName: scheduleInfo.name,
+        timeZone: userTimezone,
+        availability: formatAvailabilitySchedule(items, userTimezone),
+        isDefault: Boolean(
+          scheduleInfo.user?.defaultScheduleId === Number(scheduleId)
+        )
+      };
+    })
+    .filter(Boolean) as TFormatedAvailabilitiesBySchedule[];
+
   return result;
 };
