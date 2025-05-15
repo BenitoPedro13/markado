@@ -1,3 +1,5 @@
+'use server';
+
 import {TRPCError} from '@trpc/server';
 import {Context} from '../context';
 import {
@@ -10,6 +12,9 @@ import {
   transformDateOverrides,
   transformWorkingHours
 } from '../utils/availability/findDetailedScheduleById';
+import { timeStringToDate } from '@/utils/time-utils';
+import { revalidatePath } from 'next/cache';
+import { auth } from '@/auth';
 
 export async function getAllAvailabilitiesHandler(ctx: Context) {
   if (!ctx.session?.user) {
@@ -136,42 +141,59 @@ export async function findDetailedScheduleById({
 }
 
 export async function createAvailabilityHandler(
-  ctx: Context,
   input: typeof ZCreateAvailabilitySchema._type
 ) {
-  if (!ctx.session?.user) {
+  const session = await auth();
+
+  if (!session) {
     throw new TRPCError({
       code: 'UNAUTHORIZED',
-      message: 'Not authenticated'
+      message: 'createAvailabilityHandler: Could not get the user session'
     });
   }
 
-  // If scheduleId is provided, verify it belongs to the user
-  if (input.scheduleId) {
-    const schedule = await ctx.prisma.schedule.findFirst({
-      where: {
-        id: input.scheduleId,
-        userId: ctx.session.user.id
-      }
+  if (!session.user) {
+    throw new TRPCError({
+      code: 'UNAUTHORIZED',
+      message: 'createAvailabilityHandler: Not authenticated'
     });
-
-    if (!schedule) {
-      throw new TRPCError({
-        code: 'BAD_REQUEST',
-        message: 'Schedule not found or you do not have permission to use it'
-      });
-    }
   }
 
-  return ctx.prisma.availability.create({
+  // Get the schedule to access its timezone
+  const schedule = input.scheduleId
+    ? await prisma.schedule.findFirst({
+        where: {
+          id: input.scheduleId,
+          userId: session?.user.id
+        }
+      })
+    : null;
+
+  // Use the schedule's timezone or default to America/Sao_Paulo
+  const timezone = schedule?.timeZone || 'America/Sao_Paulo';
+
+  // Convert time strings to Date objects for database storage
+  const startDateTime = timeStringToDate(input.startTime, timezone);
+  const endDateTime = timeStringToDate(input.endTime, timezone);
+
+  const res = prisma.availability.create({
     data: {
       ...input,
-      userId: ctx.session.user.id
+      startTime: startDateTime,
+      endTime: endDateTime,
+      userId: session?.user.id
     },
     include: {
       schedule: true
     }
   });
+
+  revalidatePath('/availability');
+  if (input.scheduleId) {
+    revalidatePath(`/availability/${input.scheduleId}`);
+  }
+
+  return res
 }
 
 export async function updateAvailabilityHandler(
