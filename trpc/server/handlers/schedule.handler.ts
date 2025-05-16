@@ -4,6 +4,7 @@ import {TRPCError} from '@trpc/server';
 import {Context} from '../context';
 import {
   ZCreateScheduleSchema,
+  ZUpdateInputSchema,
   ZUpdateScheduleSchema
 } from '../schemas/availability.schema';
 import {revalidatePath} from 'next/cache';
@@ -12,7 +13,11 @@ import {auth} from '@/auth';
 
 import {prisma} from '@/lib/prisma';
 import dayjs from '@/lib/dayjs';
-import {createAvailabilityHandler} from '~/trpc/server/handlers/availability.handler';
+import {
+  createAvailabilityHandler,
+  updateDetailedAvailability
+} from '~/trpc/server/handlers/availability.handler';
+import { redirect } from 'next/navigation';
 
 export async function getAllSchedulesHandler(ctx: Context) {
   if (!ctx.session?.user) {
@@ -178,6 +183,102 @@ export const submitCreateSchedule = async (newName: string) => {
     // });
   } finally {
     // setIsSubmitting(false);
+  }
+};
+
+export const submitUpdateSchedule = async (
+  scheduleValues: typeof ZUpdateInputSchema._type
+) => {
+  try {
+    const scheduleResult = await updateDetailedAvailability({
+      input: scheduleValues
+    });
+
+    if (!scheduleResult.schedule.id) return;
+    // notification({
+    //   title: 'Alterações salvas!',
+    //   description: 'Seus updates foram salvos com sucesso.',
+    //   variant: 'stroke',
+    //   status: 'success'
+    // });
+
+    // router.push(`/availability`);
+    return scheduleResult;
+  } catch (error: any) {
+    console.error('Error submitting availability form:', error);
+
+    throw new TRPCError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Failed to update schedule'
+    });
+  }
+};
+
+export const deleteSchedule = async (scheduleId: number) => {
+  const session = await auth();
+  if (!session) {
+    throw new TRPCError({
+      code: 'UNAUTHORIZED',
+      message: 'deleteSchedule: Could not get the user session'
+    });
+  }
+
+  if (!session.user) {
+    throw new TRPCError({
+      code: 'UNAUTHORIZED',
+      message: 'deleteSchedule: Not authenticated'
+    });
+  }
+
+  const existingSchedule = await prisma.schedule.findFirst({
+    where: {
+      id: scheduleId,
+      userId: session.user.id
+    }
+  });
+
+  if (!existingSchedule) {
+    throw new Error(
+      "Schedule not found or you don't have permission to delete it"
+    );
+  }
+
+  console.log(
+    `[TRPC] Deleting schedule for user ${session.user.id}:`,
+    scheduleId
+  );
+
+  revalidatePath('/availability'); // revalidate the list page
+  // revalidatePath(`/availability/${existingSchedule.id}`); // revalidate the details page
+
+  return prisma.schedule.delete({
+    where: {
+      id: scheduleId
+    }
+  });
+};
+
+export const submitDeleteSchedule = async (scheduleId: number) => {
+  try {
+    const scheduleResult = await deleteSchedule(scheduleId);
+
+    if (!scheduleResult.id) return;
+    // notification({
+    //   title: 'Agendamento deletado!',
+    //   description: 'Seu agendamento foi deletado com sucesso.',
+    //   variant: 'stroke',
+    //   status: 'success'
+    // });
+
+    // router.push(`/availability`);
+    // redirect('/availability');
+    return scheduleResult;
+  } catch (error) {
+    console.error('Error deleting schedule:', error);
+    throw new TRPCError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Failed to delete schedule'
+    });
   }
 };
 
