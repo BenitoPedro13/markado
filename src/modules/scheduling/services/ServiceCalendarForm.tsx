@@ -1,15 +1,17 @@
 'use client';
 
 import * as Avatar from '@/components/align-ui/ui/avatar';
-import { Root as Button } from '@/components/align-ui/ui/button';
-import { Calendar } from '@/components/ui/Calendar';
-import { useScheduling } from '@/contexts/SchedulingContext';
-import { cn } from '@/lib/utils';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import {Root as Button} from '@/components/align-ui/ui/button';
+import {Calendar} from '@/components/ui/Calendar';
+import {useScheduling} from '@/contexts/SchedulingContext';
+import {cn} from '@/lib/utils';
+import {format} from 'date-fns';
+import {ptBR} from 'date-fns/locale';
+import {useRouter} from 'next/navigation';
+import {useState} from 'react';
 
+// TODO: Time slots do backend?
+// Lidar com horários disponíveis baseado nos dados preenchidos no onboarding
 const timeSlots = [
   '09:00',
   '09:15',
@@ -70,8 +72,14 @@ CalendarSection.displayName = 'CalendarSection';
 const ServiceCalendarForm = () => {
   const [date, setDate] = useState<Date>();
 
-  const {profileUser, isLoading, error, selectedDate, setSelectedDate, service} =
-    useScheduling();
+  const {
+    profileUser,
+    isLoading,
+    error,
+    selectedDate,
+    setSelectedDate,
+    service
+  } = useScheduling();
 
   const router = useRouter();
 

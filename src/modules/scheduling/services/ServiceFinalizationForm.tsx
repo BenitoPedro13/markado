@@ -1,9 +1,10 @@
 'use client';
 
 import * as Divider from '@/components/align-ui/ui/divider';
-import { useScheduling } from '@/contexts/SchedulingContext';
+import {useScheduling} from '@/contexts/SchedulingContext';
 import Image from 'next/image';
-import { useParams } from 'next/navigation';
+import Link from 'next/link';
+import {useParams} from 'next/navigation';
 const ServiceFinalizationForm = () => {
   const {status} = useParams();
   const {service} = useScheduling();
@@ -23,17 +24,13 @@ const ServiceFinalizationForm = () => {
         </div>
         <Divider.Root className="w-full" />
         <div className="flex justify-between items-center">
-          <p className="text-paragraph-lg text-text-strong-950">
-            Assunto:
-          </p>
+          <p className="text-paragraph-lg text-text-strong-950">Assunto:</p>
           <p className="text-label-sm font-medium text-text-strong-950">
             {service}
           </p>
         </div>
         <Divider.Root className="w-full" />
-        <Link href="/">
-        Precisa alterar?
-        </Link>
+        <Link href="/">Precisa alterar?</Link>
       </div>
     </div>
   );

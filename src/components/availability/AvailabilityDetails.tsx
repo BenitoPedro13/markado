@@ -5,8 +5,8 @@ import * as Switch from '@/components/align-ui/ui/switch';
 import * as Input from '@/components/align-ui/ui/input';
 import * as Button from '@/components/align-ui/ui/button';
 import * as Select from '@/components/align-ui/ui/select';
-import { availabilities, DaySchedule } from '@/data/availability';
-import { RiDeleteBinLine, RiAddLine } from '@remixicon/react';
+import {availabilities, DaySchedule} from '@/data/availability';
+import {RiDeleteBinLine, RiAddLine} from '@remixicon/react';
 import * as Divider from '@/components/align-ui/ui/divider';
 type AvailabilityDetailsProps = {
   title: string;
@@ -14,20 +14,20 @@ type AvailabilityDetailsProps = {
 
 export default function AvailabilityDetails({title}: AvailabilityDetailsProps) {
   const [schedules, setSchedules] = useState<Record<string, DaySchedule>>({
-    'Segunda-feira': { enabled: true, startTime: '09:00', endTime: '17:00' },
-    'Terça-feira': { enabled: true, startTime: '09:00', endTime: '17:00' },
-    'Quarta-feira': { enabled: true, startTime: '09:00', endTime: '17:00' },
-    'Quinta-feira': { enabled: true, startTime: '09:00', endTime: '17:00' },
-    'Sexta-feira': { enabled: true, startTime: '09:00', endTime: '17:00' },
-    'Sábado': { enabled: false, startTime: '09:00', endTime: '17:00' },
-    'Domingo': { enabled: false, startTime: '09:00', endTime: '17:00' }
+    'Segunda-feira': {enabled: true, startTime: '09:00', endTime: '17:00'},
+    'Terça-feira': {enabled: true, startTime: '09:00', endTime: '17:00'},
+    'Quarta-feira': {enabled: true, startTime: '09:00', endTime: '17:00'},
+    'Quinta-feira': {enabled: true, startTime: '09:00', endTime: '17:00'},
+    'Sexta-feira': {enabled: true, startTime: '09:00', endTime: '17:00'},
+    Sábado: {enabled: false, startTime: '09:00', endTime: '17:00'},
+    Domingo: {enabled: false, startTime: '09:00', endTime: '17:00'}
   });
 
   useEffect(() => {
-    const availability = availabilities.find(a => 
-      a.title.toLowerCase() === title.toLowerCase()
+    const availability = availabilities.find(
+      (a) => a.title.toLowerCase() === title.toLowerCase()
     );
-    
+
     if (availability) {
       setSchedules(availability.schedules);
     }
@@ -46,33 +46,33 @@ export default function AvailabilityDetails({title}: AvailabilityDetailsProps) {
                   onCheckedChange={(checked) =>
                     setSchedules((prev) => ({
                       ...prev,
-                      [day]: { ...prev[day], enabled: checked }
+                      [day]: {...prev[day], enabled: checked}
                     }))
                   }
                 />
                 <span className=" w-[120px]">{day}</span>
               </div>
-              <Input.Root className="w-24">
+              <Input.Root className="w-fit">
                 <Input.Input
                   type="time"
                   value={schedule.startTime}
                   onChange={(e) =>
                     setSchedules((prev) => ({
                       ...prev,
-                      [day]: { ...prev[day], startTime: e.target.value }
+                      [day]: {...prev[day], startTime: e.target.value}
                     }))
                   }
                   disabled={!schedule.enabled}
                 />
               </Input.Root>
-              <Input.Root className="w-24">
+              <Input.Root className="w-fit">
                 <Input.Input
                   type="time"
                   value={schedule.endTime}
                   onChange={(e) =>
                     setSchedules((prev) => ({
                       ...prev,
-                      [day]: { ...prev[day], endTime: e.target.value }
+                      [day]: {...prev[day], endTime: e.target.value}
                     }))
                   }
                   disabled={!schedule.enabled}
@@ -89,7 +89,7 @@ export default function AvailabilityDetails({title}: AvailabilityDetailsProps) {
         </div>
       </div>
 
-<Divider.Root />
+      <Divider.Root />
 
       <div className="space-y-4">
         <div className="text-title-h6">Avançado</div>
@@ -109,4 +109,4 @@ export default function AvailabilityDetails({title}: AvailabilityDetailsProps) {
       </div>
     </form>
   );
-} 
+}

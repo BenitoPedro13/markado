@@ -39,10 +39,15 @@ import * as Modal from '@/components/align-ui/ui/modal';
 import {useNotification} from '@/hooks/use-notification';
 import * as ButtonGroup from '@/components/align-ui/ui/button-group';
 import * as Tooltip from '@/components/align-ui/ui/tooltip';
-import { useRouter } from 'next/navigation';
-import { DatepickerRangeDemo } from '@/components/align-ui/daterange';
+import {useRouter} from 'next/navigation';
+import {DatepickerRangeDemo} from '@/components/align-ui/daterange';
 
-type HeaderVariant = 'scheduling' | 'availability' | 'services' | 'reports' | 'settings';
+type HeaderVariant =
+  | 'scheduling'
+  | 'availability'
+  | 'services'
+  | 'reports'
+  | 'settings';
 type HeaderMode = 'default' | 'inside';
 
 type HeaderProps = {
@@ -75,7 +80,12 @@ function Header({
     return (
       <div className="w-full h-[88px] px-8 py-5 relative bg-bg-white-0 inline-flex justify-between items-center overflow-hidden">
         <div className="flex items-center gap-3">
-          <Button.Root variant="neutral" mode="stroke" size="small" onClick={() => router.back()}>
+          <Button.Root
+            variant="neutral"
+            mode="stroke"
+            size="small"
+            onClick={() => router.back()}
+          >
             <Button.Icon as={RiArrowLeftSLine} />
           </Button.Root>
           <div className="flex flex-col">
@@ -125,9 +135,7 @@ function Header({
                         <ButtonGroup.Icon as={RiCodeLine} />
                       </ButtonGroup.Item>
                     </Tooltip.Trigger>
-                    <Tooltip.Content size="small">
-                      Criar embed
-                    </Tooltip.Content>
+                    <Tooltip.Content size="small">Criar embed</Tooltip.Content>
                   </Tooltip.Root>
                 </ButtonGroup.Root>
               </>
@@ -177,7 +185,7 @@ function Header({
           </div>
           <FancyButton.Root
             variant="neutral"
-            size='small'
+            size="small"
             onClick={() => {
               if ((window as any).submitServiceForm) {
                 (window as any).submitServiceForm();
@@ -258,8 +266,7 @@ function Header({
         return {
           icon: <RiLinksLine className="text-bg-strong-950" />,
           title: 'Serviços',
-          description:
-            'Crie serviços para os clientes agendarem',
+          description: 'Crie serviços para os clientes agendarem',
           buttons: (
             <div className="services flex gap-2">
               <Button.Root variant="neutral" mode="stroke">
@@ -353,7 +360,12 @@ function Header({
     }
   };
 
-  const {icon: headerIcon, title: variantTitle, description, buttons} = getHeaderContent();
+  const {
+    icon: headerIcon,
+    title: variantTitle,
+    description,
+    buttons
+  } = getHeaderContent();
 
   return (
     <div className="w-full px-8 py-5 relative inline-flex justify-start items-center gap-3 overflow-hidden">
