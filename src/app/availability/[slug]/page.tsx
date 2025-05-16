@@ -13,6 +13,7 @@ import AvailabilityHeader from '@/components/availability/AvailabilityHeader';
 import {getMeByUserId} from '~/trpc/server/handlers/user.handler';
 import { AvailabilityDetailsProvider } from '@/contexts/availability/availabilityDetails/AvailabilityContext';
 import AvailabilityDetailsHeader from '@/components/availability/AvailabilityDetailsHeader';
+import AvailabilityDetailsPage from '@/modules/availability/availabilityDetails/AvailabilityDetailsPage';
 
 type Props = {
   params: {
@@ -20,7 +21,7 @@ type Props = {
   };
 };
 
-export default async function AvailabilityDetailsPage({params}: Props) {
+export default async function AvailabilityDetailsServerPage({params}: Props) {
   const session = await auth();
 
   const userId = session?.user?.id;
@@ -71,19 +72,7 @@ export default async function AvailabilityDetailsPage({params}: Props) {
           initialAvailabilityDetails={availability}
           initialMe={me}
         >
-          <AvailabilityDetailsHeader
-            // title={title}
-            // subtitle="seg. - sex., 9:00 até 17:00"
-            scheduleId={+availabilityId}
-            // timeZone={availability?.timeZone || 'America/Sao_Paulo'}
-          />
-          <div className="px-8">
-            <Divider.Root />
-          </div>
-
-          <div className="p-8">
-            <AvailabilityDetails title={title || ''} />
-          </div>
+          <AvailabilityDetailsPage />
         </AvailabilityDetailsProvider>
       {/* </HydrationBoundary> */}
     </PageLayout>
