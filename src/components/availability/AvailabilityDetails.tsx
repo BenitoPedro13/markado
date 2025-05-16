@@ -27,7 +27,7 @@ type AvailabilityById =
   inferRouterOutputs<AppRouter>['availability']['findDetailedScheduleById'];
 
 type AvailabilityDetailsProps = {
-  title: string;
+  // title: string;
   // availability: AvailabilityById;
 };
 
@@ -40,7 +40,6 @@ export type AvailabilityFormValues = {
 };
 
 export default function AvailabilityDetails({
-  title
   // availability
 }: AvailabilityDetailsProps) {
   const router = useRouter();
