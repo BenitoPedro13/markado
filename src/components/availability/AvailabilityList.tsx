@@ -78,9 +78,9 @@ export default function AvailabilityList({
     });
   };
 
-  const handleDelete = (id: number) => {
-    setAvailabilities(availabilities.filter((a) => a.scheduleId !== id));
-  };
+  // const handleDelete = (id: number) => {
+  //   setAvailabilities(availabilities.filter((a) => a.scheduleId !== id));
+  // };
 
   // const handleCreate = () => {
   //   if (!newName.trim()) return;
@@ -141,8 +141,8 @@ export default function AvailabilityList({
             schedule={data.availability}
             timezone={data.timeZone}
             isDefault={data.isDefault}
-            onDelete={() => handleDelete(data.scheduleId)}
-            onDuplicate={() => handleDuplicate(data.scheduleId)}
+            // onDelete={() => handleDelete(data.scheduleId)}
+            // onDuplicate={() => handleDuplicate(data.scheduleId)}
           />
           {data !== initialAllAvailability[initialAllAvailability.length - 1] && (
             <Divider.Root />
