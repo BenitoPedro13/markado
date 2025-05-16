@@ -15,7 +15,7 @@ import * as Dropdown from '@/components/align-ui/ui/dropdown';
 import * as Modal from '@/components/align-ui/ui/modal';
 import * as Button from '@/components/align-ui/ui/button';
 import Link from 'next/link';
-import {submitDeleteSchedule} from '~/trpc/server/handlers/schedule.handler';
+import {duplicateScheduleHandler, submitDeleteSchedule} from '~/trpc/server/handlers/schedule.handler';
 import {useRouter} from 'next/navigation';
 import {useNotification} from '@/hooks/use-notification';
 import { useLocale } from '@/hooks/use-locale';
@@ -26,8 +26,8 @@ type AvailabilityProps = {
   schedule?: string;
   timezone?: string | null;
   isDefault?: boolean;
-  onDuplicate: (id: number) => void;
-  onDelete: (id: number) => void;
+  // onDuplicate: (id: number) => void;
+  // onDelete: (id: number) => void;
 };
 
 export default function Availability({
@@ -36,8 +36,8 @@ export default function Availability({
   schedule,
   timezone,
   isDefault = false,
-  onDuplicate,
-  onDelete
+  // onDuplicate,
+  // onDelete
 }: AvailabilityProps) {
   const {notification} = useNotification();
 
@@ -46,11 +46,6 @@ export default function Availability({
   const router = useRouter();
 
   const {t} = useLocale('Availability');
-
-  const handleDelete = () => {
-    onDelete(id);
-    setIsDeleteModalOpen(false);
-  };
 
   return (
     <>
@@ -101,11 +96,13 @@ export default function Availability({
                     <Dropdown.ItemIcon as={RiDeleteBinLine} />
                     Excluir disponibilidade
                   </Dropdown.Item>
-                  <Dropdown.Item onClick={() => router.push(`/availability/${id}`)}>
+                  <Dropdown.Item
+                    onClick={() => router.push(`/availability/${id}`)}
+                  >
                     <Dropdown.ItemIcon as={RiPencilLine} />
                     Editar disponibilidade
                   </Dropdown.Item>
-                  <Dropdown.Item onClick={() => onDuplicate(id)}>
+                  <Dropdown.Item onClick={() => duplicateScheduleHandler(id)}>
                     <Dropdown.ItemIcon as={RiFileCopyLine} />
                     Duplicar disponibilidade
                   </Dropdown.Item>
