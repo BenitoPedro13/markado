@@ -1,13 +1,11 @@
 'use client';
 
 import * as Divider from '@/components/align-ui/ui/divider';
-import {useScheduling} from '@/contexts/SchedulingContext';
 import Image from 'next/image';
 import Link from 'next/link';
 import {useParams} from 'next/navigation';
 const ServiceFinalizationForm = () => {
-  const {status} = useParams();
-  const {service} = useScheduling();
+  const {service, status} = useParams();
 
   return (
     <div className="min-h-screen w-full flex flex-col items-center justify-center">

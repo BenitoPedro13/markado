@@ -2,14 +2,14 @@
 
 import * as Avatar from '@/components/align-ui/ui/avatar';
 import * as Badge from '@/components/align-ui/ui/badge';
-import { badgeVariants } from '@/components/align-ui/ui/badge';
+import {badgeVariants} from '@/components/align-ui/ui/badge';
 import * as Skeleton from '@/components/align-ui/ui/skeleton';
-import { useBusiness } from '@/components/settings/business/Business';
-import { useScheduling } from '@/contexts/SchedulingContext';
-import { services as initialServices } from '@/data/services';
-import { ServiceBadgeColor } from '@/types/service';
-import { cn } from '@/utils/cn';
-import type { VariantProps } from '@/utils/tv';
+import {useBusiness} from '@/components/settings/business/Business';
+import {useScheduling} from '@/contexts/SchedulingContext';
+import {services as initialServices} from '@/data/services';
+import {ServiceBadgeColor} from '@/types/service';
+import {cn} from '@/utils/cn';
+import type {VariantProps} from '@/utils/tv';
 import {
   RiArrowRightSLine,
   RiFacebookFill,
@@ -20,7 +20,8 @@ import {
   RiTwitterXLine
 } from '@remixicon/react';
 import Link from 'next/link';
-import { useEffect } from 'react';
+import {useEffect} from 'react';
+import {getHostUserByUsername} from '~/trpc/server/handlers/user.handler';
 
 type BadgeColor = NonNullable<VariantProps<typeof badgeVariants>['color']>;
 
@@ -75,75 +76,15 @@ const mapServiceColorToBadgeColor = (
 
 type ServicesSchedulingFormProps = {
   fullHeight?: boolean;
+  host: Awaited<ReturnType<typeof getHostUserByUsername>>;
 };
 
 const ServicesSchedulingForm = ({
-  fullHeight = true
+  fullHeight = true,
+  host
 }: ServicesSchedulingFormProps) => {
-  const {profileUser, isLoading, error, service, setService} = useScheduling();
   const {businessName, businessColor, businessDescription, socialLinks} =
     useBusiness();
-
-  useEffect(() => {
-    setService(null);
-  }, []);
-
-  if (isLoading) {
-    return (
-      <div
-        className={cn(
-          'w-full flex flex-col justify-center items-center',
-          fullHeight && 'min-h-screen'
-        )}
-      >
-        <main className="p-8 flex flex-col md:flex-row items-center md:items-start gap-6 w-full max-w-[624px]">
-          <div className="w-full md:flex-1 flex flex-col items-center md:items-start gap-4">
-            <Skeleton.Root className="w-12 h-12 rounded-full" />
-            <Skeleton.Text lines={1} className="w-32" />
-            <Skeleton.Text lines={2} className="w-full" />
-            <div className="flex flex-row items-center gap-3">
-              <Skeleton.Root className="w-5 h-5 rounded-full" />
-              <Skeleton.Root className="w-5 h-5 rounded-full" />
-              <Skeleton.Root className="w-5 h-5 rounded-full" />
-            </div>
-          </div>
-          <div className="bg-bg-white-0 w-full md:min-w-[332px] md:flex-1 overflow-hidden flex flex-col rounded-3xl border border-stroke-soft-200">
-            {[1, 2, 3].map((index) => (
-              <div
-                key={index}
-                className={cn(
-                  'p-4 flex gap-4 justify-between items-center',
-                  index !== 3 && 'border-b border-stroke-soft-200'
-                )}
-              >
-                <div className="flex flex-col gap-2">
-                  <Skeleton.Text lines={1} className="w-32" />
-                  <div className="flex items-center gap-2">
-                    <Skeleton.Root className="w-16 h-6 rounded-full" />
-                    <Skeleton.Root className="w-20 h-4" />
-                  </div>
-                </div>
-                <Skeleton.Root className="w-6 h-6 rounded-md" />
-              </div>
-            ))}
-          </div>
-        </main>
-      </div>
-    );
-  }
-
-  if (error || !profileUser) {
-    return (
-      <div
-        className={cn(
-          'w-full flex flex-col justify-center items-center',
-          fullHeight && 'min-h-screen'
-        )}
-      >
-        <p className="text-text-sub-600">Usuário não encontrado</p>
-      </div>
-    );
-  }
 
   return (
     <div
@@ -156,20 +97,20 @@ const ServicesSchedulingForm = ({
         <div className="w-full md:flex-1 flex flex-col items-center md:items-start gap-4">
           <Avatar.Root
             size={'48'}
-            fallbackText={businessName || profileUser.name || ''}
+            fallbackText={businessName || host.name || ''}
           >
             <Avatar.Image
-              src={profileUser.image || ''}
-              alt={businessName || profileUser.name || 'User'}
+              src={host.image || ''}
+              alt={businessName || host.name || 'User'}
             />
           </Avatar.Root>
 
           <h1 className="text-label-lg text-text-strong-950">
-            {businessName || profileUser.name}
+            {businessName || host.name}
           </h1>
 
           <p className="text-label-sm text-text-sub-600">
-            {businessDescription || profileUser.biography}
+            {businessDescription || host.biography}
           </p>
           {/** Social icons */}
           <div className="flex flex-row items-center gap-3">
@@ -228,9 +169,8 @@ const ServicesSchedulingForm = ({
         <div className="bg-bg-white-0 w-full md:min-w-[332px] md:flex-1 overflow-hidden flex flex-col rounded-3xl border border-stroke-soft-200">
           {initialServices.map((service, index) => (
             <Link
-              onClick={() => setService(service.slug)}
               key={service.slug}
-              href={`/${profileUser.username}/${service.slug}`}
+              href={`/${host.username}/${service.slug}`}
               className={cn(
                 'p-4 flex gap-4 justify-between items-center hover:bg-stroke-soft-200 transition hover:cursor-pointer',
                 index !== initialServices.length - 1 &&
