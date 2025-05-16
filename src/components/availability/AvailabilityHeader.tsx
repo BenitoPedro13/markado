@@ -74,7 +74,7 @@ function AvailabilityHeader({selectedMenuItem}: HeaderProps) {
 
   const {t} = useLocale('Availability');
 
-  const formRef = useRef<HTMLFormElement>(null);
+  // const formRef = useRef<HTMLFormElement>(null);
 
   // const {t, locale, isLocaleReady} = useLocale('Availability');
 
@@ -249,7 +249,7 @@ function AvailabilityHeader({selectedMenuItem}: HeaderProps) {
       <Modal.Root open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
         <Modal.Content className="max-w-[440px]">
           <form
-            ref={formRef}
+            // ref={formRef}
             action={async (formData) => {
               const nameValue = newName.trim();
               console.log(nameValue);
