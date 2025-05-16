@@ -95,37 +95,6 @@ function AvailabilityDetailsHeader(
 
   if (!availability) return null;
 
-  const updateScheduleMutation = useMutation(
-    trpc.availability.updateDetailedAvailability.mutationOptions({
-      onSuccess: () => {
-        // queryClient.invalidateQueries({
-        //   queryKey: [
-        //     ['availability', 'findDetailedScheduleById'],
-        //     {
-        //       type: 'query'
-        //     }
-        //   ]
-        // });
-        // queryClient.invalidateQueries({
-        //   queryKey: [
-        //     ['availability', 'getAll'],
-        //     {
-        //       type: 'query'
-        //     }
-        //   ]
-        // });
-      },
-      onError: (error) => {
-        // notification({
-        //   title: t('schedule_updated_error'),
-        //   description: error.message,
-        //   variant: 'stroke',
-        //   id: 'schedule_updated_error'
-        // });
-      }
-    })
-  );
-
   const deleteScheduleMutation = useMutation(
     trpc.schedule.delete.mutationOptions({
       onSuccess: () => {
@@ -206,80 +175,7 @@ function AvailabilityDetailsHeader(
     }
   };
 
-  // const submitCreateSchedule = async (e: FormEvent<HTMLButtonElement>) => {
-  //   e.preventDefault();
-  //   // setIsSubmitting(true);
-
-  //   try {
-  //     // Get form values from the Schedule component
-  //     const scheduleValues = DEFAULT_SCHEDULE;
-
-  //     // Create a schedule first
-  //     const scheduleResult = await createScheduleMutation.mutateAsync({
-  //       name: newName,
-  //       timeZone:
-  //         Intl.DateTimeFormat().resolvedOptions().timeZone ||
-  //         'America/Sao_Paulo'
-  //     });
-
-  //     // Convert the schedule format to availability format
-  //     const schedule = scheduleValues;
-
-  //     // Create availabilities for each day
-  //     for (let dayIndex = 0; dayIndex < schedule.length; dayIndex++) {
-  //       const timeRanges = schedule[dayIndex];
-  //       if (timeRanges && timeRanges.length > 0) {
-  //         for (const timeRange of timeRanges) {
-  //           // Format the time values as HH:MM strings to match the schema requirements
-  //           const startTime = dayjs(timeRange.start).format('HH:mm');
-  //           const endTime = dayjs(timeRange.end).format('HH:mm');
-
-  //           await createAvailabilityMutation.mutateAsync({
-  //             days: [dayIndex],
-  //             startTime,
-  //             endTime,
-  //             scheduleId: scheduleResult.id
-  //           });
-  //         }
-  //       }
-  //     }
-
-  //     queryClient.invalidateQueries({
-  //       queryKey: [
-  //         ['availability', 'getAll'],
-  //         {
-  //           type: 'query'
-  //         }
-  //       ]
-  //     });
-
-  //     // Clear the edit_mode cookie if it exists
-  //     // clearEditMode();
-
-  //     // Set the availability step completion cookie
-  //     // setStepComplete('availability');
-
-  //     router.push(`/availability/${scheduleResult.id}`);
-
-  //     notification({
-  //       title: t('schedule_created_success'),
-  //       variant: 'stroke',
-  //       id: 'schedule_created_success'
-  //     });
-  //   } catch (error: any) {
-  //     console.error('Error submitting availability form:', error);
-  //     notification({
-  //       title: t('availability_created_error'),
-  //       description: error.message,
-  //       variant: 'stroke',
-  //       id: 'availability_created_error'
-  //     });
-  //   } finally {
-  //     // setIsSubmitting(false);
-  //   }
-  // };
-
-  const submitDeleteSchedule = async (e: FormEvent<HTMLButtonElement>) => {
+  const submitDeleteSchedule = async () => {
     e.preventDefault();
     try {
       if (!availability.id) {
@@ -300,82 +196,6 @@ function AvailabilityDetailsHeader(
       console.error('Error deleting schedule:', error);
     }
   };
-
-  // const getHeaderContent = () => {
-  //   if (selectedMenuItem) {
-  //     const IconLine = selectedMenuItem.iconLine;
-  //     const IconFill = selectedMenuItem.iconFill;
-  //     return {
-  //       icon: <IconFill className="text-bg-strong-950" />,
-  //       title: selectedMenuItem.label,
-  //       description: getDescriptionForMenuItem(selectedMenuItem.value),
-  //       buttons: getButtonsForMenuItem(selectedMenuItem.value)
-  //     };
-  //   }
-
-  //   return {
-  //     icon: <RiTimeLine className="text-bg-strong-950" />,
-  //     title: 'Disponibilidade',
-  //     description: 'Configure seus horários disponíveis para agendamentos.',
-  //     buttons: (
-  //       <div className="flex justify-start items-center gap-3 availability">
-  //         <FancyButton.Root
-  //           variant="neutral"
-  //           onClick={() => setIsCreateModalOpen(true)}
-  //         >
-  //           <FancyButton.Icon as={RiAddLine} />
-  //           Criar Disponibilidade
-  //         </FancyButton.Root>
-  //       </div>
-  //     )
-  //   };
-  // };
-
-  // const getDescriptionForMenuItem = (value: string) => {
-  //   switch (value) {
-  //     case 'profile':
-  //       return 'Gerencie suas informações pessoais e preferências.';
-  //     case 'business':
-  //       return 'Configure as informações da sua página de negócio.';
-  //     case 'general':
-  //       return 'Ajuste as configurações gerais do seu projeto.';
-  //     case 'calendars':
-  //       return 'Gerencie seus calendários e integrações.';
-  //     case 'conference':
-  //       return 'Configure suas opções de videoconferência.';
-  //     case 'privacy':
-  //       return 'Gerencie suas configurações de privacidade e segurança.';
-  //     case 'subscription':
-  //       return 'Visualize e gerencie sua assinatura.';
-  //     case 'payment':
-  //       return 'Configure seus métodos de pagamento.';
-  //     default:
-  //       return 'Gerencie suas configurações.';
-  //   }
-  // };
-
-  // const getButtonsForMenuItem = (value: string) => {
-  //   switch (value) {
-  //     case 'profile':
-  //     case 'business':
-  //     case 'general':
-  //     case 'calendars':
-  //     case 'conference':
-  //     case 'privacy':
-  //     case 'subscription':
-  //     case 'payment':
-  //       return (
-  //         <div className="settings">
-  //           <FancyButton.Root variant="neutral">
-  //             <FancyButton.Icon as={RiSaveFill} />
-  //             Salvar
-  //           </FancyButton.Root>
-  //         </div>
-  //       );
-  //     default:
-  //       return null;
-  //   }
-  // };
 
   return (
     <div className="w-full h-[88px] px-8 py-5 relative bg-bg-white-0 inline-flex justify-between items-center overflow-hidden">
