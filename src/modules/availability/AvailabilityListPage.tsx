@@ -23,11 +23,9 @@ export default function AvailabilityListPage() {
 
   // const {t} = useLocale('Availability');
 
-  const formRef = useRef<HTMLFormElement>(null);
-
   return (
     <>
-      <AvailabilityHeader formRef={formRef} />
+      <AvailabilityHeader />
       <div className="px-8">
         <Divider.Root />
       </div>
