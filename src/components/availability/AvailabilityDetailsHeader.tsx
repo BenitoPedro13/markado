@@ -43,6 +43,11 @@ import {
   formatScheduleFromDetailed
 } from '@/utils/formatAvailability';
 import {updateDetailedAvailability} from '~/trpc/server/handlers/availability.handler';
+import {ZUpdateInputSchema} from '~/trpc/server/schemas/availability.schema';
+import {
+  submitDeleteSchedule,
+  submitUpdateSchedule
+} from '~/trpc/server/handlers/schedule.handler';
 
 // type HeaderVariant =
 //   | 'scheduling'
@@ -91,111 +96,8 @@ function AvailabilityDetailsHeader(
   const router = useRouter();
   const name = watch('name');
   const isDefault = watch('isDefault');
-  const trpc = useTRPC();
 
   if (!availability) return null;
-
-  const deleteScheduleMutation = useMutation(
-    trpc.schedule.delete.mutationOptions({
-      onSuccess: () => {
-        console.log('schedule deleted successfully');
-
-        // queryClient.invalidateQueries({
-        //   queryKey: [
-        //     ['availability', 'getAll'],
-        //     {
-        //       type: 'query'
-        //     }
-        //   ]
-        // });
-
-        router.push('/availability');
-      }
-    })
-  );
-
-  const submitUpdateSchedule = async () => {
-    // e.preventDefault();
-    // setIsSubmitting(true);
-
-    try {
-      // Get form values from the Schedule component
-      const scheduleValues = getValues();
-
-      // const scheduleResult = await updateScheduleMutation.mutateAsync({
-      //   id: scheduleValues.id,
-      // data: {
-      //   schedule: scheduleValues.schedule,
-      //   scheduleId: scheduleValues.id,
-      //   isDefault: scheduleValues.isDefault,
-      //   timeZone: scheduleValues.timeZone,
-      //   name: scheduleValues.name
-      // }
-      // });
-
-      const scheduleResult = await updateDetailedAvailability({
-        input: {
-          schedule: scheduleValues.schedule,
-          scheduleId: scheduleValues.id,
-          isDefault: scheduleValues.isDefault,
-          timeZone: scheduleValues.timeZone,
-          name: scheduleValues.name
-        }
-      });
-
-      if (scheduleResult.schedule.id) {
-        notification({
-          title: 'Alterações salvas!',
-          description: 'Seus updates foram salvos com sucesso.',
-          variant: 'stroke',
-          status: 'success'
-        });
-
-        return scheduleResult;
-
-        router.push(`/availability`);
-      }
-    } catch (error: any) {
-      console.error('Error submitting availability form:', error);
-      notification({
-        title: t('schedule_updated_error'),
-        description: error.message,
-        variant: 'stroke',
-        id: 'schedule_updated_error',
-        status: 'error'
-      });
-    } finally {
-      // // setIsSubmitting(false);
-      // notification({
-      //   title: 'Alterações salvas!',
-      //   description: 'Seus updates foram salvos com sucesso.',
-      //   variant: 'stroke',
-      //   status: 'success'
-      // });
-    }
-  };
-
-  const submitDeleteSchedule = async () => {
-    e.preventDefault();
-    try {
-      if (!availability.id) {
-        throw new Error('Schedule ID is required');
-      }
-
-      await deleteScheduleMutation.mutateAsync({
-        id: availability.id
-      });
-
-      notification({
-        title: t('schedule_deleted_success'),
-        variant: 'stroke',
-        id: 'schedule_deleted_success',
-        status: 'success'
-      });
-    } catch (error) {
-      console.error('Error deleting schedule:', error);
-    }
-  };
 
   return (
     <div className="w-full h-[88px] px-8 py-5 relative bg-bg-white-0 inline-flex justify-between items-center overflow-hidden">
@@ -278,39 +180,67 @@ function AvailabilityDetailsHeader(
               </Button.Root>
             </Modal.Trigger>
             <Modal.Content className="max-w-[440px]">
-              <Modal.Body className="flex items-start gap-4">
-                <div className="rounded-10 bg-error-lighter flex size-10 shrink-0 items-center justify-center">
-                  <RiDeleteBinLine className="text-error-base size-6" />
-                </div>
-                <div className="space-y-1">
-                  <div className="text-label-md text-text-strong-950">
-                    Apagar {availability?.name}
+              <form
+                action={async (formData) => {
+                  try {
+
+                    console.log("availability.id", availability.id);
+                    await submitDeleteSchedule(availability.id);
+
+                    notification({
+                      title: 'Alterações salvas!',
+                      description: 'Seus updates foram salvos com sucesso.',
+                      variant: 'stroke',
+                      status: 'success'
+                    });
+
+                    router.push(`/availability`);
+                  } catch (error: any) {
+                    console.error('Error submitting availability form:', error);
+                    notification({
+                      title: t('schedule_updated_error'),
+                      description: error.message,
+                      variant: 'stroke',
+                      id: 'schedule_updated_error',
+                      status: 'error'
+                    });
+                  }
+                }}
+              >
+                <Modal.Body className="flex items-start gap-4">
+                  <div className="rounded-10 bg-error-lighter flex size-10 shrink-0 items-center justify-center">
+                    <RiDeleteBinLine className="text-error-base size-6" />
                   </div>
-                  <div className="text-paragraph-sm text-text-sub-600">
-                    Você não poderá recuperar a disponibilidade após apagá-lo.
+                  <div className="space-y-1">
+                    <div className="text-label-md text-text-strong-950">
+                      Apagar {availability?.name}
+                    </div>
+                    <div className="text-paragraph-sm text-text-sub-600">
+                      Você não poderá recuperar a disponibilidade após apagá-lo.
+                    </div>
                   </div>
-                </div>
-              </Modal.Body>
-              <Modal.Footer>
-                <Modal.Close asChild>
+                </Modal.Body>
+                <Modal.Footer>
+                  <Modal.Close asChild>
+                    <Button.Root
+                      variant="neutral"
+                      mode="stroke"
+                      size="small"
+                      className="w-full"
+                    >
+                      Cancelar
+                    </Button.Root>
+                  </Modal.Close>
                   <Button.Root
-                    variant="neutral"
-                    mode="stroke"
+                    variant="error"
                     size="small"
                     className="w-full"
+                    // onClick={() => submitDeleteSchedule(availability.id)}
                   >
-                    Cancelar
+                    Apagar
                   </Button.Root>
-                </Modal.Close>
-                <Button.Root
-                  variant="error"
-                  size="small"
-                  className="w-full"
-                  onClick={submitDeleteSchedule}
-                >
-                  Apagar
-                </Button.Root>
-              </Modal.Footer>
+                </Modal.Footer>
+              </form>
             </Modal.Content>
           </Modal.Root>
         </div>
@@ -318,11 +248,24 @@ function AvailabilityDetailsHeader(
           action={async (formData) => {
             try {
               // Get form values from the Schedule component
-              // const scheduleValues = getValues();
+              const {id, ...rest} = getValues();
 
-              const scheduleResult = await submitUpdateSchedule();
+              const scheduleInputValues = {
+                ...rest,
+                scheduleId: id
+              };
+
+              const scheduleResult =
+                await submitUpdateSchedule(scheduleInputValues);
 
               if (!scheduleResult) return;
+
+              notification({
+                title: 'Alterações salvas!',
+                description: 'Seus updates foram salvos com sucesso.',
+                variant: 'stroke',
+                status: 'success'
+              });
 
               router.push(`/availability`);
             } catch (error: any) {
