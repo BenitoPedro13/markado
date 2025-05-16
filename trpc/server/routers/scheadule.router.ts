@@ -105,8 +105,8 @@ export const scheduleRouter = router({
         input
       );
 
-      revalidatePath('/availability');
-      revalidatePath(`/availability/${input.id}`);
+      // revalidatePath('/availability');
+      // revalidatePath(`/availability/${input.id}`);
 
       return ctx.prisma.schedule.update({
         where: {
