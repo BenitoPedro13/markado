@@ -4,17 +4,23 @@ import {TRPCError} from '@trpc/server';
 import {Context} from '../context';
 import {
   ZCreateAvailabilitySchema,
-  ZUpdateAvailabilitySchema
-} from '../schemas/availability.schema';
+  ZUpdateAvailabilitySchema,
+  ZUpdateInputSchema
+} from '~/trpc/server/schemas/availability.schema';
+
+// import type {ZUpdateInputSchema} from '../schemas/availability.schema';
 import {prisma} from '@/lib/prisma';
 import {
+  setupDefaultSchedule,
   transformAvailability,
   transformDateOverrides,
+  transformScheduleToAvailability,
   transformWorkingHours
-} from '../utils/availability/findDetailedScheduleById';
-import { timeStringToDate } from '@/utils/time-utils';
-import { revalidatePath } from 'next/cache';
-import { auth } from '@/auth';
+} from '~/trpc/server/utils/availability/findDetailedScheduleById';
+import {timeStringToDate} from '@/utils/time-utils';
+import {revalidatePath} from 'next/cache';
+import {auth} from '@/auth';
+import { getAvailabilityFromSchedule } from '@/lib/availability';
 
 export async function getAllAvailabilitiesHandler(ctx: Context) {
   if (!ctx.session?.user) {
@@ -140,6 +146,156 @@ export async function findDetailedScheduleById({
   };
 }
 
+export async function updateDetailedAvailability({
+  input
+}: {
+  input: typeof ZUpdateInputSchema._type;
+}) {
+  const session = await auth();
+
+  if (!session) {
+    throw new TRPCError({
+      code: 'UNAUTHORIZED',
+      message: 'updateDetailedAvailability: Could not get the user session'
+    });
+  }
+
+  if (!session.user) {
+    throw new TRPCError({
+      code: 'UNAUTHORIZED',
+      message: 'updateDetailedAvailability: Not authenticated'
+    });
+  }
+
+  const user = session.user;
+  const userId = user.id;
+
+  const availability = input.schedule
+    ? getAvailabilityFromSchedule(input.schedule, userId)
+    : (input.dateOverrides || []).map((dateOverride) => ({
+        startTime: dateOverride.start,
+        endTime: dateOverride.end,
+        date: dateOverride.start,
+        days: []
+      }));
+
+  // Not able to update the schedule with userId where clause, so fetch schedule separately and then validate
+  // Bug: https://github.com/prisma/prisma/issues/7290
+  const userSchedule = await prisma.schedule.findUnique({
+    where: {
+      id: input.scheduleId
+    },
+    select: {
+      userId: true,
+      name: true,
+      id: true
+    }
+  });
+
+  if (!userSchedule) {
+    throw new TRPCError({
+      code: 'UNAUTHORIZED'
+    });
+  }
+
+  if (userSchedule?.userId !== userId) {
+    // const hasEditPermission = await hasEditPermissionForUserID({
+    //   ctx,
+    //   input: {memberId: userSchedule.userId}
+    // });
+    // if (!hasEditPermission) {
+    //   throw new TRPCError({
+    //     code: 'UNAUTHORIZED'
+    //   });
+    // }
+
+    throw new TRPCError({
+      code: 'UNAUTHORIZED'
+    });
+  }
+
+  let updatedUser;
+  if (input.isDefault) {
+    const setupDefault = await setupDefaultSchedule(
+      user.id,
+      input.scheduleId,
+      prisma
+    );
+    updatedUser = setupDefault;
+  }
+
+  if (!input.name) {
+    // TODO: Improve
+    // We don't want to pass the full schedule for just a set as default update
+    // but in the current logic, this wipes the existing availability.
+    // Return early to prevent this from happening.
+    return {
+      schedule: userSchedule,
+      isDefault: updatedUser
+        ? updatedUser.defaultScheduleId === input.scheduleId
+        : user.defaultScheduleId === input.scheduleId
+    };
+  }
+
+  const schedule = await prisma.schedule.update({
+    where: {
+      id: input.scheduleId
+    },
+    data: {
+      timeZone: input.timeZone,
+      name: input.name,
+      availability: {
+        deleteMany: {
+          scheduleId: {
+            equals: input.scheduleId
+          }
+        },
+        createMany: {
+          data: [
+            ...availability,
+            ...(input.dateOverrides || []).map((override) => ({
+              date: override.start,
+              startTime: override.start,
+              endTime: override.end
+            }))
+          ]
+        }
+      }
+    },
+    select: {
+      id: true,
+      userId: true,
+      name: true,
+      availability: true,
+      timeZone: true
+      // eventType: {
+      //   select: {
+      //     id: true,
+      //     eventName: true
+      //   }
+      // }
+    }
+  });
+
+  const userAvailability = transformScheduleToAvailability(schedule);
+
+  revalidatePath('/availability'); // revalidate the list page
+  revalidatePath(`/availability/${schedule.id}`); // revalidate the details page
+
+  return {
+    schedule,
+    availability: userAvailability,
+    timeZone: schedule.timeZone || user.timeZone,
+    isDefault: updatedUser
+      ? updatedUser.defaultScheduleId === schedule.id
+      : user.defaultScheduleId === schedule.id,
+    prevDefaultId: user.defaultScheduleId,
+    currentDefaultId: updatedUser
+      ? updatedUser.defaultScheduleId
+      : user.defaultScheduleId
+  };
+}
+
 export async function createAvailabilityHandler(
   input: typeof ZCreateAvailabilitySchema._type
 ) {
@@ -193,7 +349,7 @@ export async function createAvailabilityHandler(
     revalidatePath(`/availability/${input.scheduleId}`);
   }
 
-  return res
+  return res;
 }
 
 export async function updateAvailabilityHandler(
