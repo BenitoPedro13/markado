@@ -50,8 +50,8 @@ import { formatAvailabilitySchedule, formatScheduleFromDetailed } from '@/utils/
 
 type HeaderProps = {
   // mode?: HeaderMode;
-    title?: string;
-    subtitle?: string;
+    // title?: string;
+    // subtitle?: string;
   // icon?: React.ReactNode;
   // selectedMenuItem?: {
   //   value: string;
@@ -59,7 +59,7 @@ type HeaderProps = {
   //   iconLine: React.ElementType;
   //   iconFill: React.ElementType;
   // };
-  scheduleId: number;
+  // scheduleId: number;
   // timeZone?: string;
 };
 
@@ -69,7 +69,7 @@ function AvailabilityDetailsHeader({
   // subtitle,
   // icon,
   // selectedMenuItem,
-  scheduleId
+  // scheduleId
   // timeZone = 'America/Sao_Paulo'
 }: HeaderProps) {
   const {notification} = useNotification();
@@ -92,6 +92,8 @@ function AvailabilityDetailsHeader({
   const name = watch('name');
   const isDefault = watch('isDefault');
   const trpc = useTRPC();
+
+  if(!availability) return null;
 
   // const queryClient = getQueryClient();
 
@@ -328,12 +330,12 @@ function AvailabilityDetailsHeader({
   const submitDeleteSchedule = async (e: FormEvent<HTMLButtonElement>) => {
     e.preventDefault();
     try {
-      if (!scheduleId) {
+      if (!availability.id) {
         throw new Error('Schedule ID is required');
       }
 
       await deleteScheduleMutation.mutateAsync({
-        id: scheduleId || 0
+        id: availability.id
       });
 
       notification({
