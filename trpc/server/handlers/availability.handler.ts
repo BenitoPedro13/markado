@@ -151,149 +151,157 @@ export async function updateDetailedAvailability({
 }: {
   input: typeof ZUpdateInputSchema._type;
 }) {
-  const session = await auth();
+  try {
+    const session = await auth();
 
-  if (!session) {
-    throw new TRPCError({
-      code: 'UNAUTHORIZED',
-      message: 'updateDetailedAvailability: Could not get the user session'
-    });
-  }
-
-  if (!session.user) {
-    throw new TRPCError({
-      code: 'UNAUTHORIZED',
-      message: 'updateDetailedAvailability: Not authenticated'
-    });
-  }
-
-  const user = session.user;
-  const userId = user.id;
-
-  const availability = input.schedule
-    ? getAvailabilityFromSchedule(input.schedule, userId)
-    : (input.dateOverrides || []).map((dateOverride) => ({
-        startTime: dateOverride.start,
-        endTime: dateOverride.end,
-        date: dateOverride.start,
-        days: []
-      }));
-
-  // Not able to update the schedule with userId where clause, so fetch schedule separately and then validate
-  // Bug: https://github.com/prisma/prisma/issues/7290
-  const userSchedule = await prisma.schedule.findUnique({
-    where: {
-      id: input.scheduleId
-    },
-    select: {
-      userId: true,
-      name: true,
-      id: true
+    if (!session) {
+      throw new TRPCError({
+        code: 'UNAUTHORIZED',
+        message: 'updateDetailedAvailability: Could not get the user session'
+      });
     }
-  });
 
-  if (!userSchedule) {
-    throw new TRPCError({
-      code: 'UNAUTHORIZED'
-    });
-  }
+    if (!session.user) {
+      throw new TRPCError({
+        code: 'UNAUTHORIZED',
+        message: 'updateDetailedAvailability: Not authenticated'
+      });
+    }
 
-  if (userSchedule?.userId !== userId) {
-    // const hasEditPermission = await hasEditPermissionForUserID({
-    //   ctx,
-    //   input: {memberId: userSchedule.userId}
-    // });
-    // if (!hasEditPermission) {
-    //   throw new TRPCError({
-    //     code: 'UNAUTHORIZED'
-    //   });
-    // }
+    const user = session.user;
+    const userId = user.id;
 
-    throw new TRPCError({
-      code: 'UNAUTHORIZED'
-    });
-  }
+    const availability = input.schedule
+      ? getAvailabilityFromSchedule(input.schedule, userId)
+      : (input.dateOverrides || []).map((dateOverride) => ({
+          startTime: dateOverride.start,
+          endTime: dateOverride.end,
+          date: dateOverride.start,
+          days: []
+        }));
 
-  let updatedUser;
-  if (input.isDefault) {
-    const setupDefault = await setupDefaultSchedule(
-      user.id,
-      input.scheduleId,
-      prisma
-    );
-    updatedUser = setupDefault;
-  }
-
-  if (!input.name) {
-    // TODO: Improve
-    // We don't want to pass the full schedule for just a set as default update
-    // but in the current logic, this wipes the existing availability.
-    // Return early to prevent this from happening.
-    return {
-      schedule: userSchedule,
-      isDefault: updatedUser
-        ? updatedUser.defaultScheduleId === input.scheduleId
-        : user.defaultScheduleId === input.scheduleId
-    };
-  }
-
-  const schedule = await prisma.schedule.update({
-    where: {
-      id: input.scheduleId
-    },
-    data: {
-      timeZone: input.timeZone,
-      name: input.name,
-      availability: {
-        deleteMany: {
-          scheduleId: {
-            equals: input.scheduleId
-          }
-        },
-        createMany: {
-          data: [
-            ...availability,
-            ...(input.dateOverrides || []).map((override) => ({
-              date: override.start,
-              startTime: override.start,
-              endTime: override.end
-            }))
-          ]
-        }
+    // Not able to update the schedule with userId where clause, so fetch schedule separately and then validate
+    // Bug: https://github.com/prisma/prisma/issues/7290
+    const userSchedule = await prisma.schedule.findUnique({
+      where: {
+        id: input.scheduleId
+      },
+      select: {
+        userId: true,
+        name: true,
+        id: true
       }
-    },
-    select: {
-      id: true,
-      userId: true,
-      name: true,
-      availability: true,
-      timeZone: true
-      // eventType: {
-      //   select: {
-      //     id: true,
-      //     eventName: true
-      //   }
-      // }
+    });
+
+    if (!userSchedule) {
+      throw new TRPCError({
+        code: 'UNAUTHORIZED'
+      });
     }
-  });
 
-  const userAvailability = transformScheduleToAvailability(schedule);
+    if (userSchedule?.userId !== userId) {
+      // const hasEditPermission = await hasEditPermissionForUserID({
+      //   ctx,
+      //   input: {memberId: userSchedule.userId}
+      // });
+      // if (!hasEditPermission) {
+      //   throw new TRPCError({
+      //     code: 'UNAUTHORIZED'
+      //   });
+      // }
 
-  revalidatePath('/availability'); // revalidate the list page
-  revalidatePath(`/availability/${schedule.id}`); // revalidate the details page
+      throw new TRPCError({
+        code: 'UNAUTHORIZED'
+      });
+    }
 
-  return {
-    schedule,
-    availability: userAvailability,
-    timeZone: schedule.timeZone || user.timeZone,
-    isDefault: updatedUser
-      ? updatedUser.defaultScheduleId === schedule.id
-      : user.defaultScheduleId === schedule.id,
-    prevDefaultId: user.defaultScheduleId,
-    currentDefaultId: updatedUser
-      ? updatedUser.defaultScheduleId
-      : user.defaultScheduleId
-  };
+    let updatedUser;
+    if (input.isDefault) {
+      const setupDefault = await setupDefaultSchedule(
+        user.id,
+        input.scheduleId,
+        prisma
+      );
+      updatedUser = setupDefault;
+    }
+
+    if (!input.name) {
+      // TODO: Improve
+      // We don't want to pass the full schedule for just a set as default update
+      // but in the current logic, this wipes the existing availability.
+      // Return early to prevent this from happening.
+      return {
+        schedule: userSchedule,
+        isDefault: updatedUser
+          ? updatedUser.defaultScheduleId === input.scheduleId
+          : user.defaultScheduleId === input.scheduleId
+      };
+    }
+
+    const schedule = await prisma.schedule.update({
+      where: {
+        id: input.scheduleId
+      },
+      data: {
+        timeZone: input.timeZone,
+        name: input.name,
+        availability: {
+          deleteMany: {
+            scheduleId: {
+              equals: input.scheduleId
+            }
+          },
+          createMany: {
+            data: [
+              ...availability,
+              ...(input.dateOverrides || []).map((override) => ({
+                date: override.start,
+                startTime: override.start,
+                endTime: override.end
+              }))
+            ]
+          }
+        }
+      },
+      select: {
+        id: true,
+        userId: true,
+        name: true,
+        availability: true,
+        timeZone: true
+        // eventType: {
+        //   select: {
+        //     id: true,
+        //     eventName: true
+        //   }
+        // }
+      }
+    });
+
+    const userAvailability = transformScheduleToAvailability(schedule);
+
+    revalidatePath('/availability'); // revalidate the list page
+    revalidatePath(`/availability/${schedule.id}`); // revalidate the details page
+
+    return {
+      schedule,
+      availability: userAvailability,
+      timeZone: schedule.timeZone || user.timeZone,
+      isDefault: updatedUser
+        ? updatedUser.defaultScheduleId === schedule.id
+        : user.defaultScheduleId === schedule.id,
+      prevDefaultId: user.defaultScheduleId,
+      currentDefaultId: updatedUser
+        ? updatedUser.defaultScheduleId
+        : user.defaultScheduleId
+    };
+  } catch (error) {
+    console.error('Error updating detailed availability:', error);
+    throw new TRPCError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Failed to update detailed availability'
+    });
+  }
 }
 
 export async function createAvailabilityHandler(
