@@ -136,9 +136,9 @@ export const availabilityRouter = router({
       const startDateTime = timeStringToDate(input.startTime, timezone);
       const endDateTime = timeStringToDate(input.endTime, timezone);
 
-      revalidatePath('/availability');
+      // revalidatePath('/availability');
       if (input.scheduleId) {
-        revalidatePath(`/availability/${input.scheduleId}`);
+        // revalidatePath(`/availability/${input.scheduleId}`);
       }
 
       return ctx.prisma.availability.create({
@@ -203,9 +203,9 @@ export const availabilityRouter = router({
         updateData.endTime = timeStringToDate(input.data.endTime);
       }
 
-      revalidatePath('/availability');
+      // revalidatePath('/availability');
       if (existingAvailability.scheduleId) {
-        revalidatePath(`/availability/${existingAvailability.scheduleId}`);
+        // revalidatePath(`/availability/${existingAvailability.scheduleId}`);
       }
 
       return ctx.prisma.availability.update({
@@ -344,8 +344,8 @@ export const availabilityRouter = router({
 
       const userAvailability = transformScheduleToAvailability(schedule);
 
-      revalidatePath('/availability'); // revalidate the list page
-      revalidatePath(`/availability/${schedule.id}`); // revalidate the details page
+      // revalidatePath('/availability'); // revalidate the list page
+      // revalidatePath(`/availability/${schedule.id}`); // revalidate the details page
 
       return {
         schedule,
