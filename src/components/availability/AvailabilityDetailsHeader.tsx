@@ -42,6 +42,7 @@ import {
   formatAvailabilitySchedule,
   formatScheduleFromDetailed
 } from '@/utils/formatAvailability';
+import {updateDetailedAvailability} from '~/trpc/server/handlers/availability.handler';
 
 // type HeaderVariant =
 //   | 'scheduling'
@@ -144,17 +145,27 @@ function AvailabilityDetailsHeader(
     })
   );
 
-  const submitUpdateSchedule = async (e: FormEvent<HTMLButtonElement>) => {
-    e.preventDefault();
+  const submitUpdateSchedule = async () => {
+    // e.preventDefault();
     // setIsSubmitting(true);
 
     try {
       // Get form values from the Schedule component
       const scheduleValues = getValues();
 
-      const scheduleResult = await updateScheduleMutation.mutateAsync({
-        id: scheduleValues.id,
-        data: {
+      // const scheduleResult = await updateScheduleMutation.mutateAsync({
+      //   id: scheduleValues.id,
+      // data: {
+      //   schedule: scheduleValues.schedule,
+      //   scheduleId: scheduleValues.id,
+      //   isDefault: scheduleValues.isDefault,
+      //   timeZone: scheduleValues.timeZone,
+      //   name: scheduleValues.name
+      // }
+      // });
+
+      const scheduleResult = await updateDetailedAvailability({
+        input: {
           schedule: scheduleValues.schedule,
           scheduleId: scheduleValues.id,
           isDefault: scheduleValues.isDefault,
@@ -171,6 +182,8 @@ function AvailabilityDetailsHeader(
           status: 'success'
         });
 
+        return scheduleResult;
+
         router.push(`/availability`);
       }
     } catch (error: any) {
@@ -179,16 +192,17 @@ function AvailabilityDetailsHeader(
         title: t('schedule_updated_error'),
         description: error.message,
         variant: 'stroke',
-        id: 'schedule_updated_error'
+        id: 'schedule_updated_error',
+        status: 'error'
       });
     } finally {
-      // setIsSubmitting(false);
-      notification({
-        title: 'Alterações salvas!',
-        description: 'Seus updates foram salvos com sucesso.',
-        variant: 'stroke',
-        status: 'success'
-      });
+      // // setIsSubmitting(false);
+      // notification({
+      //   title: 'Alterações salvas!',
+      //   description: 'Seus updates foram salvos com sucesso.',
+      //   variant: 'stroke',
+      //   status: 'success'
+      // });
     }
   };
 
@@ -484,29 +498,13 @@ function AvailabilityDetailsHeader(
           action={async (formData) => {
             try {
               // Get form values from the Schedule component
-              const scheduleValues = getValues();
+              // const scheduleValues = getValues();
 
-              const scheduleResult = await updateScheduleMutation.mutateAsync({
-                id: scheduleValues.id,
-                data: {
-                  schedule: scheduleValues.schedule,
-                  scheduleId: scheduleValues.id,
-                  isDefault: scheduleValues.isDefault,
-                  timeZone: scheduleValues.timeZone,
-                  name: scheduleValues.name
-                }
-              });
+              const scheduleResult = await submitUpdateSchedule();
 
-              if (scheduleResult.schedule.id) {
-                notification({
-                  title: 'Alterações salvas!',
-                  description: 'Seus updates foram salvos com sucesso.',
-                  variant: 'stroke',
-                  status: 'success'
-                });
+              if (!scheduleResult) return;
 
-                router.push(`/availability`);
-              }
+              router.push(`/availability`);
             } catch (error: any) {
               console.error('Error submitting availability form:', error);
               notification({
@@ -526,7 +524,7 @@ function AvailabilityDetailsHeader(
               // if ((window as any).submitServiceForm) {
               //   (window as any).submitServiceForm();
               // }
-              submitUpdateSchedule(e);
+              // submitUpdateSchedule();
             }}
           >
             <FancyButton.Icon as={RiSaveFill} />
