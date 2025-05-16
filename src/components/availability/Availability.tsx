@@ -101,7 +101,7 @@ export default function Availability({
                     <Dropdown.ItemIcon as={RiDeleteBinLine} />
                     Excluir disponibilidade
                   </Dropdown.Item>
-                  <Dropdown.Item>
+                  <Dropdown.Item onClick={() => router.push(`/availability/${id}`)}>
                     <Dropdown.ItemIcon as={RiPencilLine} />
                     Editar disponibilidade
                   </Dropdown.Item>
