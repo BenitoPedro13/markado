@@ -400,3 +400,60 @@ export async function setDefaultScheduleHandler(ctx: Context, id: number) {
     }
   });
 }
+
+/**
+ * Duplicates a schedule and all its availabilities for the authenticated user.
+ * @param scheduleId The id of the schedule to duplicate
+ * @returns The new schedule with its availabilities
+ */
+export async function duplicateScheduleHandler(scheduleId: number) {
+  const session = await auth();
+  if (!session) {
+    throw new TRPCError({
+      code: 'UNAUTHORIZED',
+      message: 'duplicateScheduleHandler: Could not get the user session'
+    });
+  }
+  if (!session.user) {
+    throw new TRPCError({
+      code: 'UNAUTHORIZED',
+      message: 'duplicateScheduleHandler: Not authenticated'
+    });
+  }
+  // Fetch the original schedule with its availabilities
+  const originalSchedule = await prisma.schedule.findUnique({
+    where: {
+      id: scheduleId,
+      userId: session.user.id
+    },
+    include: {
+      availability: true
+    }
+  });
+  if (!originalSchedule) {
+    throw new TRPCError({
+      code: 'NOT_FOUND',
+      message: 'Schedule not found or you do not have permission to duplicate it'
+    });
+  }
+  // Create the new schedule and its availabilities in one call
+  const newSchedule = await prisma.schedule.create({
+    data: {
+      name: `${originalSchedule.name} (Copy)`,
+      timeZone: originalSchedule.timeZone,
+      userId: session.user.id,
+      availability: {
+        create: originalSchedule.availability.map((a) => ({
+          days: a.days,
+          startTime: a.startTime,
+          endTime: a.endTime,
+          date: a.date,
+          userId: session.user.id
+        }))
+      }
+    },
+    include: { availability: true }
+  });
+  revalidatePath('/availability');
+  return newSchedule;
+}
