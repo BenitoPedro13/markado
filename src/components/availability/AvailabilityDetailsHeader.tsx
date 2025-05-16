@@ -38,7 +38,10 @@ import {useLocale} from '@/hooks/use-locale';
 // import {getQueryClient} from '@/app/get-query-client';
 // import {DEFAULT_SCHEDULE} from '@/lib/availability';
 import {useAvailabilityDetails} from '@/contexts/availability/availabilityDetails/AvailabilityContext';
-import { formatAvailabilitySchedule, formatScheduleFromDetailed } from '@/utils/formatAvailability';
+import {
+  formatAvailabilitySchedule,
+  formatScheduleFromDetailed
+} from '@/utils/formatAvailability';
 
 // type HeaderVariant =
 //   | 'scheduling'
@@ -50,8 +53,8 @@ import { formatAvailabilitySchedule, formatScheduleFromDetailed } from '@/utils/
 
 type HeaderProps = {
   // mode?: HeaderMode;
-    // title?: string;
-    // subtitle?: string;
+  // title?: string;
+  // subtitle?: string;
   // icon?: React.ReactNode;
   // selectedMenuItem?: {
   //   value: string;
@@ -63,28 +66,24 @@ type HeaderProps = {
   // timeZone?: string;
 };
 
-function AvailabilityDetailsHeader({
-  // mode = 'default',
-  // title,
-  // subtitle,
-  // icon,
-  // selectedMenuItem,
-  // scheduleId
-  // timeZone = 'America/Sao_Paulo'
-}: HeaderProps) {
+function AvailabilityDetailsHeader(
+  {
+    // mode = 'default',
+    // title,
+    // subtitle,
+    // icon,
+    // selectedMenuItem,
+    // scheduleId
+    // timeZone = 'America/Sao_Paulo'
+  }: HeaderProps
+) {
   const {notification} = useNotification();
-
-  // const {
-  //   state: {isCreateModalOpen, setIsCreateModalOpen}
-  // } = useAvailability();
 
   const {
     queries: {availabilityDetails: availability},
     state: {isDeleteModalOpen, setIsDeleteModalOpen, isEditing, setIsEditing},
     availabilityDetailsForm: {register, setValue, watch, getValues}
   } = useAvailabilityDetails();
-
-  // const [newName, setNewName] = useState('');
 
   const {t, locale, isLocaleReady} = useLocale('Availability');
 
@@ -93,24 +92,7 @@ function AvailabilityDetailsHeader({
   const isDefault = watch('isDefault');
   const trpc = useTRPC();
 
-  if(!availability) return null;
-
-  // const queryClient = getQueryClient();
-
-  // // Get the prefetched data using tRPC query
-  // const {data: availability} = useQuery(
-  //   trpc.availability.findDetailedScheduleById.queryOptions(
-  //     {
-  //       scheduleId: scheduleId || 0,
-  //       timeZone
-  //     },
-  //     {
-  //       enabled: !!scheduleId,
-  //       // This ensures we use the prefetched data
-  //       staleTime: Infinity
-  //     }
-  //   )
-  // );
+  if (!availability) return null;
 
   const updateScheduleMutation = useMutation(
     trpc.availability.updateDetailedAvailability.mutationOptions({
@@ -142,50 +124,6 @@ function AvailabilityDetailsHeader({
       }
     })
   );
-
-  // const createScheduleMutation = useMutation(
-  //   trpc.schedule.create.mutationOptions({
-  //     onSuccess: () => {
-  //       notification({
-  //         title: t('schedule_created_success'),
-  //         variant: 'stroke',
-  //         id: 'schedule_created_success',
-  //         status: 'success'
-  //       });
-  //     },
-  //     onError: (error) => {
-  //       notification({
-  //         title: t('schedule_created_error'),
-  //         description: error.message,
-  //         variant: 'stroke',
-  //         id: 'schedule_created_error',
-  //         status: 'error'
-  //       });
-  //     }
-  //   })
-  // );
-
-  // const createAvailabilityMutation = useMutation(
-  //   trpc.availability.create.mutationOptions({
-  //     onSuccess: () => {
-  //       // notification({
-  //       //   title: t('availability_created_success'),
-  //       //   variant: 'stroke',
-  //       //   id: 'availability_created_success'
-  //       // });
-  //       console.log('availability created successfully');
-  //     },
-  //     onError: (error) => {
-  //       // notification({
-  //       //   title: t('availability_created_error'),
-  //       //   description: error.message,
-  //       //   variant: 'stroke',
-  //       //   id: 'availability_created_error'
-  //       // });
-  //       console.log('availability created error', error);
-  //     }
-  //   })
-  // );
 
   const deleteScheduleMutation = useMutation(
     trpc.schedule.delete.mutationOptions({
@@ -542,19 +480,59 @@ function AvailabilityDetailsHeader({
             </Modal.Content>
           </Modal.Root>
         </div>
-        <FancyButton.Root
-          variant="neutral"
-          size="small"
-          onClick={(e) => {
-            // if ((window as any).submitServiceForm) {
-            //   (window as any).submitServiceForm();
-            // }
-            submitUpdateSchedule(e);
+        <form
+          action={async (formData) => {
+            try {
+              // Get form values from the Schedule component
+              const scheduleValues = getValues();
+
+              const scheduleResult = await updateScheduleMutation.mutateAsync({
+                id: scheduleValues.id,
+                data: {
+                  schedule: scheduleValues.schedule,
+                  scheduleId: scheduleValues.id,
+                  isDefault: scheduleValues.isDefault,
+                  timeZone: scheduleValues.timeZone,
+                  name: scheduleValues.name
+                }
+              });
+
+              if (scheduleResult.schedule.id) {
+                notification({
+                  title: 'Alterações salvas!',
+                  description: 'Seus updates foram salvos com sucesso.',
+                  variant: 'stroke',
+                  status: 'success'
+                });
+
+                router.push(`/availability`);
+              }
+            } catch (error: any) {
+              console.error('Error submitting availability form:', error);
+              notification({
+                title: t('schedule_updated_error'),
+                description: error.message,
+                variant: 'stroke',
+                id: 'schedule_updated_error',
+                status: 'error'
+              });
+            }
           }}
         >
-          <FancyButton.Icon as={RiSaveFill} />
-          Salvar
-        </FancyButton.Root>
+          <FancyButton.Root
+            variant="neutral"
+            size="small"
+            onClick={(e) => {
+              // if ((window as any).submitServiceForm) {
+              //   (window as any).submitServiceForm();
+              // }
+              submitUpdateSchedule(e);
+            }}
+          >
+            <FancyButton.Icon as={RiSaveFill} />
+            Salvar
+          </FancyButton.Root>
+        </form>
       </div>
     </div>
   );
