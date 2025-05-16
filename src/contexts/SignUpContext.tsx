@@ -208,6 +208,7 @@ export function SignUpProvider({
       timeZone: userData?.timeZone || ''
     }
   });
+
   const availabilityForm = useForm<SignUpAvailabilityFormData>({
     resolver: zodResolver(signUpAvailabilityFormSchema),
     mode: 'onSubmit',

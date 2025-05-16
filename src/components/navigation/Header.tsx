@@ -9,27 +9,12 @@ import {
   RiArrowLeftSLine,
   RiDeleteBinLine,
   RiShare2Line,
-  RiCopyleftFill,
   RiFileCopyFill,
-  RiCodeLine,
-  RiSaveLine,
+  RiCodeLine, 
   RiSaveFill,
+  RiPencilLine,
   RiSettings4Line,
-  RiUser3Line,
-  RiUser3Fill,
-  RiGlobalLine,
-  RiGlobalFill,
-  RiCalendarFill,
-  RiVideoLine,
-  RiVideoFill,
-  RiLockLine,
-  RiLockFill,
-  RiVipCrownLine,
-  RiVipCrownFill,
-  RiWalletLine,
-  RiWalletFill,
-  RiStoreLine,
-  RiStoreFill
+
 } from '@remixicon/react';
 import React, {useState} from 'react';
 import * as Button from '@/components/align-ui/ui/button';
@@ -41,7 +26,10 @@ import * as ButtonGroup from '@/components/align-ui/ui/button-group';
 import * as Tooltip from '@/components/align-ui/ui/tooltip';
 import { useRouter } from 'next/navigation';
 import { DatepickerRangeDemo } from '@/components/align-ui/daterange';
-import CreateServiceModal from '@/components/services/CreateServiceModal';
+import * as Input from '@/components/align-ui/ui/input';
+import { usePageContext } from '@/contexts/PageContext';
+import { useAvailability } from '@/contexts/availability/AvailabilityContext';
+// import CreateServiceModal from '@/components/services/CreateServiceModal';
 
 type HeaderVariant = 'scheduling' | 'availability' | 'services' | 'reports' | 'settings';
 type HeaderMode = 'default' | 'inside';
@@ -69,9 +57,169 @@ function Header({
   selectedMenuItem
 }: HeaderProps) {
   const {notification} = useNotification();
+  const { isCreateModalOpen, setIsCreateModalOpen } = usePageContext();
   const [open, setOpen] = useState(false);
+  const [newName, setNewName] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
+  // const {queries: {availability}, availabilityDetailsForm} = useAvailability();
+  const [editedTitle, setEditedTitle] = useState(title  || '');
   const [isCreateServiceModalOpen, setIsCreateServiceModalOpen] = useState(false);
   const router = useRouter();
+
+  const getHeaderContent = () => {
+    if (selectedMenuItem) {
+      const IconLine = selectedMenuItem.iconLine;
+      const IconFill = selectedMenuItem.iconFill;
+      return {
+        icon: <IconFill className="text-bg-strong-950" />,
+        title: selectedMenuItem.label,
+        description: getDescriptionForMenuItem(selectedMenuItem.value),
+        buttons: getButtonsForMenuItem(selectedMenuItem.value)
+      };
+    }
+
+    switch (variant) {
+      case 'settings':
+        return {
+          icon: icon || <RiSettings4Line className="text-bg-strong-950" />,
+          title: 'Configurações',
+          description: 'Gerencie as configurações do seu projeto.',
+          buttons: (
+            <div className="settings">
+              <FancyButton.Root variant="neutral">
+                <FancyButton.Icon as={RiSaveFill} />
+                Salvar
+              </FancyButton.Root>
+            </div>
+          )
+        };
+      case 'scheduling':
+        return {
+          icon: <RiCalendarLine className="text-bg-strong-950" />,
+          title: 'Agendamentos',
+          description:
+            'Visualize e gerencie todos os agendamentos do seu calendário.',
+          buttons: (
+            <div className="scheduling">
+              <FancyButton.Root variant="neutral">
+                <FancyButton.Icon as={RiAddLine} />
+                Novo Agendamento
+              </FancyButton.Root>
+            </div>
+          )
+        };
+      case 'availability':
+        return {
+          icon: <RiTimeLine className="text-bg-strong-950" />,
+          title: 'Disponibilidade',
+          description: 'Configure seus horários disponíveis para agendamentos.',
+          buttons: (
+            <div className="flex justify-start items-center gap-3 availability">
+              <FancyButton.Root variant="neutral" onClick={() => setIsCreateModalOpen(true)}  >
+                <FancyButton.Icon as={RiAddLine} />
+                Criar Disponibilidade
+              </FancyButton.Root>
+            </div>
+          )
+        };
+      case 'services':
+        return {
+          icon: <RiLinksLine className="text-bg-strong-950" />,
+          title: 'Serviços',
+          description:
+            'Crie serviços para os clientes agendarem',
+          buttons: (
+            <div className="services flex gap-2">
+              <Button.Root variant="neutral" mode="stroke">
+                <Button.Icon as={RiLinksLine} />
+                Páginas de Serviços
+              </Button.Root>
+              <FancyButton.Root variant="neutral">
+                <FancyButton.Icon as={RiAddLine} />
+                Criar Serviço
+              </FancyButton.Root>
+            </div>
+          )
+        };
+      case 'reports':
+        return {
+          icon: <RiDashboard3Line className="text-bg-strong-950" />,
+          title: 'Relatórios',
+          description:
+            'Visualize estatísticas e relatórios sobre seus agendamentos.',
+          buttons: (
+            <div className="reports">
+              <DatepickerRangeDemo />
+            </div>
+          )
+        };
+      default:
+        return {
+          icon: <RiCalendarLine className="text-bg-strong-950" />,
+          title: 'Agendamentos',
+          description:
+            'Visualize e gerencie todos os agendamentos do seu calendário.',
+          buttons: (
+            <div className="scheduling">
+              <Button.Root variant="neutral" mode="stroke">
+                <Button.Icon as={RiCalendarLine} />
+                Calendário
+              </Button.Root>
+              <FancyButton.Root variant="neutral">
+                <FancyButton.Icon as={RiAddLine} />
+                Novo Agendamento
+              </FancyButton.Root>
+            </div>
+          )
+        };
+    }
+  };
+
+  const getDescriptionForMenuItem = (value: string) => {
+    switch (value) {
+      case 'profile':
+        return 'Gerencie suas informações pessoais e preferências.';
+      case 'business':
+        return 'Configure as informações da sua página de negócio.';
+      case 'general':
+        return 'Ajuste as configurações gerais do seu projeto.';
+      case 'calendars':
+        return 'Gerencie seus calendários e integrações.';
+      case 'conference':
+        return 'Configure suas opções de videoconferência.';
+      case 'privacy':
+        return 'Gerencie suas configurações de privacidade e segurança.';
+      case 'subscription':
+        return 'Visualize e gerencie sua assinatura.';
+      case 'payment':
+        return 'Configure seus métodos de pagamento.';
+      default:
+        return 'Gerencie suas configurações.';
+    }
+  };
+
+  const getButtonsForMenuItem = (value: string) => {
+    switch (value) {
+      case 'profile':
+      case 'business':
+      case 'general':
+      case 'calendars':
+      case 'conference':
+      case 'privacy':
+      case 'subscription':
+      case 'payment':
+        return (
+          <div className="settings">
+            <FancyButton.Root variant="neutral">
+              <FancyButton.Icon as={RiSaveFill} />
+              Salvar
+            </FancyButton.Root>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
 
   if (mode === 'inside') {
     return (
@@ -82,7 +230,53 @@ function Header({
           </Button.Root>
           <div className="flex flex-col">
             <div className="text-text-strong-950 text-lg font-medium font-sans leading-normal">
-              {title || 'Configuração do Serviço'}
+              {title ? <div className="flex items-center gap-2">
+                {isEditing ? (
+                  <Input.Root>
+                    <Input.Input
+                      value={editedTitle}
+                      onChange={(e) => setEditedTitle(e.target.value)}
+                      onBlur={() => {
+                        setIsEditing(false);
+                        if (editedTitle.trim() && editedTitle !== title) {
+                          notification({
+                            title: 'Título atualizado!',
+                            description: 'O título foi atualizado com sucesso.',
+                            variant: 'stroke',
+                            status: 'success'
+                          });
+                        }
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          setIsEditing(false);
+                          if (editedTitle.trim() && editedTitle !== title) {
+                            notification({
+                              title: 'Título atualizado!',
+                              description: 'O título foi atualizado com sucesso.',
+                              variant: 'stroke',
+                              status: 'success'
+                            });
+                          }
+                        }
+                      }}
+                      autoFocus
+                    />
+                  </Input.Root>
+                ) : (
+                  <>
+                    <span>{editedTitle}</span>
+                    <Button.Root 
+                      variant="neutral" 
+                      mode="ghost" 
+                      size="small"
+                      onClick={() => setIsEditing(true)}
+                    >
+                      <Button.Icon as={RiPencilLine} />
+                    </Button.Root>
+                  </>
+                )}
+              </div> : 'Configuração do Serviço'}
             </div>
             {subtitle && (
               <div className="text-text-sub-600 text-paragraph-xs font-normal font-sans leading-tight">
@@ -200,164 +394,6 @@ function Header({
     );
   }
 
-  const getHeaderContent = () => {
-    if (selectedMenuItem) {
-      const IconLine = selectedMenuItem.iconLine;
-      const IconFill = selectedMenuItem.iconFill;
-      return {
-        icon: <IconFill className="text-bg-strong-950" />,
-        title: selectedMenuItem.label,
-        description: getDescriptionForMenuItem(selectedMenuItem.value),
-        buttons: getButtonsForMenuItem(selectedMenuItem.value)
-      };
-    }
-
-    switch (variant) {
-      case 'settings':
-        return {
-          icon: icon || <RiSettings4Line className="text-bg-strong-950" />,
-          title: 'Configurações',
-          description: 'Gerencie as configurações do seu projeto.',
-          buttons: (
-            <div className="settings">
-              <FancyButton.Root variant="neutral">
-                <FancyButton.Icon as={RiSaveFill} />
-                Salvar
-              </FancyButton.Root>
-            </div>
-          )
-        };
-      case 'scheduling':
-        return {
-          icon: <RiCalendarLine className="text-bg-strong-950" />,
-          title: 'Agendamentos',
-          description:
-            'Visualize e gerencie todos os agendamentos do seu calendário.',
-          buttons: (
-            <div className="scheduling">
-              <FancyButton.Root variant="neutral">
-                <FancyButton.Icon as={RiAddLine} />
-                Novo Agendamento
-              </FancyButton.Root>
-            </div>
-          )
-        };
-      case 'availability':
-        return {
-          icon: <RiTimeLine className="text-bg-strong-950" />,
-          title: 'Disponibilidade',
-          description: 'Configure seus horários disponíveis para agendamentos.',
-          buttons: (
-            <div className="flex justify-start items-center gap-3 availability">
-              <FancyButton.Root variant="neutral">
-                <FancyButton.Icon as={RiAddLine} />
-                Criar Disponibilidade
-              </FancyButton.Root>
-            </div>
-          )
-        };
-      case 'services':
-        return {
-          icon: <RiLinksLine className="text-bg-strong-950" />,
-          title: 'Serviços',
-          description:
-            'Crie serviços para os clientes agendarem',
-          buttons: (
-            <div className="services flex gap-2">
-              <Button.Root variant="neutral" mode="stroke">
-                <Button.Icon as={RiLinksLine} />
-                Páginas de Serviços
-              </Button.Root>
-              <FancyButton.Root 
-                variant="neutral"
-                onClick={() => setIsCreateServiceModalOpen(true)}
-              >
-                <FancyButton.Icon as={RiAddLine} />
-                Criar Serviço
-              </FancyButton.Root>
-            </div>
-          )
-        };
-      case 'reports':
-        return {
-          icon: <RiDashboard3Line className="text-bg-strong-950" />,
-          title: 'Relatórios',
-          description:
-            'Visualize estatísticas e relatórios sobre seus agendamentos.',
-          buttons: (
-            <div className="reports">
-              <DatepickerRangeDemo />
-            </div>
-          )
-        };
-      default:
-        return {
-          icon: <RiCalendarLine className="text-bg-strong-950" />,
-          title: 'Agendamentos',
-          description:
-            'Visualize e gerencie todos os agendamentos do seu calendário.',
-          buttons: (
-            <div className="scheduling">
-              <Button.Root variant="neutral" mode="stroke">
-                <Button.Icon as={RiCalendarLine} />
-                Calendário
-              </Button.Root>
-              <FancyButton.Root variant="neutral">
-                <FancyButton.Icon as={RiAddLine} />
-                Novo Agendamento
-              </FancyButton.Root>
-            </div>
-          )
-        };
-    }
-  };
-
-  const getDescriptionForMenuItem = (value: string) => {
-    switch (value) {
-      case 'profile':
-        return 'Gerencie suas informações pessoais e preferências.';
-      case 'business':
-        return 'Configure as informações da sua página de negócio.';
-      case 'general':
-        return 'Ajuste as configurações gerais do seu projeto.';
-      case 'calendars':
-        return 'Gerencie seus calendários e integrações.';
-      case 'conference':
-        return 'Configure suas opções de videoconferência.';
-      case 'privacy':
-        return 'Gerencie suas configurações de privacidade e segurança.';
-      case 'subscription':
-        return 'Visualize e gerencie sua assinatura.';
-      case 'payment':
-        return 'Configure seus métodos de pagamento.';
-      default:
-        return 'Gerencie suas configurações.';
-    }
-  };
-
-  const getButtonsForMenuItem = (value: string) => {
-    switch (value) {
-      case 'profile':
-      case 'business':
-      case 'general':
-      case 'calendars':
-      case 'conference':
-      case 'privacy':
-      case 'subscription':
-      case 'payment':
-        return (
-          <div className="settings">
-            <FancyButton.Root variant="neutral">
-              <FancyButton.Icon as={RiSaveFill} />
-              Salvar
-            </FancyButton.Root>
-          </div>
-        );
-      default:
-        return null;
-    }
-  };
-
   const {icon: headerIcon, title: variantTitle, description, buttons} = getHeaderContent();
 
   return (
@@ -378,10 +414,10 @@ function Header({
         </div>
         <div className="flex justify-start items-center gap-3">{buttons}</div>
       </div>
-      <CreateServiceModal 
+      {/* <CreateServiceModal 
         open={isCreateServiceModalOpen} 
         onOpenChange={setIsCreateServiceModalOpen} 
-      />
+      /> */}
     </>
   );
 }

@@ -7,6 +7,7 @@ import {
   ZCreateScheduleSchema,
   ZUpdateScheduleSchema
 } from '../schemas/availability.schema';
+import { revalidatePath } from 'next/cache';
 
 export const scheduleRouter = router({
   // Get all schedules for the current user
@@ -59,6 +60,8 @@ export const scheduleRouter = router({
         input
       );
 
+      revalidatePath('/availability');
+
       return ctx.prisma.schedule.create({
         data: {
           ...input,
@@ -102,6 +105,9 @@ export const scheduleRouter = router({
         input
       );
 
+      // revalidatePath('/availability');
+      // revalidatePath(`/availability/${input.id}`);
+
       return ctx.prisma.schedule.update({
         where: {
           id: input.id
@@ -135,6 +141,8 @@ export const scheduleRouter = router({
         `[TRPC] Deleting schedule for user ${ctx.session?.user.id}:`,
         input
       );
+
+      revalidatePath('/availability'); // revalidate the list page
 
       return ctx.prisma.schedule.delete({
         where: {
