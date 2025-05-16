@@ -154,8 +154,11 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
       }
       return token;
     },
-    session({session, token}) {
-      session.user.id = token.id;
+    session({ session, token }) {
+      // Only set session.user.id if it doesn't exist
+      if (token && session.user && !session.user.id) {
+        session.user.id = token.id;
+      }
       return session;
     },
     redirect({ url, baseUrl }) {

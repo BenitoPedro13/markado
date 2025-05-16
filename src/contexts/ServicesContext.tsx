@@ -17,6 +17,7 @@ type ServicesContextType = {
   register: any;
   updateServiceStatus: (slug: string, status: 'active' | 'disabled') => void;
   deleteService: (slug: string) => void;
+  createService: (service: Omit<Service, 'status'>) => void;
   currentFilter: FilterType;
   setFilter: (filter: FilterType) => void;
 };
@@ -67,6 +68,13 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
     );
   };
 
+  const createService = (newService: Omit<Service, 'status'>) => {
+    setServices(prevServices => [
+      ...prevServices,
+      { ...newService, status: 'active' }
+    ]);
+  };
+
   const setFilter = (filter: FilterType) => {
     setCurrentFilter(filter);
   };
@@ -77,6 +85,7 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
       register, 
       updateServiceStatus,
       deleteService,
+      createService,
       currentFilter,
       setFilter
     }}>
