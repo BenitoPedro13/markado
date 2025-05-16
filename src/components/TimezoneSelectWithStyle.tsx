@@ -43,6 +43,7 @@ export type TimezoneSelectWithStyleProps = {
   disabled?: boolean;
   isLoading?: boolean;
   autoDetect?: boolean;
+  hint?: boolean;
 };
 
 export function TimezoneSelectWithStyle({
@@ -52,6 +53,7 @@ export function TimezoneSelectWithStyle({
   labelStyle = 'original',
   placeholder = 'Select timezone',
   disabled = false,
+  hint = true,
   isLoading = false,
   autoDetect = true,
   defaultValue = ''
@@ -214,7 +216,8 @@ export function TimezoneSelectWithStyle({
         <Select.Trigger
           className={cn(
             'flex items-center gap-1 border-none w-full',
-            (disabled || isDetecting) && 'opacity-50 cursor-not-allowed'
+            (disabled || isDetecting) && 'opacity-50 cursor-not-allowed',
+            className
           )}
         >
           <RiGlobalLine size={20} color="var(--text-soft-400)" />
@@ -237,7 +240,7 @@ export function TimezoneSelectWithStyle({
         </Select.Content>
       </Select.Root>
       
-      {selectedTimezone && currentTime && (
+      {selectedTimezone && currentTime && hint && (
         <Hint.Root>
           <Hint.Icon as={RiInformationFill} />
           Hora atual: {currentTime}

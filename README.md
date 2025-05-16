@@ -34,6 +34,8 @@
   - [Deployment](#deployment)
     - [CI/CD Setup](#cicd-setup)
     - [Security Guidelines](#security-guidelines)
+    - [Project Structure](#project-structure)
+  - [Key Directories](#key-directories)
   - [License](#license)
 
 ## Overview
@@ -255,6 +257,79 @@ The project uses GitHub Actions with a self-hosted runner for continuous integra
 - Regularly rotate secrets
 - Keep runner machine secure and updated
 - Monitor runner logs for suspicious activity
+
+### Project Structure
+
+## Key Directories
+
+- **src/app**: Contains Next.js App Router pages and layouts
+- **src/components**: Reusable React components
+- **src/contexts**: React context providers for state management
+- **src/hooks**: Custom React hooks for shared functionality
+- **src/lib**: Library code and third-party integrations
+- **src/utils**: Utility functions and helpers
+- **prisma**: Database schema, migrations, and related utilities
+- **trpc**: tRPC API implementation with routers, schemas, and handlers
+- **public**: Static assets like images and fonts
+
+```bash
+markado/
+├── src/                           # Main source code
+│   ├── app/                       # Next.js App Router
+│   │   ├── (auth)/                # Authentication routes
+│   │   ├── api/                   # API routes
+│   │   ├── availability/          # Availability management
+│   │   ├── scheduling/            # Scheduling functionality
+│   │   ├── settings/              # User settings
+│   │   ├── [username]/            # Dynamic user profile routes
+│   │   ├── layout.tsx             # Root layout
+│   │   └── page.tsx               # Home page
+│   ├── components/                # React components
+│   │   ├── align-ui/              # AlignUI design system components
+│   │   ├── auth/                  # Authentication components
+│   │   ├── availability/          # Availability components
+│   │   ├── icons/                 # Icon components
+│   │   ├── navigation/            # Navigation components
+│   │   ├── scheduling/            # Scheduling components
+│   │   ├── services/              # Service-related components
+│   │   └── settings/              # Settings components
+│   ├── contexts/                  # React context providers
+│   ├── data/                      # Data files and constants
+│   ├── hooks/                     # Custom React hooks
+│   ├── i18n/                      # Internationalization
+│   ├── lib/                       # Library code and utilities
+│   ├── modules/                   # Feature modules
+│   ├── providers/                 # Provider components
+│   ├── services/                  # Service layer
+│   ├── stores/                    # State management
+│   ├── tests/                     # Test files
+│   ├── types/                     # TypeScript type definitions
+│   ├── utils/                     # Utility functions
+│   ├── auth.ts                    # Authentication configuration
+│   ├── config.ts                  # Application configuration
+│   └── middleware.ts              # Next.js middleware
+├── prisma/                        # Database ORM
+│   ├── migrations/                # Database migrations
+│   ├── schema.prisma              # Prisma schema
+│   ├── seed.ts                    # Database seeding
+│   ├── zod/                       # Zod validation schemas
+│   └── enums/                     # Enum definitions
+├── public/                        # Static assets
+│   └── images/                    # Image files
+├── trpc/                          # tRPC API
+│   ├── client/                    # tRPC client setup
+│   └── server/                    # tRPC server implementation
+│       ├── routers/               # API route definitions
+│       ├── schemas/               # Validation schemas
+│       └── handlers/              # Request handlers
+├── .github/                       # GitHub Actions workflows
+├── .vscode/                       # VS Code configuration
+├── kysely/                        # Kysely query builder
+├── tailwind.config.ts             # Tailwind CSS configuration
+├── next.config.js                 # Next.js configuration
+├── package.json                   # Project dependencies
+└── tsconfig.json                  # TypeScript configuration
+```
 
 ## License
 

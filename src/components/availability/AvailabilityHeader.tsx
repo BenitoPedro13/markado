@@ -1,5 +1,3 @@
-'use client';
-
 import {
   RiLinksLine,
   RiAddLine,
@@ -15,9 +13,10 @@ import {
   RiSaveLine,
   RiSaveFill,
   RiSettings4Line,
-  RiPencilLine
+  RiPencilLine,
+  RiCloseLine
 } from '@remixicon/react';
-import React, {useState} from 'react';
+import React, {FormEvent, useOptimistic, useRef, useState} from 'react';
 import * as Button from '@/components/align-ui/ui/button';
 import * as FancyButton from '@/components/align-ui/ui/fancy-button';
 import * as Switch from '@/components/align-ui/ui/switch';
@@ -29,7 +28,18 @@ import {useRouter} from 'next/navigation';
 import {DatepickerRangeDemo} from '@/components/align-ui/daterange';
 import * as Input from '@/components/align-ui/ui/input';
 import {usePageContext} from '@/contexts/PageContext';
-import {useAvailability} from '@/contexts/AvailabilityContext';
+// import {useAvailability} from '@/contexts/AvailabilityContext';
+import {useTRPC} from '@/utils/trpc';
+import {useMutation, useQuery} from '@tanstack/react-query';
+import {useTranslations} from 'next-intl';
+import {useLocale} from '@/hooks/use-locale';
+import dayjs from 'dayjs';
+import {getQueryClient} from '@/app/get-query-client';
+import {DEFAULT_SCHEDULE} from '@/lib/availability';
+import {useAvailability} from '@/contexts/availability/AvailabilityContext';
+import {submitCreateSchedule} from '~/trpc/server/handlers/schedule.handler';
+import {useFormStatus} from 'react-dom';
+import {TFormatedAvailabilitiesBySchedule} from '@/utils/formatAvailability';
 
 type HeaderVariant =
   | 'scheduling'
@@ -40,7 +50,6 @@ type HeaderVariant =
 type HeaderMode = 'default' | 'inside';
 
 type HeaderProps = {
-  variant?: HeaderVariant;
   mode?: HeaderMode;
   title?: string;
   subtitle?: string;
@@ -51,363 +60,168 @@ type HeaderProps = {
     iconLine: React.ElementType;
     iconFill: React.ElementType;
   };
+  scheduleId?: number;
+  timeZone?: string;
 };
 
-function Header({
-  variant = 'scheduling',
-  mode = 'default',
-  title,
-  subtitle,
-  icon,
-  selectedMenuItem
-}: HeaderProps) {
+function AvailabilityHeader({selectedMenuItem}: HeaderProps) {
   const {notification} = useNotification();
-  const {isCreateModalOpen, setIsCreateModalOpen} = usePageContext();
-  const [open, setOpen] = useState(false);
-  const [newName, setNewName] = useState('');
-  const [isEditing, setIsEditing] = useState(false);
-  // const {queries: {availability}, availabilityDetailsForm} = useAvailability();
-  const [editedTitle, setEditedTitle] = useState(title || '');
+
+  const {
+    state: {setIsCreateModalOpen, newName, setNewName, isCreateModalOpen},
+    optimistic: {addOptimisticAvailabilityList}
+  } = useAvailability();
+
+  const {t} = useLocale('Availability');
+
+  // const formRef = useRef<HTMLFormElement>(null);
+
+  // const {t, locale, isLocaleReady} = useLocale('Availability');
+
   const router = useRouter();
+  // const trpc = useTRPC();
+  // const formRef = useRef<HTMLFormElement>(null);
+
+  //createScheduleHandler
+  // const createScheduleMutation = useMutation(
+  //   trpc.schedule.create.mutationOptions({
+  //     onSuccess: () => {
+  //       notification({
+  //         title: t('schedule_created_success'),
+  //         variant: 'stroke',
+  //         id: 'schedule_created_success',
+  //         status: 'success'
+  //       });
+  //     },
+  //     onError: (error) => {
+  //       notification({
+  //         title: t('schedule_created_error'),
+  //         description: error.message,
+  //         variant: 'stroke',
+  //         id: 'schedule_created_error',
+  //         status: 'error'
+  //       });
+  //     }
+  //   })
+  // );
+
+  // // createAvailabilityHandler
+  // const createAvailabilityMutation = useMutation(
+  //   trpc.availability.create.mutationOptions({
+  //     onSuccess: () => {
+  //       // notification({
+  //       //   title: t('availability_created_success'),
+  //       //   variant: 'stroke',
+  //       //   id: 'availability_created_success'
+  //       // });
+  //       console.log('availability created successfully');
+  //     },
+  //     onError: (error) => {
+  //       // notification({
+  //       //   title: t('availability_created_error'),
+  //       //   description: error.message,
+  //       //   variant: 'stroke',
+  //       //   id: 'availability_created_error'
+  //       // });
+  //       console.log('availability created error', error);
+  //     }
+  //   })
+  // );
+
+  // const submitCreateSchedule = async (
+  //   newName: string
+  // ) => {
+  //   // e.preventDefault();
+  //   // setIsSubmitting(true);
+
+  //   try {
+  //     // Get form values from the Schedule component
+  //     const scheduleValues = DEFAULT_SCHEDULE;
+
+  //     // Create a schedule first
+  //     const scheduleResult = await createScheduleMutation.mutateAsync({
+  //       name: newName,
+  //       timeZone:
+  //         Intl.DateTimeFormat().resolvedOptions().timeZone ||
+  //         'America/Sao_Paulo'
+  //     });
+
+  //     // Convert the schedule format to availability format
+  //     const schedule = scheduleValues;
+
+  //     // Create availabilities for each day
+  //     for (let dayIndex = 0; dayIndex < schedule.length; dayIndex++) {
+  //       const timeRanges = schedule[dayIndex];
+  //       if (timeRanges && timeRanges.length > 0) {
+  //         for (const timeRange of timeRanges) {
+  //           // Format the time values as HH:MM strings to match the schema requirements
+  //           const startTime = dayjs(timeRange.start).format('HH:mm');
+  //           const endTime = dayjs(timeRange.end).format('HH:mm');
+
+  //           await createAvailabilityMutation.mutateAsync({
+  //             days: [dayIndex],
+  //             startTime,
+  //             endTime,
+  //             scheduleId: scheduleResult.id
+  //           });
+  //         }
+  //       }
+  //     }
+
+  //     // queryClient.invalidateQueries({
+  //     //   queryKey: [
+  //     //     ['availability', 'getAll'],
+  //     //     {
+  //     //       type: 'query'
+  //     //     }
+  //     //   ]
+  //     // });
+
+  //     // Clear the edit_mode cookie if it exists
+  //     // clearEditMode();
+
+  //     // Set the availability step completion cookie
+  //     // setStepComplete('availability');
+
+  //     router.push(`/availability/${scheduleResult.id}`);
+
+  //     notification({
+  //       title: t('schedule_created_success'),
+  //       variant: 'stroke',
+  //       id: 'schedule_created_success'
+  //     });
+  //   } catch (error: any) {
+  //     console.error('Error submitting availability form:', error);
+  //     notification({
+  //       title: t('availability_created_error'),
+  //       description: error.message,
+  //       variant: 'stroke',
+  //       id: 'availability_created_error'
+  //     });
+  //   } finally {
+  //     // setIsSubmitting(false);
+  //   }
+  // };
 
   const getHeaderContent = () => {
-    if (selectedMenuItem) {
-      const IconLine = selectedMenuItem.iconLine;
-      const IconFill = selectedMenuItem.iconFill;
-      return {
-        icon: <IconFill className="text-bg-strong-950" />,
-        title: selectedMenuItem.label,
-        description: getDescriptionForMenuItem(selectedMenuItem.value),
-        buttons: getButtonsForMenuItem(selectedMenuItem.value)
-      };
-    }
-
-    switch (variant) {
-      case 'settings':
-        return {
-          icon: icon || <RiSettings4Line className="text-bg-strong-950" />,
-          title: 'Configurações',
-          description: 'Gerencie as configurações do seu projeto.',
-          buttons: (
-            <div className="settings">
-              <FancyButton.Root variant="neutral">
-                <FancyButton.Icon as={RiSaveFill} />
-                Salvar
-              </FancyButton.Root>
-            </div>
-          )
-        };
-      case 'scheduling':
-        return {
-          icon: <RiCalendarLine className="text-bg-strong-950" />,
-          title: 'Agendamentos',
-          description:
-            'Visualize e gerencie todos os agendamentos do seu calendário.',
-          buttons: (
-            <div className="scheduling">
-              <FancyButton.Root variant="neutral">
-                <FancyButton.Icon as={RiAddLine} />
-                Novo Agendamento
-              </FancyButton.Root>
-            </div>
-          )
-        };
-      case 'availability':
-        return {
-          icon: <RiTimeLine className="text-bg-strong-950" />,
-          title: 'Disponibilidade',
-          description: 'Configure seus horários disponíveis para agendamentos.',
-          buttons: (
-            <div className="flex justify-start items-center gap-3 availability">
-              <FancyButton.Root
-                variant="neutral"
-                onClick={() => setIsCreateModalOpen(true)}
-              >
-                <FancyButton.Icon as={RiAddLine} />
-                Criar Disponibilidade
-              </FancyButton.Root>
-            </div>
-          )
-        };
-      case 'services':
-        return {
-          icon: <RiLinksLine className="text-bg-strong-950" />,
-          title: 'Serviços',
-          description: 'Crie serviços para os clientes agendarem',
-          buttons: (
-            <div className="services flex gap-2">
-              <Button.Root variant="neutral" mode="stroke">
-                <Button.Icon as={RiLinksLine} />
-                Páginas de Serviços
-              </Button.Root>
-              <FancyButton.Root variant="neutral">
-                <FancyButton.Icon as={RiAddLine} />
-                Criar Serviço
-              </FancyButton.Root>
-            </div>
-          )
-        };
-      case 'reports':
-        return {
-          icon: <RiDashboard3Line className="text-bg-strong-950" />,
-          title: 'Relatórios',
-          description:
-            'Visualize estatísticas e relatórios sobre seus agendamentos.',
-          buttons: (
-            <div className="reports">
-              <DatepickerRangeDemo />
-            </div>
-          )
-        };
-      default:
-        return {
-          icon: <RiCalendarLine className="text-bg-strong-950" />,
-          title: 'Agendamentos',
-          description:
-            'Visualize e gerencie todos os agendamentos do seu calendário.',
-          buttons: (
-            <div className="scheduling">
-              <Button.Root variant="neutral" mode="stroke">
-                <Button.Icon as={RiCalendarLine} />
-                Calendário
-              </Button.Root>
-              <FancyButton.Root variant="neutral">
-                <FancyButton.Icon as={RiAddLine} />
-                Novo Agendamento
-              </FancyButton.Root>
-            </div>
-          )
-        };
-    }
-  };
-
-  const getDescriptionForMenuItem = (value: string) => {
-    switch (value) {
-      case 'profile':
-        return 'Gerencie suas informações pessoais e preferências.';
-      case 'business':
-        return 'Configure as informações da sua página de negócio.';
-      case 'general':
-        return 'Ajuste as configurações gerais do seu projeto.';
-      case 'calendars':
-        return 'Gerencie seus calendários e integrações.';
-      case 'conference':
-        return 'Configure suas opções de videoconferência.';
-      case 'privacy':
-        return 'Gerencie suas configurações de privacidade e segurança.';
-      case 'subscription':
-        return 'Visualize e gerencie sua assinatura.';
-      case 'payment':
-        return 'Configure seus métodos de pagamento.';
-      default:
-        return 'Gerencie suas configurações.';
-    }
-  };
-
-  const getButtonsForMenuItem = (value: string) => {
-    switch (value) {
-      case 'profile':
-      case 'business':
-      case 'general':
-      case 'calendars':
-      case 'conference':
-      case 'privacy':
-      case 'subscription':
-      case 'payment':
-        return (
-          <div className="settings">
-            <FancyButton.Root variant="neutral">
-              <FancyButton.Icon as={RiSaveFill} />
-              Salvar
-            </FancyButton.Root>
-          </div>
-        );
-      default:
-        return null;
-    }
-  };
-
-  if (mode === 'inside') {
-    return (
-      <div className="w-full h-[88px] px-8 py-5 relative bg-bg-white-0 inline-flex justify-between items-center overflow-hidden">
-        <div className="flex items-center gap-3">
-          <Button.Root
-            variant="neutral"
-            mode="stroke"
-            size="small"
-            onClick={() => router.back()}
-          >
-            <Button.Icon as={RiArrowLeftSLine} />
-          </Button.Root>
-          <div className="flex flex-col">
-            <div className="text-text-strong-950 text-lg font-medium font-sans leading-normal">
-              {title ? (
-                <div className="flex items-center gap-2">
-                  {isEditing ? (
-                    <Input.Root>
-                      <Input.Input
-                        value={editedTitle}
-                        onChange={(e) => setEditedTitle(e.target.value)}
-                        onBlur={() => {
-                          setIsEditing(false);
-                          if (editedTitle.trim() && editedTitle !== title) {
-                            notification({
-                              title: 'Título atualizado!',
-                              description:
-                                'O título foi atualizado com sucesso.',
-                              variant: 'stroke',
-                              status: 'success'
-                            });
-                          }
-                        }}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
-                            setIsEditing(false);
-                            if (editedTitle.trim() && editedTitle !== title) {
-                              notification({
-                                title: 'Título atualizado!',
-                                description:
-                                  'O título foi atualizado com sucesso.',
-                                variant: 'stroke',
-                                status: 'success'
-                              });
-                            }
-                          }
-                        }}
-                        autoFocus
-                      />
-                    </Input.Root>
-                  ) : (
-                    <>
-                      <span>{editedTitle}</span>
-                      <Button.Root
-                        variant="neutral"
-                        mode="ghost"
-                        size="small"
-                        onClick={() => setIsEditing(true)}
-                      >
-                        <Button.Icon as={RiPencilLine} />
-                      </Button.Root>
-                    </>
-                  )}
-                </div>
-              ) : (
-                'Configuração do Serviço'
-              )}
-            </div>
-            {subtitle && (
-              <div className="text-text-sub-600 text-paragraph-xs font-normal font-sans leading-tight">
-                {subtitle}
-              </div>
-            )}
-          </div>
-        </div>
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 text-text-sub-600 text-paragraph-xs font-normal font-sans leading-tight w-fit">
-            {variant === 'availability' && 'Definir padrão'}
-            <Switch.Root />
-          </div>
-          <div className="flex items-center gap-2">
-            {variant === 'availability' && <></>}
-            {variant === 'services' && (
-              <>
-                <ButtonGroup.Root>
-                  <Tooltip.Root>
-                    <Tooltip.Trigger asChild>
-                      <ButtonGroup.Item>
-                        <ButtonGroup.Icon as={RiShare2Line} />
-                      </ButtonGroup.Item>
-                    </Tooltip.Trigger>
-                    <Tooltip.Content size="small">
-                      Compartilhar serviço
-                    </Tooltip.Content>
-                  </Tooltip.Root>
-                  <Tooltip.Root>
-                    <Tooltip.Trigger asChild>
-                      <ButtonGroup.Item>
-                        <ButtonGroup.Icon as={RiFileCopyFill} />
-                      </ButtonGroup.Item>
-                    </Tooltip.Trigger>
-                    <Tooltip.Content size="small">
-                      Copiar link do serviço
-                    </Tooltip.Content>
-                  </Tooltip.Root>
-                  <Tooltip.Root>
-                    <Tooltip.Trigger asChild>
-                      <ButtonGroup.Item>
-                        <ButtonGroup.Icon as={RiCodeLine} />
-                      </ButtonGroup.Item>
-                    </Tooltip.Trigger>
-                    <Tooltip.Content size="small">Criar embed</Tooltip.Content>
-                  </Tooltip.Root>
-                </ButtonGroup.Root>
-              </>
-            )}
-            <Modal.Root open={open} onOpenChange={setOpen}>
-              <Modal.Trigger asChild>
-                <Button.Root
-                  variant="neutral"
-                  mode="stroke"
-                  onClick={() => setOpen(true)}
-                >
-                  <Button.Icon as={RiDeleteBinLine} />
-                  Apagar
-                </Button.Root>
-              </Modal.Trigger>
-              <Modal.Content className="max-w-[440px]">
-                <Modal.Body className="flex items-start gap-4">
-                  <div className="rounded-10 bg-error-lighter flex size-10 shrink-0 items-center justify-center">
-                    <RiDeleteBinLine className="text-error-base size-6" />
-                  </div>
-                  <div className="space-y-1">
-                    <div className="text-label-md text-text-strong-950">
-                      Apagar {title}
-                    </div>
-                    <div className="text-paragraph-sm text-text-sub-600">
-                      Você não poderá recuperar a disponibilidade após apagá-lo.
-                    </div>
-                  </div>
-                </Modal.Body>
-                <Modal.Footer>
-                  <Modal.Close asChild>
-                    <Button.Root
-                      variant="neutral"
-                      mode="stroke"
-                      size="small"
-                      className="w-full"
-                    >
-                      Cancelar
-                    </Button.Root>
-                  </Modal.Close>
-                  <Button.Root variant="error" size="small" className="w-full">
-                    Apagar
-                  </Button.Root>
-                </Modal.Footer>
-              </Modal.Content>
-            </Modal.Root>
-          </div>
+    return {
+      icon: <RiTimeLine className="text-bg-strong-950" />,
+      title: 'Disponibilidade',
+      description: 'Configure seus horários disponíveis para agendamentos.',
+      buttons: (
+        <div className="flex justify-start items-center gap-3 availability">
           <FancyButton.Root
             variant="neutral"
-            size="small"
-            onClick={() => {
-              if ((window as any).submitServiceForm) {
-                (window as any).submitServiceForm();
-              }
-              notification({
-                title: 'Alterações salvas!',
-                description: 'Seus updates foram salvos com sucesso.',
-                variant: 'stroke',
-                status: 'success'
-              });
-            }}
+            type="button"
+            onClick={() => setIsCreateModalOpen(true)}
           >
-            <FancyButton.Icon as={RiSaveFill} />
-            Salvar
+            <FancyButton.Icon as={RiAddLine} />
+            Criar Disponibilidade
           </FancyButton.Root>
         </div>
-      </div>
-    );
-  }
+      )
+    };
+  };
 
   const {
     icon: headerIcon,
@@ -434,46 +248,91 @@ function Header({
       <div className="flex justify-start items-center gap-3">{buttons}</div>
       <Modal.Root open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
         <Modal.Content className="max-w-[440px]">
-          <Modal.Body>
-            <div className="text-xl font-semibold mb-4">
-              Adicionar nova disponibilidade
-            </div>
-            <div className="mb-2 text-label-md">Nome</div>
-            <Input.Root>
-              <Input.Input
-                placeholder="Horas de Trabalho"
-                value={newName}
-                onChange={(e) => setNewName(e.target.value)}
-                autoFocus
-              />
-            </Input.Root>
-          </Modal.Body>
-          <Modal.Footer className="flex gap-2 justify-end">
-            <Modal.Close asChild>
-              <Button.Root variant="neutral" mode="stroke" size="small">
-                Fechar
-              </Button.Root>
-            </Modal.Close>
-            <Button.Root
-              variant="neutral"
-              size="small"
-              className="font-semibold"
-              disabled={!newName.trim()}
-              onClick={() => {
-                if (!newName.trim()) return;
-                const slug = newName.trim().toLowerCase().replace(/ /g, '-');
-                setIsCreateModalOpen(false);
+          <form
+            // ref={formRef}
+            action={async (formData) => {
+              const nameValue = newName.trim();
+              console.log(nameValue);
+
+              if (!nameValue) return;
+
+              addOptimisticAvailabilityList({
+                scheduleId: Math.trunc(Math.random() * 1000),
+                scheduleName: nameValue,
+                timeZone: 'America/Sao_Paulo',
+                availability: 'seg. - sex., 9:00 até 17:00',
+                isDefault: false
+              });
+
+              try {
+                const scheduleResult = await submitCreateSchedule(nameValue);
+
                 setNewName('');
-                // router.push(`/availability/${slug}`);
-              }}
-            >
-              Criar
-            </Button.Root>
-          </Modal.Footer>
+
+                if (scheduleResult) {
+                  notification({
+                    title: t('schedule_created_success'),
+                    variant: 'stroke',
+                    // id: 'schedule_created_success',
+                    status: 'success'
+                  });
+                  // router.push(`/availability/${scheduleResult.id}`);
+                }
+              } catch (error) {}
+            }}
+          >
+            <Modal.Header className="flex justify-start items-center gap-3">
+              <Modal.Title className="text-text-strong-950 text-lg font-semibold">
+                Criar Disponibilidade
+              </Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <div className="mb-2 text-label-md">Nome</div>
+              <Input.Root>
+                <Input.Input
+                  id="name"
+                  name="name"
+                  type="text"
+                  placeholder="Horas de Trabalho"
+                  value={newName}
+                  onChange={(e) => {
+                    setNewName(e.target.value);
+                  }}
+                  required
+                  autoFocus
+                />
+              </Input.Root>
+            </Modal.Body>
+            <Modal.Footer className="flex gap-2 justify-end">
+              <Modal.Close asChild>
+                <Button.Root variant="neutral" mode="stroke" size="small">
+                  Fechar
+                </Button.Root>
+              </Modal.Close>
+              <Button.Root
+                variant="neutral"
+                size="small"
+                className="font-semibold"
+                // type="submit"
+                // disabled={!newName?.trim()}
+                onClick={async (e) => {
+                  // if (!newName?.trim()) return;
+                  // // const slug = newName?.trim().toLowerCase().replace(/ /g, '-');
+                  // await submitCreateSchedule(e);
+                  // formRef?.current?.requestSubmit();
+                  setIsCreateModalOpen(false);
+                  // setNewName('');
+                  // router.push(`/availability/${slug}`);
+                }}
+              >
+                Criar
+              </Button.Root>
+            </Modal.Footer>
+          </form>
         </Modal.Content>
       </Modal.Root>
     </div>
   );
 }
 
-export default Header;
+export default AvailabilityHeader;

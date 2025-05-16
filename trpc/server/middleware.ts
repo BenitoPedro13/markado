@@ -39,9 +39,6 @@ export const protectedProcedure = publicProcedure.use(async ({ ctx, next }) => {
   }
   
   return next({
-    ctx: {
-      ...ctx,
-      user: ctx.session.user
-    }
+    ctx,
   });
 }); 

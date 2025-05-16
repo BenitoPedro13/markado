@@ -25,12 +25,14 @@ export const DEFAULT_SCHEDULE: Schedule = [
 ];
 
 export function getAvailabilityFromSchedule(
-  schedule: Schedule
+  schedule: Schedule,
+  userId: string,
 ): Availability[] {
   return schedule.reduce(
     (availability: Availability[], times: TimeRange[], day: number) => {
       const addNewTime = (time: TimeRange) =>
         ({
+          userId,
           days: [day],
           startTime: time.start,
           endTime: time.end
