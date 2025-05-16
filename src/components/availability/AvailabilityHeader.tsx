@@ -62,7 +62,6 @@ type HeaderProps = {
   };
   scheduleId?: number;
   timeZone?: string;
-  formRef?: React.RefObject<HTMLFormElement>;
 };
 
 function AvailabilityHeader({selectedMenuItem}: HeaderProps) {
