@@ -27,9 +27,9 @@ generator kysely {
 }
 
 generator enums {
-  provider = "ts-node --transpile-only ./prisma/enum-generator"
+  provider = "ts-node --transpile-only prisma/enum-generator.ts"
+  output   = "./enums/index.ts"
 }
-
 
 enum IndustryType {
   HEALTHCARE
