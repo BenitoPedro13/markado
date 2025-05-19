@@ -56,7 +56,7 @@ export function getOrgSlug(hostname: string, forcedSlug?: string) {
 
 export function orgDomainConfig(req: IncomingMessage | undefined, fallback?: string | string[]) {
   const forPlatform = isPlatformRequest(req);
-  const forcedSlugHeader = req?.headers?.["x-cal-force-slug"];
+  const forcedSlugHeader = req?.headers?.["x-markado-force-slug"];
   const forcedSlug = forcedSlugHeader instanceof Array ? forcedSlugHeader[0] : forcedSlugHeader;
 
   if (forPlatform && forcedSlug) {
@@ -75,7 +75,7 @@ export function orgDomainConfig(req: IncomingMessage | undefined, fallback?: str
 }
 
 function isPlatformRequest(req: IncomingMessage | undefined) {
-  return !!req?.headers?.["x-cal-client-id"];
+  return !!req?.headers?.['x-markado-client-id'];
 }
 
 export function getOrgDomainConfigFromHostname({
