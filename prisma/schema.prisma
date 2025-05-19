@@ -447,7 +447,7 @@ model Availability {
   startTime   DateTime   @db.Time
   endTime     DateTime   @db.Time
   date        DateTime?  @db.Date
-  Schedule    Schedule?  @relation(fields: [scheduleId], references: [id])
+  schedule    Schedule?  @relation(fields: [scheduleId], references: [id])
   scheduleId  Int?
 
   @@index([userId])
