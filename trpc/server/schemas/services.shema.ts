@@ -1,10 +1,8 @@
-import type {z} from 'zod';
+import {z} from 'zod';
+import {SchedulingType} from '~/prisma/enums';
+import * as imports from '~/prisma/zod-utils';
 
 // Create
-
-import {SchedulingType} from '@calcom/prisma/enums';
-import {z} from 'zod';
-import * as imports from '../../zod-utils';
 
 export const createEventTypeInput = z
   .object({
@@ -44,8 +42,6 @@ export const EventTypeDuplicateInput = z
 export type EventTypeLocation = z.infer<
   typeof imports.eventTypeLocations
 >[number];
-
-import {createEventTypeInput} from '@calcom/prisma/zod/custom/eventtype';
 
 export const ZCreateInputSchema = createEventTypeInput;
 
