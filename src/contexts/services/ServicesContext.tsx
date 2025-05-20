@@ -10,6 +10,7 @@ import {
 } from 'react';
 import {useRouter, useSearchParams} from 'next/navigation';
 import {services as initialServices, ServicesProps} from '@/data/services';
+import { TInitialServices } from '@/app/services/page';
 
 type SearchFormData = {
   search: string;
@@ -24,10 +25,10 @@ export enum FilterType {
 }
 
 type ServicesContextType = {
-  filteredServices: Service[];
+  filteredServices: TInitialServices;
   updateServiceStatus: (slug: string, status: 'active' | 'disabled') => void;
   deleteService: (slug: string) => void;
-  createService: (service: Omit<Service, 'status'>) => void;
+  // createService: (service: Omit<Service, 'status'>) => void;
   currentFilter: FilterType;
   setFilter: (filter: FilterType) => void;
   setSearch: (search: string) => void;
@@ -42,10 +43,10 @@ const ServicesContext = createContext<ServicesContextType | undefined>(
   undefined
 );
 
-export function ServicesProvider({children}: {children: ReactNode}) {
-  const [services, setServices] = useState<Service[]>(initialServices);
+export function ServicesProvider({children, initialServices = []}: {children: ReactNode, initialServices?: TInitialServices}) {
+  const [services, setServices] = useState<TInitialServices>(initialServices);
   const [filteredServices, setFilteredServices] =
-    useState<Service[]>(initialServices);
+    useState<TInitialServices>(initialServices);
   const [isCreateServiceModalOpen, setIsCreateServiceModalOpen] =
     useState(false);
 
@@ -64,10 +65,12 @@ export function ServicesProvider({children}: {children: ReactNode}) {
         service.title.toLowerCase().includes(searchValue.toLowerCase())
       );
     }
-    if (currentFilter !== FilterType.ALL) {
-      filtered = filtered.filter(
-        (service) => service.status.toUpperCase() === currentFilter
-      );
+    if (currentFilter === FilterType.ALL) {
+      filtered = filtered
+    } else if (currentFilter === FilterType.DISABLED) {
+      filtered = filtered.filter(service => service.hidden === true)
+    } else if (currentFilter === FilterType.ACTIVE) {
+      filtered = filtered.filter((service) => service.hidden === false);
     }
     setFilteredServices(filtered);
   }, [searchValue, currentFilter, services]);
@@ -86,12 +89,12 @@ export function ServicesProvider({children}: {children: ReactNode}) {
     );
   };
 
-  const createService = (newService: Omit<Service, 'status'>) => {
-    setServices((prevServices) => [
-      ...prevServices,
-      {...newService, status: 'active'}
-    ]);
-  };
+  // const createService = (newService: Omit<Service, 'status'>) => {
+  //   setServices((prevServices) => [
+  //     ...prevServices,
+  //     {...newService, status: 'active'}
+  //   ]);
+  // };
 
   // Update filter in URL
   const setFilter = (filter: FilterType) => {
@@ -125,7 +128,7 @@ export function ServicesProvider({children}: {children: ReactNode}) {
       filteredServices,
       updateServiceStatus,
       deleteService,
-      createService,
+      // createService,
       currentFilter,
       setFilter,
       setSearch,
@@ -139,7 +142,7 @@ export function ServicesProvider({children}: {children: ReactNode}) {
       filteredServices,
       updateServiceStatus,
       deleteService,
-      createService,
+      // createService,
       currentFilter,
       setFilter,
       isCreateServiceModalOpen,
