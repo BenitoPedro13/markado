@@ -8,8 +8,8 @@ import * as Hint from '@/components/align-ui/ui/hint';
 import {cn} from '@/utils/cn';
 
 import type {Timezones} from '@/lib/timezone';
-import { useTRPC } from '@/utils/trpc';
-import { useQuery } from '@tanstack/react-query';
+import {useTRPC} from '@/utils/trpc';
+import {useQuery} from '@tanstack/react-query';
 
 const SELECT_SEARCH_DATA: Timezones = [
   {label: 'San Francisco', timezone: 'America/Los_Angeles'},
@@ -44,6 +44,7 @@ export type TimezoneSelectWithStyleProps = {
   isLoading?: boolean;
   autoDetect?: boolean;
   hint?: boolean;
+  variant?: 'default' | 'compact' | 'compactForInput' | 'inline';
 };
 
 export function TimezoneSelectWithStyle({
@@ -56,13 +57,16 @@ export function TimezoneSelectWithStyle({
   hint = true,
   isLoading = false,
   autoDetect = true,
-  defaultValue = ''
+  defaultValue = '',
+  variant = 'default'
 }: TimezoneSelectWithStyleProps) {
   const {options, parseTimezone} = useTimezoneSelect({labelStyle});
   const [currentTime, setCurrentTime] = useState<string>('');
   const [isDetecting, setIsDetecting] = useState(false);
-  const [selectedTimezone, setSelectedTimezone] = useState<string | undefined>(value);
-  
+  const [selectedTimezone, setSelectedTimezone] = useState<string | undefined>(
+    value
+  );
+
   // Use refs to track state without triggering renders
   const isDetectingRef = useRef(false);
   const detectionAttemptedRef = useRef(false);
@@ -71,11 +75,13 @@ export function TimezoneSelectWithStyle({
   // Memoize the formatted timezone value to prevent recalculation on every render
   const formattedValue = useMemo(() => {
     if (!selectedTimezone) return placeholder;
-    
+
     // Try to find a matching option from the predefined list
-    const matchingOption = options.find((opt) => opt.value === selectedTimezone);
+    const matchingOption = options.find(
+      (opt) => opt.value === selectedTimezone
+    );
     if (matchingOption) return matchingOption.label;
-    
+
     // If not found in predefined list, format it manually
     return selectedTimezone.replace(/_/g, ' ');
   }, [selectedTimezone, options, placeholder]);
@@ -111,7 +117,7 @@ export function TimezoneSelectWithStyle({
       detectionAttemptedRef.current = true;
     }
   }, [value]);
-  
+
   // Handle component unmount
   useEffect(() => {
     return () => {
@@ -122,7 +128,12 @@ export function TimezoneSelectWithStyle({
   // One-time timezone detection
   useEffect(() => {
     // Only run once and only if auto-detection is enabled and no timezone is selected
-    if (detectionAttemptedRef.current || !autoDetect || selectedTimezone || isDetectingRef.current) {
+    if (
+      detectionAttemptedRef.current ||
+      !autoDetect ||
+      selectedTimezone ||
+      isDetectingRef.current
+    ) {
       return;
     }
 
@@ -134,7 +145,7 @@ export function TimezoneSelectWithStyle({
     // Set up the timeout first
     const timeoutId = setTimeout(() => {
       if (!mountedRef.current) return;
-      
+
       // If we're still detecting, force completion
       if (isDetectingRef.current) {
         console.log('Timezone detection timed out');
@@ -147,10 +158,10 @@ export function TimezoneSelectWithStyle({
     const detectTimezone = () => {
       try {
         const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        
+
         if (mountedRef.current) {
           setSelectedTimezone(userTimezone);
-          
+
           if (onChange) {
             onChange(userTimezone);
           }
@@ -178,7 +189,7 @@ export function TimezoneSelectWithStyle({
   // Update the current time every second
   useEffect(() => {
     if (!selectedTimezone) return;
-    
+
     const updateTime = () => {
       try {
         const now = new Date();
@@ -212,6 +223,7 @@ export function TimezoneSelectWithStyle({
         disabled={disabled || isLoading || isDetecting}
         value={selectedTimezone}
         defaultValue={defaultValue}
+        variant={variant}
       >
         <Select.Trigger
           className={cn(
@@ -228,7 +240,9 @@ export function TimezoneSelectWithStyle({
         <Select.Content>
           {isLoading || isDetecting ? (
             <div className="p-2 text-center text-text-sub-600">
-              {isDetecting ? 'Detecting your timezone...' : 'Loading timezones...'}
+              {isDetecting
+                ? 'Detecting your timezone...'
+                : 'Loading timezones...'}
             </div>
           ) : (
             uniqueOptions.map((option) => (
@@ -239,7 +253,7 @@ export function TimezoneSelectWithStyle({
           )}
         </Select.Content>
       </Select.Root>
-      
+
       {selectedTimezone && currentTime && hint && (
         <Hint.Root>
           <Hint.Icon as={RiInformationFill} />
@@ -251,4 +265,3 @@ export function TimezoneSelectWithStyle({
 }
 
 export default TimezoneSelectWithStyle;
-

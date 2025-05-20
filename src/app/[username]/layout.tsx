@@ -1,6 +1,4 @@
-'use client';
-
-import { SchedulingProvider } from '@/contexts/SchedulingContext';
+import {SchedulingProvider} from '@/contexts/SchedulingContext';
 
 interface SchedulingLayoutProps {
   children: React.ReactNode;
@@ -9,10 +7,13 @@ interface SchedulingLayoutProps {
   };
 }
 
-export default function SchedulingLayout({ children, params }: SchedulingLayoutProps) {
+export default function SchedulingLayout({
+  children,
+  params
+}: SchedulingLayoutProps) {
   return (
     <SchedulingProvider username={params.username}>
       {children}
     </SchedulingProvider>
   );
-} 
+}

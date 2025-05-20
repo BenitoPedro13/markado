@@ -17,7 +17,7 @@ import * as Switch from '@/components/align-ui/ui/switch';
 import * as Dropdown from '@/components/align-ui/ui/dropdown';
 import * as Modal from '@/components/align-ui/ui/modal';
 import * as Button from '@/components/align-ui/ui/button';
-import {useServices} from '@/contexts/ServicesContext';
+import {useServices} from '@/contexts/services/ServicesContext';
 import {useRouter} from 'next/navigation';
 import Link from 'next/link';
 import {ServicesProps} from '@/data/services';

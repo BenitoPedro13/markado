@@ -2,15 +2,15 @@
 
 import * as Divider from '@/components/align-ui/ui/divider';
 import Service from '@/components/services/Service';
-import { useServices } from '@/contexts/ServicesContext';
+import { useServices } from '@/contexts/services/ServicesContext';
 
 export default function ServicesList() {
-  const { filteredServices } = useServices();
+  const {filteredServices} = useServices();
 
   return (
     <div className="px-8">
       <div className="rounded-lg w-full border border-stroke-soft-200">
-        {filteredServices.map(service => (
+        {filteredServices.map((service, idx) => (
           <div key={service.slug}>
             <Service
               title={service.title}
@@ -20,10 +20,10 @@ export default function ServicesList() {
               status={service.status}
               badgeColor={service.badgeColor}
             />
-            <Divider.Root />
+            {idx !== filteredServices.length - 1 && <Divider.Root />}
           </div>
         ))}
       </div>
     </div>
   );
-} 
+}

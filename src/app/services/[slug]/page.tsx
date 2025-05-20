@@ -9,13 +9,10 @@ import ServiceAdvanced from '@/components/services/service-details/ServiceAdvanc
 import * as Divider from '@/components/align-ui/ui/divider';
 import {
   RiArrowRightSLine,
-
   RiDraftFill,
   RiDraftLine,
-
   RiLinksFill,
   RiLinksLine,
-
   RiSettingsFill,
   RiSettingsLine,
   RiTimeFill,
@@ -34,38 +31,42 @@ const menuItems = [
     label: 'Serviço',
     iconLine: RiLinksLine,
     iconFill: RiLinksFill,
-    component: ServiceDetails,
+    component: ServiceDetails
   },
   {
     value: 'availability',
     label: 'Disponibilidade',
     iconLine: RiTimeLine,
     iconFill: RiTimeFill,
-    component: ServiceAvailability,
+    component: ServiceAvailability
   },
   {
     value: 'form',
     label: 'Formulário',
     iconLine: RiDraftLine,
     iconFill: RiDraftFill,
-    component: ServiceForm,
+    component: ServiceForm
   },
   {
     value: 'advanced',
     label: 'Avançado',
     iconLine: RiSettingsLine,
     iconFill: RiSettingsFill,
-    component: ServiceAdvanced,
-  },
+    component: ServiceAdvanced
+  }
 ];
 
 export default function ServicePage({params: {slug}}: Props) {
   return (
     <PageLayout title="Detalhes do Serviço">
-      <Header variant="services" mode="inside" />
+      <Header
+        variant="services"
+        mode="inside"
+        title="Configuração do Serviço"
+      />
       <div className="px-8">
         <Divider.Root />
-      </div>          
+      </div>
       <div className="p-8 flex w-full justify-center">
         <TabMenuVertical.Root
           defaultValue="service"
@@ -75,18 +76,24 @@ export default function ServicePage({params: {slug}}: Props) {
             <div className="text-subheading-xs uppercase text-text-sub-600">
               Menu
             </div>
-            {menuItems.map(({value, label, iconLine: IconLine, iconFill: IconFill}) => (
-              <TabMenuVertical.Trigger key={value} value={value} indicator={false}>
-                <TabMenuVertical.Icon
-                  iconLine={<IconLine />}
-                  iconFill={<IconFill />}
-                />
-                {label}
-                <TabMenuVertical.ArrowIcon>
-                  <RiArrowRightSLine />
-                </TabMenuVertical.ArrowIcon>
-              </TabMenuVertical.Trigger>
-            ))}
+            {menuItems.map(
+              ({value, label, iconLine: IconLine, iconFill: IconFill}) => (
+                <TabMenuVertical.Trigger
+                  key={value}
+                  value={value}
+                  indicator={false}
+                >
+                  <TabMenuVertical.Icon
+                    iconLine={<IconLine />}
+                    iconFill={<IconFill />}
+                  />
+                  {label}
+                  <TabMenuVertical.ArrowIcon>
+                    <RiArrowRightSLine />
+                  </TabMenuVertical.ArrowIcon>
+                </TabMenuVertical.Trigger>
+              )
+            )}
           </TabMenuVertical.List>
           <div className="w-full">
             {menuItems.map(({value, component: Component}) => (
@@ -97,9 +104,6 @@ export default function ServicePage({params: {slug}}: Props) {
           </div>
         </TabMenuVertical.Root>
       </div>
-      
-
-      
     </PageLayout>
   );
-} 
+}
