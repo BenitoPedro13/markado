@@ -24,7 +24,7 @@ function IconCmd(props: React.SVGProps<SVGSVGElement>) {
 }
 
 export default function ServicesSearch() {
-  const { register } = useServices();
+  const { searchValue, setSearch } = useServices();
 
   return (
     <div className="w-full max-w-[300px]">
@@ -33,7 +33,8 @@ export default function ServicesSearch() {
           <Input.Icon as={RiSearch2Line} />
           <Input.Input 
             placeholder="Pesquisar Serviço..." 
-            {...register('search')}
+            value={searchValue}
+            onChange={e => setSearch(e.target.value)}
           />
           <Kbd.Root>
             <IconCmd className="size-2.5" />
