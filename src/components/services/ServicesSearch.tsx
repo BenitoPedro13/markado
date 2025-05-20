@@ -3,7 +3,7 @@
 import * as Input from '@/components/align-ui/ui/input';
 import * as Kbd from '@/components/align-ui/ui/kbd';
 import {RiSearch2Line} from '@remixicon/react';
-import { useServices } from '@/contexts/ServicesContext';
+import { useServices } from '@/contexts/services/ServicesContext';
 
 function IconCmd(props: React.SVGProps<SVGSVGElement>) {
   return (
