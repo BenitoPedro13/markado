@@ -1,7 +1,7 @@
 'use client';
 
 import {createContext, useContext, ReactNode, useState, useEffect, useMemo} from 'react';
-import {useForm} from 'react-hook-form';
+import {useRouter, useSearchParams} from 'next/navigation';
 import {services as initialServices, ServicesProps} from '@/data/services';
 
 type SearchFormData = {
@@ -14,12 +14,13 @@ type FilterType = 'all' | 'active' | 'disabled';
 
 type ServicesContextType = {
   filteredServices: Service[];
-  register: any;
   updateServiceStatus: (slug: string, status: 'active' | 'disabled') => void;
   deleteService: (slug: string) => void;
   createService: (service: Omit<Service, 'status'>) => void;
   currentFilter: FilterType;
   setFilter: (filter: FilterType) => void;
+  setSearch: (search: string) => void;
+  searchValue: string;
   state: {
     isCreateServiceModalOpen: boolean;
     setIsCreateServiceModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -32,34 +33,26 @@ const ServicesContext = createContext<ServicesContextType | undefined>(
 
 export function ServicesProvider({children}: {children: ReactNode}) {
   const [services, setServices] = useState<Service[]>(initialServices);
-  const [filteredServices, setFilteredServices] =
-    useState<Service[]>(initialServices);
-  const [currentFilter, setCurrentFilter] = useState<FilterType>('all');
-  const [isCreateServiceModalOpen, setIsCreateServiceModalOpen] =
-    useState(false);
-  const {register, watch} = useForm<SearchFormData>({
-    defaultValues: {
-      search: ''
-    }
-  });
+  const [filteredServices, setFilteredServices] = useState<Service[]>(initialServices);
+  const [isCreateServiceModalOpen, setIsCreateServiceModalOpen] = useState(false);
 
-  const searchValue = watch('search');
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Read from URL
+  const searchValue = searchParams.get('search') || '';
+  const currentFilter = (searchParams.get('filter') as FilterType) || 'all';
 
   useEffect(() => {
     let filtered = services;
-
-    // Aplicar filtro de busca
     if (searchValue) {
       filtered = filtered.filter((service) =>
         service.title.toLowerCase().includes(searchValue.toLowerCase())
       );
     }
-
-    // Aplicar filtro de status
     if (currentFilter !== 'all') {
       filtered = filtered.filter((service) => service.status === currentFilter);
     }
-
     setFilteredServices(filtered);
   }, [searchValue, currentFilter, services]);
 
@@ -84,28 +77,45 @@ export function ServicesProvider({children}: {children: ReactNode}) {
     ]);
   };
 
+  // Update filter in URL
   const setFilter = (filter: FilterType) => {
-    setCurrentFilter(filter);
+    const params = new URLSearchParams(searchParams.toString());
+    if (filter === 'all') {
+      params.delete('filter');
+    } else {
+      params.set('filter', filter);
+    }
+    router.replace(`?${params.toString()}`);
   };
 
-  const value = useMemo<ServicesContextType>(() => ({
+  // Update search in URL
+  const setSearch = (search: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (!search) {
+      params.delete('search');
+    } else {
+      params.set('search', search);
+    }
+    router.replace(`?${params.toString()}`);
+  };
+
+  const value = useMemo<ServicesContextType & { setSearch: (search: string) => void; searchValue: string }>(() => ({
     filteredServices,
-    register,
     updateServiceStatus,
     deleteService,
     createService,
     currentFilter,
     setFilter,
+    setSearch,
+    searchValue,
     state: {
       isCreateServiceModalOpen,
       setIsCreateServiceModalOpen
     }
-  }), [filteredServices, register, updateServiceStatus, deleteService, createService, currentFilter, setFilter, isCreateServiceModalOpen]);
+  }), [filteredServices, updateServiceStatus, deleteService, createService, currentFilter, setFilter, isCreateServiceModalOpen, setSearch, searchValue]);
 
   return (
-    <ServicesContext.Provider
-      value={value}
-    >
+    <ServicesContext.Provider value={value}>
       {children}
     </ServicesContext.Provider>
   );
