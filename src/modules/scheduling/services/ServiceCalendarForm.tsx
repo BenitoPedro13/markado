@@ -2,20 +2,30 @@
 
 import * as Select from '@/components/align-ui/ui/select';
 import * as Avatar from '@/components/align-ui/ui/avatar';
+import * as Label from '@/components/align-ui/ui/label';
+import * as Input from '@/components/align-ui/ui/input';
+import * as TextArea from '@/components/align-ui/ui/textarea';
 import {Root as Button} from '@/components/align-ui/ui/button';
 import {Calendar} from '@/components/ui/Calendar';
 import {useScheduling} from '@/contexts/SchedulingContext';
 import {cn} from '@/lib/utils';
-import {RiGlobalLine, RiTicketLine, RiTimeLine} from '@remixicon/react';
+import {
+  RiCalendarCheckFill,
+  RiGlobalLine,
+  RiMailLine,
+  RiTicketLine,
+  RiTimeLine,
+  RiUser6Line
+} from '@remixicon/react';
 import {format} from 'date-fns';
 import {ptBR} from 'date-fns/locale';
 import {useParams, useRouter} from 'next/navigation';
-import {useState} from 'react';
+import {useMemo, useState} from 'react';
 import {services} from '@/data/services';
 import TimezoneSelectWithStyle from '@/components/TimezoneSelectWithStyle';
 import {getHostUserByUsername} from '~/trpc/server/handlers/user.handler';
 import {getServiceBySlugAndUsername} from '~/trpc/server/handlers/service.handler';
-import {dateToTimeString} from '@/utils/time-utils';
+import {dateToCalendarDateString, dateToTimeString} from '@/utils/time-utils';
 
 // TODO: Jogar para uma função utilitária
 const parseServiceDuration = (duration_in_minutes: number): string => {
@@ -29,6 +39,10 @@ const parseServiceDuration = (duration_in_minutes: number): string => {
     return str;
   }
   return `${minutes}m`;
+};
+// TODO: Jogar para uma função utilitária
+const capitalizeFirstLetter = (str: string) => {
+  return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
 const GoogleMeetIcon = () => (
@@ -103,22 +117,13 @@ const timeSlots = [
   '14:45'
 ];
 
-const timeZones = [
-  'America/Sao_Paulo',
-  'America/New_York',
-  'Europe/London',
-  'Europe/Berlin',
-  'Asia/Tokyo',
-  'Australia/Sydney'
-];
-
 const CalendarRoot = ({
   children,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => {
   return (
     <div
-      className="overflow-hidden h-full gap-5 md:gap-0 md:max-h-[548px] flex flex-col md:grid md:grid-cols-4 p-6 w-full max-w-[1024px] md:border md:border-bg-soft-200 md:rounded-[24px]"
+      className="overflow-hidden h-full gap-5 md:gap-0 md:max-h-[548px] flex flex-col md:grid md:grid-cols-8 p-6 w-full max-w-[1024px] md:border md:border-bg-soft-200 md:rounded-[24px]"
       {...props}
     >
       {children}
@@ -149,7 +154,7 @@ const CalendarSectionItem = ({
   return (
     <div
       className={cn(
-        'text-label-sm flex gap-[5px] text-text-sub-600 items-center',
+        'text-label-sm flex gap-[5px] text-text-sub-600 items-center ',
         props.className
       )}
       {...props}
@@ -169,31 +174,200 @@ const ServiceCalendarForm = ({
   host,
   service
 }: Readonly<ServiceCalendarFormProps>) => {
-  const [date, setDate] = useState<Date>();
+  const [day, setDay] = useState<Date>();
+  const [time, setTime] = useState<string>();
+
+  const [timezone, setTimezone] = useState<string | undefined>();
 
   const router = useRouter();
 
   const handleDateSelect = (selected: Date | undefined) => {
-    setDate(selected);
+    setDay(selected);
   };
 
   const selectTime = (time: string) => {
-    if (!date) return;
+    if (!day) {
+      setTime(undefined);
+      return;
+    }
+
+    setTime(time);
+
     const [hours, minutes] = time.split(':').map(Number);
-    const newDate = new Date(date);
+    const newDate = new Date(day);
     newDate.setHours(hours, minutes, 0, 0);
 
+    console.log('newDate', newDate);
     // TODO: Converter a data marcada pra string no formato correto
-    const dateString = dateToTimeString(newDate, 'America/Sao_Paulo');
+    const dateString = dateToCalendarDateString(newDate);
     // Redireciona para a rota de finalização
-    router.push(`/${host.username}/${service.slug}/${dateString}`);
   };
+
+  const scheduleDate: Date | undefined = useMemo(() => {
+    if (!day || !time) return undefined;
+
+    const [hours, minutes] = time.split(':').map(Number);
+    const newDate = new Date(day);
+    newDate.setHours(hours, minutes, 0, 0);
+
+    return newDate;
+  }, [day, time]);
+
+  const clearScheduledDate = () => {
+    setDay(undefined);
+    setTime(undefined);
+    setTimezone(undefined);
+  };
+
+  const dateSelectionElement = (
+    <>
+      {/* Calendar */}
+      <CalendarSection className="md:col-span-4 md:border-x md:border-x-bg-soft-200">
+        <Calendar
+          mode="single"
+          selected={day}
+          onSelect={handleDateSelect}
+          disabled={(date) => date < new Date()}
+        />
+      </CalendarSection>
+
+      {/* Time slots */}
+      <CalendarSection className="h-full md:pl-5 md:col-span-2">
+        <div className="space-y-4 h-full">
+          <div className="flex justify-between items-center">
+            <h3 className="font-medium text-lg">
+              {day
+                ? format(day, "EEEE, d 'de' MMMM", {locale: ptBR})
+                : 'Selecione uma data'}
+            </h3>
+          </div>
+
+          <div className="h-full md:h-[458px] md:overflow-y-auto pr-2 custom-scrollbar">
+            <div className="flex flex-col gap-2">
+              {timeSlots.map((time) => (
+                <Button
+                  key={time}
+                  variant={'neutral'}
+                  mode={
+                    day &&
+                    (() => {
+                      const [h, m] = time.split(':').map(Number);
+                      return day.getHours() === h && day.getMinutes() === m;
+                    })()
+                      ? 'lighter'
+                      : 'stroke'
+                  }
+                  className="w-full"
+                  onClick={() => selectTime(time)}
+                  disabled={!day}
+                >
+                  {time}
+                </Button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </CalendarSection>
+    </>
+  );
+
+  const formElement = (
+    <form
+      action=""
+      className="col-span-5 flex flex-col flex-1 w-full md:border-l md:border-x-bg-soft-200 pl-6 gap-4"
+    >
+      <div>
+        <Label.Root
+          htmlFor="name"
+          className="text-label-sm text-text-strong-950 pb-1"
+        >
+          Seu nome
+          <Label.Asterisk />
+        </Label.Root>
+        <Input.Root>
+          <Input.Wrapper>
+            <Input.Icon as={RiUser6Line} />
+            <Input.Input
+              id="name"
+              type="text"
+              placeholder="Digite seu nome..."
+              className="w-full"
+            />
+          </Input.Wrapper>
+        </Input.Root>
+      </div>
+
+      <div>
+        <Label.Root
+          htmlFor="email"
+          className="text-label-sm text-text-strong-950 pb-1"
+        >
+          Endereço de e-mail
+          <Label.Asterisk />
+        </Label.Root>
+        <Input.Root>
+          <Input.Wrapper>
+            <Input.Icon as={RiMailLine} />
+            <Input.Input
+              id="email"
+              type="text"
+              placeholder="Digite seu email..."
+              className="w-full"
+            />
+          </Input.Wrapper>
+        </Input.Root>
+      </div>
+
+      <div>
+        <Label.Root
+          htmlFor="observations"
+          className="text-label-sm text-text-strong-950 pb-1"
+        >
+          Observações
+          <Label.Sub>(Opcional)</Label.Sub>
+        </Label.Root>
+        <TextArea.Root
+          id="observations"
+          placeholder="Deixe aqui suas observações para esse evento..."
+          maxLength={200}
+        >
+          <TextArea.CharCounter
+            current={0}
+            max={200}
+            className="text-text-sub-600"
+          />
+        </TextArea.Root>
+      </div>
+      <div className="flex gap-x-2 justify-end mt-auto">
+        <Button
+          variant="neutral"
+          mode="stroke"
+          className=""
+          onClick={clearScheduledDate}
+        >
+          Voltar
+        </Button>
+        <Button
+          variant="neutral"
+          mode="filled"
+          className=""
+          onClick={() => {
+            router.push(`/${host.username}/${service.slug}/finalization`);
+          }}
+        >
+          Finalizar
+        </Button>
+      </div>
+    </form>
+  );
 
   return (
     <div className="flex-1 flex justify-center items-center md:p-8 ">
       <CalendarRoot>
         {/** User info */}
-        <CalendarSection className="pr-5">
+        <CalendarSection
+          className={`pr-5 ${!scheduleDate ? 'col-span-2' : 'col-span-3'}`}
+        >
           <div className="md:px-5 flex items-center gap-[5px]">
             <Avatar.Root size={'40'} fallbackText={host.name || ''}>
               <Avatar.Image src={host.image || ''} alt={host.name || 'User'} />
@@ -204,6 +378,29 @@ const ServiceCalendarForm = ({
             <h1 className="text-label-xl text-stroke-strong-950">
               {service.title || 'Serviço'}
             </h1>
+            {scheduleDate && (
+              <CalendarSectionItem>
+                <RiCalendarCheckFill
+                  size={20}
+                  color="var(--text-sub-600)"
+                  className="flex-none"
+                />
+                <p
+                  className="whitespace-nowrap overflow-hidden text-ellipsis"
+                  title={capitalizeFirstLetter(
+                    format(scheduleDate, 'PPPP', {
+                      locale: ptBR
+                    })
+                  )}
+                >
+                  {capitalizeFirstLetter(
+                    format(scheduleDate, 'PPPP', {
+                      locale: ptBR
+                    })
+                  )}
+                </p>
+              </CalendarSectionItem>
+            )}
             <CalendarSectionItem>
               <GoogleMeetIcon />
               Google meet
@@ -211,76 +408,28 @@ const ServiceCalendarForm = ({
             <CalendarSectionItem>
               <RiTimeLine size={20} color="var(--text-sub-600)" />
               {parseServiceDuration(service.duration)}
+              {scheduleDate &&
+                `, ${dateToTimeString(scheduleDate)}h até ${dateToTimeString(
+                  new Date(
+                    scheduleDate.getTime() + service.duration * 60 * 1000
+                  )
+                )}h`}
             </CalendarSectionItem>
             <CalendarSectionItem>
               <RiTicketLine size={20} color="var(--text-sub-600)" />
               R$150
             </CalendarSectionItem>
             <CalendarSectionItem>
-              <TimezoneSelectWithStyle variant="inline" hint={false} />
-              {/* <Select.Root variant="inline" defaultValue="America/São Paulo">
-                <Select.Trigger className="text-label-sm text-text-sub-600 font-normal">
-                  <Select.Value placeholder="Fuso Horário" />
-                </Select.Trigger>
-                <Select.Content>
-                  {timeZones.map((zone) => (
-                    <Select.Item key={zone} value={zone}>
-                      {zone}
-                    </Select.Item>
-                  ))}
-                </Select.Content>
-              </Select.Root> */}
+              <TimezoneSelectWithStyle
+                variant="inline"
+                hint={false}
+                value={timezone}
+                onChange={setTimezone}
+              />
             </CalendarSectionItem>
           </div>
         </CalendarSection>
-
-        {/* Calendar */}
-        <CalendarSection className="md:col-span-2 md:border-x md:border-x-bg-soft-200">
-          <Calendar
-            mode="single"
-            selected={date}
-            onSelect={handleDateSelect}
-            disabled={(date) => date < new Date()}
-          />
-        </CalendarSection>
-
-        {/* Time slots */}
-        <CalendarSection className="h-full md:pl-5">
-          <div className="space-y-4 h-full">
-            <div className="flex justify-between items-center">
-              <h3 className="font-medium text-lg">
-                {date
-                  ? format(date, "EEEE, d 'de' MMMM", {locale: ptBR})
-                  : 'Selecione uma data'}
-              </h3>
-            </div>
-
-            <div className="h-full md:h-[458px] md:overflow-y-auto pr-2 custom-scrollbar">
-              <div className="flex flex-col gap-2">
-                {timeSlots.map((time) => (
-                  <Button
-                    key={time}
-                    variant={'neutral'}
-                    mode={
-                      date &&
-                      (() => {
-                        const [h, m] = time.split(':').map(Number);
-                        return date.getHours() === h && date.getMinutes() === m;
-                      })()
-                        ? 'lighter'
-                        : 'stroke'
-                    }
-                    className="w-full"
-                    onClick={() => selectTime(time)}
-                    disabled={!date}
-                  >
-                    {time}
-                  </Button>
-                ))}
-              </div>
-            </div>
-          </div>
-        </CalendarSection>
+        {!scheduleDate ? dateSelectionElement : formElement}
       </CalendarRoot>
     </div>
   );
