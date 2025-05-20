@@ -15,10 +15,10 @@ export default function ServicesList() {
             <Service
               title={service.title}
               slug={service.slug}
-              duration={service.duration}
-              price={service.price}
-              status={service.status}
-              badgeColor={service.badgeColor}
+              duration={service.length}
+              price={Math.trunc(Math.random() * 100)}
+              status={service.hidden ? 'disabled' : 'active'}
+              badgeColor={'faded'}
             />
             {idx !== filteredServices.length - 1 && <Divider.Root />}
           </div>
