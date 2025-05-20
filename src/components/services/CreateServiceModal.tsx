@@ -12,7 +12,11 @@ import {useState} from 'react';
 import React from 'react';
 
 import * as Hint from '@/components/align-ui/ui/hint';
-import { RiErrorWarningFill } from '@remixicon/react';
+import {RiErrorWarningFill} from '@remixicon/react';
+import {MARKADO_DOMAIN} from '@/constants';
+import {createServiceHandler} from '~/trpc/server/handlers/services.handler';
+import {useNotification} from '@/hooks/use-notification';
+import {useLocale} from '@/hooks/use-locale';
 
 type CreateServiceFormData = Omit<Service, 'status'>;
 
@@ -30,6 +34,9 @@ const colorOptions = [
 ];
 
 export default function CreateServiceModal() {
+  const {notification} = useNotification();
+  const {t} = useLocale('Services');
+
   const {
     createService,
     state: {
@@ -37,8 +44,18 @@ export default function CreateServiceModal() {
       setIsCreateServiceModalOpen: onOpenChange
     }
   } = useServices();
+
   const [step, setStep] = useState(1);
-  const formRef = useForm<CreateServiceFormData>({
+
+  const {
+    register,
+    handleSubmit,
+    formState: {errors},
+    watch,
+    getValues,
+    setValue,
+    reset
+  } = useForm<CreateServiceFormData>({
     defaultValues: {
       title: '',
       description: '',
@@ -50,20 +67,10 @@ export default function CreateServiceModal() {
     }
   });
 
-  const {
-    register,
-    handleSubmit,
-    formState: {errors},
-    watch,
-    setValue
-  } = formRef;
-
   const title = watch('title');
   const description = watch('description');
   const slug = watch('slug');
   const badgeColor = watch('badgeColor');
-
-  const isFirstStepValid = title && description && slug && badgeColor;
 
   // Função para converter texto em kebab-case
   const toKebabCase = (text: string) => {
@@ -82,23 +89,29 @@ export default function CreateServiceModal() {
     }
   }, [title, setValue]);
 
-  const onSubmit = (data: CreateServiceFormData) => {
-    const newService = {
-      ...data,
-      price: Number(data.price),
-      duration: Number(data.duration)
-    };
-    createService(newService);
-    onOpenChange(false);
-    setStep(1);
+  const validateFirstStep = () => {
+    const trimmedTitle = title ? title?.trim() : '';
+    const trimmedSlug = slug ? slug?.trim() : '';
+    const titleIsValid = trimmedTitle && trimmedTitle.length > 0;
+    const slugIsValid = trimmedSlug && trimmedSlug.length > 0;
+
+    return titleIsValid === true && slugIsValid === true;
   };
+
+  // const onSubmit = (data: CreateServiceFormData) => {
+  //   // const newService = {
+  //   //   ...data,
+  //   //   price: Number(data.price),
+  //   //   duration: Number(data.duration)
+  //   // };
+  //   createService(newService);
+  //   onOpenChange(false);
+  //   setStep(1);
+  // };
 
   const handleNextStep = () => {
     if (step === 1) {
-      const {title, description, slug, badgeColor} = watch();
-      if (title && description && slug && badgeColor) {
-        setStep(2);
-      }
+      setStep(2);
     } else {
       const {duration, price, location} = watch();
       if (duration && price && location) {
@@ -118,7 +131,55 @@ export default function CreateServiceModal() {
           <Modal.Title>Criar Novo Serviço</Modal.Title>
         </Modal.Header>
 
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form
+          action={async () => {
+            // const nameValue = newName.trim();
+            // console.log("formData", formData.get('title'));
+
+            if (step < 2) return;
+
+            // addOptimisticAvailabilityList({
+            //   scheduleId: Math.trunc(Math.random() * 1000),
+            //   scheduleName: nameValue,
+            //   timeZone: 'America/Sao_Paulo',
+            //   availability: 'seg. - sex., 9:00 até 17:00',
+            //   isDefault: false
+            // });
+            const formData = getValues();
+
+            const input = {
+              title: formData.title,
+              description: formData.description,
+              slug: formData.slug,
+              length: Number(formData.duration),
+              // price: Number(formData.price),
+              // locations: formData.location,
+              // badgeColor: formData.badgeColor
+            };
+
+            try {
+              const serviceResult = await createServiceHandler({input});
+              onOpenChange(false);
+              setStep(1);
+              console.log('serviceResult', serviceResult);
+              // const scheduleResult = await submitCreateSchedule(nameValue);
+              // setNewName('');
+              if (serviceResult) {
+                reset();
+                notification({
+                  title: t('service_created_success'),
+                  variant: 'stroke',
+                  // id: 'schedule_created_success',
+                  status: 'success'
+                });
+                // router.push(`/availability/${scheduleResult.id}`);
+              }
+            } catch (error) {
+              console.log('error', error);
+            }
+          }}
+          // onSubmit={handleSubmit(onSubmit)}
+        >
           <Modal.Body>
             {step === 1 ? (
               <div className="space-y-4">
@@ -134,7 +195,10 @@ export default function CreateServiceModal() {
                   </Input.Root>
                   {errors.title && (
                     <Hint.Root className="text-error-base">
-                      <Hint.Icon as={RiErrorWarningFill} className="text-error-base" />
+                      <Hint.Icon
+                        as={RiErrorWarningFill}
+                        className="text-error-base"
+                      />
                       O título é obrigatório
                     </Hint.Root>
                   )}
@@ -146,11 +210,14 @@ export default function CreateServiceModal() {
                   </label>
                   <Textarea.Root
                     placeholder="Digite a descrição do serviço"
-                    {...register('description', {required: true})}
+                    {...register('description')}
                   />
                   {errors.description && (
                     <Hint.Root className="text-error-base">
-                      <Hint.Icon as={RiErrorWarningFill} className="text-error-base" />
+                      <Hint.Icon
+                        as={RiErrorWarningFill}
+                        className="text-error-base"
+                      />
                       A descrição é obrigatória
                     </Hint.Root>
                   )}
@@ -161,7 +228,7 @@ export default function CreateServiceModal() {
                     Slug
                   </label>
                   <Input.Root hasError={!!errors.slug}>
-                    <Input.Affix>app.markado.co/marcaum/</Input.Affix>
+                    <Input.Affix>{MARKADO_DOMAIN}/marcaum/</Input.Affix>
                     <Input.Input
                       placeholder="consulta-30min"
                       {...register('slug', {required: true})}
@@ -169,7 +236,10 @@ export default function CreateServiceModal() {
                   </Input.Root>
                   {errors.slug && (
                     <Hint.Root className="text-error-base">
-                      <Hint.Icon as={RiErrorWarningFill} className="text-error-base" />
+                      <Hint.Icon
+                        as={RiErrorWarningFill}
+                        className="text-error-base"
+                      />
                       O slug é obrigatório
                     </Hint.Root>
                   )}
@@ -199,7 +269,10 @@ export default function CreateServiceModal() {
                   </Select.Root>
                   {errors.badgeColor && (
                     <Hint.Root className="text-error-base">
-                      <Hint.Icon as={RiErrorWarningFill} className="text-error-base" />
+                      <Hint.Icon
+                        as={RiErrorWarningFill}
+                        className="text-error-base"
+                      />
                       A cor é obrigatória
                     </Hint.Root>
                   )}
@@ -221,7 +294,10 @@ export default function CreateServiceModal() {
                     </Input.Root>
                     {errors.duration && (
                       <Hint.Root className="text-error-base">
-                        <Hint.Icon as={RiErrorWarningFill} className="text-error-base" />
+                        <Hint.Icon
+                          as={RiErrorWarningFill}
+                          className="text-error-base"
+                        />
                         A duração é obrigatória
                       </Hint.Root>
                     )}
@@ -240,7 +316,10 @@ export default function CreateServiceModal() {
                     </Input.Root>
                     {errors.price && (
                       <Hint.Root className="text-error-base">
-                        <Hint.Icon as={RiErrorWarningFill} className="text-error-base" />
+                        <Hint.Icon
+                          as={RiErrorWarningFill}
+                          className="text-error-base"
+                        />
                         O preço é obrigatório
                       </Hint.Root>
                     )}
@@ -259,7 +338,10 @@ export default function CreateServiceModal() {
                   </Input.Root>
                   {errors.location && (
                     <Hint.Root className="text-error-base">
-                      <Hint.Icon as={RiErrorWarningFill} className="text-error-base" />
+                      <Hint.Icon
+                        as={RiErrorWarningFill}
+                        className="text-error-base"
+                      />
                       O local é obrigatório
                     </Hint.Root>
                   )}
@@ -272,7 +354,12 @@ export default function CreateServiceModal() {
             {step === 1 ? (
               <>
                 <Modal.Close asChild>
-                  <Button.Root variant="neutral" mode="stroke" size="small">
+                  <Button.Root
+                    type="reset"
+                    variant="neutral"
+                    mode="stroke"
+                    size="small"
+                  >
                     Cancelar
                   </Button.Root>
                 </Modal.Close>
@@ -281,7 +368,7 @@ export default function CreateServiceModal() {
                   variant="neutral"
                   size="small"
                   onClick={handleNextStep}
-                  disabled={!isFirstStepValid}
+                  disabled={!validateFirstStep()}
                 >
                   Próximo
                 </Button.Root>
@@ -297,7 +384,7 @@ export default function CreateServiceModal() {
                 >
                   Voltar
                 </Button.Root>
-                <Button.Root type="submit" variant="neutral" size="small">
+                <Button.Root variant="neutral" size="small">
                   Criar Serviço
                 </Button.Root>
               </>
