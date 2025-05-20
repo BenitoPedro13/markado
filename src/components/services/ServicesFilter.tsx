@@ -1,7 +1,7 @@
 'use client';
 
 import * as SegmentedControl from '@/components/align-ui/ui/segmented-control';
-import { useServices } from '@/contexts/ServicesContext';
+import { useServices } from '@/contexts/services/ServicesContext';
 
 export default function ServicesFilter() {
   const { currentFilter, setFilter } = useServices();
