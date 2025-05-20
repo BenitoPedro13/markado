@@ -6,11 +6,11 @@ import {prisma} from '@/lib/prisma';
 import {EventTypeRepository} from '@/repositories/eventType';
 import type {PrismaClient} from '~/prisma/app/generated/prisma/client';
 import {SchedulingType, UserPermissionRole} from '~/prisma/enums';
-import type {EventTypeLocation} from '~/trpc/server/schemas/services.shema';
+import type {EventTypeLocation} from '~/trpc/server/schemas/services.schema';
 
 import {TRPCError} from '@trpc/server';
 import {userMetadataType} from '~/prisma/zod-utils';
-import type {TCreateInputSchema} from '~/trpc/server/schemas/services.shema';
+import type {TCreateInputSchema} from '~/trpc/server/schemas/services.schema';
 import { auth } from '@/auth';
 import { UserRepository } from '@/repositories/user';
 
