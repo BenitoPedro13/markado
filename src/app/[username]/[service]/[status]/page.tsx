@@ -1,8 +1,8 @@
-import ServiceCalendarForm from '@/modules/scheduling/services/ServiceCalendarForm';
+import ServiceFinalizationForm from '@/modules/scheduling/services/ServiceFinalizationForm';
 import {getServiceBySlugAndUsername} from '~/trpc/server/handlers/service.handler';
 import {getHostUserByUsername} from '~/trpc/server/handlers/user.handler';
 
-const ServiceSchedulingPage = async ({
+const ServiceSchedulingFinalizationPage = async ({
   params
 }: {
   params: {username: string; service: string};
@@ -13,7 +13,7 @@ const ServiceSchedulingPage = async ({
     params.username
   );
 
-  return <ServiceCalendarForm service={service} host={host} />;
+  return <ServiceFinalizationForm host={host} service={service} />;
 };
 
-export default ServiceSchedulingPage;
+export default ServiceSchedulingFinalizationPage;
