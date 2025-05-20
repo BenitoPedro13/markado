@@ -54,7 +54,7 @@ export const createServiceHandler = async ({input}: CreateOptions) => {
     });
   }
 
-  const user = await UserRepository.findByIdOrThrow(session.user.id);
+  const user = await UserRepository.findByIdOrThrow({id: session.user.id});
   const enrichedUser = await UserRepository.enrichUserWithItsProfile({user})
 
   const {
