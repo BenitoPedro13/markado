@@ -1,24 +1,25 @@
 'use client';
 
 import * as SegmentedControl from '@/components/align-ui/ui/segmented-control';
-import { useServices } from '@/contexts/services/ServicesContext';
+import { FilterType, useServices } from '@/contexts/services/ServicesContext';
 
 export default function ServicesFilter() {
   const { currentFilter, setFilter } = useServices();
 
   return (
     <SegmentedControl.Root 
-      value={currentFilter} 
-      onValueChange={(value) => setFilter(value as 'all' | 'active' | 'disabled')}
+      value={currentFilter}
+      defaultValue={FilterType.ALL}
+      onValueChange={(value) => setFilter(value as FilterType)}
     >
       <SegmentedControl.List>
-        <SegmentedControl.Trigger value="all">
+        <SegmentedControl.Trigger value={FilterType.ALL}>
           Todos
         </SegmentedControl.Trigger>
-        <SegmentedControl.Trigger value="active">
+        <SegmentedControl.Trigger value={FilterType.ACTIVE}>
           Ativos
         </SegmentedControl.Trigger>
-        <SegmentedControl.Trigger value="disabled">
+        <SegmentedControl.Trigger value={FilterType.DISABLED}>
           Desativados
         </SegmentedControl.Trigger>
       </SegmentedControl.List>
