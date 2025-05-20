@@ -59,6 +59,9 @@ const userSelect = Prisma.validator<Prisma.UserSelect>()({
   locked: true,
   movedToProfileId: true,
   isPlatformManaged: true,
+  role: true,
+  organizationId: true,
+  organization: true,
 });
 
 export class UserRepository {
