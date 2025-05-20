@@ -69,7 +69,7 @@ export class ProfileRepository {
     if (upId.startsWith("usr-")) {
       return {
         type: LookupTarget.User,
-        id: parseInt(upId.replace("usr-", "")),
+        id: upId.replace("usr-", ""),
       } as const;
     }
     return {
