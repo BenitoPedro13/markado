@@ -202,6 +202,7 @@ export class UserRepository {
         identityProvider: true,
         password: true,
         locale: true,
+        emailVerified: true,
         teams: {
           include: {
             team: {
