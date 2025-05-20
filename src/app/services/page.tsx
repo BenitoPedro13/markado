@@ -1,8 +1,6 @@
 "use client"
 
 import PageLayout from '@/components/PageLayout';
-import {useTranslations} from 'next-intl';
-import Header from '@/components/navigation/Header';
 import * as Divider from '@/components/align-ui/ui/divider';
 import { ServicesProvider } from '@/contexts/services/ServicesContext';
 import ServicesList from '@/components/services/ServicesList';
@@ -12,7 +10,7 @@ import ServicesHeader from '@/components/services/ServicesHeader';
 
 /** Services page of the website. */
 export default function ServicesPage() {
-  
+
   return (
     <PageLayout title="Home">
       <ServicesProvider>
