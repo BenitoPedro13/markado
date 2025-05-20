@@ -6,7 +6,7 @@ import * as Textarea from '@/components/align-ui/ui/textarea';
 import * as Button from '@/components/align-ui/ui/button';
 import * as Select from '@/components/align-ui/ui/select';
 import * as Modal from '@/components/align-ui/ui/modal';
-import {useServices} from '@/contexts/ServicesContext';
+import {useServices} from '@/contexts/services/ServicesContext';
 import {Service, ServiceBadgeColor} from '@/types/service';
 import {useState} from 'react';
 import React from 'react';
@@ -29,14 +29,14 @@ const colorOptions = [
   {value: 'stable' as ServiceBadgeColor, label: 'Verde Água', emoji: '🌊'}
 ];
 
-export default function CreateServiceModal({
-  open,
-  onOpenChange
-}: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}) {
-  const {createService} = useServices();
+export default function CreateServiceModal() {
+  const {
+    createService,
+    state: {
+      isCreateServiceModalOpen: open,
+      setIsCreateServiceModalOpen: onOpenChange
+    }
+  } = useServices();
   const [step, setStep] = useState(1);
   const formRef = useForm<CreateServiceFormData>({
     defaultValues: {
