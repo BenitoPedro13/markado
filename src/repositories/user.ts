@@ -59,6 +59,9 @@ const userSelect = Prisma.validator<Prisma.UserSelect>()({
   locked: true,
   movedToProfileId: true,
   isPlatformManaged: true,
+  role: true,
+  organizationId: true,
+  organization: true,
 });
 
 export class UserRepository {
@@ -202,6 +205,7 @@ export class UserRepository {
         identityProvider: true,
         password: true,
         locale: true,
+        emailVerified: true,
         teams: {
           include: {
             team: {
