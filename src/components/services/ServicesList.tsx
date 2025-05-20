@@ -2,7 +2,7 @@
 
 import * as Divider from '@/components/align-ui/ui/divider';
 import Service from '@/components/services/Service';
-import { useServices } from '@/contexts/ServicesContext';
+import { useServices } from '@/contexts/services/ServicesContext';
 
 export default function ServicesList() {
   const { filteredServices } = useServices();
