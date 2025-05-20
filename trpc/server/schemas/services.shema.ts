@@ -20,7 +20,8 @@ export const createEventTypeInput = z
     minimumBookingNotice: z.number().int().min(0).optional(),
     beforeEventBuffer: z.number().int().min(0).optional(),
     afterEventBuffer: z.number().int().min(0).optional(),
-    scheduleId: z.number().int().optional()
+    scheduleId: z.number().int().optional(),
+    badgeColor: z.string().optional(),
   })
   .partial({hidden: true, locations: true})
   .refine((data) => (data.teamId ? data.teamId && data.schedulingType : true), {
