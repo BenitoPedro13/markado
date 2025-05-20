@@ -61,6 +61,41 @@ export function getAvailabilityFromSchedule(
   );
 }
 
+export function getAvailabilityFromScheduleWithoutUser(
+  schedule: Schedule
+): Availability[] {
+  return schedule.reduce(
+    (availability: Availability[], times: TimeRange[], day: number) => {
+      const addNewTime = (time: TimeRange) =>
+        ({
+          days: [day],
+          startTime: time.start,
+          endTime: time.end
+        }) as Availability;
+
+      const filteredTimes = times.filter((time) => {
+        let idx;
+        if (
+          (idx = availability.findIndex(
+            (schedule) =>
+              schedule.startTime.toString() === time.start.toString() &&
+              schedule.endTime.toString() === time.end.toString()
+          )) !== -1
+        ) {
+          availability[idx].days.push(day);
+          return false;
+        }
+        return true;
+      });
+      filteredTimes.forEach((time) => {
+        availability.push(addNewTime(time));
+      });
+      return availability;
+    },
+    [] as Availability[]
+  );
+}
+
 export const MINUTES_IN_DAY = 60 * 24;
 export const MINUTES_DAY_END = MINUTES_IN_DAY - 1;
 export const MINUTES_DAY_START = 0;
