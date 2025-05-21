@@ -38,7 +38,7 @@ export default function CreateServiceModal() {
   const {t} = useLocale('Services');
 
   const {
-    createService,
+    // createService,
     state: {
       isCreateServiceModalOpen: open,
       setIsCreateServiceModalOpen: onOpenChange

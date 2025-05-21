@@ -12,10 +12,6 @@ import {useRouter, useSearchParams} from 'next/navigation';
 import {services as initialServices, ServicesProps} from '@/data/services';
 import { TInitialServices } from '@/app/services/page';
 
-type SearchFormData = {
-  search: string;
-};
-
 type Service = ServicesProps;
 
 export enum FilterType {
