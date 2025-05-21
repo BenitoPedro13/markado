@@ -34,7 +34,7 @@ const ServiceFinalizationForm = ({
   service
 }: ServiceFinalizationFormProps) => {
   return (
-    <div className="min-h-screen w-full flex flex-col items-center justify-center">
+    <div className="w-full flex flex-col items-center justify-center">
       <div className="w-full md:max-w-[400px] flex flex-col gap-5 border border-stroke-soft-200 rounded-3xl p-6">
         <div className="flex flex-col gap-1 ">
           <Image

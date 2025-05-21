@@ -1,4 +1,4 @@
-import {SchedulingProvider} from '@/contexts/SchedulingContext';
+import LocaleSwitcher from '@/components/LocaleSwitcher';
 
 interface SchedulingLayoutProps {
   children: React.ReactNode;
@@ -12,8 +12,18 @@ export default function SchedulingLayout({
   params
 }: SchedulingLayoutProps) {
   return (
-    <SchedulingProvider username={params.username}>
-      {children}
-    </SchedulingProvider>
+    <div className="w-full h-full px-11 py-6 flex flex-col">
+      {/* Content */}
+      <div className="grow flex flex-col items-center justify-center">
+        {children}
+      </div>
+      {/* Footer */}
+      <footer className="mt-auto w-full flex justify-between items-center">
+        <p className="text-paragraph-sm text-text-sub-600">
+          &copy; {new Date().getFullYear()} Markado
+        </p>
+        <LocaleSwitcher />
+      </footer>
+    </div>
   );
 }

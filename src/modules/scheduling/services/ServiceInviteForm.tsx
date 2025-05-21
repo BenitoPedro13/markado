@@ -1,16 +1,25 @@
 'use client';
 
 import * as Avatar from '@/components/align-ui/ui/avatar';
+import * as Label from '@/components/align-ui/ui/label';
+import * as Input from '@/components/align-ui/ui/input';
+import * as TextArea from '@/components/align-ui/ui/textarea';
 import {Root as Button} from '@/components/align-ui/ui/button';
-import {Calendar} from '@/components/ui/Calendar';
 import {cn} from '@/lib/utils';
-import {RiTicketLine, RiTimeLine} from '@remixicon/react';
+import {
+  RiCalendarCheckFill,
+  RiMailLine,
+  RiTicketLine,
+  RiTimeLine,
+  RiUser6Line
+} from '@remixicon/react';
 import {format} from 'date-fns';
 import {ptBR} from 'date-fns/locale';
-import {useRouter, useSearchParams} from 'next/navigation';
+import {useRouter} from 'next/navigation';
 import TimezoneSelectWithStyle from '@/components/TimezoneSelectWithStyle';
 import {getHostUserByUsername} from '~/trpc/server/handlers/user.handler';
 import {getServiceBySlugAndUsername} from '~/trpc/server/handlers/service.handler';
+import {dateToTimeString} from '@/utils/time-utils';
 import dayjs from 'dayjs';
 
 // TODO: Jogar para uma função utilitária
@@ -108,11 +117,8 @@ const CalendarRoot = ({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => {
   return (
-    // className="overflow-hidden h-full gap-5 md:gap-0 md:max-h-[548px] flex flex-col md:grid md:grid-cols-8 p-6 w-full max-w-[1024px] md:border md:border-bg-soft-200 md:rounded-[24px]"
     <div
-      className="overflow-hidden
-       h-full w-full gap-5 flex flex-col p-6 max-w-[1024px]
-       md:gap-0 md:max-h-[548px] md:grid md:grid-cols-8 md:border md:border-bg-soft-200 md:rounded-[24px]"
+      className="overflow-hidden h-full gap-5 md:gap-0 md:max-h-[548px] flex flex-col md:grid md:grid-cols-8 p-6 w-full max-w-[1024px] md:border md:border-bg-soft-200 md:rounded-[24px]"
       {...props}
     >
       {children}
@@ -154,86 +160,54 @@ const CalendarSectionItem = ({
 };
 CalendarSectionItem.displayName = 'CalendarSectionItem';
 
-interface ServiceCalendarFormProps {
+interface ServiceInviteFormProps {
   host: Awaited<ReturnType<typeof getHostUserByUsername>>;
   service: Awaited<ReturnType<typeof getServiceBySlugAndUsername>>;
+  date: Date;
+  timezone: string;
 }
 
-const ServiceCalendarForm = ({
+const ServiceInviteForm = ({
   host,
-  service
-}: Readonly<ServiceCalendarFormProps>) => {
-  const searchParams = useSearchParams();
-  const day = searchParams.get('d');
-  const time = searchParams.get('t');
-  const encodedTimezone = searchParams.get('tz');
-  const timezone = decodeURIComponent(encodedTimezone || '');
-
+  service,
+  date,
+  timezone
+}: Readonly<ServiceInviteFormProps>) => {
   const router = useRouter();
 
-  const handleDaySelect = (selected: Date | undefined) => {
-    const params = new URLSearchParams(searchParams.toString());
-
-    if (!selected) {
-      params.delete('d');
-      window.history.replaceState(null, '', `?${params.toString()}`);
-      return;
-    }
-
-    const dayjsSelected = dayjs(selected).utc().format('YYYY-MM-DD');
-
-    params.set('d', dayjsSelected);
-    console.log('dayjsSelected', dayjsSelected);
-
-    window.history.replaceState(null, '', `?${params.toString()}`);
-  };
-
-  const handleTimeSelect = (selected: string) => {
-    console.log('selected', selected);
-    const params = new URLSearchParams(searchParams.toString());
-
-    if (!day || !encodedTimezone || !selected) {
-      params.delete('d');
-      params.delete('t');
-      params.delete('tz');
-      window.history.replaceState(null, '', `?${params.toString()}`);
-      return;
-    }
-
-    if (!selected) {
-      params.delete('t');
-      window.history.replaceState(null, '', `?${params.toString()}`);
-      return;
-    }
-
-    params.set('t', selected);
-    window.history.replaceState(null, '', `?${params.toString()}`);
-    router.push(
-      `/${host.username}/${service.slug}?d=${day}&t=${selected}&tz=${encodedTimezone}`
-    );
-  };
-
-  const handleTimezoneSelect = (selected: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-
-    params.set('tz', encodeURIComponent(selected));
-    window.history.replaceState(null, '', `?${params.toString()}`);
+  const clearDate = () => {
+    const encodedURI = `/${host.username}/${service.slug}?tz=${encodeURIComponent(timezone)}&d=${dayjs(date).format('YYYY-MM-DD')}`;
+    router.push(encodedURI);
   };
 
   return (
     <CalendarRoot>
       {/** User info */}
-      <CalendarSection className={`pr-5 col-span-2`}>
+      <CalendarSection className={'pr-5 col-span-3'}>
         <div className="md:px-5 flex items-center gap-[5px]">
           <Avatar.Root size={'40'} fallbackText={host.name || ''}>
             <Avatar.Image src={host.image || ''} alt={host.name || 'User'} />
           </Avatar.Root>
           <h2 className="font-medium text-lg">{host.name}</h2>
         </div>
-        <div className="mt-5 md:px-5 flex flex-col gap-[10px] overflow-hidden">
+        <div className="mt-5 md:px-5 flex flex-col gap-[10px]">
           <h1 className="text-label-xl text-stroke-strong-950">
             {service.title || 'Serviço'}
           </h1>
+          <CalendarSectionItem>
+            <RiCalendarCheckFill
+              size={20}
+              color="var(--text-sub-600)"
+              className="flex-none"
+            />
+            <p className="whitespace-nowrap overflow-hidden text-ellipsis">
+              {capitalizeFirstLetter(
+                format(dayjs(date).toDate(), "EEEE, d 'de' MMMM", {
+                  locale: ptBR
+                })
+              )}
+            </p>
+          </CalendarSectionItem>
 
           <CalendarSectionItem>
             <GoogleMeetIcon />
@@ -242,6 +216,9 @@ const ServiceCalendarForm = ({
           <CalendarSectionItem>
             <RiTimeLine size={20} color="var(--text-sub-600)" />
             {parseServiceDuration(service.duration)}
+            {`, ${dateToTimeString(date)}h até ${dateToTimeString(
+              new Date(date.getTime() + service.duration * 60 * 1000)
+            )}h`}
           </CalendarSectionItem>
           <CalendarSectionItem>
             <RiTicketLine size={20} color="var(--text-sub-600)" />
@@ -251,66 +228,103 @@ const ServiceCalendarForm = ({
             <TimezoneSelectWithStyle
               variant="inline"
               hint={false}
-              value={timezone || undefined}
-              onChange={handleTimezoneSelect}
-              className="whitespace-nowrap overflow-hidden text-ellipsis"
+              value={timezone}
+              disabled
             />
           </CalendarSectionItem>
         </div>
       </CalendarSection>
-      {/* Calendar */}
-      <CalendarSection className="md:col-span-4 md:border-x md:border-x-bg-soft-200">
-        <Calendar
-          mode="single"
-          selected={dayjs(day).toDate()}
-          onSelect={handleDaySelect}
-          disabled={(date) => date < new Date()}
-        />
-      </CalendarSection>
-
-      {/* Time slots */}
-      <CalendarSection className="h-full md:pl-5 md:col-span-2">
-        <div className="space-y-4 h-full">
-          <div className="flex justify-between items-center">
-            <h3 className="font-medium text-lg">
-              {day
-                ? capitalizeFirstLetter(
-                    format(dayjs(day).toDate(), "EEEE, d 'de' MMMM", {
-                      locale: ptBR
-                    })
-                  )
-                : 'Selecione uma data'}
-            </h3>
-          </div>
-
-          <div className="h-full md:h-[458px] md:overflow-y-auto pr-2 custom-scrollbar">
-            <div className="flex flex-col gap-2">
-              {timeSlots.map((timeSlot) => (
-                <Button
-                  key={timeSlot}
-                  variant={'neutral'}
-                  mode={
-                    day &&
-                    (() => {
-                      const [h, m] = timeSlot.split(':').map(Number);
-                      return timeSlot === time;
-                    })()
-                      ? 'lighter'
-                      : 'stroke'
-                  }
-                  className="w-full"
-                  onClick={() => handleTimeSelect(timeSlot)}
-                  disabled={!day}
-                >
-                  {timeSlot}
-                </Button>
-              ))}
-            </div>
-          </div>
+      <form
+        action=""
+        className="col-span-5 flex flex-col flex-1 w-full md:border-l md:border-x-bg-soft-200 pl-6 gap-4"
+      >
+        <div>
+          <Label.Root
+            htmlFor="name"
+            className="text-label-sm text-text-strong-950 pb-1"
+          >
+            Seu nome
+            <Label.Asterisk />
+          </Label.Root>
+          <Input.Root>
+            <Input.Wrapper>
+              <Input.Icon as={RiUser6Line} />
+              <Input.Input
+                id="name"
+                type="text"
+                placeholder="Digite seu nome..."
+                className="w-full pl-0"
+              />
+            </Input.Wrapper>
+          </Input.Root>
         </div>
-      </CalendarSection>
+
+        <div>
+          <Label.Root
+            htmlFor="email"
+            className="text-label-sm text-text-strong-950 pb-1"
+          >
+            Endereço de e-mail
+            <Label.Asterisk />
+          </Label.Root>
+          <Input.Root>
+            <Input.Wrapper>
+              <Input.Icon as={RiMailLine} />
+              <Input.Input
+                id="email"
+                type="text"
+                placeholder="Digite seu email..."
+                className="w-full pl-0"
+              />
+            </Input.Wrapper>
+          </Input.Root>
+        </div>
+
+        <div>
+          <Label.Root
+            htmlFor="observations"
+            className="text-label-sm text-text-strong-950 pb-1"
+          >
+            Observações
+            <Label.Sub>(Opcional)</Label.Sub>
+          </Label.Root>
+          <TextArea.Root
+            id="observations"
+            placeholder="Deixe aqui suas observações para esse evento..."
+            maxLength={200}
+          >
+            <TextArea.CharCounter
+              current={0}
+              max={200}
+              className="text-text-sub-600"
+            />
+          </TextArea.Root>
+        </div>
+        <div className="flex gap-x-2 justify-end mt-auto">
+          <Button
+            variant="neutral"
+            mode="stroke"
+            className=""
+            type="button"
+            onClick={clearDate}
+          >
+            Voltar
+          </Button>
+          <Button
+            variant="neutral"
+            mode="filled"
+            className=""
+            type="button"
+            onClick={() => {
+              router.push(`/${host.username}/${service.slug}/finalization`);
+            }}
+          >
+            Finalizar
+          </Button>
+        </div>
+      </form>
     </CalendarRoot>
   );
 };
 
-export default ServiceCalendarForm;
+export default ServiceInviteForm;
