@@ -1,16 +1,24 @@
+export const dynamic = 'force-dynamic';
+
 import PageLayout from '@/components/PageLayout';
 import * as Divider from '@/components/align-ui/ui/divider';
-import { ServicesProvider } from '@/contexts/services/ServicesContext';
+import {ServicesProvider} from '@/contexts/services/ServicesContext';
 import ServicesList from '@/components/services/ServicesList';
 import ServicesSearch from '@/components/services/ServicesSearch';
 import ServicesFilter from '@/components/services/ServicesFilter';
 import ServicesHeader from '@/components/services/ServicesHeader';
-import { getEventTypesFromGroup } from '~/trpc/server/handlers/services.handler';
+import {getEventTypesFromGroup} from '~/trpc/server/handlers/services.handler';
 
-export type TInitialServices = Awaited<ReturnType<typeof getEventTypesFromGroup>>['eventTypes']
+export type TInitialServices = Awaited<
+  ReturnType<typeof getEventTypesFromGroup>
+>['eventTypes'];
 
 /** Services page of the website. */
-export default async function ServicesPage({searchParams}: {searchParams?: {filter?: string, search?: string}}) {
+export default async function ServicesPage({
+  searchParams
+}: {
+  searchParams?: {filter?: string; search?: string};
+}) {
   // // Parse filters/search from URL
   const filter = searchParams?.filter;
   const search = searchParams?.search;
@@ -52,4 +60,4 @@ export default async function ServicesPage({searchParams}: {searchParams?: {filt
       </ServicesProvider>
     </PageLayout>
   );
-} 
+}
