@@ -48,7 +48,7 @@ function Service({
   badgeColor
 }: ServicesProps) {
   const {notification} = useNotification();
-  const {updateServiceStatus} = useServices();
+  // const {updateServiceStatus} = useServices();
   const [isEnabled, setIsEnabled] = useState(status === 'active');
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const router = useRouter();
@@ -59,11 +59,11 @@ function Service({
     setIsEnabled(status === 'active');
   }, [status]);
 
-  const handleSwitchChange = () => {
-    const newStatus = !isEnabled ? 'active' : 'disabled';
-    setIsEnabled(!isEnabled);
-    updateServiceStatus(slug, newStatus);
-  };
+  // const handleSwitchChange = () => {
+  //   const newStatus = !isEnabled ? 'active' : 'disabled';
+  //   setIsEnabled(!isEnabled);
+  //   updateServiceStatus(slug, newStatus);
+  // };
 
   // const handleDeleteService = () => {
   //   // Implementar a lógica de exclusão aqui
@@ -124,7 +124,7 @@ function Service({
         >
           <Switch.Root
             checked={isEnabled}
-            onCheckedChange={handleSwitchChange}
+            // onCheckedChange={handleSwitchChange}
           />
           <ButtonGroup.Root>
             <Tooltip.Root>
