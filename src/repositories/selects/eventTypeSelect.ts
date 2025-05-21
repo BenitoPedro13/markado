@@ -3,6 +3,9 @@ import { Prisma } from "~/prisma/app/generated/prisma/client";
 export const eventTypeSelect = Prisma.validator<Prisma.EventTypeSelect>()({
   id: true,
   teamId: true,
+  price: true,
+  currency: true,
+  badgeColor: true,
   schedulingType: true,
   userId: true,
   metadata: true,
