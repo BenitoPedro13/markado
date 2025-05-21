@@ -1,5 +1,5 @@
 import {z} from 'zod';
-import {SchedulingType} from '~/prisma/enums';
+import {SchedulingType, ServiceBadgeColor} from '~/prisma/enums';
 import * as imports from '~/prisma/zod-utils';
 
 // Create
@@ -21,7 +21,7 @@ export const createEventTypeInput = z
     beforeEventBuffer: z.number().int().min(0).optional(),
     afterEventBuffer: z.number().int().min(0).optional(),
     scheduleId: z.number().int().optional(),
-    badgeColor: z.string().optional(),
+    badgeColor: z.nativeEnum(ServiceBadgeColor).optional(),
   })
   .partial({hidden: true, locations: true})
   .refine((data) => (data.teamId ? data.teamId && data.schedulingType : true), {
