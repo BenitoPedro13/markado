@@ -23,7 +23,7 @@ export enum FilterType {
 type ServicesContextType = {
   filteredServices: TInitialServices;
   updateServiceStatus: (slug: string, status: 'active' | 'disabled') => void;
-  deleteService: (slug: string) => void;
+  // deleteService: (slug: string) => void;
   // createService: (service: Omit<Service, 'status'>) => void;
   currentFilter: FilterType;
   setFilter: (filter: FilterType) => void;
@@ -79,17 +79,10 @@ export function ServicesProvider({children, initialServices = []}: {children: Re
     );
   };
 
-  const deleteService = (slug: string) => {
-    setServices((prevServices) =>
-      prevServices.filter((service) => service.slug !== slug)
-    );
-  };
-
-  // const createService = (newService: Omit<Service, 'status'>) => {
-  //   setServices((prevServices) => [
-  //     ...prevServices,
-  //     {...newService, status: 'active'}
-  //   ]);
+  // const deleteService = (slug: string) => {
+  //   setServices((prevServices) =>
+  //     prevServices.filter((service) => service.slug !== slug)
+  //   );
   // };
 
   // Update filter in URL
@@ -123,7 +116,7 @@ export function ServicesProvider({children, initialServices = []}: {children: Re
     () => ({
       filteredServices,
       updateServiceStatus,
-      deleteService,
+      // deleteService,
       // createService,
       currentFilter,
       setFilter,
@@ -137,7 +130,7 @@ export function ServicesProvider({children, initialServices = []}: {children: Re
     [
       filteredServices,
       updateServiceStatus,
-      deleteService,
+      // deleteService,
       // createService,
       currentFilter,
       setFilter,
