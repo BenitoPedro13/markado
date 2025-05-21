@@ -414,12 +414,7 @@ export const deleteService = async (input: TDeleteInputSchema) => {
     );
   }
 
-  console.log(
-    `Deleting Service for user ${session.user.id}:`,
-    id
-  );
-
-  revalidatePath('/services'); // revalidate the list page
+  console.log(`Deleting Service for user ${session.user.id}:`, id);
 
   await prisma.eventTypeCustomInput.deleteMany({
     where: {
@@ -432,6 +427,7 @@ export const deleteService = async (input: TDeleteInputSchema) => {
       id
     }
   });
+  revalidatePath('/services'); // revalidate the list page
 
   return {
     id
