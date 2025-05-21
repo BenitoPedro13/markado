@@ -16,9 +16,9 @@ export default function ServicesList() {
               title={service.title}
               slug={service.slug}
               duration={service.length}
-              price={Math.trunc(Math.random() * 100)}
+              price={service.price}
               status={service.hidden ? 'disabled' : 'active'}
-              badgeColor={'faded'}
+              badgeColor={service.badgeColor}
             />
             {idx !== filteredServices.length - 1 && <Divider.Root />}
           </div>
