@@ -2,9 +2,9 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["views"]
-  output   = "app/generated/prisma/client"
+  output          = "app/generated/prisma/client"
 }
 
 datasource db {
@@ -97,6 +97,7 @@ enum SMSLockState {
   UNLOCKED
   REVIEW_NEEDED
 }
+
 model User {
   id                  String                  @id @default(cuid())
   name                String?
@@ -256,7 +257,6 @@ model NotificationsSubscriptions {
   @@index([userId, subscription])
 }
 
-
 enum AccessScope {
   READ_BOOKING
   READ_PROFILE
@@ -332,24 +332,23 @@ model OutOfOfficeReason {
 }
 
 model VerifiedEmail {
-  id     Int    @id @default(autoincrement())
+  id     Int     @id @default(autoincrement())
   userId String?
-  user   User?  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
   teamId Int?
-  team   Team?  @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  team   Team?   @relation(fields: [teamId], references: [id], onDelete: Cascade)
   email  String
 
   @@index([userId])
   @@index([teamId])
 }
 
-
 model VerifiedNumber {
-  id          Int    @id @default(autoincrement())
+  id          Int     @id @default(autoincrement())
   userId      String?
-  user        User?  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
   teamId      Int?
-  team        Team?  @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  team        Team?   @relation(fields: [teamId], references: [id], onDelete: Cascade)
   phoneNumber String
 
   @@index([userId])
@@ -482,7 +481,6 @@ model BusinessLocation {
   team Team[]
 }
 
-
 model Team {
   id                           Int                     @id @default(autoincrement())
   /// @zod.min(1)
@@ -573,7 +571,6 @@ model OrganizationSettings {
   isAdminAPIEnabled             Boolean    @default(false)
 }
 
-
 model DSyncData {
   id               Int                     @id @default(autoincrement())
   directoryId      String                  @unique
@@ -608,7 +605,6 @@ model PlatformBilling {
 
   team Team @relation(fields: [id], references: [id], onDelete: Cascade)
 }
-
 
 model Membership {
   id                   Int               @id @default(autoincrement())
@@ -702,6 +698,19 @@ model Host {
   @@index([scheduleId])
 }
 
+enum ServiceBadgeColor {
+  faded
+  information
+  warning
+  error
+  success
+  away
+  feature
+  verified
+  highlighted
+  stable
+}
+
 model EventType {
   id          Int     @id @default(autoincrement())
   /// @zod.min(1)
@@ -793,6 +802,9 @@ model EventType {
   /// @zod.custom(imports.eventTypeColor)
   eventTypeColor Json?
   // rescheduleWithSameRoundRobinHost Boolean @default(false)
+  badgeColor     ServiceBadgeColor @default(faded)
+  price          Float             @default(0)
+  currency       String            @default("BRL")
 
   secondaryEmailId Int?
   secondaryEmail   SecondaryEmail? @relation(fields: [secondaryEmailId], references: [id], onDelete: Cascade)
@@ -969,7 +981,7 @@ model DestinationCalendar {
   /// @zod.custom(imports.emailSchema)
   primaryEmail String?
   user         User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId       String?        @unique
+  userId       String?     @unique
   booking      Booking[]
   eventType    EventType?  @relation(fields: [eventTypeId], references: [id], onDelete: Cascade)
   eventTypeId  Int?        @unique
