@@ -2,7 +2,7 @@
 
 import * as Divider from '@/components/align-ui/ui/divider';
 import Service from '@/components/services/Service';
-import { useServices } from '@/contexts/services/ServicesContext';
+import {useServices} from '@/contexts/services/ServicesContext';
 
 export default function ServicesList() {
   const {filteredServices} = useServices();
@@ -13,6 +13,7 @@ export default function ServicesList() {
         {filteredServices.map((service, idx) => (
           <div key={service.slug}>
             <Service
+              id={service.id}
               title={service.title}
               slug={service.slug}
               duration={service.length}

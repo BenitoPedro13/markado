@@ -82,3 +82,11 @@ export const ZGetEventTypesFromGroupSchema = z.object({
 export type TGetEventTypesFromGroupSchema = z.infer<
   typeof ZGetEventTypesFromGroupSchema
 >;
+
+// Delete
+
+export const ZDeleteInputSchema = z.object({
+  id: z.number()
+});
+
+export type TDeleteInputSchema = z.infer<typeof ZDeleteInputSchema>;

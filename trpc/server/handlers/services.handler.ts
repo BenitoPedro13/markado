@@ -6,7 +6,7 @@ import {prisma} from '@/lib/prisma';
 import {EventTypeRepository} from '@/repositories/eventType';
 import type {PrismaClient} from '~/prisma/app/generated/prisma/client';
 import {SchedulingType, UserPermissionRole} from '~/prisma/enums';
-import type {EventTypeLocation, TGetEventTypesFromGroupSchema} from '~/trpc/server/schemas/services.schema';
+import type {EventTypeLocation, TDeleteInputSchema, TGetEventTypesFromGroupSchema} from '~/trpc/server/schemas/services.schema';
 
 import {TRPCError} from '@trpc/server';
 import {userMetadataType} from '~/prisma/zod-utils';
@@ -15,6 +15,7 @@ import { auth } from '@/auth';
 import { UserRepository } from '@/repositories/user';
 import { safeStringify } from '@/lib/safeStringify';
 import {hasFilter, mapEventType} from '~/trpc/server/utils/services/util';
+import { revalidatePath } from 'next/cache';
 
 
 // Create
@@ -380,4 +381,75 @@ const filterEventTypes = async (
   );
 
   return filteredEventTypes;
+};
+
+export const deleteService = async (input: TDeleteInputSchema) => {
+  const session = await auth();
+  if (!session) {
+    throw new TRPCError({
+      code: 'UNAUTHORIZED',
+      message: 'deleteService: Could not get the user session'
+    });
+  }
+
+  if (!session.user) {
+    throw new TRPCError({
+      code: 'UNAUTHORIZED',
+      message: 'deleteService: Not authenticated'
+    });
+  }
+
+  const {id} = input;
+
+  const existingService = await prisma.eventType.findFirst({
+    where: {
+      id,
+      userId: session.user.id
+    }
+  });
+
+  if (!existingService) {
+    throw new Error(
+      "Service not found or you don't have permission to delete it"
+    );
+  }
+
+  console.log(
+    `Deleting Service for user ${session.user.id}:`,
+    id
+  );
+
+  revalidatePath('/services'); // revalidate the list page
+
+  await prisma.eventTypeCustomInput.deleteMany({
+    where: {
+      eventTypeId: id
+    }
+  });
+
+  await prisma.eventType.delete({
+    where: {
+      id
+    }
+  });
+
+  return {
+    id
+  };
+};
+
+export const submitDeleteService = async (serviceId: number) => {
+  try {
+    const serviceResult = await deleteService({id: serviceId});
+
+    if (!serviceResult.id) return;
+
+    return serviceResult;
+  } catch (error) {
+    console.error('Error deleting Service:', error);
+    throw new TRPCError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Failed to delete service'
+    });
+  }
 };

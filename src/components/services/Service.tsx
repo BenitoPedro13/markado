@@ -20,25 +20,40 @@ import * as Button from '@/components/align-ui/ui/button';
 import {useServices} from '@/contexts/services/ServicesContext';
 import {useRouter} from 'next/navigation';
 import Link from 'next/link';
-import {ServicesProps} from '@/data/services';
+import {useNotification} from '@/hooks/use-notification';
+import {useLocale} from '@/hooks/use-locale';
+import { submitDeleteService } from '~/trpc/server/handlers/services.handler';
 
-type ServiceProps = Pick<
-  ServicesProps,
-  'title' | 'slug' | 'duration' | 'price' | 'status' | 'badgeColor'
->;
+import {ServiceBadgeColor} from '~/prisma/enums';
+
+export type ServicesProps = {
+  id: number;
+  title: string;
+  slug: string;
+  duration: number;
+  price: number;
+  status: 'active' | 'disabled';
+  description?: string;
+  location?: string;
+  badgeColor: ServiceBadgeColor;
+};
 
 function Service({
+  id,
   title,
   slug,
   duration,
   price,
   status,
   badgeColor
-}: ServiceProps) {
+}: ServicesProps) {
+  const {notification} = useNotification();
   const {updateServiceStatus} = useServices();
   const [isEnabled, setIsEnabled] = useState(status === 'active');
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const router = useRouter();
+
+  const {t} = useLocale('Services');
 
   useEffect(() => {
     setIsEnabled(status === 'active');
@@ -112,7 +127,6 @@ function Service({
             onCheckedChange={handleSwitchChange}
           />
           <ButtonGroup.Root>
-            
             <Tooltip.Root>
               <Tooltip.Trigger asChild>
                 <ButtonGroup.Item>
@@ -150,39 +164,65 @@ function Service({
 
       <Modal.Root open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
         <Modal.Content className="max-w-[440px]">
-          <Modal.Body className="flex items-start gap-4">
-            <div className="rounded-10 bg-error-lighter flex size-10 shrink-0 items-center justify-center">
-              <RiDeleteBinLine className="text-error-base size-6" />
-            </div>
-            <div className="space-y-1">
-              <div className="text-label-md text-text-strong-950">
-                Apagar {title}
+          <form
+            action={async (formData) => {
+              try {
+                await submitDeleteService(id);
+
+                notification({
+                  title: 'Alterações salvas!',
+                  description: 'Seus updates foram salvos com sucesso.',
+                  variant: 'stroke',
+                  status: 'success'
+                });
+
+                // router.push(`/availability`);
+              } catch (error: any) {
+                console.error('Error submitting service delete form:', error);
+                notification({
+                  title: t('service_deleted_error'),
+                  description: error.message,
+                  variant: 'stroke',
+                  id: 'service_deleted_error',
+                  status: 'error'
+                });
+              }
+            }}
+          >
+            <Modal.Body className="flex items-start gap-4">
+              <div className="rounded-10 bg-error-lighter flex size-10 shrink-0 items-center justify-center">
+                <RiDeleteBinLine className="text-error-base size-6" />
               </div>
-              <div className="text-paragraph-sm text-text-sub-600">
-                Você não poderá recuperar o serviço após apagá-lo.
+              <div className="space-y-1">
+                <div className="text-label-md text-text-strong-950">
+                  Apagar {title}
+                </div>
+                <div className="text-paragraph-sm text-text-sub-600">
+                  Você não poderá recuperar o serviço após apagá-lo.
+                </div>
               </div>
-            </div>
-          </Modal.Body>
-          <Modal.Footer>
-            <Modal.Close asChild>
+            </Modal.Body>
+            <Modal.Footer>
+              <Modal.Close asChild>
+                <Button.Root
+                  variant="neutral"
+                  mode="stroke"
+                  size="small"
+                  className="w-full"
+                >
+                  Cancelar
+                </Button.Root>
+              </Modal.Close>
               <Button.Root
-                variant="neutral"
-                mode="stroke"
+                variant="error"
                 size="small"
                 className="w-full"
+                onClick={handleDeleteService}
               >
-                Cancelar
+                Apagar
               </Button.Root>
-            </Modal.Close>
-            <Button.Root
-              variant="error"
-              size="small"
-              className="w-full"
-              onClick={handleDeleteService}
-            >
-              Apagar
-            </Button.Root>
-          </Modal.Footer>
+            </Modal.Footer>
+          </form>
         </Modal.Content>
       </Modal.Root>
     </>
