@@ -263,15 +263,7 @@ export const submitDeleteSchedule = async (scheduleId: number) => {
     const scheduleResult = await deleteSchedule(scheduleId);
 
     if (!scheduleResult.id) return;
-    // notification({
-    //   title: 'Agendamento deletado!',
-    //   description: 'Seu agendamento foi deletado com sucesso.',
-    //   variant: 'stroke',
-    //   status: 'success'
-    // });
 
-    // router.push(`/availability`);
-    // redirect('/availability');
     return scheduleResult;
   } catch (error) {
     console.error('Error deleting schedule:', error);
