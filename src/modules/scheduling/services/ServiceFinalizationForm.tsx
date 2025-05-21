@@ -9,6 +9,21 @@ import {getServiceBySlugAndUsername} from '~/trpc/server/handlers/service.handle
 import {getHostUserByUsername} from '~/trpc/server/handlers/user.handler';
 import {RiCalendarScheduleLine, RiCloseLine} from '@remixicon/react';
 
+const FinalizationItem = ({
+  label,
+  value
+}: {
+  label: string;
+  value: string | number;
+}) => {
+  return (
+    <div className="flex justify-between items-center">
+      <p className="text-paragraph-lg text-text-strong-950">{label}:</p>
+      <p className="text-label-lg font-medium text-text-strong-950">{value}</p>
+    </div>
+  );
+};
+
 interface ServiceFinalizationFormProps {
   host: Awaited<ReturnType<typeof getHostUserByUsername>>;
   service: Awaited<ReturnType<typeof getServiceBySlugAndUsername>>;
@@ -38,53 +53,25 @@ const ServiceFinalizationForm = ({
           </p>
         </div>
         <Divider.Root className="w-full" />
-        <div className="flex justify-between items-center">
-          <p className="text-paragraph-lg text-text-strong-950">Assunto:</p>
-          <p className="text-label-lg font-medium text-text-strong-950">
-            {service.title}
-          </p>
-        </div>
+        <FinalizationItem label="Assunto" value={service.title} />
 
-        <div className="flex justify-between items-center">
-          <p className="text-paragraph-lg text-text-strong-950">
-            Data marcada:
-          </p>
-          <p className="text-label-lg font-medium text-text-strong-950">
-            {dayjs().format('DD/MM/YYYY')}
-          </p>
-        </div>
+        <FinalizationItem
+          label="Data marcada"
+          value={dayjs().format('DD/MM/YYYY')}
+        />
 
-        <div className="flex justify-between items-center">
-          <p className="text-paragraph-lg text-text-strong-950">
-            Hora marcada:
-          </p>
-          <p className="text-label-lg font-medium text-text-strong-950">
-            {dayjs().format('HH:mm')} até{' '}
-            {dayjs().add(1, 'hour').format('HH:mm')}
-          </p>
-        </div>
+        <FinalizationItem
+          label="Hora marcada"
+          value={`${dayjs().format('HH:mm')} até ${dayjs()
+            .add(1, 'hour')
+            .format('HH:mm')}`}
+        />
 
-        <div className="flex justify-between items-center">
-          <p className="text-paragraph-lg text-text-strong-950">Local:</p>
-          <p className="text-label-lg font-medium text-text-strong-950">
-            Google Meet
-          </p>
-        </div>
-
-        <div className="flex justify-between items-center">
-          <p className="text-paragraph-lg text-text-strong-950">Anfitrião:</p>
-          <p className="text-label-lg font-medium text-text-strong-950">
-            {host.name}
-          </p>
-        </div>
-
-        <div className="flex justify-between items-center">
-          <p className="text-paragraph-lg text-text-strong-950">Convidado:</p>
-          <p className="text-label-lg font-medium text-text-strong-950">
-            João da Silva
-          </p>
-        </div>
+        <FinalizationItem label="Local" value="Google Meet" />
+        <FinalizationItem label="Anfitrião" value={host.name ?? ''} />
+        <FinalizationItem label="Convidado" value="João da Silva" />
         <Divider.Root className="w-full" />
+
         <p className="text-label-sm text-text-strong-950 mx-auto underline">
           Precisa alterar?
         </p>
