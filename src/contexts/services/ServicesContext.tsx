@@ -1,25 +1,34 @@
 'use client';
 
-import {createContext, useContext, ReactNode, useState, useEffect, useMemo} from 'react';
-import {useForm} from 'react-hook-form';
+import {
+  createContext,
+  useContext,
+  ReactNode,
+  useState,
+  useEffect,
+  useMemo
+} from 'react';
+import {useRouter, useSearchParams} from 'next/navigation';
 import {services as initialServices, ServicesProps} from '@/data/services';
-
-type SearchFormData = {
-  search: string;
-};
+import { TInitialServices } from '@/app/services/page';
 
 type Service = ServicesProps;
 
-type FilterType = 'all' | 'active' | 'disabled';
+export enum FilterType {
+  ALL = 'ALL',
+  ACTIVE = 'ACTIVE',
+  DISABLED = 'DISABLED'
+}
 
 type ServicesContextType = {
-  filteredServices: Service[];
-  register: any;
+  filteredServices: TInitialServices;
   updateServiceStatus: (slug: string, status: 'active' | 'disabled') => void;
   deleteService: (slug: string) => void;
-  createService: (service: Omit<Service, 'status'>) => void;
+  // createService: (service: Omit<Service, 'status'>) => void;
   currentFilter: FilterType;
   setFilter: (filter: FilterType) => void;
+  setSearch: (search: string) => void;
+  searchValue: string;
   state: {
     isCreateServiceModalOpen: boolean;
     setIsCreateServiceModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -30,36 +39,35 @@ const ServicesContext = createContext<ServicesContextType | undefined>(
   undefined
 );
 
-export function ServicesProvider({children}: {children: ReactNode}) {
-  const [services, setServices] = useState<Service[]>(initialServices);
+export function ServicesProvider({children, initialServices = []}: {children: ReactNode, initialServices?: TInitialServices}) {
+  const [services, setServices] = useState<TInitialServices>(initialServices);
   const [filteredServices, setFilteredServices] =
-    useState<Service[]>(initialServices);
-  const [currentFilter, setCurrentFilter] = useState<FilterType>('all');
+    useState<TInitialServices>(initialServices);
   const [isCreateServiceModalOpen, setIsCreateServiceModalOpen] =
     useState(false);
-  const {register, watch} = useForm<SearchFormData>({
-    defaultValues: {
-      search: ''
-    }
-  });
 
-  const searchValue = watch('search');
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Read from URL
+  const searchValue = searchParams.get('search') || '';
+  const currentFilter =
+    (searchParams.get('filter') as FilterType) || FilterType.ALL;
 
   useEffect(() => {
     let filtered = services;
-
-    // Aplicar filtro de busca
     if (searchValue) {
       filtered = filtered.filter((service) =>
         service.title.toLowerCase().includes(searchValue.toLowerCase())
       );
     }
-
-    // Aplicar filtro de status
-    if (currentFilter !== 'all') {
-      filtered = filtered.filter((service) => service.status === currentFilter);
+    if (currentFilter === FilterType.ALL) {
+      filtered = filtered
+    } else if (currentFilter === FilterType.DISABLED) {
+      filtered = filtered.filter(service => service.hidden === true)
+    } else if (currentFilter === FilterType.ACTIVE) {
+      filtered = filtered.filter((service) => service.hidden === false);
     }
-
     setFilteredServices(filtered);
   }, [searchValue, currentFilter, services]);
 
@@ -77,35 +85,70 @@ export function ServicesProvider({children}: {children: ReactNode}) {
     );
   };
 
-  const createService = (newService: Omit<Service, 'status'>) => {
-    setServices((prevServices) => [
-      ...prevServices,
-      {...newService, status: 'active'}
-    ]);
-  };
+  // const createService = (newService: Omit<Service, 'status'>) => {
+  //   setServices((prevServices) => [
+  //     ...prevServices,
+  //     {...newService, status: 'active'}
+  //   ]);
+  // };
 
+  // Update filter in URL
   const setFilter = (filter: FilterType) => {
-    setCurrentFilter(filter);
+    const params = new URLSearchParams(searchParams.toString());
+    if (filter === FilterType.ALL) {
+      params.delete('filter');
+    } else {
+      params.set('filter', filter);
+    }
+    router.replace(`?${params.toString()}`);
   };
 
-  const value = useMemo<ServicesContextType>(() => ({
-    filteredServices,
-    register,
-    updateServiceStatus,
-    deleteService,
-    createService,
-    currentFilter,
-    setFilter,
-    state: {
-      isCreateServiceModalOpen,
-      setIsCreateServiceModalOpen
+  // Update search in URL
+  const setSearch = (search: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (!search) {
+      params.delete('search');
+    } else {
+      params.set('search', search);
     }
-  }), [filteredServices, register, updateServiceStatus, deleteService, createService, currentFilter, setFilter, isCreateServiceModalOpen]);
+    router.replace(`?${params.toString()}`);
+  };
+
+  const value = useMemo<
+    ServicesContextType & {
+      setSearch: (search: string) => void;
+      searchValue: string;
+    }
+  >(
+    () => ({
+      filteredServices,
+      updateServiceStatus,
+      deleteService,
+      // createService,
+      currentFilter,
+      setFilter,
+      setSearch,
+      searchValue,
+      state: {
+        isCreateServiceModalOpen,
+        setIsCreateServiceModalOpen
+      }
+    }),
+    [
+      filteredServices,
+      updateServiceStatus,
+      deleteService,
+      // createService,
+      currentFilter,
+      setFilter,
+      isCreateServiceModalOpen,
+      setSearch,
+      searchValue
+    ]
+  );
 
   return (
-    <ServicesContext.Provider
-      value={value}
-    >
+    <ServicesContext.Provider value={value}>
       {children}
     </ServicesContext.Provider>
   );

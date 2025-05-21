@@ -1,6 +1,6 @@
 'use client';
 
-import {useForm} from 'react-hook-form';
+import {useForm, UseFormRegister, UseFormSetValue} from 'react-hook-form';
 import * as Input from '@/components/align-ui/ui/input';
 import * as Textarea from '@/components/align-ui/ui/textarea';
 import * as Button from '@/components/align-ui/ui/button';
@@ -17,6 +17,7 @@ import {MARKADO_DOMAIN} from '@/constants';
 import {createServiceHandler} from '~/trpc/server/handlers/services.handler';
 import {useNotification} from '@/hooks/use-notification';
 import {useLocale} from '@/hooks/use-locale';
+import slugify from '@/lib/slugify';
 
 type CreateServiceFormData = Omit<Service, 'status'>;
 
@@ -33,12 +34,179 @@ const colorOptions = [
   {value: 'stable' as ServiceBadgeColor, label: 'Verde Água', emoji: '🌊'}
 ];
 
+function StepOneFields({
+  register,
+  errors,
+  setValue
+}: {
+  register: UseFormRegister<CreateServiceFormData>;
+  errors: Record<string, any>;
+  setValue: UseFormSetValue<CreateServiceFormData>;
+}) {
+  return (
+    <div className="space-y-4">
+      <div className="space-y-2">
+        <label className="text-sm font-medium text-text-strong-950">
+          Título
+        </label>
+        <Input.Root hasError={!!errors.title}>
+          <Input.Input
+            placeholder="Digite o título do serviço"
+            {...register('title', {required: true})}
+          />
+        </Input.Root>
+        {errors.title && (
+          <Hint.Root className="text-error-base">
+            <Hint.Icon as={RiErrorWarningFill} className="text-error-base" />O
+            título é obrigatório
+          </Hint.Root>
+        )}
+      </div>
+
+      <div className="space-y-2">
+        <label className="text-sm font-medium text-text-strong-950">
+          Descrição
+        </label>
+        <Textarea.Root
+          placeholder="Digite a descrição do serviço"
+          {...register('description')}
+        />
+        {errors.description && (
+          <Hint.Root className="text-error-base">
+            <Hint.Icon as={RiErrorWarningFill} className="text-error-base" />A
+            descrição é obrigatória
+          </Hint.Root>
+        )}
+      </div>
+
+      <div className="space-y-2">
+        <label className="text-sm font-medium text-text-strong-950">Slug</label>
+        <Input.Root hasError={!!errors.slug}>
+          <Input.Affix>{MARKADO_DOMAIN}/marcaum/</Input.Affix>
+          <Input.Input
+            placeholder="consulta-30min"
+            {...register('slug', {required: true})}
+          />
+        </Input.Root>
+        {errors.slug && (
+          <Hint.Root className="text-error-base">
+            <Hint.Icon as={RiErrorWarningFill} className="text-error-base" />O
+            slug é obrigatório
+          </Hint.Root>
+        )}
+      </div>
+
+      <div className="space-y-2">
+        <label className="text-sm font-medium text-text-strong-950">
+          Cor do Evento
+        </label>
+        <Select.Root
+          defaultValue="faded"
+          {...register('badgeColor', {required: true})}
+          onValueChange={(value) => {
+            setValue('badgeColor', value as ServiceBadgeColor);
+          }}
+        >
+          <Select.Trigger>
+            <Select.Value placeholder="Selecione uma cor" />
+          </Select.Trigger>
+          <Select.Content>
+            {colorOptions.map((color) => (
+              <Select.Item key={color.value} value={color.value}>
+                <div className="flex items-center gap-2">
+                  <span>{color.emoji}</span>
+                  <span>{color.label}</span>
+                </div>
+              </Select.Item>
+            ))}
+          </Select.Content>
+        </Select.Root>
+        {errors.badgeColor && (
+          <Hint.Root className="text-error-base">
+            <Hint.Icon as={RiErrorWarningFill} className="text-error-base" />A
+            cor é obrigatória
+          </Hint.Root>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function StepTwoFields({
+  register,
+  errors
+}: {
+  register: UseFormRegister<CreateServiceFormData>;
+  errors: Record<string, any>;
+}) {
+  return (
+    <div className="space-y-4">
+      <div className="flex gap-4 w-full">
+        <div className="space-y-2 w-full">
+          <label className="text-sm font-medium text-text-strong-950">
+            Duração (minutos)
+          </label>
+          <Input.Root className="w-full" hasError={!!errors.duration}>
+            <Input.Input
+              type="number"
+              placeholder="Digite a duração em minutos"
+              {...register('duration', {required: true, min: 1})}
+            />
+          </Input.Root>
+          {errors.duration && (
+            <Hint.Root className="text-error-base">
+              <Hint.Icon as={RiErrorWarningFill} className="text-error-base" />A
+              duração é obrigatória
+            </Hint.Root>
+          )}
+        </div>
+
+        <div className="space-y-2 w-full">
+          <label className="text-sm font-medium text-text-strong-950">
+            Preço (R$)
+          </label>
+          <Input.Root className="w-full" hasError={!!errors.price}>
+            <Input.Input
+              type="number"
+              placeholder="Digite o preço"
+              {...register('price', {required: true, min: 0})}
+            />
+          </Input.Root>
+          {errors.price && (
+            <Hint.Root className="text-error-base">
+              <Hint.Icon as={RiErrorWarningFill} className="text-error-base" />O
+              preço é obrigatório
+            </Hint.Root>
+          )}
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <label className="text-sm font-medium text-text-strong-950">
+          Local
+        </label>
+        <Input.Root hasError={!!errors.location}>
+          <Input.Input
+            placeholder="Digite o local do serviço"
+            {...register('location', {required: true})}
+          />
+        </Input.Root>
+        {errors.location && (
+          <Hint.Root className="text-error-base">
+            <Hint.Icon as={RiErrorWarningFill} className="text-error-base" />O
+            local é obrigatório
+          </Hint.Root>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function CreateServiceModal() {
   const {notification} = useNotification();
   const {t} = useLocale('Services');
 
   const {
-    createService,
     state: {
       isCreateServiceModalOpen: open,
       setIsCreateServiceModalOpen: onOpenChange
@@ -49,7 +217,6 @@ export default function CreateServiceModal() {
 
   const {
     register,
-    handleSubmit,
     formState: {errors},
     watch,
     getValues,
@@ -68,24 +235,12 @@ export default function CreateServiceModal() {
   });
 
   const title = watch('title');
-  const description = watch('description');
   const slug = watch('slug');
-  const badgeColor = watch('badgeColor');
-
-  // Função para converter texto em kebab-case
-  const toKebabCase = (text: string) => {
-    return text
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '') // Remove acentos
-      .replace(/[^a-z0-9]+/g, '-') // Substitui caracteres especiais por hífen
-      .replace(/^-+|-+$/g, ''); // Remove hífens do início e fim
-  };
 
   // Atualiza o slug quando o título mudar
   React.useEffect(() => {
     if (title) {
-      setValue('slug', toKebabCase(title));
+      setValue('slug', slugify(title));
     }
   }, [title, setValue]);
 
@@ -98,23 +253,10 @@ export default function CreateServiceModal() {
     return titleIsValid === true && slugIsValid === true;
   };
 
-  // const onSubmit = (data: CreateServiceFormData) => {
-  //   // const newService = {
-  //   //   ...data,
-  //   //   price: Number(data.price),
-  //   //   duration: Number(data.duration)
-  //   // };
-  //   createService(newService);
-  //   onOpenChange(false);
-  //   setStep(1);
-  // };
-
   const handleNextStep = () => {
     if (step === 1) {
-      setStep(2);
-    } else {
-      const {duration, price, location} = watch();
-      if (duration && price && location) {
+      const isValid = validateFirstStep();
+      if (isValid) {
         setStep(2);
       }
     }
@@ -133,18 +275,11 @@ export default function CreateServiceModal() {
 
         <form
           action={async () => {
-            // const nameValue = newName.trim();
-            // console.log("formData", formData.get('title'));
+            if (step < 2) {
+              handleNextStep();
+              return;
+            }
 
-            if (step < 2) return;
-
-            // addOptimisticAvailabilityList({
-            //   scheduleId: Math.trunc(Math.random() * 1000),
-            //   scheduleName: nameValue,
-            //   timeZone: 'America/Sao_Paulo',
-            //   availability: 'seg. - sex., 9:00 até 17:00',
-            //   isDefault: false
-            // });
             const formData = getValues();
 
             const input = {
@@ -152,9 +287,8 @@ export default function CreateServiceModal() {
               description: formData.description,
               slug: formData.slug,
               length: Number(formData.duration),
-              // price: Number(formData.price),
-              // locations: formData.location,
-              // badgeColor: formData.badgeColor
+              price: Number(formData.price),
+              badgeColor: formData.badgeColor
             };
 
             try {
@@ -162,191 +296,28 @@ export default function CreateServiceModal() {
               onOpenChange(false);
               setStep(1);
               console.log('serviceResult', serviceResult);
-              // const scheduleResult = await submitCreateSchedule(nameValue);
-              // setNewName('');
               if (serviceResult) {
                 reset();
                 notification({
                   title: t('service_created_success'),
                   variant: 'stroke',
-                  // id: 'schedule_created_success',
                   status: 'success'
                 });
-                // router.push(`/availability/${scheduleResult.id}`);
               }
             } catch (error) {
               console.log('error', error);
             }
           }}
-          // onSubmit={handleSubmit(onSubmit)}
         >
           <Modal.Body>
             {step === 1 ? (
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-text-strong-950">
-                    Título
-                  </label>
-                  <Input.Root hasError={!!errors.title}>
-                    <Input.Input
-                      placeholder="Digite o título do serviço"
-                      {...register('title', {required: true})}
-                    />
-                  </Input.Root>
-                  {errors.title && (
-                    <Hint.Root className="text-error-base">
-                      <Hint.Icon
-                        as={RiErrorWarningFill}
-                        className="text-error-base"
-                      />
-                      O título é obrigatório
-                    </Hint.Root>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-text-strong-950">
-                    Descrição
-                  </label>
-                  <Textarea.Root
-                    placeholder="Digite a descrição do serviço"
-                    {...register('description')}
-                  />
-                  {errors.description && (
-                    <Hint.Root className="text-error-base">
-                      <Hint.Icon
-                        as={RiErrorWarningFill}
-                        className="text-error-base"
-                      />
-                      A descrição é obrigatória
-                    </Hint.Root>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-text-strong-950">
-                    Slug
-                  </label>
-                  <Input.Root hasError={!!errors.slug}>
-                    <Input.Affix>{MARKADO_DOMAIN}/marcaum/</Input.Affix>
-                    <Input.Input
-                      placeholder="consulta-30min"
-                      {...register('slug', {required: true})}
-                    />
-                  </Input.Root>
-                  {errors.slug && (
-                    <Hint.Root className="text-error-base">
-                      <Hint.Icon
-                        as={RiErrorWarningFill}
-                        className="text-error-base"
-                      />
-                      O slug é obrigatório
-                    </Hint.Root>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-text-strong-950">
-                    Cor do Evento
-                  </label>
-                  <Select.Root
-                    defaultValue="faded"
-                    {...register('badgeColor', {required: true})}
-                  >
-                    <Select.Trigger>
-                      <Select.Value placeholder="Selecione uma cor" />
-                    </Select.Trigger>
-                    <Select.Content>
-                      {colorOptions.map((color) => (
-                        <Select.Item key={color.value} value={color.value}>
-                          <div className="flex items-center gap-2">
-                            <span>{color.emoji}</span>
-                            <span>{color.label}</span>
-                          </div>
-                        </Select.Item>
-                      ))}
-                    </Select.Content>
-                  </Select.Root>
-                  {errors.badgeColor && (
-                    <Hint.Root className="text-error-base">
-                      <Hint.Icon
-                        as={RiErrorWarningFill}
-                        className="text-error-base"
-                      />
-                      A cor é obrigatória
-                    </Hint.Root>
-                  )}
-                </div>
-              </div>
+              <StepOneFields
+                register={register}
+                errors={errors}
+                setValue={setValue}
+              />
             ) : (
-              <div className="space-y-4">
-                <div className="flex gap-4 w-full">
-                  <div className="space-y-2 w-full">
-                    <label className="text-sm font-medium text-text-strong-950">
-                      Duração (minutos)
-                    </label>
-                    <Input.Root className="w-full" hasError={!!errors.duration}>
-                      <Input.Input
-                        type="number"
-                        placeholder="Digite a duração em minutos"
-                        {...register('duration', {required: true, min: 1})}
-                      />
-                    </Input.Root>
-                    {errors.duration && (
-                      <Hint.Root className="text-error-base">
-                        <Hint.Icon
-                          as={RiErrorWarningFill}
-                          className="text-error-base"
-                        />
-                        A duração é obrigatória
-                      </Hint.Root>
-                    )}
-                  </div>
-
-                  <div className="space-y-2 w-full">
-                    <label className="text-sm font-medium text-text-strong-950">
-                      Preço (R$)
-                    </label>
-                    <Input.Root className="w-full" hasError={!!errors.price}>
-                      <Input.Input
-                        type="number"
-                        placeholder="Digite o preço"
-                        {...register('price', {required: true, min: 0})}
-                      />
-                    </Input.Root>
-                    {errors.price && (
-                      <Hint.Root className="text-error-base">
-                        <Hint.Icon
-                          as={RiErrorWarningFill}
-                          className="text-error-base"
-                        />
-                        O preço é obrigatório
-                      </Hint.Root>
-                    )}
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-text-strong-950">
-                    Local
-                  </label>
-                  <Input.Root hasError={!!errors.location}>
-                    <Input.Input
-                      placeholder="Digite o local do serviço"
-                      {...register('location', {required: true})}
-                    />
-                  </Input.Root>
-                  {errors.location && (
-                    <Hint.Root className="text-error-base">
-                      <Hint.Icon
-                        as={RiErrorWarningFill}
-                        className="text-error-base"
-                      />
-                      O local é obrigatório
-                    </Hint.Root>
-                  )}
-                </div>
-              </div>
+              <StepTwoFields register={register} errors={errors} />
             )}
           </Modal.Body>
 
@@ -384,7 +355,7 @@ export default function CreateServiceModal() {
                 >
                   Voltar
                 </Button.Root>
-                <Button.Root variant="neutral" size="small">
+                <Button.Root variant="neutral" size="small" type="submit">
                   Criar Serviço
                 </Button.Root>
               </>

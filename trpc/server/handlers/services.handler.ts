@@ -6,34 +6,20 @@ import {prisma} from '@/lib/prisma';
 import {EventTypeRepository} from '@/repositories/eventType';
 import type {PrismaClient} from '~/prisma/app/generated/prisma/client';
 import {SchedulingType, UserPermissionRole} from '~/prisma/enums';
-import type {EventTypeLocation} from '~/trpc/server/schemas/services.shema';
+import type {EventTypeLocation, TGetEventTypesFromGroupSchema} from '~/trpc/server/schemas/services.schema';
 
 import {TRPCError} from '@trpc/server';
 import {userMetadataType} from '~/prisma/zod-utils';
-import type {TCreateInputSchema} from '~/trpc/server/schemas/services.shema';
+import type {TCreateInputSchema} from '~/trpc/server/schemas/services.schema';
 import { auth } from '@/auth';
 import { UserRepository } from '@/repositories/user';
+import { safeStringify } from '@/lib/safeStringify';
+import {hasFilter, mapEventType} from '~/trpc/server/utils/services/util';
+
 
 // Create
 
-// type User = {
-//   id: string;
-//   // role: UserPermissionRole;
-//   // organizationId: number | null;
-//   // organization: {
-//   //   isOrgAdmin: boolean;
-//   // };
-//   profile: {
-//     id: number | null;
-//   };
-//   metadata: userMetadataType;
-// };
-
 type CreateOptions = {
-  // ctx: {
-  //   user: User;
-  //   prisma: PrismaClient;
-  // };
   input: TCreateInputSchema;
 };
 
@@ -163,4 +149,235 @@ export const createServiceHandler = async ({input}: CreateOptions) => {
     }
     throw new TRPCError({code: 'BAD_REQUEST'});
   }
+};
+
+
+// get all services
+
+type GetByViewerOptions = {
+  input: TGetEventTypesFromGroupSchema;
+};
+
+type EventType = Awaited<
+  ReturnType<typeof EventTypeRepository.findAllByUpId>
+>[number];
+type MappedEventType = Awaited<ReturnType<typeof mapEventType>>;
+type EnrichedUser = Awaited<ReturnType<typeof UserRepository.enrichUserWithItsProfile<Awaited<ReturnType<typeof UserRepository.findByIdOrThrow>>>>>
+
+export const getEventTypesFromGroup = async ({
+  // ctx,
+  input
+}: GetByViewerOptions): Promise<{
+  eventTypes: MappedEventType[];
+  nextCursor: number | null | undefined;
+}> => {
+  const session = await auth();
+
+  if (!session) {
+    throw new TRPCError({
+      code: 'UNAUTHORIZED',
+      message: 'createServiceHandler: Could not get the user session'
+    });
+  }
+
+  if (!session.user) {
+    throw new TRPCError({
+      code: 'UNAUTHORIZED',
+      message: 'createServiceHandler: Not authenticated'
+    });
+  }
+
+  const user = await UserRepository.findByIdOrThrow({id: session.user.id});
+  const enrichedUser = await UserRepository.enrichUserWithItsProfile({user});
+
+  const userProfile = enrichedUser.profile;
+  const {group, limit, cursor, filters, searchQuery} = input;
+  const {teamId} = group;
+
+  const isFilterSet = (filters && hasFilter(filters)) || !!teamId;
+  const isUpIdInFilter = filters?.upIds?.includes(userProfile.upId);
+
+  const shouldListUserEvents =
+    !isFilterSet ||
+    isUpIdInFilter ||
+    (isFilterSet && filters?.upIds && !isUpIdInFilter);
+
+  const eventTypes: MappedEventType[] = [];
+  const currentCursor = cursor;
+  let nextCursor: number | null | undefined = undefined;
+  let isFetchingForFirstTime = true;
+
+  const fetchAndFilterEventTypes = async () => {
+    const batch = await fetchEventTypesBatch(
+      enrichedUser,
+      input,
+      shouldListUserEvents,
+      currentCursor,
+      searchQuery
+    );
+    const filteredBatch = await filterEventTypes(
+      batch.eventTypes,
+      enrichedUser.id,
+      shouldListUserEvents,
+      teamId
+    );
+    eventTypes.push(...filteredBatch);
+    nextCursor = batch.nextCursor;
+  };
+
+  while (eventTypes.length < limit && (nextCursor || isFetchingForFirstTime)) {
+    await fetchAndFilterEventTypes();
+    isFetchingForFirstTime = false;
+  }
+
+  return {
+    eventTypes,
+    nextCursor: nextCursor ?? undefined
+  };
+};
+
+const fetchEventTypesBatch = async (
+  user: EnrichedUser,
+  input: GetByViewerOptions['input'],
+  shouldListUserEvents: boolean | undefined,
+  cursor: TGetEventTypesFromGroupSchema['cursor'],
+  searchQuery: TGetEventTypesFromGroupSchema['searchQuery']
+) => {
+  const userProfile = user.profile;
+  const {group, limit, filters} = input;
+  const {teamId, parentId} = group;
+  const isFilterSet = (filters && hasFilter(filters)) || !!teamId;
+
+  const eventTypes: EventType[] = [];
+
+  if (shouldListUserEvents || !teamId) {
+    const userEventTypes =
+      (await EventTypeRepository.findAllByUpId(
+        {
+          upId: userProfile.upId,
+          userId: user.id
+        },
+        {
+          where: {
+            teamId: null,
+            schedulingType: null,
+            ...(searchQuery
+              ? {title: {contains: searchQuery, mode: 'insensitive'}}
+              : {})
+          },
+          orderBy: [
+            {
+              position: 'desc'
+            },
+            {
+              id: 'asc'
+            }
+          ],
+          limit,
+          cursor
+        }
+      )) ?? [];
+
+    eventTypes.push(...userEventTypes);
+  }
+
+  if (teamId) {
+    const teamEventTypes =
+      (await EventTypeRepository.findTeamEventTypes({
+        teamId,
+        parentId,
+        userId: user.id,
+        limit,
+        cursor,
+        where: {
+          ...(isFilterSet && !!filters?.schedulingTypes
+            ? {
+                schedulingType: {in: filters.schedulingTypes}
+              }
+            : null),
+          ...(searchQuery
+            ? {title: {contains: searchQuery, mode: 'insensitive'}}
+            : {})
+        },
+        orderBy: [
+          {
+            position: 'desc'
+          },
+          {
+            id: 'asc'
+          }
+        ]
+      })) ?? [];
+
+    eventTypes.push(...teamEventTypes);
+  }
+
+  let nextCursor: number | null | undefined = undefined;
+  if (eventTypes.length > limit) {
+    const nextItem = eventTypes.pop();
+    nextCursor = nextItem?.id;
+  }
+
+  const mappedEventTypes = await Promise.all(eventTypes.map(mapEventType));
+
+  return {eventTypes: mappedEventTypes, nextCursor: nextCursor ?? undefined};
+};
+
+const filterEventTypes = async (
+  eventTypes: MappedEventType[],
+  userId: string,
+  shouldListUserEvents: boolean | undefined,
+  teamId: number | null | undefined
+) => {
+  const filteredEventTypes = eventTypes.filter((eventType) => {
+    if (!eventType.parentId) {
+      return true;
+    }
+    // A child event only has one user
+    const childEventAssignee = eventType.users[0];
+
+    if (!childEventAssignee || childEventAssignee.id !== userId) {
+      return false;
+    }
+    return true;
+  });
+
+  console.info(
+    'mappedEventTypes before and after filtering',
+    safeStringify({
+      beforeFiltering: eventTypes,
+      afterFiltering: filteredEventTypes
+    })
+  );
+
+  const membership = await prisma.membership.findFirst({
+    where: {
+      userId,
+      teamId: teamId ?? 0,
+      accepted: true,
+      role: 'MEMBER'
+    },
+    include: {
+      team: {
+        select: {
+          isPrivate: true
+        }
+      }
+    }
+  });
+
+  if (membership && membership.team.isPrivate)
+    filteredEventTypes.forEach((evType) => {
+      evType.users = [];
+      evType.hosts = [];
+    });
+
+  console.info(
+    'filteredEventTypes',
+    safeStringify({
+      filteredEventTypes
+    })
+  );
+
+  return filteredEventTypes;
 };

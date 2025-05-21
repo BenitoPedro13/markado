@@ -15,9 +15,9 @@ export default function ServicesList() {
             <Service
               title={service.title}
               slug={service.slug}
-              duration={service.duration}
+              duration={service.length}
               price={service.price}
-              status={service.status}
+              status={service.hidden ? 'disabled' : 'active'}
               badgeColor={service.badgeColor}
             />
             {idx !== filteredServices.length - 1 && <Divider.Root />}

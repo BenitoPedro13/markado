@@ -148,7 +148,7 @@ export class EventTypeRepository {
       // Lookup is by userId
       return await prisma.eventType.findMany({
         where: {
-          userId: lookupTarget.id,
+          userId: lookupTarget.id as string,
           ...where,
         },
         select,
@@ -252,7 +252,7 @@ export class EventTypeRepository {
       // Lookup is by userId
       return await prisma.eventType.findMany({
         where: {
-          userId: lookupTarget.id,
+          userId: lookupTarget.id as string,
           ...where,
         },
         select,

@@ -4,6 +4,7 @@ import * as Input from '@/components/align-ui/ui/input';
 import * as Kbd from '@/components/align-ui/ui/kbd';
 import {RiSearch2Line} from '@remixicon/react';
 import { useServices } from '@/contexts/services/ServicesContext';
+import { useState, useEffect } from 'react';
 
 function IconCmd(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -24,7 +25,21 @@ function IconCmd(props: React.SVGProps<SVGSVGElement>) {
 }
 
 export default function ServicesSearch() {
-  const { register } = useServices();
+  const { searchValue, setSearch } = useServices();
+  const [inputValue, setInputValue] = useState(searchValue);
+
+  // Debounce input
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setSearch(inputValue);
+    }, 300);
+    return () => clearTimeout(handler);
+  }, [inputValue, setSearch]);
+
+  // Sync local state if searchValue changes externally
+  useEffect(() => {
+    setInputValue(searchValue);
+  }, [searchValue]);
 
   return (
     <div className="w-full max-w-[300px]">
@@ -33,7 +48,8 @@ export default function ServicesSearch() {
           <Input.Icon as={RiSearch2Line} />
           <Input.Input 
             placeholder="Pesquisar Serviço..." 
-            {...register('search')}
+            value={inputValue}
+            onChange={e => setInputValue(e.target.value)}
           />
           <Kbd.Root>
             <IconCmd className="size-2.5" />

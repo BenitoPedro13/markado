@@ -1,5 +1,5 @@
 import {z} from 'zod';
-import {SchedulingType} from '~/prisma/enums';
+import {SchedulingType, ServiceBadgeColor} from '~/prisma/enums';
 import * as imports from '~/prisma/zod-utils';
 
 // Create
@@ -21,7 +21,7 @@ export const createEventTypeInput = z
     beforeEventBuffer: z.number().int().min(0).optional(),
     afterEventBuffer: z.number().int().min(0).optional(),
     scheduleId: z.number().int().optional(),
-    badgeColor: z.string().optional(),
+    badgeColor: z.nativeEnum(ServiceBadgeColor).optional(),
   })
   .partial({hidden: true, locations: true})
   .refine((data) => (data.teamId ? data.teamId && data.schedulingType : true), {
@@ -47,3 +47,38 @@ export type EventTypeLocation = z.infer<
 export const ZCreateInputSchema = createEventTypeInput;
 
 export type TCreateInputSchema = z.infer<typeof ZCreateInputSchema>;
+
+
+// get all by viewer
+
+export const filterQuerySchemaStrict = z.object({
+  teamIds: z.number().array().optional(),
+  // A user can only filter by only his userId
+  upIds: z.string().array().max(1).optional(),
+  schedulingTypes: z.nativeEnum(SchedulingType).array().optional()
+});
+
+export const ZEventTypeInputSchema = z
+  .object({
+    filters: filterQuerySchemaStrict.optional(),
+    forRoutingForms: z.boolean().optional()
+  })
+  .nullish();
+
+export type TEventTypeInputSchema = z.infer<typeof ZEventTypeInputSchema>;
+
+export const ZGetEventTypesFromGroupSchema = z.object({
+  filters: filterQuerySchemaStrict.optional(),
+  forRoutingForms: z.boolean().optional(),
+  cursor: z.number().nullish(),
+  limit: z.number().default(10),
+  group: z.object({
+    teamId: z.number().nullish(),
+    parentId: z.number().nullish()
+  }),
+  searchQuery: z.string().optional()
+});
+
+export type TGetEventTypesFromGroupSchema = z.infer<
+  typeof ZGetEventTypesFromGroupSchema
+>;
