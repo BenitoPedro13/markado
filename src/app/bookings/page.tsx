@@ -3,12 +3,12 @@ import {useTranslations} from 'next-intl';
 import Header from '@/components/navigation/Header';
 import * as Divider from '@/components/align-ui/ui/divider';
 import {BookingProvider} from '@/contexts/bookings/BookingContext';
-import SchedulingList from '@/components/scheduling/SchedulingList';
-import SchedulingFilter from '@/components/scheduling/SchedulingFilter';
-import SchedulingSearch from '@/components/scheduling/SchedulingSearch';
-import SchedulingViewControl from '@/components/scheduling/SchedulingViewControl';
-import {SchedulingSort} from '@/components/scheduling/SchedulingSort';
-import SchedulingPageClient from '@/components/scheduling/SchedulingPageClient';
+import BookingList from '@/components/scheduling/BookingList';
+import BookingFilter from '@/components/scheduling/BookingFilter';
+import BookingSearch from '@/components/scheduling/BookingSearch';
+import BookingViewControl from '@/components/scheduling/BookingViewControl';
+import {BookingSort} from '@/components/scheduling/BookingSort';
+import BookingPageClient from '@/components/scheduling/BookingPageClient';
 import {getMeHandler} from '~/trpc/server/handlers/user.handler';
 
 function IconCmd(props: React.SVGProps<SVGSVGElement>) {
@@ -30,10 +30,10 @@ function IconCmd(props: React.SVGProps<SVGSVGElement>) {
 }
 
 /** Services page of the website. */
-export default function ServicesPage() {
+export default function BookingPage() {
   return (
     <BookingProvider>
-      <SchedulingPageClient />
+      <BookingPageClient />
     </BookingProvider>
   );
 }
