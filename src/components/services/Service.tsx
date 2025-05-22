@@ -25,6 +25,8 @@ import {useLocale} from '@/hooks/use-locale';
 import { submitDeleteService } from '~/trpc/server/handlers/services.handler';
 
 import {ServiceBadgeColor} from '~/prisma/enums';
+import { TInitialServices } from '@/app/services/page';
+import { MARKADO_URL } from '@/constants';
 
 export type ServicesProps = {
   id: number;
@@ -36,6 +38,7 @@ export type ServicesProps = {
   description?: string;
   location?: string;
   badgeColor: ServiceBadgeColor;
+  users: TInitialServices[number]['users'];
 };
 
 function Service({
@@ -45,7 +48,8 @@ function Service({
   duration,
   price,
   status,
-  badgeColor
+  badgeColor,
+  users
 }: ServicesProps) {
   const {notification} = useNotification();
   // const {updateServiceStatus} = useServices();
@@ -89,6 +93,19 @@ function Service({
     return colorMap[badgeColor];
   };
 
+  const getHostServiceSchedulingLink = () => {
+    if (!users || users.length < 1) {
+      return '';
+    }
+
+    if (users.length === 1) {
+      return `${MARKADO_URL}/${users[0].username}/${slug}`;
+    }
+
+    // TODO: Definir logica para quando o serviço é disponibilizado por mais de 1 host (times)
+    return `${MARKADO_URL}/${users[0].username}/${slug}`;
+  }
+
   return (
     <>
       <div className="p-4 flex hover:bg-bg-weak-50 transition-colors duration-200">
@@ -129,7 +146,21 @@ function Service({
           <ButtonGroup.Root>
             <Tooltip.Root>
               <Tooltip.Trigger asChild>
-                <ButtonGroup.Item>
+                <ButtonGroup.Item
+                  onClick={async () => {
+                    const schedulingLink = getHostServiceSchedulingLink();
+
+                    await navigator.clipboard.writeText(schedulingLink);
+
+                    notification({
+                      title: 'Link do serviço copiado!',
+                      description:
+                        'Seu link de agendamento do serviço foi copiado com sucesso.',
+                      variant: 'stroke',
+                      status: 'success'
+                    });
+                  }}
+                >
                   <ButtonGroup.Icon as={RiLinksLine} />
                 </ButtonGroup.Item>
               </Tooltip.Trigger>

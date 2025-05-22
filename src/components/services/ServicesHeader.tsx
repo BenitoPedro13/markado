@@ -28,6 +28,8 @@ import {DatepickerRangeDemo} from '@/components/align-ui/daterange';
 import * as Input from '@/components/align-ui/ui/input';
 import CreateServiceModal from '@/components/services/CreateServiceModal';
 import {useServices} from '@/contexts/services/ServicesContext';
+import {useSessionStore} from '@/providers/session-store-provider';
+import {MARKADO_URL} from '@/constants';
 
 type HeaderVariant = 'services';
 type TSelectedMenuItem = {
@@ -92,6 +94,9 @@ const getButtonsForMenuItem = (value: string) => {
 };
 
 const getHeaderContent = (selectedMenuItem?: TSelectedMenuItem) => {
+  const {notification} = useNotification();
+  const username = useSessionStore((store) => store.user?.username);
+
   const {
     state: {setIsCreateServiceModalOpen}
   } = useServices();
@@ -107,16 +112,46 @@ const getHeaderContent = (selectedMenuItem?: TSelectedMenuItem) => {
     };
   }
 
+  const getServiceListSchedulingLink = () => {
+    if (!username || username.length < 1) {
+      return '';
+    }
+
+    return `${MARKADO_URL}/${username}`;
+  };
+
   return {
     icon: <RiLinksLine className="text-bg-strong-950" />,
     title: 'Serviços',
     description: 'Crie serviços para os clientes agendarem',
     buttons: (
       <div className="services flex gap-2">
-        <Button.Root variant="neutral" mode="stroke">
-          <Button.Icon as={RiLinksLine} />
-          Páginas de Serviços
-        </Button.Root>
+        <Tooltip.Root>
+          <Tooltip.Trigger asChild>
+            <Button.Root
+              variant="neutral"
+              mode="stroke"
+              onClick={async () => {
+                const schedulingLink = getServiceListSchedulingLink();
+
+                await navigator.clipboard.writeText(schedulingLink);
+
+                notification({
+                  title: 'Link da pagina de serviços copiado!',
+                  description:
+                    'Seu link da pagina de serviços foi copiado com sucesso.',
+                  variant: 'stroke',
+                  status: 'success'
+                });
+              }}
+            >
+              <Button.Icon as={RiLinksLine} />
+              Páginas de Serviços
+            </Button.Root>
+          </Tooltip.Trigger>
+          <Tooltip.Content size="small">Copiar link da página de serviços</Tooltip.Content>
+        </Tooltip.Root>
+
         <FancyButton.Root
           variant="neutral"
           onClick={() => setIsCreateServiceModalOpen(true)}
