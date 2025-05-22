@@ -33,7 +33,7 @@ import * as Textarea from '@/components/align-ui/ui/textarea';
 import * as Notification from '@/components/align-ui/ui/notification';
 import {useState, useEffect} from 'react';
 
-type SchedulingProps = {
+type BookingProps = {
   id: string;
   title: string;
   duration: number;
@@ -53,7 +53,7 @@ type Participant = {
 type LocationType = 'online' | 'presential';
 type OnlinePlatform = 'google-meet' | 'zoom' | 'teams';
 
-export default function Scheduling({
+export default function Booking({
   id,
   title,
   duration,
@@ -63,7 +63,7 @@ export default function Scheduling({
   type,
   status,
   location
-}: SchedulingProps) {
+}: BookingProps) {
   const {
     updateBookingStatus: updateSchedulingStatus,
     deleteBooking: deleteScheduling,

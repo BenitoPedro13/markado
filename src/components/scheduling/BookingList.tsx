@@ -1,17 +1,17 @@
 'use client';
 
 import {useBooking} from '@/contexts/bookings/BookingContext';
-import Scheduling from './Scheduling';
+import Booking from './Booking';
 import * as Divider from '@/components/align-ui/ui/divider';
 
-export default function SchedulingList() {
+export default function BookingList() {
   const {filteredBookings} = useBooking();
 
   return (
     <div className="rounded-lg w-full border border-stroke-soft-200">
       {filteredBookings.map((scheduling) => (
         <div key={scheduling.id}>
-          <Scheduling
+          <Booking
             key={scheduling.id}
             id={scheduling.id}
             title={scheduling.title}

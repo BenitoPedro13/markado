@@ -4,7 +4,7 @@ import * as SegmentedControl from '@/components/align-ui/ui/segmented-control';
 import {RiListUnordered, RiCalendarLine} from '@remixicon/react';
 import {useBooking} from '@/contexts/bookings/BookingContext';
 
-export default function SchedulingViewControl() {
+export default function BookingViewControl() {
   const {currentView, setView} = useBooking();
 
   return (

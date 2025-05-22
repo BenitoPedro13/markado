@@ -16,7 +16,7 @@ const sortOptions: SortOption[] = [
   {value: 'oldest', label: 'Mais antigos'}
 ];
 
-export function SchedulingSort() {
+export function BookingSort() {
   const {bookings, setBookings} = useBooking();
 
   const handleSort = (value: string) => {

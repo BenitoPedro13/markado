@@ -3,7 +3,7 @@
 import * as SegmentedControl from '@/components/align-ui/ui/segmented-control';
 import {useBooking} from '@/contexts/bookings/BookingContext';
 
-export default function SchedulingFilter() {
+export default function BookingFilter() {
   const {filter, setFilter} = useBooking();
 
   return (
