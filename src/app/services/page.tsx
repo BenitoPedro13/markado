@@ -1,13 +1,11 @@
 export const dynamic = 'force-dynamic';
 
 import PageLayout from '@/components/PageLayout';
-import * as Divider from '@/components/align-ui/ui/divider';
 import {ServicesProvider} from '@/contexts/services/ServicesContext';
-import ServicesList from '@/components/services/ServicesList';
-import ServicesSearch from '@/components/services/ServicesSearch';
-import ServicesFilter from '@/components/services/ServicesFilter';
-import ServicesHeader from '@/components/services/ServicesHeader';
 import {getEventTypesFromGroup} from '~/trpc/server/handlers/services.handler';
+import {redirect} from 'next/navigation';
+import {auth} from '@/auth';
+import ServicesListPage from '@/modules/services/ServicesListPage';
 
 export type TInitialServices = Awaited<
   ReturnType<typeof getEventTypesFromGroup>
@@ -19,6 +17,14 @@ export default async function ServicesPage({
 }: {
   searchParams?: {filter?: string; search?: string};
 }) {
+  const session = await auth();
+
+  const userId = session?.user?.id;
+
+  if (!userId) {
+    redirect('/sign-in');
+  }
+
   // // Parse filters/search from URL
   const filter = searchParams?.filter;
   const search = searchParams?.search;
@@ -44,19 +50,7 @@ export default async function ServicesPage({
   return (
     <PageLayout title="Home">
       <ServicesProvider initialServices={initialServices}>
-        <ServicesHeader />
-        <div className="px-8">
-          <Divider.Root />
-        </div>
-
-        <div className="gap-8 p-8 ">
-          <div className="flex justify-between">
-            <ServicesFilter />
-            <ServicesSearch />
-          </div>
-        </div>
-
-        <ServicesList />
+        <ServicesListPage />
       </ServicesProvider>
     </PageLayout>
   );

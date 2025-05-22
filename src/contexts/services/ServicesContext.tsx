@@ -6,13 +6,12 @@ import {
   ReactNode,
   useState,
   useEffect,
-  useMemo
+  useMemo,
+  useOptimistic
 } from 'react';
 import {useRouter, useSearchParams} from 'next/navigation';
-import {services as initialServices, ServicesProps} from '@/data/services';
-import { TInitialServices } from '@/app/services/page';
 
-type Service = ServicesProps;
+import {TInitialServices} from '@/app/services/page';
 
 export enum FilterType {
   ALL = 'ALL',
@@ -21,10 +20,8 @@ export enum FilterType {
 }
 
 type ServicesContextType = {
-  filteredServices: TInitialServices;
-  updateServiceStatus: (slug: string, status: 'active' | 'disabled') => void;
-  // deleteService: (slug: string) => void;
-  // createService: (service: Omit<Service, 'status'>) => void;
+  // filteredServices: TInitialServices;
+  // updateServiceStatus: (slug: string, status: 'active' | 'disabled') => void;
   currentFilter: FilterType;
   setFilter: (filter: FilterType) => void;
   setSearch: (search: string) => void;
@@ -33,16 +30,21 @@ type ServicesContextType = {
     isCreateServiceModalOpen: boolean;
     setIsCreateServiceModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   };
+  optimistic: {
+    optimisticServicesList: TInitialServices;
+    addOptimisticServicesList: (action: TInitialServices[number]) => void;
+  };
 };
 
-const ServicesContext = createContext<ServicesContextType | undefined>(
-  undefined
-);
+const ServicesContext = createContext<ServicesContextType | null>(null);
 
-export function ServicesProvider({children, initialServices = []}: {children: ReactNode, initialServices?: TInitialServices}) {
-  const [services, setServices] = useState<TInitialServices>(initialServices);
-  const [filteredServices, setFilteredServices] =
-    useState<TInitialServices>(initialServices);
+export function ServicesProvider({
+  children,
+  initialServices = []
+}: {
+  children: ReactNode;
+  initialServices?: TInitialServices;
+}) {
   const [isCreateServiceModalOpen, setIsCreateServiceModalOpen] =
     useState(false);
 
@@ -54,34 +56,37 @@ export function ServicesProvider({children, initialServices = []}: {children: Re
   const currentFilter =
     (searchParams.get('filter') as FilterType) || FilterType.ALL;
 
-  useEffect(() => {
-    let filtered = services;
-    if (searchValue) {
-      filtered = filtered.filter((service) =>
-        service.title.toLowerCase().includes(searchValue.toLowerCase())
-      );
-    }
-    if (currentFilter === FilterType.ALL) {
-      filtered = filtered
-    } else if (currentFilter === FilterType.DISABLED) {
-      filtered = filtered.filter(service => service.hidden === true)
-    } else if (currentFilter === FilterType.ACTIVE) {
-      filtered = filtered.filter((service) => service.hidden === false);
-    }
-    setFilteredServices(filtered);
-  }, [searchValue, currentFilter, services]);
+  const [optimisticServicesList, addOptimisticServicesList] = useOptimistic(
+    initialServices,
+    (state: TInitialServices | [], newServices: TInitialServices[number]) => {
+      if (!state) return [] as TInitialServices;
 
-  const updateServiceStatus = (slug: string, status: 'active' | 'disabled') => {
-    setServices((prevServices) =>
-      prevServices.map((service) =>
-        service.slug === slug ? {...service, status} : service
-      )
-    );
-  };
+      return [...state, newServices];
+    }
+  );
 
-  // const deleteService = (slug: string) => {
+  // useEffect(() => {
+  //   let filtered = services;
+  //   if (searchValue) {
+  //     filtered = filtered.filter((service) =>
+  //       service.title.toLowerCase().includes(searchValue.toLowerCase())
+  //     );
+  //   }
+  //   if (currentFilter === FilterType.ALL) {
+  //     filtered = filtered
+  //   } else if (currentFilter === FilterType.DISABLED) {
+  //     filtered = filtered.filter(service => service.hidden === true)
+  //   } else if (currentFilter === FilterType.ACTIVE) {
+  //     filtered = filtered.filter((service) => service.hidden === false);
+  //   }
+  //   setFilteredServices(filtered);
+  // }, [currentFilter, services]);
+
+  // const updateServiceStatus = (slug: string, status: 'active' | 'disabled') => {
   //   setServices((prevServices) =>
-  //     prevServices.filter((service) => service.slug !== slug)
+  //     prevServices.map((service) =>
+  //       service.slug === slug ? {...service, status} : service
+  //     )
   //   );
   // };
 
@@ -114,10 +119,8 @@ export function ServicesProvider({children, initialServices = []}: {children: Re
     }
   >(
     () => ({
-      filteredServices,
-      updateServiceStatus,
-      // deleteService,
-      // createService,
+      // filteredServices,
+      // updateServiceStatus,
       currentFilter,
       setFilter,
       setSearch,
@@ -125,11 +128,15 @@ export function ServicesProvider({children, initialServices = []}: {children: Re
       state: {
         isCreateServiceModalOpen,
         setIsCreateServiceModalOpen
+      },
+      optimistic: {
+        optimisticServicesList,
+        addOptimisticServicesList
       }
     }),
     [
-      filteredServices,
-      updateServiceStatus,
+      // filteredServices,
+      // updateServiceStatus,
       // deleteService,
       // createService,
       currentFilter,
@@ -149,7 +156,7 @@ export function ServicesProvider({children, initialServices = []}: {children: Re
 
 export function useServices() {
   const context = useContext(ServicesContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error('useServices must be used within a ServicesProvider');
   }
   return context;

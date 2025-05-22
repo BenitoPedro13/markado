@@ -48,7 +48,7 @@ function Service({
   badgeColor
 }: ServicesProps) {
   const {notification} = useNotification();
-  const {updateServiceStatus} = useServices();
+  // const {updateServiceStatus} = useServices();
   const [isEnabled, setIsEnabled] = useState(status === 'active');
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const router = useRouter();
@@ -59,17 +59,17 @@ function Service({
     setIsEnabled(status === 'active');
   }, [status]);
 
-  const handleSwitchChange = () => {
-    const newStatus = !isEnabled ? 'active' : 'disabled';
-    setIsEnabled(!isEnabled);
-    updateServiceStatus(slug, newStatus);
-  };
+  // const handleSwitchChange = () => {
+  //   const newStatus = !isEnabled ? 'active' : 'disabled';
+  //   setIsEnabled(!isEnabled);
+  //   updateServiceStatus(slug, newStatus);
+  // };
 
-  const handleDeleteService = () => {
-    // Implementar a lógica de exclusão aqui
-    console.log('Deletando serviço:', slug);
-    setIsDeleteModalOpen(false);
-  };
+  // const handleDeleteService = () => {
+  //   // Implementar a lógica de exclusão aqui
+  //   console.log('Deletando serviço:', slug);
+  //   setIsDeleteModalOpen(false);
+  // };
 
   // Mapeia as cores do tema para as cores aceitas pelo Badge
   const getBadgeColor = () => {
@@ -124,7 +124,7 @@ function Service({
         >
           <Switch.Root
             checked={isEnabled}
-            onCheckedChange={handleSwitchChange}
+            // onCheckedChange={handleSwitchChange}
           />
           <ButtonGroup.Root>
             <Tooltip.Root>
@@ -176,6 +176,8 @@ function Service({
                   status: 'success'
                 });
 
+                setIsDeleteModalOpen(false);
+
                 // router.push(`/availability`);
               } catch (error: any) {
                 console.error('Error submitting service delete form:', error);
@@ -217,7 +219,7 @@ function Service({
                 variant="error"
                 size="small"
                 className="w-full"
-                onClick={handleDeleteService}
+                // onClick={handleDeleteService}
               >
                 Apagar
               </Button.Root>
