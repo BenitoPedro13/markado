@@ -30,6 +30,7 @@ import CreateServiceModal from '@/components/services/CreateServiceModal';
 import {useServices} from '@/contexts/services/ServicesContext';
 import {useSessionStore} from '@/providers/session-store-provider';
 import {MARKADO_URL} from '@/constants';
+import Link from 'next/link';
 
 type HeaderVariant = 'services';
 type TSelectedMenuItem = {
@@ -128,28 +129,32 @@ const getHeaderContent = (selectedMenuItem?: TSelectedMenuItem) => {
       <div className="services flex gap-2">
         <Tooltip.Root>
           <Tooltip.Trigger asChild>
-            <Button.Root
-              variant="neutral"
-              mode="stroke"
-              onClick={async () => {
-                const schedulingLink = getServiceListSchedulingLink();
+            <Link href={getServiceListSchedulingLink()} target="_blank">
+              <Button.Root
+                variant="neutral"
+                mode="stroke"
+                // onClick={async () => {
+                //   const schedulingLink = getServiceListSchedulingLink();
 
-                await navigator.clipboard.writeText(schedulingLink);
+                //   await navigator.clipboard.writeText(schedulingLink);
 
-                notification({
-                  title: 'Link da pagina de serviços copiado!',
-                  description:
-                    'Seu link da pagina de serviços foi copiado com sucesso.',
-                  variant: 'stroke',
-                  status: 'success'
-                });
-              }}
-            >
-              <Button.Icon as={RiLinksLine} />
-              Páginas de Serviços
-            </Button.Root>
+                //   notification({
+                //     title: 'Link da pagina de serviços copiado!',
+                //     description:
+                //       'Seu link da pagina de serviços foi copiado com sucesso.',
+                //     variant: 'stroke',
+                //     status: 'success'
+                //   });
+                // }}
+              >
+                <Button.Icon as={RiLinksLine} />
+                Páginas de Serviços
+              </Button.Root>
+            </Link>
           </Tooltip.Trigger>
-          <Tooltip.Content size="small">Copiar link da página de serviços</Tooltip.Content>
+          <Tooltip.Content size="small">
+            Ir para página de serviços
+          </Tooltip.Content>
         </Tooltip.Root>
 
         <FancyButton.Root
