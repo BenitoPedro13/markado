@@ -1,6 +1,6 @@
 'use client';
 
-import {useScheduling} from '@/contexts/SchedulingContext';
+import {useBooking} from '@/contexts/bookings/BookingContext';
 import * as Badge from '@/components/align-ui/ui/badge';
 import * as Button from '@/components/align-ui/ui/button';
 import * as ButtonGroup from '@/components/align-ui/ui/button-group';
@@ -64,8 +64,11 @@ export default function Scheduling({
   status,
   location
 }: SchedulingProps) {
-  const {updateSchedulingStatus, deleteScheduling, updateSchedulingType} =
-    useScheduling();
+  const {
+    updateBookingStatus: updateSchedulingStatus,
+    deleteBooking: deleteScheduling,
+    updateBookingType: updateSchedulingType
+  } = useBooking();
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [cancelMessage, setCancelMessage] = useState('');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -257,9 +260,7 @@ export default function Scheduling({
                     <Dropdown.ItemIcon as={RiUserAddLine} />
                     Adicionar participantes
                   </Dropdown.Item>
-                  <Dropdown.Item
-                    onClick={() => setIsRescheduleModalOpen(true)}
-                  >
+                  <Dropdown.Item onClick={() => setIsRescheduleModalOpen(true)}>
                     <Dropdown.ItemIcon as={RiSendPlane2Line} />
                     Solicitar reagendamento
                   </Dropdown.Item>
@@ -641,7 +642,10 @@ export default function Scheduling({
       </Notification.Provider>
 
       {/* Modal de reagendamento */}
-      <Modal.Root open={isRescheduleModalOpen} onOpenChange={setIsRescheduleModalOpen}>
+      <Modal.Root
+        open={isRescheduleModalOpen}
+        onOpenChange={setIsRescheduleModalOpen}
+      >
         <Modal.Content>
           <Modal.Header title="Solicitar reagendamento" />
           <Modal.Body>

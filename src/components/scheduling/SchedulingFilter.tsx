@@ -1,27 +1,27 @@
 'use client';
 
 import * as SegmentedControl from '@/components/align-ui/ui/segmented-control';
-import { useScheduling } from '@/contexts/SchedulingContext';
+import {useBooking} from '@/contexts/bookings/BookingContext';
 
 export default function SchedulingFilter() {
-  const { currentFilter, setFilter } = useScheduling();
+  const {filter, setFilter} = useBooking();
 
   return (
-    <SegmentedControl.Root 
-      value={currentFilter} 
-      onValueChange={(value) => setFilter(value as 'todas' | 'confirmadas' | 'canceladas')}
+    <SegmentedControl.Root
+      value={filter}
+      onValueChange={(value) =>
+        setFilter(value as 'all' | 'confirmed' | 'canceled')
+      }
     >
       <SegmentedControl.List>
-        <SegmentedControl.Trigger value="todas">
-          Todas
-        </SegmentedControl.Trigger>
-        <SegmentedControl.Trigger value="confirmadas">
+        <SegmentedControl.Trigger value="all">Todas</SegmentedControl.Trigger>
+        <SegmentedControl.Trigger value="confirmed">
           Confirmadas
         </SegmentedControl.Trigger>
-        <SegmentedControl.Trigger value="canceladas">
+        <SegmentedControl.Trigger value="canceled">
           Canceladas
         </SegmentedControl.Trigger>
       </SegmentedControl.List>
     </SegmentedControl.Root>
   );
-} 
+}

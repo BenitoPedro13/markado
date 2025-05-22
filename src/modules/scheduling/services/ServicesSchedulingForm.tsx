@@ -5,7 +5,6 @@ import * as Badge from '@/components/align-ui/ui/badge';
 import {badgeVariants} from '@/components/align-ui/ui/badge';
 import * as Skeleton from '@/components/align-ui/ui/skeleton';
 import {useBusiness} from '@/components/settings/business/Business';
-import {useScheduling} from '@/contexts/SchedulingContext';
 import {services as initialServices} from '@/data/services';
 import {ServiceBadgeColor} from '@/types/service';
 import {cn} from '@/utils/cn';

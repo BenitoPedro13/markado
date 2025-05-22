@@ -1,15 +1,15 @@
-'use client';
-
 import PageLayout from '@/components/PageLayout';
 import {useTranslations} from 'next-intl';
 import Header from '@/components/navigation/Header';
 import * as Divider from '@/components/align-ui/ui/divider';
-import {SchedulingProvider} from '@/contexts/SchedulingContext';
+import {BookingProvider} from '@/contexts/bookings/BookingContext';
 import SchedulingList from '@/components/scheduling/SchedulingList';
 import SchedulingFilter from '@/components/scheduling/SchedulingFilter';
 import SchedulingSearch from '@/components/scheduling/SchedulingSearch';
 import SchedulingViewControl from '@/components/scheduling/SchedulingViewControl';
-import { SchedulingSort } from '@/components/scheduling/SchedulingSort';
+import {SchedulingSort} from '@/components/scheduling/SchedulingSort';
+import SchedulingPageClient from '@/components/scheduling/SchedulingPageClient';
+import {getMeHandler} from '~/trpc/server/handlers/user.handler';
 
 function IconCmd(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -32,27 +32,8 @@ function IconCmd(props: React.SVGProps<SVGSVGElement>) {
 /** Services page of the website. */
 export default function ServicesPage() {
   return (
-    <PageLayout title="Home">
-      <Header variant="scheduling" />
-      <div className="px-8">
-        <Divider.Root />
-      </div>
-
-      <SchedulingProvider>
-        <div className="w-full gap-8 p-8">
-          <div className="flex justify-between">
-            <SchedulingFilter />
-            <div className="flex items-center justify-end gap-2">
-              <SchedulingSearch />
-              <SchedulingSort />
-              <SchedulingViewControl />
-            </div>
-          </div>
-        </div>
-        <div className="w-full gap-8 px-8">
-          <SchedulingList />
-        </div>
-      </SchedulingProvider>
-    </PageLayout>
+    <BookingProvider>
+      <SchedulingPageClient />
+    </BookingProvider>
   );
 }

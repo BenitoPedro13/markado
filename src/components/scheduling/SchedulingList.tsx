@@ -1,15 +1,15 @@
 'use client';
 
-import { useScheduling } from '@/contexts/SchedulingContext';
+import {useBooking} from '@/contexts/bookings/BookingContext';
 import Scheduling from './Scheduling';
 import * as Divider from '@/components/align-ui/ui/divider';
 
 export default function SchedulingList() {
-  const { filteredSchedulings } = useScheduling();
+  const {filteredBookings} = useBooking();
 
   return (
     <div className="rounded-lg w-full border border-stroke-soft-200">
-      {filteredSchedulings.map((scheduling) => (
+      {filteredBookings.map((scheduling) => (
         <div key={scheduling.id}>
           <Scheduling
             key={scheduling.id}
@@ -23,11 +23,9 @@ export default function SchedulingList() {
             status={scheduling.status}
             location={scheduling.location}
           />
-          <Divider.Root />  
+          <Divider.Root />
         </div>
       ))}
-      
     </div>
   );
-} 
-
+}
