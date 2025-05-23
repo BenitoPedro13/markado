@@ -1,4 +1,3 @@
-import {BookingProvider} from '@/contexts/bookings/BookingContext';
 import {
   getAllBookings,
   getBookingsByStatus
@@ -11,7 +10,6 @@ import BookingFilter from '@/components/scheduling/BookingFilter';
 import BookingSearch from '@/components/scheduling/BookingSearch';
 import BookingViewControl from '@/components/scheduling/BookingViewControl';
 import {BookingSort as ValidBookingSort} from '@/components/scheduling/BookingSort';
-import {Booking} from '@/data/bookings';
 
 const VALID_VIEWS = ['list', 'calendar'];
 const VALID_STATUSES = ['all', 'confirmed', 'canceled'];
