@@ -1,9 +1,7 @@
 'use client';
 
-import {useBooking} from '@/contexts/bookings/BookingContext';
 import * as Badge from '@/components/align-ui/ui/badge';
 import * as Button from '@/components/align-ui/ui/button';
-import * as ButtonGroup from '@/components/align-ui/ui/button-group';
 import * as Dropdown from '@/components/align-ui/ui/dropdown';
 import * as Drawer from '@/components/align-ui/ui/drawer';
 import * as Divider from '@/components/align-ui/ui/divider';
@@ -12,24 +10,16 @@ import * as Radio from '@/components/align-ui/ui/radio';
 import {
   RiComputerLine,
   RiMapPinLine,
-  RiEditLine,
   RiTimeLine,
   RiMore2Fill,
   RiDeleteBinLine,
-  RiPencilLine,
   RiUserAddLine,
-  RiMapPin2Line,
-  RiCheckLine,
-  RiCheckboxFill,
   RiCheckboxCircleFill,
-  RiCloseFill,
   RiCloseCircleFill,
   RiSendPlaneLine,
-  RiSendPlane2Line,
-  RiCloseLine
+  RiSendPlane2Line
 } from '@remixicon/react';
 import * as Modal from '@/components/align-ui/ui/modal';
-import * as Textarea from '@/components/align-ui/ui/textarea';
 import * as Notification from '@/components/align-ui/ui/notification';
 import {useState, useEffect} from 'react';
 
@@ -53,7 +43,7 @@ type Participant = {
 type LocationType = 'online' | 'presential';
 type OnlinePlatform = 'google-meet' | 'zoom' | 'teams';
 
-export default function Booking({
+export default function BookingListItem({
   id,
   title,
   duration,
@@ -64,11 +54,16 @@ export default function Booking({
   status,
   location
 }: BookingProps) {
-  const {
-    updateBookingStatus: updateSchedulingStatus,
-    deleteBooking: deleteScheduling,
-    updateBookingType: updateSchedulingType
-  } = useBooking();
+  const updateBookingStatus = (id: string, status: string) => {};
+
+  const deleteBooking = (id: string) => {};
+
+  const updateBookingType = (
+    id: string,
+    type: LocationType,
+    location: string
+  ) => {};
+
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [cancelMessage, setCancelMessage] = useState('');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -133,7 +128,7 @@ export default function Booking({
   const endDate = formatDate(endTime);
 
   const handleCancel = (message?: string) => {
-    updateSchedulingStatus(id, 'canceled');
+    updateBookingStatus(id, 'canceled');
     setIsCancelModalOpen(false);
     setCancelMessage('');
     setIsDrawerOpen(false);
@@ -603,7 +598,7 @@ export default function Booking({
                 try {
                   const newLocation =
                     selectedLocationType === 'online' ? 'Google Meet' : address;
-                  updateSchedulingType(id, selectedLocationType, newLocation);
+                  updateBookingType(id, selectedLocationType, newLocation);
                   setIsLocationModalOpen(false);
                   setNotificationType('success');
                   setShowNotification(true);
