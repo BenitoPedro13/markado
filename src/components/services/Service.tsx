@@ -38,7 +38,7 @@ export type ServicesProps = {
   description?: string;
   location?: string;
   badgeColor: ServiceBadgeColor;
-  users: TInitialServices[number]['users'];
+  users: {username: string}[];
 };
 
 function Service({
