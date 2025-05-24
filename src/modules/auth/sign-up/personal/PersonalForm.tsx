@@ -1,6 +1,6 @@
 'use client';
 
-import {MARKADO_DOMAIN} from '@/app/constants';
+import {MARKADO_DOMAIN} from '@/constants';
 import {Root as Button} from '@/components/align-ui/ui/button';
 import * as Input from '@/components/align-ui/ui/input';
 import {Asterisk, Root as Label} from '@/components/align-ui/ui/label';

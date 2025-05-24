@@ -25,6 +25,43 @@ export const DEFAULT_SCHEDULE: Schedule = [
 ];
 
 export function getAvailabilityFromSchedule(
+  schedule: Schedule,
+  userId: string,
+): Availability[] {
+  return schedule.reduce(
+    (availability: Availability[], times: TimeRange[], day: number) => {
+      const addNewTime = (time: TimeRange) =>
+        ({
+          userId,
+          days: [day],
+          startTime: time.start,
+          endTime: time.end
+        }) as Availability;
+
+      const filteredTimes = times.filter((time) => {
+        let idx;
+        if (
+          (idx = availability.findIndex(
+            (schedule) =>
+              schedule.startTime.toString() === time.start.toString() &&
+              schedule.endTime.toString() === time.end.toString()
+          )) !== -1
+        ) {
+          availability[idx].days.push(day);
+          return false;
+        }
+        return true;
+      });
+      filteredTimes.forEach((time) => {
+        availability.push(addNewTime(time));
+      });
+      return availability;
+    },
+    [] as Availability[]
+  );
+}
+
+export function getAvailabilityFromScheduleWithoutUser(
   schedule: Schedule
 ): Availability[] {
   return schedule.reduce(

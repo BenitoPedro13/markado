@@ -3,14 +3,12 @@
 import React, {useState, useEffect} from 'react';
 import * as Badge from '@/components/align-ui/ui/badge';
 import {
-  RiCodeLine,
-  RiFileCopyFill,
-  RiFlashlightFill,
-  RiShare2Line,
   RiTimeLine,
   RiDeleteBinLine,
   RiMore2Fill,
-  RiPencilLine
+  RiPencilLine,
+  RiFileCopyLine,
+  RiLinksLine
 } from '@remixicon/react';
 
 import * as ButtonGroup from '@/components/align-ui/ui/button-group';
@@ -19,34 +17,63 @@ import * as Switch from '@/components/align-ui/ui/switch';
 import * as Dropdown from '@/components/align-ui/ui/dropdown';
 import * as Modal from '@/components/align-ui/ui/modal';
 import * as Button from '@/components/align-ui/ui/button';
-import {useServices} from '@/contexts/ServicesContext';
+import {useServices} from '@/contexts/services/ServicesContext';
 import {useRouter} from 'next/navigation';
 import Link from 'next/link';
-import { ServicesProps } from '@/data/services';
+import {useNotification} from '@/hooks/use-notification';
+import {useLocale} from '@/hooks/use-locale';
+import { submitDeleteService } from '~/trpc/server/handlers/services.handler';
 
-type ServiceProps = Pick<ServicesProps, 'title' | 'slug' | 'duration' | 'price' | 'status' | 'badgeColor'>;
+import {ServiceBadgeColor} from '~/prisma/enums';
+import { TInitialServices } from '@/app/services/page';
+import { MARKADO_URL } from '@/constants';
 
-function Service({title, slug, duration, price, status, badgeColor}: ServiceProps) {
-  const {updateServiceStatus} = useServices();
+export type ServicesProps = {
+  id: number;
+  title: string;
+  slug: string;
+  duration: number;
+  price: number;
+  status: 'active' | 'disabled';
+  description?: string;
+  location?: string;
+  badgeColor: ServiceBadgeColor;
+  users: TInitialServices[number]['users'];
+};
+
+function Service({
+  id,
+  title,
+  slug,
+  duration,
+  price,
+  status,
+  badgeColor,
+  users
+}: ServicesProps) {
+  const {notification} = useNotification();
+  // const {updateServiceStatus} = useServices();
   const [isEnabled, setIsEnabled] = useState(status === 'active');
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const router = useRouter();
-  
+
+  const {t} = useLocale('Services');
+
   useEffect(() => {
     setIsEnabled(status === 'active');
   }, [status]);
 
-  const handleSwitchChange = () => {
-    const newStatus = !isEnabled ? 'active' : 'disabled';
-    setIsEnabled(!isEnabled);
-    updateServiceStatus(slug, newStatus);
-  };
+  // const handleSwitchChange = () => {
+  //   const newStatus = !isEnabled ? 'active' : 'disabled';
+  //   setIsEnabled(!isEnabled);
+  //   updateServiceStatus(slug, newStatus);
+  // };
 
-  const handleDeleteService = () => {
-    // Implementar a lógica de exclusão aqui
-    console.log('Deletando serviço:', slug);
-    setIsDeleteModalOpen(false);
-  };
+  // const handleDeleteService = () => {
+  //   // Implementar a lógica de exclusão aqui
+  //   console.log('Deletando serviço:', slug);
+  //   setIsDeleteModalOpen(false);
+  // };
 
   // Mapeia as cores do tema para as cores aceitas pelo Badge
   const getBadgeColor = () => {
@@ -66,20 +93,32 @@ function Service({title, slug, duration, price, status, badgeColor}: ServiceProp
     return colorMap[badgeColor];
   };
 
+  const getHostServiceSchedulingLink = () => {
+    if (!users || users.length < 1) {
+      return '';
+    }
+
+    if (users.length === 1) {
+      return `${MARKADO_URL}/${users[0].username}/${slug}`;
+    }
+
+    // TODO: Definir logica para quando o serviço é disponibilizado por mais de 1 host (times)
+    return `${MARKADO_URL}/${users[0].username}/${slug}`;
+  }
+
   return (
     <>
       <div className="p-4 flex hover:bg-bg-weak-50 transition-colors duration-200">
         {/* Leading */}
-        <Link
-          href={`services/${slug}`}
-          className="w-full cursor-pointer"
-        >
+        <Link href={`services/${slug}`} className="w-full cursor-pointer">
           <div className="w-full flex flex-col gap-2">
             <div className="flex gap-2  items-center">
               <span className="text-paragraph-lg text-text-strong-950">
                 {title}
               </span>
-              <span className="text-paragraph-sm text-text-sub-600">/{slug}</span>
+              <span className="text-paragraph-sm text-text-sub-600">
+                /{slug}
+              </span>
             </div>
             <div className="flex gap-2 items-center">
               <Badge.Root variant="light" color={getBadgeColor()} size="medium">
@@ -96,26 +135,33 @@ function Service({title, slug, duration, price, status, badgeColor}: ServiceProp
         </Link>
 
         {/* Trailing */}
-        <div className="flex gap-2 items-center" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="flex gap-2 items-center"
+          onClick={(e) => e.stopPropagation()}
+        >
           <Switch.Root
             checked={isEnabled}
-            onCheckedChange={handleSwitchChange}
+            // onCheckedChange={handleSwitchChange}
           />
           <ButtonGroup.Root>
             <Tooltip.Root>
               <Tooltip.Trigger asChild>
-                <ButtonGroup.Item>
-                  <ButtonGroup.Icon as={RiShare2Line} />
-                </ButtonGroup.Item>
-              </Tooltip.Trigger>
-              <Tooltip.Content size="small">
-                Compartilhar serviço
-              </Tooltip.Content>
-            </Tooltip.Root>
-            <Tooltip.Root>
-              <Tooltip.Trigger asChild>
-                <ButtonGroup.Item>
-                  <ButtonGroup.Icon as={RiFileCopyFill} />
+                <ButtonGroup.Item
+                  onClick={async () => {
+                    const schedulingLink = getHostServiceSchedulingLink();
+
+                    await navigator.clipboard.writeText(schedulingLink);
+
+                    notification({
+                      title: 'Link do serviço copiado!',
+                      description:
+                        'Seu link de agendamento do serviço foi copiado com sucesso.',
+                      variant: 'stroke',
+                      status: 'success'
+                    });
+                  }}
+                >
+                  <ButtonGroup.Icon as={RiLinksLine} />
                 </ButtonGroup.Item>
               </Tooltip.Trigger>
               <Tooltip.Content size="small">
@@ -134,6 +180,10 @@ function Service({title, slug, duration, price, status, badgeColor}: ServiceProp
                   Excluir serviço
                 </Dropdown.Item>
                 <Dropdown.Item>
+                  <Dropdown.ItemIcon as={RiFileCopyLine} />
+                  Duplicar serviço
+                </Dropdown.Item>
+                <Dropdown.Item>
                   <Dropdown.ItemIcon as={RiPencilLine} />
                   Editar serviço
                 </Dropdown.Item>
@@ -145,39 +195,67 @@ function Service({title, slug, duration, price, status, badgeColor}: ServiceProp
 
       <Modal.Root open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
         <Modal.Content className="max-w-[440px]">
-          <Modal.Body className="flex items-start gap-4">
-            <div className="rounded-10 bg-error-lighter flex size-10 shrink-0 items-center justify-center">
-              <RiDeleteBinLine className="text-error-base size-6" />
-            </div>
-            <div className="space-y-1">
-              <div className="text-label-md text-text-strong-950">
-                Apagar {title}
+          <form
+            action={async (formData) => {
+              try {
+                await submitDeleteService(id);
+
+                notification({
+                  title: 'Alterações salvas!',
+                  description: 'Seus updates foram salvos com sucesso.',
+                  variant: 'stroke',
+                  status: 'success'
+                });
+
+                setIsDeleteModalOpen(false);
+
+                // router.push(`/availability`);
+              } catch (error: any) {
+                console.error('Error submitting service delete form:', error);
+                notification({
+                  title: t('service_deleted_error'),
+                  description: error.message,
+                  variant: 'stroke',
+                  id: 'service_deleted_error',
+                  status: 'error'
+                });
+              }
+            }}
+          >
+            <Modal.Body className="flex items-start gap-4">
+              <div className="rounded-10 bg-error-lighter flex size-10 shrink-0 items-center justify-center">
+                <RiDeleteBinLine className="text-error-base size-6" />
               </div>
-              <div className="text-paragraph-sm text-text-sub-600">
-                Você não poderá recuperar o serviço após apagá-lo.
+              <div className="space-y-1">
+                <div className="text-label-md text-text-strong-950">
+                  Apagar {title}
+                </div>
+                <div className="text-paragraph-sm text-text-sub-600">
+                  Você não poderá recuperar o serviço após apagá-lo.
+                </div>
               </div>
-            </div>
-          </Modal.Body>
-          <Modal.Footer>
-            <Modal.Close asChild>
+            </Modal.Body>
+            <Modal.Footer>
+              <Modal.Close asChild>
+                <Button.Root
+                  variant="neutral"
+                  mode="stroke"
+                  size="small"
+                  className="w-full"
+                >
+                  Cancelar
+                </Button.Root>
+              </Modal.Close>
               <Button.Root
-                variant="neutral"
-                mode="stroke"
+                variant="error"
                 size="small"
                 className="w-full"
+                // onClick={handleDeleteService}
               >
-                Cancelar
+                Apagar
               </Button.Root>
-            </Modal.Close>
-            <Button.Root 
-              variant="error" 
-              size="small" 
-              className="w-full"
-              onClick={handleDeleteService}
-            >
-              Apagar
-            </Button.Root>
-          </Modal.Footer>
+            </Modal.Footer>
+          </form>
         </Modal.Content>
       </Modal.Root>
     </>

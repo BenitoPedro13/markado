@@ -13,7 +13,7 @@
 !.yarn/releases
 !.yarn/versions
 package-lock.json
-pnpm-lock.yml
+pnpm-lock.yaml
 
 # testing
 /coverage
@@ -51,3 +51,9 @@ next-env.d.ts
 
 # prisma client
 /prisma/app/generated/prisma/client
+
+# prisma generated
+/kysely
+/prisma/enums
+/prisma/zod
+

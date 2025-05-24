@@ -1,28 +1,35 @@
 'use client';
-
-import React from 'react';
-import Availability from './Availability';
-import { availabilities } from '@/data/availability';
+import Availability from '@/components/availability/Availability';
 import * as Divider from '@/components/align-ui/ui/divider';
-export default function AvailabilityList() {
+import {
+  TFormatedAvailabilitiesBySchedule
+} from '@/utils/formatAvailability';
+interface AvailabilityListProps {
+  initialAllAvailability: TFormatedAvailabilitiesBySchedule[] | null;
+}
+
+export default function AvailabilityList({
+  initialAllAvailability
+}: AvailabilityListProps) {
+  if (!initialAllAvailability) return null
+
   return (
-    
-      <div className="rounded-lg w-full border border-stroke-soft-200">
-        {availabilities.map((availability) => (
-          <div key={availability.id}>
-            <Availability
-            key={availability.id}
-            title={availability.title}
-            schedule={availability.schedule}
-            timezone={availability.timezone}
-            isDefault={availability.isDefault}
+    <div className="rounded-lg w-full border border-stroke-soft-200">
+      {initialAllAvailability.map((data) => (
+        <div key={data.scheduleId}>
+          <Availability
+            id={data.scheduleId}
+            key={data.scheduleId}
+            title={data.scheduleName}
+            schedule={data.availability}
+            timezone={data.timeZone}
+            isDefault={data.isDefault}
           />
-            {availability.id !== availabilities[availabilities.length - 1].id && (
-              <Divider.Root />
-            )} 
-          </div>
-        ))}
-      </div>
-    
+          {data !== initialAllAvailability[initialAllAvailability.length - 1] && (
+            <Divider.Root />
+          )}
+        </div>
+      ))}
+    </div>
   );
-} 
+}

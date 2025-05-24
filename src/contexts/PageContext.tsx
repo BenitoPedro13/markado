@@ -1,9 +1,17 @@
-"use client"
+'use client';
 
-import { createContext, useContext } from "react";
+import {
+  createContext,
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useState
+} from 'react';
 
 interface PageContextProps {
   pageName: string;
+  isCreateModalOpen: boolean;
+  setIsCreateModalOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 const PageContext = createContext<PageContextProps | undefined>(undefined);
@@ -16,9 +24,19 @@ export const usePageContext = () => {
   return context;
 };
 
-export const PageProvider: React.FC<{ pageName: string; children: React.ReactNode }> = ({ pageName, children }) => {
+export const PageProvider = ({
+  pageName,
+  children
+}: {
+  pageName: string;
+  children: React.ReactNode;
+}) => {
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+
   return (
-    <PageContext.Provider value={{ pageName }}>
+    <PageContext.Provider
+      value={{pageName, isCreateModalOpen, setIsCreateModalOpen}}
+    >
       {children}
     </PageContext.Provider>
   );
