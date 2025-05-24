@@ -1,18 +1,26 @@
 'use client';
 
 import * as SegmentedControl from '@/components/align-ui/ui/segmented-control';
-import {useBooking} from '@/contexts/bookings/BookingContext';
+import {usePathname, useRouter, useSearchParams} from 'next/navigation';
 
-export default function BookingFilter() {
-  const {filter, setFilter} = useBooking();
+interface BookingFilterProps {
+  status: string;
+}
+
+export default function BookingFilter({status}: BookingFilterProps) {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  function handleFilterChange(value: string) {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('status', value);
+    const newUrl = `${pathname}?${params.toString()}`;
+    router.push(newUrl);
+  }
 
   return (
-    <SegmentedControl.Root
-      value={filter}
-      onValueChange={(value) =>
-        setFilter(value as 'all' | 'confirmed' | 'canceled')
-      }
-    >
+    <SegmentedControl.Root value={status} onValueChange={handleFilterChange}>
       <SegmentedControl.List>
         <SegmentedControl.Trigger value="all">Todas</SegmentedControl.Trigger>
         <SegmentedControl.Trigger value="confirmed">

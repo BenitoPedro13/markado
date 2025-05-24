@@ -2,7 +2,7 @@
 
 import * as Select from '@/components/align-ui/ui/select';
 import {RiSortAsc} from '@remixicon/react';
-import {useBooking} from '@/contexts/bookings/BookingContext';
+import {useRouter, useSearchParams} from 'next/navigation';
 
 type SortOption = {
   value: 'az' | 'za' | 'newest' | 'oldest';
@@ -16,36 +16,23 @@ const sortOptions: SortOption[] = [
   {value: 'oldest', label: 'Mais antigos'}
 ];
 
-export function BookingSort() {
-  const {bookings, setBookings} = useBooking();
+interface BookingSortProps {
+  sort: SortOption['value'] | undefined;
+}
+
+export function BookingSort({sort = 'az'}: BookingSortProps) {
+  const searchParams = useSearchParams();
+  const router = useRouter();
 
   const handleSort = (value: string) => {
-    const sortedSchedulings = [...bookings];
-
-    switch (value) {
-      case 'az':
-        sortedSchedulings.sort((a, b) => a.title.localeCompare(b.title));
-        break;
-      case 'za':
-        sortedSchedulings.sort((a, b) => b.title.localeCompare(a.title));
-        break;
-      case 'newest':
-        sortedSchedulings.sort(
-          (a, b) => b.startTime.getTime() - a.startTime.getTime()
-        );
-        break;
-      case 'oldest':
-        sortedSchedulings.sort(
-          (a, b) => a.startTime.getTime() - b.startTime.getTime()
-        );
-        break;
-    }
-
-    setBookings(sortedSchedulings);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('sort', value);
+    const newUrl = `${window.location.pathname}?${params.toString()}`;
+    router.push(newUrl);
   };
 
   return (
-    <Select.Root onValueChange={handleSort} defaultValue="az">
+    <Select.Root onValueChange={handleSort} defaultValue="az" value={sort}>
       <Select.Trigger className="w-full max-w-[180px]">
         <Select.TriggerIcon as={RiSortAsc} />
         <Select.Value placeholder="Ordenar por" />
