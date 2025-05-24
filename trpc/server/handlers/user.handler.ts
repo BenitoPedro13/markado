@@ -1,3 +1,5 @@
+'use server';
+
 import {prisma} from '@/lib/prisma';
 import {TRPCError} from '@trpc/server';
 import {hash} from 'bcryptjs';
@@ -152,4 +154,41 @@ export async function getUserByUsernameHandler(ctx: Context, username: string) {
     ...user,
     emailMd5: crypto.createHash('md5').update(user.email).digest('hex')
   };
+}
+
+export async function getHostUserByUsername(username: string) {
+  try {
+    const user = await prisma.user.findFirst({
+      where: {
+        username
+      },
+      select: {
+        name: true,
+        username: true,
+        image: true,
+        biography: true,
+        timeZone: true,
+        schedules: {
+          include: {
+            availability: true
+          }
+        }
+      }
+    });
+
+    if (!user) {
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'User not found'
+      });
+    }
+
+    return user;
+  } catch (error) {
+    console.error('Error fetching user by username:', error);
+    throw new TRPCError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Internal server error'
+    });
+  }
 }

@@ -17,7 +17,7 @@ import * as Select from '@/components/align-ui/ui/select';
 import {ServiceBadgeColor} from '@/types/service';
 import * as Divider from '@/components/align-ui/ui/divider';
 import ServicesSchedulingForm from '@/modules/scheduling/services/ServicesSchedulingForm';
-import {SchedulingProvider} from '@/contexts/SchedulingContext';
+import {BookingProvider} from '@/contexts/bookings/BookingContext';
 import * as Textarea from '@/components/align-ui/ui/textarea';
 import {useState, createContext, useContext} from 'react';
 
@@ -193,88 +193,96 @@ export default function Business({me}: Props) {
           {/** Redes sociais */}
           <div className="flex rounded-lg border border-stroke-soft-200 p-4 flex-col gap-4">
             <div className="flex flex-col gap-2">
-              <p className="text-label-lg text-text-strong-950">Redes sociais</p>
+              <p className="text-label-lg text-text-strong-950">
+                Redes sociais
+              </p>
               <p className="text-paragraph-sm text-text-sub-600">
-              Coloque o link das suas redes
-            </p>
-          </div>
-          <div className="flex flex-col gap-4">
-            <div className="flex flex-col gap-2">
-              <Label.Root htmlFor="instagram">Instagram</Label.Root>
-              <Input.Root>
-                <Input.Wrapper>
-                  <Input.Icon>
-                    <RiInstagramLine />
-                  </Input.Icon>
-                  <Input.Input
-                    placeholder="https://instagram.com/username"
-                    value={socialLinks.instagram || ''}
-                    onChange={(e) => setSocialLink('instagram', e.target.value)}
-                  />
-                </Input.Wrapper>
-              </Input.Root>
+                Coloque o link das suas redes
+              </p>
             </div>
-            <div className="flex flex-col gap-2">
-              <Label.Root htmlFor="twitter">Twitter</Label.Root>
-              <Input.Root>
-                <Input.Wrapper>
-                  <Input.Icon>
-                    <RiTwitterXLine />
-                  </Input.Icon>
-                  <Input.Input
-                    placeholder="https://twitter.com/username"
-                    value={socialLinks.twitter || ''}
-                    onChange={(e) => setSocialLink('twitter', e.target.value)}
-                  />
-                </Input.Wrapper>
-              </Input.Root>
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-2">
+                <Label.Root htmlFor="instagram">Instagram</Label.Root>
+                <Input.Root>
+                  <Input.Wrapper>
+                    <Input.Icon>
+                      <RiInstagramLine />
+                    </Input.Icon>
+                    <Input.Input
+                      placeholder="https://instagram.com/username"
+                      value={socialLinks.instagram || ''}
+                      onChange={(e) =>
+                        setSocialLink('instagram', e.target.value)
+                      }
+                    />
+                  </Input.Wrapper>
+                </Input.Root>
+              </div>
+              <div className="flex flex-col gap-2">
+                <Label.Root htmlFor="twitter">Twitter</Label.Root>
+                <Input.Root>
+                  <Input.Wrapper>
+                    <Input.Icon>
+                      <RiTwitterXLine />
+                    </Input.Icon>
+                    <Input.Input
+                      placeholder="https://twitter.com/username"
+                      value={socialLinks.twitter || ''}
+                      onChange={(e) => setSocialLink('twitter', e.target.value)}
+                    />
+                  </Input.Wrapper>
+                </Input.Root>
+              </div>
+              <div className="flex flex-col gap-2">
+                <Label.Root htmlFor="linkedin">LinkedIn</Label.Root>
+                <Input.Root>
+                  <Input.Wrapper>
+                    <Input.Icon>
+                      <RiLinkedinLine />
+                    </Input.Icon>
+                    <Input.Input
+                      placeholder="https://linkedin.com/username"
+                      value={socialLinks.linkedin || ''}
+                      onChange={(e) =>
+                        setSocialLink('linkedin', e.target.value)
+                      }
+                    />
+                  </Input.Wrapper>
+                </Input.Root>
+              </div>
+              <div className="flex flex-col gap-2">
+                <Label.Root htmlFor="facebook">Facebook</Label.Root>
+                <Input.Root>
+                  <Input.Wrapper>
+                    <Input.Icon>
+                      <RiFacebookLine />
+                    </Input.Icon>
+                    <Input.Input
+                      placeholder="https://facebook.com/username"
+                      value={socialLinks.facebook || ''}
+                      onChange={(e) =>
+                        setSocialLink('facebook', e.target.value)
+                      }
+                    />
+                  </Input.Wrapper>
+                </Input.Root>
+              </div>
+              <div className="flex flex-col gap-2">
+                <Label.Root htmlFor="website">Website</Label.Root>
+                <Input.Root>
+                  <Input.Wrapper>
+                    <Input.Icon>
+                      <RiGlobalLine />
+                    </Input.Icon>
+                    <Input.Input
+                      placeholder="https://meuwebsite.com/"
+                      value={socialLinks.website || ''}
+                      onChange={(e) => setSocialLink('website', e.target.value)}
+                    />
+                  </Input.Wrapper>
+                </Input.Root>
+              </div>
             </div>
-            <div className="flex flex-col gap-2">
-              <Label.Root htmlFor="linkedin">LinkedIn</Label.Root>
-              <Input.Root>
-                <Input.Wrapper>
-                  <Input.Icon>
-                    <RiLinkedinLine />
-                  </Input.Icon>
-                  <Input.Input
-                    placeholder="https://linkedin.com/username"
-                    value={socialLinks.linkedin || ''}
-                    onChange={(e) => setSocialLink('linkedin', e.target.value)}
-                  />
-                </Input.Wrapper>
-              </Input.Root>
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label.Root htmlFor="facebook">Facebook</Label.Root>
-              <Input.Root>
-                <Input.Wrapper>
-                  <Input.Icon>
-                    <RiFacebookLine />
-                  </Input.Icon>
-                  <Input.Input
-                    placeholder="https://facebook.com/username"
-                    value={socialLinks.facebook || ''}
-                    onChange={(e) => setSocialLink('facebook', e.target.value)}
-                  />
-                </Input.Wrapper>
-              </Input.Root>
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label.Root htmlFor="website">Website</Label.Root>
-              <Input.Root>
-                <Input.Wrapper>
-                  <Input.Icon>
-                    <RiGlobalLine />
-                  </Input.Icon>
-                  <Input.Input
-                    placeholder="https://meuwebsite.com/"
-                    value={socialLinks.website || ''}
-                    onChange={(e) => setSocialLink('website', e.target.value)}
-                  />
-                </Input.Wrapper>
-              </Input.Root>
-            </div>
-          </div>
           </div>
         </div>
 
@@ -291,9 +299,9 @@ export default function Business({me}: Props) {
                 <RiMoreLine className="text-bg-sub-300" />
               </div>
             </div>
-            <SchedulingProvider username={me.username || ''}>
+            <BookingProvider username={me.username || ''}>
               <ServicesSchedulingForm fullHeight={false} />
-            </SchedulingProvider>
+            </BookingProvider>
           </div>
         </div>
       </div>

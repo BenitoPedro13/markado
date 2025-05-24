@@ -9,10 +9,21 @@ import {z} from 'zod';
 import {cookies} from 'next/headers';
 import {
   ZCreateAvailabilitySchema,
-  ZUpdateAvailabilitySchema
+  ZUpdateAvailabilitySchema,
+  ZUpdateInputSchema
 } from '../schemas/availability.schema';
 import {timeStringToDate} from '@/utils/time-utils';
-import { transformAvailability, transformDateOverrides, transformWorkingHours } from '~/trpc/server/utils/availability/findDetailedScheduleById';
+import {
+  setupDefaultSchedule,
+  transformAvailability,
+  transformDateOverrides,
+  transformScheduleToAvailability,
+  transformWorkingHours
+} from '~/trpc/server/utils/availability/findDetailedScheduleById';
+import { getAvailabilityFromSchedule } from '@/lib/availability';
+import { TRPCError } from '@trpc/server';
+import { getAllAvailabilitiesHandler } from '../handlers/availability.handler';
+import { revalidatePath } from 'next/cache';
 
 // Define a type for the update data that matches the Prisma schema
 type AvailabilityUpdateData = {
@@ -26,19 +37,7 @@ type AvailabilityUpdateData = {
 export const availabilityRouter = router({
   // Get all availabilities for the current user
   getAll: protectedProcedure.query(async ({ctx}) => {
-    return ctx.prisma.availability.findMany({
-      where: {
-        userId: ctx.session?.user.id
-      },
-      include: {
-        schedule: {
-          include: {
-            user: true,
-            availability: true
-          }
-        }
-      }
-    });
+    return getAllAvailabilitiesHandler(ctx)
   }),
 
   // Get availability by ID
@@ -111,7 +110,7 @@ export const availabilityRouter = router({
         timeZone,
         dateOverrides: transformDateOverrides(schedule, timeZone),
         // isDefault: !input.scheduleId || defaultScheduleId === schedule.id,
-        isLastSchedule: schedulesCount <= 1,
+        isLastSchedule: schedulesCount <= 1
         // readOnly: schedule.userId !== userId && !isManagedEventType
       };
     }),
@@ -136,6 +135,11 @@ export const availabilityRouter = router({
       // Convert time strings to Date objects for database storage
       const startDateTime = timeStringToDate(input.startTime, timezone);
       const endDateTime = timeStringToDate(input.endTime, timezone);
+
+      // revalidatePath('/availability');
+      if (input.scheduleId) {
+        // revalidatePath(`/availability/${input.scheduleId}`);
+      }
 
       return ctx.prisma.availability.create({
         data: {
@@ -164,7 +168,8 @@ export const availabilityRouter = router({
         where: {
           id: input.id,
           userId: ctx.session?.user.id
-        }
+        },
+        include: { schedule: true }
       });
 
       if (!existingAvailability) {
@@ -198,6 +203,11 @@ export const availabilityRouter = router({
         updateData.endTime = timeStringToDate(input.data.endTime);
       }
 
+      // revalidatePath('/availability');
+      if (existingAvailability.scheduleId) {
+        // revalidatePath(`/availability/${existingAvailability.scheduleId}`);
+      }
+
       return ctx.prisma.availability.update({
         where: {
           id: input.id
@@ -209,6 +219,148 @@ export const availabilityRouter = router({
       });
     }),
 
+  updateDetailedAvailability: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+        data: ZUpdateInputSchema
+      })
+    )
+    .mutation(async ({input, ctx}) => {
+      const {user} = ctx;
+
+      if (!user) {
+        throw new TRPCError({
+          code: 'UNAUTHORIZED'
+        });
+      }
+
+      const availability = input.data.schedule
+        ? getAvailabilityFromSchedule(input.data.schedule, user.id)
+        : (input.data.dateOverrides || []).map((dateOverride) => ({
+            startTime: dateOverride.start,
+            endTime: dateOverride.end,
+            date: dateOverride.start,
+            days: []
+          }));
+
+      // Not able to update the schedule with userId where clause, so fetch schedule separately and then validate
+      // Bug: https://github.com/prisma/prisma/issues/7290
+      const userSchedule = await ctx.prisma.schedule.findUnique({
+        where: {
+          id: input.data.scheduleId
+        },
+        select: {
+          userId: true,
+          name: true,
+          id: true
+        }
+      });
+
+      if (!userSchedule) {
+        throw new TRPCError({
+          code: 'UNAUTHORIZED'
+        });
+      }
+
+      if (userSchedule?.userId !== user.id) {
+        // const hasEditPermission = await hasEditPermissionForUserID({
+        //   ctx,
+        //   input: {memberId: userSchedule.userId}
+        // });
+        // if (!hasEditPermission) {
+        //   throw new TRPCError({
+        //     code: 'UNAUTHORIZED'
+        //   });
+        // }
+
+        throw new TRPCError({
+          code: 'UNAUTHORIZED'
+        });
+      }
+
+      let updatedUser;
+      if (input.data.isDefault) {
+        const setupDefault = await setupDefaultSchedule(
+          user.id,
+          input.data.scheduleId,
+          prisma
+        );
+        updatedUser = setupDefault;
+      }
+
+      if (!input.data.name) {
+        // TODO: Improve
+        // We don't want to pass the full schedule for just a set as default update
+        // but in the current logic, this wipes the existing availability.
+        // Return early to prevent this from happening.
+        return {
+          schedule: userSchedule,
+          isDefault: updatedUser
+            ? updatedUser.defaultScheduleId === input.data.scheduleId
+            : user.defaultScheduleId === input.data.scheduleId
+        };
+      }
+
+      const schedule = await ctx.prisma.schedule.update({
+        where: {
+          id: input.data.scheduleId
+        },
+        data: {
+          timeZone: input.data.timeZone,
+          name: input.data.name,
+          availability: {
+            deleteMany: {
+              scheduleId: {
+                equals: input.data.scheduleId
+              }
+            },
+            createMany: {
+              data: [
+                ...availability,
+                ...(input.data.dateOverrides || []).map((override) => ({
+                  date: override.start,
+                  startTime: override.start,
+                  endTime: override.end
+                }))
+              ]
+            }
+          }
+        },
+        select: {
+          id: true,
+          userId: true,
+          name: true,
+          availability: true,
+          timeZone: true
+          // eventType: {
+          //   select: {
+          //     id: true,
+          //     eventName: true
+          //   }
+          // }
+        }
+      });
+
+      const userAvailability = transformScheduleToAvailability(schedule);
+
+      // revalidatePath('/availability'); // revalidate the list page
+      // revalidatePath(`/availability/${schedule.id}`); // revalidate the details page
+
+      return {
+        schedule,
+        availability: userAvailability,
+        timeZone: schedule.timeZone || user.timeZone,
+        isDefault: updatedUser
+          ? updatedUser.defaultScheduleId === schedule.id
+          : user.defaultScheduleId === schedule.id,
+        prevDefaultId: user.defaultScheduleId,
+        currentDefaultId: updatedUser
+          ? updatedUser.defaultScheduleId
+          : user.defaultScheduleId
+      };
+    }),
+
   // Delete an availability
   delete: protectedProcedure
     .input(z.object({id: z.number()}))
@@ -218,13 +370,19 @@ export const availabilityRouter = router({
         where: {
           id: input.id,
           userId: ctx.session?.user.id
-        }
+        },
+        include: { schedule: true }
       });
 
       if (!existingAvailability) {
         throw new Error(
           "Availability not found or you don't have permission to delete it"
         );
+      }
+
+      revalidatePath('/availability');
+      if (existingAvailability.scheduleId) {
+        revalidatePath(`/availability/${existingAvailability.scheduleId}`);
       }
 
       return ctx.prisma.availability.delete({

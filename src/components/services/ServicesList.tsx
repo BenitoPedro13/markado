@@ -1,29 +1,34 @@
 'use client';
 
+import { TInitialServices } from '@/app/services/page';
 import * as Divider from '@/components/align-ui/ui/divider';
 import Service from '@/components/services/Service';
-import { useServices } from '@/contexts/ServicesContext';
+import {useServices} from '@/contexts/services/ServicesContext';
 
-export default function ServicesList() {
-  const { filteredServices } = useServices();
+interface ServicesListProps {
+  initialAllServices: TInitialServices;
+}
 
+export default function ServicesList({initialAllServices}: ServicesListProps) {
   return (
     <div className="px-8">
       <div className="rounded-lg w-full border border-stroke-soft-200">
-        {filteredServices.map(service => (
+        {initialAllServices.map((service, idx) => (
           <div key={service.slug}>
             <Service
+              users={service.users}
+              id={service.id}
               title={service.title}
               slug={service.slug}
-              duration={service.duration}
+              duration={service.length}
               price={service.price}
-              status={service.status}
+              status={service.hidden ? 'disabled' : 'active'}
               badgeColor={service.badgeColor}
             />
-            <Divider.Root />
+            {idx !== initialAllServices.length - 1 && <Divider.Root />}
           </div>
         ))}
       </div>
     </div>
   );
-} 
+}

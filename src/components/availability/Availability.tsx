@@ -15,6 +15,10 @@ import * as Dropdown from '@/components/align-ui/ui/dropdown';
 import * as Modal from '@/components/align-ui/ui/modal';
 import * as Button from '@/components/align-ui/ui/button';
 import Link from 'next/link';
+import {duplicateScheduleHandler, submitDeleteSchedule} from '~/trpc/server/handlers/schedule.handler';
+import {useRouter} from 'next/navigation';
+import {useNotification} from '@/hooks/use-notification';
+import { useLocale } from '@/hooks/use-locale';
 
 type AvailabilityProps = {
   id: number;
@@ -22,8 +26,8 @@ type AvailabilityProps = {
   schedule?: string;
   timezone?: string | null;
   isDefault?: boolean;
-  onDuplicate: (id: number) => void;
-  onDelete: (id: number) => void;
+  // onDuplicate: (id: number) => void;
+  // onDelete: (id: number) => void;
 };
 
 export default function Availability({
@@ -32,15 +36,16 @@ export default function Availability({
   schedule,
   timezone,
   isDefault = false,
-  onDuplicate,
-  onDelete
+  // onDuplicate,
+  // onDelete
 }: AvailabilityProps) {
+  const {notification} = useNotification();
+
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-  const handleDelete = () => {
-    onDelete(id);
-    setIsDeleteModalOpen(false);
-  };
+  const router = useRouter();
+
+  const {t} = useLocale('Availability');
 
   return (
     <>
@@ -91,11 +96,13 @@ export default function Availability({
                     <Dropdown.ItemIcon as={RiDeleteBinLine} />
                     Excluir disponibilidade
                   </Dropdown.Item>
-                  <Dropdown.Item>
+                  <Dropdown.Item
+                    onClick={() => router.push(`/availability/${id}`)}
+                  >
                     <Dropdown.ItemIcon as={RiPencilLine} />
                     Editar disponibilidade
                   </Dropdown.Item>
-                  <Dropdown.Item onClick={() => onDuplicate(id)}>
+                  <Dropdown.Item onClick={() => duplicateScheduleHandler(id)}>
                     <Dropdown.ItemIcon as={RiFileCopyLine} />
                     Duplicar disponibilidade
                   </Dropdown.Item>
@@ -108,39 +115,66 @@ export default function Availability({
 
       <Modal.Root open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
         <Modal.Content className="max-w-[440px]">
-          <Modal.Body className="flex items-start gap-4">
-            <div className="rounded-10 bg-error-lighter flex size-10 shrink-0 items-center justify-center">
-              <RiDeleteBinLine className="text-error-base size-6" />
-            </div>
-            <div className="space-y-1">
-              <div className="text-label-md text-text-strong-950">
-                Apagar "{title}"
+          <form
+            action={async (formData) => {
+              try {
+                // console.log('availability.id', id);
+                await submitDeleteSchedule(id);
+
+                notification({
+                  title: 'Alterações salvas!',
+                  description: 'Seus updates foram salvos com sucesso.',
+                  variant: 'stroke',
+                  status: 'success'
+                });
+
+                // router.push(`/availability`);
+              } catch (error: any) {
+                console.error('Error submitting availability form:', error);
+                notification({
+                  title: t('schedule_updated_error'),
+                  description: error.message,
+                  variant: 'stroke',
+                  id: 'schedule_updated_error',
+                  status: 'error'
+                });
+              }
+            }}
+          >
+            <Modal.Body className="flex items-start gap-4">
+              <div className="rounded-10 bg-error-lighter flex size-10 shrink-0 items-center justify-center">
+                <RiDeleteBinLine className="text-error-base size-6" />
               </div>
-              <div className="text-paragraph-sm text-text-sub-600">
-                Você não poderá recuperar a disponibilidade após apagá-la.
+              <div className="space-y-1">
+                <div className="text-label-md text-text-strong-950">
+                  Apagar "{title}"
+                </div>
+                <div className="text-paragraph-sm text-text-sub-600">
+                  Você não poderá recuperar a disponibilidade após apagá-la.
+                </div>
               </div>
-            </div>
-          </Modal.Body>
-          <Modal.Footer>
-            <Modal.Close asChild>
+            </Modal.Body>
+            <Modal.Footer>
+              <Modal.Close asChild>
+                <Button.Root
+                  variant="neutral"
+                  mode="stroke"
+                  size="small"
+                  className="w-full"
+                >
+                  Cancelar
+                </Button.Root>
+              </Modal.Close>
               <Button.Root
-                variant="neutral"
-                mode="stroke"
+                variant="error"
                 size="small"
                 className="w-full"
+                // onClick={handleDelete}
               >
-                Cancelar
+                Apagar
               </Button.Root>
-            </Modal.Close>
-            <Button.Root
-              variant="error"
-              size="small"
-              className="w-full"
-              onClick={handleDelete}
-            >
-              Apagar
-            </Button.Root>
-          </Modal.Footer>
+            </Modal.Footer>
+          </form>
         </Modal.Content>
       </Modal.Root>
     </>

@@ -4,6 +4,8 @@ import {Schedule, TimeRange} from '@/types/scheadule';
 import {Availability} from '~/prisma/app/generated/prisma/client';
 import { yyyymmdd } from '@/lib/date-fns';
 
+import type { PrismaClient } from '~/prisma/app/generated/prisma/client';
+
 type ScheduleAvailability = Pick<
   Availability,
   'days' | 'startTime' | 'endTime'
@@ -109,3 +111,18 @@ export function transformDateOverrides(
     [] as {ranges: TimeRange[]}[]
   );
 }
+
+export const setupDefaultSchedule = async (
+  userId: string,
+  scheduleId: number,
+  prisma: PrismaClient
+) => {
+  return prisma.user.update({
+    where: {
+      id: userId
+    },
+    data: {
+      defaultScheduleId: scheduleId
+    }
+  });
+};

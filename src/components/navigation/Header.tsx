@@ -28,10 +28,15 @@ import { useRouter } from 'next/navigation';
 import { DatepickerRangeDemo } from '@/components/align-ui/daterange';
 import * as Input from '@/components/align-ui/ui/input';
 import { usePageContext } from '@/contexts/PageContext';
-import { useAvailability } from '@/contexts/AvailabilityContext';
-import CreateServiceModal from '@/components/services/CreateServiceModal';
+import { useAvailability } from '@/contexts/availability/AvailabilityContext';
+// import CreateServiceModal from '@/components/services/CreateServiceModal';
 
-type HeaderVariant = 'scheduling' | 'availability' | 'services' | 'reports' | 'settings';
+type HeaderVariant =
+  | 'scheduling'
+  | 'availability'
+  | 'services'
+  | 'reports'
+  | 'settings';
 type HeaderMode = 'default' | 'inside';
 
 type HeaderProps = {
@@ -225,7 +230,12 @@ function Header({
     return (
       <div className="w-full h-[88px] px-8 py-5 relative bg-bg-white-0 inline-flex justify-between items-center overflow-hidden">
         <div className="flex items-center gap-3">
-          <Button.Root variant="neutral" mode="stroke" size="small" onClick={() => router.back()}>
+          <Button.Root
+            variant="neutral"
+            mode="stroke"
+            size="small"
+            onClick={() => router.back()}
+          >
             <Button.Icon as={RiArrowLeftSLine} />
           </Button.Root>
           <div className="flex flex-col">
@@ -321,9 +331,7 @@ function Header({
                         <ButtonGroup.Icon as={RiCodeLine} />
                       </ButtonGroup.Item>
                     </Tooltip.Trigger>
-                    <Tooltip.Content size="small">
-                      Criar embed
-                    </Tooltip.Content>
+                    <Tooltip.Content size="small">Criar embed</Tooltip.Content>
                   </Tooltip.Root>
                 </ButtonGroup.Root>
               </>
@@ -373,7 +381,7 @@ function Header({
           </div>
           <FancyButton.Root
             variant="neutral"
-            size='small'
+            size="small"
             onClick={() => {
               if ((window as any).submitServiceForm) {
                 (window as any).submitServiceForm();
@@ -414,10 +422,10 @@ function Header({
         </div>
         <div className="flex justify-start items-center gap-3">{buttons}</div>
       </div>
-      <CreateServiceModal 
+      {/* <CreateServiceModal 
         open={isCreateServiceModalOpen} 
         onOpenChange={setIsCreateServiceModalOpen} 
-      />
+      /> */}
     </>
   );
 }
