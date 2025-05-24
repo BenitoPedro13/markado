@@ -27,6 +27,7 @@ import { submitDeleteService } from '~/trpc/server/handlers/services.handler';
 import {ServiceBadgeColor} from '~/prisma/enums';
 import { TInitialServices } from '@/app/services/page';
 import { MARKADO_URL } from '@/constants';
+import { UserProfile } from '@/types/UserProfile';
 
 export type ServicesProps = {
   id: number;
@@ -38,7 +39,7 @@ export type ServicesProps = {
   description?: string;
   location?: string;
   badgeColor: ServiceBadgeColor;
-  users: {username: string}[];
+  // username: string;
 };
 
 function Service({
@@ -49,13 +50,14 @@ function Service({
   price,
   status,
   badgeColor,
-  users
+  // username
 }: ServicesProps) {
   const {notification} = useNotification();
   // const {updateServiceStatus} = useServices();
   const [isEnabled, setIsEnabled] = useState(status === 'active');
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const router = useRouter();
+  const {state: {initialMe}} = useServices();
 
   const {t} = useLocale('Services');
 
@@ -94,16 +96,11 @@ function Service({
   };
 
   const getHostServiceSchedulingLink = () => {
-    if (!users || users.length < 1) {
+    if (!initialMe) {
       return '';
     }
 
-    if (users.length === 1) {
-      return `${MARKADO_URL}/${users[0].username}/${slug}`;
-    }
-
-    // TODO: Definir logica para quando o serviço é disponibilizado por mais de 1 host (times)
-    return `${MARKADO_URL}/${users[0].username}/${slug}`;
+    return `${MARKADO_URL}/${initialMe.username}/${slug}`;
   }
 
   return (

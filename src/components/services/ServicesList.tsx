@@ -16,7 +16,6 @@ export default function ServicesList({initialAllServices}: ServicesListProps) {
         {initialAllServices.map((service, idx) => (
           <div key={service.slug}>
             <Service
-              users={service.users}
               id={service.id}
               title={service.title}
               slug={service.slug}

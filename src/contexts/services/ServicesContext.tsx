@@ -12,6 +12,7 @@ import {
 import {useRouter, useSearchParams} from 'next/navigation';
 
 import {TInitialServices} from '@/app/services/page';
+import {Me} from '@/app/settings/page';
 
 export enum FilterType {
   ALL = 'ALL',
@@ -27,6 +28,7 @@ type ServicesContextType = {
   setSearch: (search: string) => void;
   searchValue: string;
   state: {
+    initialMe: Me | null;
     isCreateServiceModalOpen: boolean;
     setIsCreateServiceModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   };
@@ -40,10 +42,12 @@ const ServicesContext = createContext<ServicesContextType | null>(null);
 
 export function ServicesProvider({
   children,
-  initialServices = []
+  initialServices = [],
+  initialMe
 }: {
   children: ReactNode;
   initialServices?: TInitialServices;
+  initialMe: Me | null;
 }) {
   const [isCreateServiceModalOpen, setIsCreateServiceModalOpen] =
     useState(false);
@@ -126,6 +130,7 @@ export function ServicesProvider({
       setSearch,
       searchValue,
       state: {
+        initialMe: initialMe ?? null,
         isCreateServiceModalOpen,
         setIsCreateServiceModalOpen
       },

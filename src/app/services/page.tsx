@@ -6,6 +6,7 @@ import {getEventTypesFromGroup} from '~/trpc/server/handlers/services.handler';
 import {redirect} from 'next/navigation';
 import {auth} from '@/auth';
 import ServicesListPage from '@/modules/services/ServicesListPage';
+import { getMeByUserId } from '~/trpc/server/handlers/user.handler';
 
 export type TInitialServices = Awaited<
   ReturnType<typeof getEventTypesFromGroup>
@@ -44,12 +45,13 @@ export default async function ServicesPage({
   };
 
   const {eventTypes: initialServices} = await getEventTypesFromGroup({input});
+  const me = await getMeByUserId(userId);
 
   console.log('initialServices:', initialServices);
 
   return (
     <PageLayout title="Home">
-      <ServicesProvider initialServices={initialServices}>
+      <ServicesProvider initialServices={initialServices} initialMe={me}>
         <ServicesListPage />
       </ServicesProvider>
     </PageLayout>

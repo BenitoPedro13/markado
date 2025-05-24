@@ -11,7 +11,7 @@ export const services: ServicesProps[] = [
     description: 'Aprenda a usar o Figma do zero ao avançado',
     location: 'Online via Google Meet',
     badgeColor: 'feature',
-    users: [{username: 'rafael'}]
+    // username: 'rafael'
   },
   {
     id: 2,
@@ -23,7 +23,7 @@ export const services: ServicesProps[] = [
     description: 'Aprenda a criar protótipos interativos com Framer',
     location: 'Online via Google Meet',
     badgeColor: 'information',
-    users: [{username: 'rafael'}]
+    // username: 'rafael'
   },
   {
     id: 3,
@@ -35,7 +35,7 @@ export const services: ServicesProps[] = [
     description: 'Domine o Photoshop para design e edição de imagens',
     location: 'Online via Google Meet',
     badgeColor: 'success',
-    users: [{username: 'rafael'}]
+    // username: 'rafael'
   },
   {
     id: 4,
@@ -47,7 +47,7 @@ export const services: ServicesProps[] = [
     description: 'Consultoria personalizada para seu projeto de design',
     location: 'Online via Google Meet',
     badgeColor: 'verified',
-    users: [{username: 'rafael'}]
+    // username: 'rafael'
   },
   {
     id: 5,
@@ -59,6 +59,6 @@ export const services: ServicesProps[] = [
     description: 'Bate-papo sobre design, carreira e mercado',
     location: 'Online via Google Meet',
     badgeColor: 'highlighted',
-    users: [{username: 'rafael'}]
+    // username: 'rafael'
   }
 ];
