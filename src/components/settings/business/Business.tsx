@@ -299,7 +299,10 @@ export default function Business({me}: Props) {
                 <RiMoreLine className="text-bg-sub-300" />
               </div>
             </div>
-            <BookingProvider username={me.username || ''}>
+            <BookingProvider 
+            // username={me.username || ''}
+            >
+
               <ServicesSchedulingForm fullHeight={false} />
             </BookingProvider>
           </div>
