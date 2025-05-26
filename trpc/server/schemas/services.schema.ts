@@ -37,6 +37,13 @@ export const ZCreateInputSchema = createEventTypeInput;
 
 export type TCreateInputSchema = z.infer<typeof ZCreateInputSchema>;
 
+// get details by id
+export const ZGetInputSchema = z.object({
+  id: z.number()
+});
+
+export type TGetInputSchema = z.infer<typeof ZGetInputSchema>;
+
 // get all by viewer
 
 export const filterQuerySchemaStrict = z.object({
