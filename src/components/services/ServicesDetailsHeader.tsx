@@ -19,6 +19,8 @@ import * as Tooltip from '@/components/align-ui/ui/tooltip';
 import {useRouter} from 'next/navigation';
 import * as Input from '@/components/align-ui/ui/input';
 import {usePageContext} from '@/contexts/PageContext';
+import {useLocale} from '@/hooks/use-locale';
+import {useServicesDetails} from '@/contexts/services/servicesDetails/ServicesContext';
 
 type ServicesDetailsHeaderProps = {
   title?: string;
@@ -27,13 +29,20 @@ type ServicesDetailsHeaderProps = {
 
 function ServicesDetailsHeader({title, subtitle}: ServicesDetailsHeaderProps) {
   const {notification} = useNotification();
-  const [open, setOpen] = useState(false);
-  const [newName, setNewName] = useState('');
-  const [isEditing, setIsEditing] = useState(false);
-  // const {queries: {availability}, availabilityDetailsForm} = useAvailability();
-  const [editedTitle, setEditedTitle] = useState(title || '');
+
+  const {
+    queries: {serviceDetails},
+    state: {isDeleteModalOpen, setIsDeleteModalOpen, isEditing, setIsEditing},
+    ServicesDetailsForm: {register, setValue, watch, getValues}
+  } = useServicesDetails();
+  //   const [editedTitle, setEditedTitle] = useState(serviceDetails?.name || '');
+
+  const {t, locale, isLocaleReady} = useLocale('ServicesDetailsHeader');
 
   const router = useRouter();
+
+  const name = watch('name');
+  // const isDefault = watch('isDefault');
 
   return (
     <div className="w-full h-[88px] px-8 py-5 relative bg-bg-white-0 inline-flex justify-between items-center overflow-hidden">
@@ -42,7 +51,7 @@ function ServicesDetailsHeader({title, subtitle}: ServicesDetailsHeaderProps) {
           variant="neutral"
           mode="stroke"
           size="small"
-          onClick={() => router.back()}
+          onClick={() => router.push('/services')}
         >
           <Button.Icon as={RiArrowLeftSLine} />
         </Button.Root>
@@ -53,31 +62,13 @@ function ServicesDetailsHeader({title, subtitle}: ServicesDetailsHeaderProps) {
                 {isEditing ? (
                   <Input.Root>
                     <Input.Input
-                      value={editedTitle}
-                      onChange={(e) => setEditedTitle(e.target.value)}
+                      {...register('name')}
                       onBlur={() => {
                         setIsEditing(false);
-                        if (editedTitle.trim() && editedTitle !== title) {
-                          notification({
-                            title: 'Título atualizado!',
-                            description: 'O título foi atualizado com sucesso.',
-                            variant: 'stroke',
-                            status: 'success'
-                          });
-                        }
                       }}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
                           setIsEditing(false);
-                          if (editedTitle.trim() && editedTitle !== title) {
-                            notification({
-                              title: 'Título atualizado!',
-                              description:
-                                'O título foi atualizado com sucesso.',
-                              variant: 'stroke',
-                              status: 'success'
-                            });
-                          }
                         }
                       }}
                       autoFocus
@@ -85,7 +76,7 @@ function ServicesDetailsHeader({title, subtitle}: ServicesDetailsHeaderProps) {
                   </Input.Root>
                 ) : (
                   <>
-                    <span>{editedTitle}</span>
+                    <span>{name}</span>
                     <Button.Root
                       variant="neutral"
                       mode="ghost"
@@ -131,22 +122,25 @@ function ServicesDetailsHeader({title, subtitle}: ServicesDetailsHeaderProps) {
                 Copiar link do serviço
               </Tooltip.Content>
             </Tooltip.Root>
-            <Tooltip.Root>
+            {/* <Tooltip.Root>
               <Tooltip.Trigger asChild>
                 <ButtonGroup.Item>
                   <ButtonGroup.Icon as={RiCodeLine} />
                 </ButtonGroup.Item>
               </Tooltip.Trigger>
               <Tooltip.Content size="small">Criar embed</Tooltip.Content>
-            </Tooltip.Root>
+            </Tooltip.Root> */}
           </ButtonGroup.Root>
 
-          <Modal.Root open={open} onOpenChange={setOpen}>
+          <Modal.Root
+            open={isDeleteModalOpen}
+            onOpenChange={setIsDeleteModalOpen}
+          >
             <Modal.Trigger asChild>
               <Button.Root
                 variant="neutral"
                 mode="stroke"
-                onClick={() => setOpen(true)}
+                onClick={() => setIsDeleteModalOpen(true)}
               >
                 <Button.Icon as={RiDeleteBinLine} />
                 Apagar
