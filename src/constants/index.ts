@@ -17,5 +17,6 @@ const MARKADO_DOMAIN = MARKADO_URL.includes('://')
 const ALLOWED_HOSTNAMES = JSON.parse(`[${process.env.ALLOWED_HOSTNAMES || ""}]`) as string[];
 const RESERVED_SUBDOMAINS = JSON.parse(`[${process.env.RESERVED_SUBDOMAINS || ""}]`) as string[];
 
+export const AVATAR_FALLBACK = '/avatar.svg';
 
 export {MARKADO_URL, MARKADO_DOMAIN, IS_PRODUCTION, ALLOWED_HOSTNAMES, RESERVED_SUBDOMAINS};
