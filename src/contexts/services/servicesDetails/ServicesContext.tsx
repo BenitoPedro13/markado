@@ -85,7 +85,7 @@ export function ServicesDetailsProvider({
       },
       queries: {
         initialMe,
-        serviceDetails: initialServiceDetails
+        serviceDetails: initialServiceDetails ?? null
       },
       ServicesDetailsForm: scheduleForm
     }),
