@@ -1,0 +1,210 @@
+'use client';
+
+import {
+  RiArrowLeftSLine,
+  RiDeleteBinLine,
+  RiShare2Line,
+  RiFileCopyFill,
+  RiCodeLine,
+  RiSaveFill,
+  RiPencilLine
+} from '@remixicon/react';
+import React, {useState} from 'react';
+import * as Button from '@/components/align-ui/ui/button';
+import * as FancyButton from '@/components/align-ui/ui/fancy-button';
+import * as Modal from '@/components/align-ui/ui/modal';
+import {useNotification} from '@/hooks/use-notification';
+import * as ButtonGroup from '@/components/align-ui/ui/button-group';
+import * as Tooltip from '@/components/align-ui/ui/tooltip';
+import {useRouter} from 'next/navigation';
+import * as Input from '@/components/align-ui/ui/input';
+import {usePageContext} from '@/contexts/PageContext';
+
+type ServicesDetailsHeaderProps = {
+  title?: string;
+  subtitle?: string;
+};
+
+function ServicesDetailsHeader({title, subtitle}: ServicesDetailsHeaderProps) {
+  const {notification} = useNotification();
+  const [open, setOpen] = useState(false);
+  const [newName, setNewName] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
+  // const {queries: {availability}, availabilityDetailsForm} = useAvailability();
+  const [editedTitle, setEditedTitle] = useState(title || '');
+
+  const router = useRouter();
+
+  return (
+    <div className="w-full h-[88px] px-8 py-5 relative bg-bg-white-0 inline-flex justify-between items-center overflow-hidden">
+      <div className="flex items-center gap-3">
+        <Button.Root
+          variant="neutral"
+          mode="stroke"
+          size="small"
+          onClick={() => router.back()}
+        >
+          <Button.Icon as={RiArrowLeftSLine} />
+        </Button.Root>
+        <div className="flex flex-col">
+          <div className="text-text-strong-950 text-lg font-medium font-sans leading-normal">
+            {title ? (
+              <div className="flex items-center gap-2">
+                {isEditing ? (
+                  <Input.Root>
+                    <Input.Input
+                      value={editedTitle}
+                      onChange={(e) => setEditedTitle(e.target.value)}
+                      onBlur={() => {
+                        setIsEditing(false);
+                        if (editedTitle.trim() && editedTitle !== title) {
+                          notification({
+                            title: 'Título atualizado!',
+                            description: 'O título foi atualizado com sucesso.',
+                            variant: 'stroke',
+                            status: 'success'
+                          });
+                        }
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          setIsEditing(false);
+                          if (editedTitle.trim() && editedTitle !== title) {
+                            notification({
+                              title: 'Título atualizado!',
+                              description:
+                                'O título foi atualizado com sucesso.',
+                              variant: 'stroke',
+                              status: 'success'
+                            });
+                          }
+                        }
+                      }}
+                      autoFocus
+                    />
+                  </Input.Root>
+                ) : (
+                  <>
+                    <span>{editedTitle}</span>
+                    <Button.Root
+                      variant="neutral"
+                      mode="ghost"
+                      size="small"
+                      onClick={() => setIsEditing(true)}
+                    >
+                      <Button.Icon as={RiPencilLine} />
+                    </Button.Root>
+                  </>
+                )}
+              </div>
+            ) : (
+              'Configuração do Serviço'
+            )}
+          </div>
+          {subtitle && (
+            <div className="text-text-sub-600 text-paragraph-xs font-normal font-sans leading-tight">
+              {subtitle}
+            </div>
+          )}
+        </div>
+      </div>
+      <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          <ButtonGroup.Root>
+            <Tooltip.Root>
+              <Tooltip.Trigger asChild>
+                <ButtonGroup.Item>
+                  <ButtonGroup.Icon as={RiShare2Line} />
+                </ButtonGroup.Item>
+              </Tooltip.Trigger>
+              <Tooltip.Content size="small">
+                Compartilhar serviço
+              </Tooltip.Content>
+            </Tooltip.Root>
+            <Tooltip.Root>
+              <Tooltip.Trigger asChild>
+                <ButtonGroup.Item>
+                  <ButtonGroup.Icon as={RiFileCopyFill} />
+                </ButtonGroup.Item>
+              </Tooltip.Trigger>
+              <Tooltip.Content size="small">
+                Copiar link do serviço
+              </Tooltip.Content>
+            </Tooltip.Root>
+            <Tooltip.Root>
+              <Tooltip.Trigger asChild>
+                <ButtonGroup.Item>
+                  <ButtonGroup.Icon as={RiCodeLine} />
+                </ButtonGroup.Item>
+              </Tooltip.Trigger>
+              <Tooltip.Content size="small">Criar embed</Tooltip.Content>
+            </Tooltip.Root>
+          </ButtonGroup.Root>
+
+          <Modal.Root open={open} onOpenChange={setOpen}>
+            <Modal.Trigger asChild>
+              <Button.Root
+                variant="neutral"
+                mode="stroke"
+                onClick={() => setOpen(true)}
+              >
+                <Button.Icon as={RiDeleteBinLine} />
+                Apagar
+              </Button.Root>
+            </Modal.Trigger>
+            <Modal.Content className="max-w-[440px]">
+              <Modal.Body className="flex items-start gap-4">
+                <div className="rounded-10 bg-error-lighter flex size-10 shrink-0 items-center justify-center">
+                  <RiDeleteBinLine className="text-error-base size-6" />
+                </div>
+                <div className="space-y-1">
+                  <div className="text-label-md text-text-strong-950">
+                    Apagar {title}
+                  </div>
+                  <div className="text-paragraph-sm text-text-sub-600">
+                    Você não poderá recuperar a disponibilidade após apagá-lo.
+                  </div>
+                </div>
+              </Modal.Body>
+              <Modal.Footer>
+                <Modal.Close asChild>
+                  <Button.Root
+                    variant="neutral"
+                    mode="stroke"
+                    size="small"
+                    className="w-full"
+                  >
+                    Cancelar
+                  </Button.Root>
+                </Modal.Close>
+                <Button.Root variant="error" size="small" className="w-full">
+                  Apagar
+                </Button.Root>
+              </Modal.Footer>
+            </Modal.Content>
+          </Modal.Root>
+        </div>
+        <FancyButton.Root
+          variant="neutral"
+          size="small"
+          onClick={() => {
+            if ((window as any).submitServiceForm) {
+              (window as any).submitServiceForm();
+            }
+            notification({
+              title: 'Alterações salvas!',
+              description: 'Seus updates foram salvos com sucesso.',
+              variant: 'stroke',
+              status: 'success'
+            });
+          }}
+        >
+          <FancyButton.Icon as={RiSaveFill} />
+          Salvar
+        </FancyButton.Root>
+      </div>
+    </div>
+  );
+}
+
+export default ServicesDetailsHeader;
