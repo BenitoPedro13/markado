@@ -1,9 +1,7 @@
 'use client';
 
-import {useScheduling} from '@/contexts/SchedulingContext';
 import * as Badge from '@/components/align-ui/ui/badge';
 import * as Button from '@/components/align-ui/ui/button';
-import * as ButtonGroup from '@/components/align-ui/ui/button-group';
 import * as Dropdown from '@/components/align-ui/ui/dropdown';
 import * as Drawer from '@/components/align-ui/ui/drawer';
 import * as Divider from '@/components/align-ui/ui/divider';
@@ -12,28 +10,20 @@ import * as Radio from '@/components/align-ui/ui/radio';
 import {
   RiComputerLine,
   RiMapPinLine,
-  RiEditLine,
   RiTimeLine,
   RiMore2Fill,
   RiDeleteBinLine,
-  RiPencilLine,
   RiUserAddLine,
-  RiMapPin2Line,
-  RiCheckLine,
-  RiCheckboxFill,
   RiCheckboxCircleFill,
-  RiCloseFill,
   RiCloseCircleFill,
   RiSendPlaneLine,
-  RiSendPlane2Line,
-  RiCloseLine
+  RiSendPlane2Line
 } from '@remixicon/react';
 import * as Modal from '@/components/align-ui/ui/modal';
-import * as Textarea from '@/components/align-ui/ui/textarea';
 import * as Notification from '@/components/align-ui/ui/notification';
 import {useState, useEffect} from 'react';
 
-type SchedulingProps = {
+type BookingProps = {
   id: string;
   title: string;
   duration: number;
@@ -53,7 +43,7 @@ type Participant = {
 type LocationType = 'online' | 'presential';
 type OnlinePlatform = 'google-meet' | 'zoom' | 'teams';
 
-export default function Scheduling({
+export default function BookingListItem({
   id,
   title,
   duration,
@@ -63,9 +53,17 @@ export default function Scheduling({
   type,
   status,
   location
-}: SchedulingProps) {
-  const {updateSchedulingStatus, deleteScheduling, updateSchedulingType} =
-    useScheduling();
+}: BookingProps) {
+  const updateBookingStatus = (id: string, status: string) => {};
+
+  const deleteBooking = (id: string) => {};
+
+  const updateBookingType = (
+    id: string,
+    type: LocationType,
+    location: string
+  ) => {};
+
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [cancelMessage, setCancelMessage] = useState('');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -130,7 +128,7 @@ export default function Scheduling({
   const endDate = formatDate(endTime);
 
   const handleCancel = (message?: string) => {
-    updateSchedulingStatus(id, 'canceled');
+    updateBookingStatus(id, 'canceled');
     setIsCancelModalOpen(false);
     setCancelMessage('');
     setIsDrawerOpen(false);
@@ -257,9 +255,7 @@ export default function Scheduling({
                     <Dropdown.ItemIcon as={RiUserAddLine} />
                     Adicionar participantes
                   </Dropdown.Item>
-                  <Dropdown.Item
-                    onClick={() => setIsRescheduleModalOpen(true)}
-                  >
+                  <Dropdown.Item onClick={() => setIsRescheduleModalOpen(true)}>
                     <Dropdown.ItemIcon as={RiSendPlane2Line} />
                     Solicitar reagendamento
                   </Dropdown.Item>
@@ -602,7 +598,7 @@ export default function Scheduling({
                 try {
                   const newLocation =
                     selectedLocationType === 'online' ? 'Google Meet' : address;
-                  updateSchedulingType(id, selectedLocationType, newLocation);
+                  updateBookingType(id, selectedLocationType, newLocation);
                   setIsLocationModalOpen(false);
                   setNotificationType('success');
                   setShowNotification(true);
@@ -641,7 +637,10 @@ export default function Scheduling({
       </Notification.Provider>
 
       {/* Modal de reagendamento */}
-      <Modal.Root open={isRescheduleModalOpen} onOpenChange={setIsRescheduleModalOpen}>
+      <Modal.Root
+        open={isRescheduleModalOpen}
+        onOpenChange={setIsRescheduleModalOpen}
+      >
         <Modal.Content>
           <Modal.Header title="Solicitar reagendamento" />
           <Modal.Body>

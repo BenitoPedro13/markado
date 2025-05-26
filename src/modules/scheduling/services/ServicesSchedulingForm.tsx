@@ -5,7 +5,6 @@ import * as Badge from '@/components/align-ui/ui/badge';
 import {badgeVariants} from '@/components/align-ui/ui/badge';
 import * as Skeleton from '@/components/align-ui/ui/skeleton';
 import {useBusiness} from '@/components/settings/business/Business';
-import {useScheduling} from '@/contexts/SchedulingContext';
 import {services as initialServices} from '@/data/services';
 import {ServiceBadgeColor} from '@/types/service';
 import {cn} from '@/utils/cn';
@@ -76,7 +75,7 @@ const mapServiceColorToBadgeColor = (
 
 type ServicesSchedulingFormProps = {
   fullHeight?: boolean;
-  host: Awaited<ReturnType<typeof getHostUserByUsername>>;
+  host?: Awaited<ReturnType<typeof getHostUserByUsername>>;
 };
 
 const ServicesSchedulingForm = ({
@@ -89,19 +88,19 @@ const ServicesSchedulingForm = ({
   return (
     <main className="p-8 flex flex-col md:flex-row items-center md:items-start gap-6 w-full max-w-[624px]">
       <div className="w-full md:flex-1 flex flex-col items-center md:items-start gap-4">
-        <Avatar.Root size={'48'} fallbackText={businessName || host.name || ''}>
+        <Avatar.Root size={'48'} fallbackText={businessName || host?.name || ''}>
           <Avatar.Image
-            src={host.image || ''}
-            alt={businessName || host.name || 'User'}
+            src={host?.image || ''}
+            alt={businessName || host?.name || 'User'}
           />
         </Avatar.Root>
 
         <h1 className="text-label-lg text-text-strong-950">
-          {businessName || host.name}
+          {businessName || host?.name}
         </h1>
 
         <p className="text-label-sm text-text-sub-600">
-          {businessDescription || host.biography}
+          {businessDescription || host?.biography}
         </p>
         {/** Social icons */}
         <div className="flex flex-row items-center gap-3">
@@ -161,7 +160,7 @@ const ServicesSchedulingForm = ({
         {initialServices.map((service, index) => (
           <Link
             key={service.slug}
-            href={`/${host.username}/${service.slug}`}
+            href={`/${host?.username}/${service.slug}`}
             className={cn(
               'p-4 flex gap-4 justify-between items-center hover:bg-stroke-soft-200 transition hover:cursor-pointer',
               index !== initialServices.length - 1 &&
