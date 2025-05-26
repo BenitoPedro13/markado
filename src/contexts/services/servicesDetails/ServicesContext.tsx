@@ -15,7 +15,7 @@ import { useSessionStore } from '@/providers/session-store-provider';
 import { Me } from '@/app/settings/page';
 import { usePathname } from 'next/navigation';
 
-const updateAvailabilityDetailsFormSchema = z.object({
+const updateServicesDetailsFormSchema = z.object({
   id: z.number(),
   name: z.string().optional(),
   schedule: z.array(z.array(z.custom<TimeRange>())),
@@ -23,14 +23,14 @@ const updateAvailabilityDetailsFormSchema = z.object({
   isDefault: z.boolean()
 });
 
-export type UpdateAvailabilityDetailsFormData = z.infer<
-  typeof updateAvailabilityDetailsFormSchema
+export type UpdateServicesDetailsFormData = z.infer<
+  typeof updateServicesDetailsFormSchema
 >;
 
 type AvailabilityById =
   inferRouterOutputs<AppRouter>['availability']['findDetailedScheduleById'];
 
-type AvailabilityDetailsContextType = {
+type ServicesDetailsContextType = {
   state: {
     isDeleteModalOpen: boolean;
     setIsDeleteModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -38,44 +38,44 @@ type AvailabilityDetailsContextType = {
     setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
   };
   queries: {
-    availabilityDetails: AvailabilityById | null;
+    serviceDetails: AvailabilityById | null;
     initialMe: Me | null;
   };
-  availabilityDetailsForm: UseFormReturn<UpdateAvailabilityDetailsFormData>;
+  ServicesDetailsForm: UseFormReturn<UpdateServicesDetailsFormData>;
 };
 
-const AvailabilityDetailsContext = createContext<AvailabilityDetailsContextType | null>(null);
+const ServicesDetailsContext = createContext<ServicesDetailsContextType | null>(null);
 
-type AvailabilityDetailsProviderProps = {
+type ServicesDetailsProviderProps = {
   children: React.ReactNode;
-  initialAvailabilityDetails: AvailabilityById | null;
+  initialServiceDetails: AvailabilityById | null;
   initialMe: Me | null;
 };
 
-export function AvailabilityDetailsProvider({
+export function ServicesDetailsProvider({
   children,
-  initialAvailabilityDetails,
+  initialServiceDetails,
   initialMe
-}: AvailabilityDetailsProviderProps) {
+}: ServicesDetailsProviderProps) {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
   const pathname = usePathname();
 
   // Schedule form for availability scheduling
-  const scheduleForm = useForm<UpdateAvailabilityDetailsFormData>({
-    resolver: zodResolver(updateAvailabilityDetailsFormSchema),
+  const scheduleForm = useForm<UpdateServicesDetailsFormData>({
+    resolver: zodResolver(updateServicesDetailsFormSchema),
     defaultValues: {
-      id: initialAvailabilityDetails?.id || 0,
-      name: initialAvailabilityDetails?.name || '',
-      schedule: initialAvailabilityDetails?.availability,
-      timeZone: initialAvailabilityDetails?.timeZone || '',
+      id: initialServiceDetails?.id || 0,
+      name: initialServiceDetails?.name || '',
+      schedule: initialServiceDetails?.availability,
+      timeZone: initialServiceDetails?.timeZone || '',
       isDefault:
-        initialMe?.defaultScheduleId === initialAvailabilityDetails?.id
+        initialMe?.defaultScheduleId === initialServiceDetails?.id
     },
   });
 
-  const value = useMemo<AvailabilityDetailsContextType>(
+  const value = useMemo<ServicesDetailsContextType>(
     () => ({
       state: {
         isDeleteModalOpen,
@@ -85,9 +85,9 @@ export function AvailabilityDetailsProvider({
       },
       queries: {
         initialMe,
-        availabilityDetails: initialAvailabilityDetails
+        serviceDetails: initialServiceDetails
       },
-      availabilityDetailsForm: scheduleForm
+      ServicesDetailsForm: scheduleForm
     }),
     [
       pathname,
@@ -96,23 +96,23 @@ export function AvailabilityDetailsProvider({
       setIsDeleteModalOpen,
       isEditing,
       setIsEditing,
-      initialAvailabilityDetails,
+      initialServiceDetails,
       initialMe
     ]
   );
 
   return (
-    <AvailabilityDetailsContext.Provider value={value}>
-      <FormProvider {...value.availabilityDetailsForm}>{children}</FormProvider>
-    </AvailabilityDetailsContext.Provider>
+    <ServicesDetailsContext.Provider value={value}>
+      <FormProvider {...value.ServicesDetailsForm}>{children}</FormProvider>
+    </ServicesDetailsContext.Provider>
   );
 }
 
-export function useAvailabilityDetails() {
-  const context = useContext(AvailabilityDetailsContext);
+export function useServicesDetails() {
+  const context = useContext(ServicesDetailsContext);
   if (!context) {
     throw new Error(
-      'useAvailabilityDetails must be used within a AvailabilityDetailsProvider'
+      'useServicesDetails must be used within a ServicesDetailsProvider'
     );
   }
   return context;
