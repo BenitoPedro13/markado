@@ -22,12 +22,15 @@ import {useRouter} from 'next/navigation';
 import Link from 'next/link';
 import {useNotification} from '@/hooks/use-notification';
 import {useLocale} from '@/hooks/use-locale';
-import { submitDeleteService } from '~/trpc/server/handlers/services.handler';
+import {
+  duplicateHandler,
+  submitDeleteService
+} from '~/trpc/server/handlers/services.handler';
 
 import {ServiceBadgeColor} from '~/prisma/enums';
-import { TInitialServices } from '@/app/services/page';
-import { MARKADO_URL } from '@/constants';
-import { UserProfile } from '@/types/UserProfile';
+import {TInitialServices} from '@/app/services/page';
+import {MARKADO_URL} from '@/constants';
+import {UserProfile} from '@/types/UserProfile';
 
 export type ServicesProps = {
   id: number;
@@ -49,7 +52,7 @@ function Service({
   duration,
   price,
   status,
-  badgeColor,
+  badgeColor
   // username
 }: ServicesProps) {
   const {notification} = useNotification();
@@ -57,7 +60,9 @@ function Service({
   const [isEnabled, setIsEnabled] = useState(status === 'active');
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const router = useRouter();
-  const {state: {initialMe}} = useServices();
+  const {
+    state: {initialMe}
+  } = useServices();
 
   const {t} = useLocale('Services');
 
@@ -101,7 +106,7 @@ function Service({
     }
 
     return `${MARKADO_URL}/${initialMe.username}/${slug}`;
-  }
+  };
 
   return (
     <>
@@ -176,7 +181,17 @@ function Service({
                   <Dropdown.ItemIcon as={RiDeleteBinLine} />
                   Excluir serviço
                 </Dropdown.Item>
-                <Dropdown.Item>
+                <Dropdown.Item
+                  onClick={() =>
+                    duplicateHandler({
+                      id,
+                      title: `${title} (Copy)`,
+                      slug: `${slug}-copy`,
+                      description: '',
+                      length: duration
+                    })
+                  }
+                >
                   <Dropdown.ItemIcon as={RiFileCopyLine} />
                   Duplicar serviço
                 </Dropdown.Item>

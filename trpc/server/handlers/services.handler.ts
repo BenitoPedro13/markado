@@ -644,6 +644,8 @@ export const duplicateHandler = async (input: TDuplicateInputSchema) => {
         data: relationCreateData
       });
     }
+
+    revalidatePath('/services'); // revalidate the list page
     // if (destinationCalendar) {
     //   await setDestinationCalendarHandler({
     //     ctx,
