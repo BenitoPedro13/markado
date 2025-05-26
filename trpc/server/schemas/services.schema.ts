@@ -21,24 +21,13 @@ export const createEventTypeInput = z
     beforeEventBuffer: z.number().int().min(0).optional(),
     afterEventBuffer: z.number().int().min(0).optional(),
     scheduleId: z.number().int().optional(),
-    badgeColor: z.nativeEnum(ServiceBadgeColor).optional(),
+    badgeColor: z.nativeEnum(ServiceBadgeColor).optional()
   })
   .partial({hidden: true, locations: true})
   .refine((data) => (data.teamId ? data.teamId && data.schedulingType : true), {
     path: ['schedulingType'],
     message: 'You must select a scheduling type for team events'
   });
-
-export const EventTypeDuplicateInput = z
-  .object({
-    id: z.number(),
-    slug: z.string(),
-    title: z.string().min(1),
-    description: z.string(),
-    length: z.number(),
-    teamId: z.number().nullish()
-  })
-  .strict();
 
 export type EventTypeLocation = z.infer<
   typeof imports.eventTypeLocations
@@ -47,7 +36,6 @@ export type EventTypeLocation = z.infer<
 export const ZCreateInputSchema = createEventTypeInput;
 
 export type TCreateInputSchema = z.infer<typeof ZCreateInputSchema>;
-
 
 // get all by viewer
 
@@ -90,3 +78,20 @@ export const ZDeleteInputSchema = z.object({
 });
 
 export type TDeleteInputSchema = z.infer<typeof ZDeleteInputSchema>;
+
+// duplicate
+
+export const EventTypeDuplicateInput = z
+  .object({
+    id: z.number(),
+    slug: z.string(),
+    title: z.string().min(1),
+    description: z.string(),
+    length: z.number(),
+    teamId: z.number().nullish()
+  })
+  .strict();
+
+export const ZDuplicateInputSchema = EventTypeDuplicateInput;
+
+export type TDuplicateInputSchema = z.infer<typeof ZDuplicateInputSchema>;
