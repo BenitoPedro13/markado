@@ -1,7 +1,7 @@
+export const dynamic = 'force-dynamic';
 import PageLayout from '@/components/PageLayout';
-import * as Divider from '@/components/align-ui/ui/divider';
-import ServicesDetailsHeader from '@/components/services/ServicesDetailsHeader';
-import ServicesDetailsSidebar from '@/components/services/service-details/ServicesDetailsSidebar';
+
+import ServiceDetailsPage from '@/modules/services/serviceDetails/ServiceDetailsPage';
 
 type Props = {
   params: {
@@ -9,14 +9,12 @@ type Props = {
   };
 };
 
-export default function ServicePage({params: {slug}}: Props) {
+export default async function ServiceDetailsServerPage({
+  params: {slug}
+}: Props) {
   return (
     <PageLayout title="Detalhes do Serviço">
-      <ServicesDetailsHeader title="Configuração do Serviço" />
-      <div className="px-8">
-        <Divider.Root />
-      </div>
-      <ServicesDetailsSidebar slug={slug} />
+      <ServiceDetailsPage slug={slug} />
     </PageLayout>
   );
 }
