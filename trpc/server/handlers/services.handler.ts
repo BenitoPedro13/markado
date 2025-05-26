@@ -1,22 +1,29 @@
 'use server';
 
-import type {Prisma} from '~/prisma/app/generated/prisma/client';
+import {Prisma} from '~/prisma/app/generated/prisma/client';
+// import type {Prisma as PrismaType}  from '~/prisma/app/generated/prisma/client';
 import {PrismaClientKnownRequestError} from '@prisma/client/runtime/library';
 import {prisma} from '@/lib/prisma';
 import {EventTypeRepository} from '@/repositories/eventType';
+import {generateHashedLink} from '@/lib/generateHashedLink';
+// import {setDestinationCalendarHandler} from './destinationCalendar.handler';
 import type {PrismaClient} from '~/prisma/app/generated/prisma/client';
 import {SchedulingType, UserPermissionRole} from '~/prisma/enums';
-import type {EventTypeLocation, TDeleteInputSchema, TGetEventTypesFromGroupSchema} from '~/trpc/server/schemas/services.schema';
+import type {
+  EventTypeLocation,
+  TDeleteInputSchema,
+  TDuplicateInputSchema,
+  TGetEventTypesFromGroupSchema
+} from '~/trpc/server/schemas/services.schema';
 
 import {TRPCError} from '@trpc/server';
 import {userMetadataType} from '~/prisma/zod-utils';
 import type {TCreateInputSchema} from '~/trpc/server/schemas/services.schema';
-import { auth } from '@/auth';
-import { UserRepository } from '@/repositories/user';
-import { safeStringify } from '@/lib/safeStringify';
+import {auth} from '@/auth';
+import {UserRepository} from '@/repositories/user';
+import {safeStringify} from '@/lib/safeStringify';
 import {hasFilter, mapEventType} from '~/trpc/server/utils/services/util';
-import { revalidatePath } from 'next/cache';
-
+import {revalidatePath} from 'next/cache';
 
 // Create
 
@@ -42,7 +49,7 @@ export const createServiceHandler = async ({input}: CreateOptions) => {
   }
 
   const user = await UserRepository.findByIdOrThrow({id: session.user.id});
-  const enrichedUser = await UserRepository.enrichUserWithItsProfile({user})
+  const enrichedUser = await UserRepository.enrichUserWithItsProfile({user});
 
   const {
     schedulingType,
@@ -56,7 +63,7 @@ export const createServiceHandler = async ({input}: CreateOptions) => {
   const userId = session.user.id;
   // const isManagedEventType = schedulingType === SchedulingType.MANAGED;
   // const isOrgAdmin = user?.organization?.isOrgAdmin;
-  
+
   const locations: EventTypeLocation[] | undefined = inputLocations;
 
   const data: Prisma.EventTypeCreateInput = {
@@ -66,9 +73,9 @@ export const createServiceHandler = async ({input}: CreateOptions) => {
     // Only connecting the current user for non-managed event types and non team event types
     users:
       // isManagedEventType || schedulingType
-        // ? undefined
-        // : 
-        {connect: {id: userId}},
+      // ? undefined
+      // :
+      {connect: {id: userId}},
     locations,
     schedule: scheduleId ? {connect: {id: scheduleId}} : undefined
   };
@@ -152,7 +159,6 @@ export const createServiceHandler = async ({input}: CreateOptions) => {
   }
 };
 
-
 // get all services
 
 type GetByViewerOptions = {
@@ -163,7 +169,13 @@ type EventType = Awaited<
   ReturnType<typeof EventTypeRepository.findAllByUpId>
 >[number];
 type MappedEventType = Awaited<ReturnType<typeof mapEventType>>;
-type EnrichedUser = Awaited<ReturnType<typeof UserRepository.enrichUserWithItsProfile<Awaited<ReturnType<typeof UserRepository.findByIdOrThrow>>>>>
+type EnrichedUser = Awaited<
+  ReturnType<
+    typeof UserRepository.enrichUserWithItsProfile<
+      Awaited<ReturnType<typeof UserRepository.findByIdOrThrow>>
+    >
+  >
+>;
 
 export const getEventTypesFromGroup = async ({
   // ctx,
@@ -383,6 +395,8 @@ const filterEventTypes = async (
   return filteredEventTypes;
 };
 
+// Delete
+
 export const deleteService = async (input: TDeleteInputSchema) => {
   const session = await auth();
   if (!session) {
@@ -449,3 +463,205 @@ export const submitDeleteService = async (serviceId: number) => {
     });
   }
 };
+
+// Duplicate
+
+
+export const duplicateHandler = async (input: TDuplicateInputSchema) => {
+  try {
+    const session = await auth();
+    if (!session) {
+      throw new TRPCError({
+        code: 'UNAUTHORIZED',
+        message: 'deleteService: Could not get the user session'
+      });
+    }
+
+    if (!session.user) {
+      throw new TRPCError({
+        code: 'UNAUTHORIZED',
+        message: 'deleteService: Not authenticated'
+      });
+    }
+
+    const {
+      id: originalEventTypeId,
+      title: newEventTitle,
+      slug: newSlug,
+      description: newDescription,
+      length: newLength
+    } = input;
+    const eventType = await prisma.eventType.findUnique({
+      where: {
+        id: originalEventTypeId
+      },
+      include: {
+        customInputs: true,
+        schedule: true,
+        users: {
+          select: {
+            id: true
+          }
+        },
+        hosts: true,
+        team: true,
+        workflows: true,
+        webhooks: true,
+        hashedLink: true,
+        destinationCalendar: true
+      }
+    });
+
+    if (!eventType) {
+      throw new TRPCError({code: 'NOT_FOUND'});
+    }
+
+    // Validate user is owner of event type or in the team
+    if (eventType.userId !== session.user.id) {
+      if (eventType.teamId) {
+        const isMember = await prisma.membership.findFirst({
+          where: {
+            userId: session.user.id,
+            teamId: eventType.teamId
+          }
+        });
+        if (!isMember) {
+          throw new TRPCError({code: 'FORBIDDEN'});
+        }
+      }
+    }
+
+    const {
+      customInputs,
+      users,
+      locations,
+      team,
+      hosts,
+      recurringEvent,
+      bookingLimits,
+      durationLimits,
+      eventTypeColor,
+      metadata,
+      workflows,
+      hashedLink,
+      destinationCalendar,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      id: _id,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      webhooks: _webhooks,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      schedule: _schedule,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/ban-ts-comment
+      // @ts-ignore - descriptionAsSafeHTML is added on the fly using a prisma middleware it shouldn't be used to create event type. Such a property doesn't exist on schema
+      descriptionAsSafeHTML: _descriptionAsSafeHTML,
+      secondaryEmailId,
+      instantMeetingScheduleId: _instantMeetingScheduleId,
+      ...rest
+    } = eventType;
+
+    const data: Prisma.EventTypeCreateInput = {
+      ...rest,
+      title: newEventTitle,
+      slug: newSlug,
+      description: newDescription,
+      length: newLength,
+      locations: locations ?? undefined,
+      team: team ? {connect: {id: team.id}} : undefined,
+      users: users
+        ? {connect: users.map((user) => ({id: user.id}))}
+        : undefined,
+      hosts: hosts
+        ? {
+            createMany: {
+              data: hosts.map(({eventTypeId: _, ...rest}) => rest)
+            }
+          }
+        : undefined,
+
+      recurringEvent: recurringEvent || undefined,
+      bookingLimits: bookingLimits ?? undefined,
+      durationLimits: durationLimits ?? undefined,
+      eventTypeColor: eventTypeColor ?? undefined,
+      metadata: metadata === null ? Prisma.DbNull : metadata,
+      bookingFields:
+        eventType.bookingFields === null
+          ? Prisma.DbNull
+          : eventType.bookingFields
+    };
+
+    // Validate the secondary email
+    if (!!secondaryEmailId) {
+      const secondaryEmail = await prisma.secondaryEmail.findUnique({
+        where: {
+          id: secondaryEmailId,
+          userId: session.user.id
+        }
+      });
+      // Make sure the secondary email id belongs to the current user and its a verified one
+      if (secondaryEmail && secondaryEmail.emailVerified) {
+        data.secondaryEmail = {
+          connect: {
+            id: secondaryEmailId
+          }
+        };
+      }
+    }
+
+    const newEventType = await EventTypeRepository.create(data);
+
+    // Create custom inputs
+    if (customInputs) {
+      const customInputsData = customInputs.map((customInput) => {
+        const {id: _, options, ...rest} = customInput;
+        return {
+          options: options ?? undefined,
+          ...rest,
+          eventTypeId: newEventType.id
+        };
+      });
+      await prisma.eventTypeCustomInput.createMany({
+        data: customInputsData
+      });
+    }
+
+    if (hashedLink) {
+      await prisma.hashedLink.create({
+        data: {
+          link: generateHashedLink(users[0]?.id ?? newEventType.teamId),
+          eventType: {
+            connect: {id: newEventType.id}
+          }
+        }
+      });
+    }
+
+    if (workflows.length > 0) {
+      const relationCreateData = workflows.map((workflow) => {
+        return {eventTypeId: newEventType.id, workflowId: workflow.workflowId};
+      });
+
+      await prisma.workflowsOnEventTypes.createMany({
+        data: relationCreateData
+      });
+    }
+    // if (destinationCalendar) {
+    //   await setDestinationCalendarHandler({
+    //     ctx,
+    //     input: {
+    //       ...destinationCalendar,
+    //       eventTypeId: newEventType.id
+    //     }
+    //   });
+    // }
+
+    // return {
+    //   eventType: newEventType
+    // };
+  } catch (error) {
+    throw new TRPCError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: `Error duplicating event type ${error}`
+    });
+  }
+};
+
