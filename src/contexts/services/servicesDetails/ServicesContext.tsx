@@ -16,6 +16,7 @@ import { Me } from '@/app/settings/page';
 import { usePathname } from 'next/navigation';
 import { EventType } from '@/packages/event-types/getEventTypeBySlug';
 import { ServiceBadgeColor } from '~/prisma/enums';
+import { LocationObject } from '@/core/locations';
 
 const updateServicesDetailsFormSchema = z.object({
   id: z.number(),
@@ -26,7 +27,7 @@ const updateServicesDetailsFormSchema = z.object({
   isHidden: z.boolean().optional(),
   duration: z.number().positive().int(),
   price: z.number().nonnegative(),
-  location: z.string().optional(),
+  locations: z.array(z.custom<LocationObject>()).optional()
 });
 
 export type UpdateServicesDetailsFormData = z.infer<
@@ -75,8 +76,8 @@ export function ServicesDetailsProvider({
       slug: initialServiceDetails?.slug || '',
       badgeColor: initialServiceDetails?.badgeColor || ServiceBadgeColor.faded,
       duration: initialServiceDetails?.length || 15,
-      // price: initialServiceDetails?
-      // location: initialServiceDetails?.l
+      price: initialServiceDetails?.price || 0,
+      locations: initialServiceDetails?.locations || [],
       isHidden: initialServiceDetails?.hidden || false,
     },
   });
