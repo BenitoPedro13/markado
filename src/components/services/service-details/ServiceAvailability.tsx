@@ -24,7 +24,6 @@ import {useEffect, useRef, useState, memo} from 'react';
 
 import type {UseQueryResult} from '@tanstack/react-query';
 import {Controller, useFormContext, useForm} from 'react-hook-form';
-import type {OptionProps, SingleValueProps} from 'react-select';
 // import {components} from 'react-select';
 
 import {GetAllSchedulesByUserIdQueryType} from '~/trpc/server/handlers/schedule.handler';
@@ -35,7 +34,7 @@ import dayjs from '@/lib/dayjs';
 import type {
   AvailabilityOption,
   FormValues,
-  EventTypeSetup,
+  EventTypeSetup
 } from '@/features/eventtypes/lib/types';
 import {cn as classNames} from '@/utils/cn';
 import {useLocale} from '@/hooks/use-locale';
@@ -45,6 +44,7 @@ import Link from 'next/link';
 import {AvailabilityById} from '@/contexts/availability/availabilityDetails/AvailabilityContext';
 import {Me} from '@/app/settings/page';
 import {TFormatedAvailabilitiesBySchedule} from '@/utils/formatAvailability';
+import {useServicesDetails} from '@/contexts/services/servicesDetails/ServicesContext';
 // import {
 //   // Avatar,
 //   // Badge,
@@ -92,7 +92,7 @@ type HostSchedulesQueryType =
     >);
 
 type EventTypeTeamScheduleProps = {
-  hostSchedulesQuery: HostSchedulesQueryType;
+  hostSchedulesQuery?: HostSchedulesQueryType;
 };
 
 // type TeamMember = Pick<TeamMembers[number], 'avatar' | 'name' | 'id'>;
@@ -113,46 +113,6 @@ export type EventAvailabilityTabBaserProps = {
 
 type EventAvailabilityTabProps = EventAvailabilityTabBaserProps &
   EventTypeScheduleProps;
-
-const Option = ({...props}: OptionProps<AvailabilityOption>) => {
-  const {label, isDefault, isManaged = false} = props.data;
-  const {t} = useLocale();
-  return (
-    <components.Option {...props}>
-      <span>{label}</span>
-      {isDefault && (
-        <Badge.Root color="blue" className="ml-2">
-          {t('default')}
-        </Badge.Root>
-      )}
-      {isManaged && (
-        <Badge.Root color="gray" className="ml-2">
-          {t('managed')}
-        </Badge.Root>
-      )}
-    </components.Option>
-  );
-};
-
-const SingleValue = ({...props}: SingleValueProps<AvailabilityOption>) => {
-  const {label, isDefault, isManaged = false} = props.data;
-  const {t} = useLocale();
-  return (
-    <components.SingleValue {...props}>
-      <span>{label}</span>
-      {isDefault && (
-        <Badge.Root color="blue" className="ml-2">
-          {t('default')}
-        </Badge.Root>
-      )}
-      {isManaged && (
-        <Badge.Root color="gray" className="ml-2">
-          {t('managed')}
-        </Badge.Root>
-      )}
-    </components.SingleValue>
-  );
-};
 
 const format = (date: Date, hour12: boolean) =>
   Intl.DateTimeFormat(undefined, {
@@ -366,18 +326,52 @@ const EventTypeSchedule = ({
             );
             return (
               <Select.Root
-                placeholder={t('select')}
-                options={options}
+                defaultValue={optionValue?.label}
                 // isDisabled={shouldLockDisableProps('schedule').disabled}
-                isSearchable={false}
-                onChange={(selected) => {
-                  if (selected) onChange(selected.value);
+                // isSearchable={false}
+                onValueChange={(selected) => {
+                  if (selected) onChange(selected);
                 }}
-                className="block w-full min-w-0 flex-1 rounded-sm text-sm"
-                value={optionValue}
-                components={{Option, SingleValue}}
-                isMulti={false}
-              />
+                // className="block w-full min-w-0 flex-1 rounded-sm text-sm"
+                // components={{Option, SingleValue}}
+                // isMulti={false}
+              >
+                <Select.Trigger className="flex w-[90px] sm:w-[100px]">
+                  <Select.Value>
+                    <span>{optionValue?.label}</span>
+                    {optionValue?.isDefault && (
+                      <Badge.Root color="blue" className="ml-2">
+                        {t('default')}
+                      </Badge.Root>
+                    )}
+                    {optionValue?.isManaged && (
+                      <Badge.Root color="gray" className="ml-2">
+                        {t('managed')}
+                      </Badge.Root>
+                    )}
+                  </Select.Value>
+                </Select.Trigger>
+                <Select.Content>
+                  {options.map((option) => (
+                    <Select.Item
+                      key={option.value}
+                      value={option.value.toString()}
+                    >
+                      <span>{option.label}</span>
+                      {option.isDefault && (
+                        <Badge.Root color="blue" className="ml-2">
+                          {t('default')}
+                        </Badge.Root>
+                      )}
+                      {option.isManaged && (
+                        <Badge.Root color="gray" className="ml-2">
+                          {t('managed')}
+                        </Badge.Root>
+                      )}
+                    </Select.Item>
+                  ))}
+                </Select.Content>
+              </Select.Root>
             );
           }}
         />
@@ -615,90 +609,96 @@ const daysOfWeek = [
 ];
 
 export default function ServiceAvailability({slug}: Props) {
-  const {register, handleSubmit} = useForm<AvailabilityFormData>();
+  const {
+    queries: {initialMe, serviceDetails},
+    ServicesDetailsForm: {register, handleSubmit, watch, getValues, setValue}
+  } = useServicesDetails();
 
-  const onSubmit = (data: AvailabilityFormData) => {
+  const onSubmit = (data: unknown) => {
     console.log(data);
     // TODO: Implementar atualização da disponibilidade
   };
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="space-y-6 flex flex-col gap-4 max-w-2xl"
-    >
-      <div className="space-y-4 ">
-        <div className="text-title-h6">Geral</div>
-        <div className="grid grid-cols-[1fr,auto,auto] gap-4 items-end">
-          <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-text-strong-950">
-              Disponibilidade
-            </label>
-            <Select.Root>
-              <Select.Trigger>
-                <Select.Value placeholder="Selecione os dias" />
-              </Select.Trigger>
-              <Select.Content>
-                {daysOfWeek.map((day) => (
-                  <Select.Item key={day.value} value={day.value}>
-                    {day.label}
-                  </Select.Item>
-                ))}
-              </Select.Content>
-            </Select.Root>
+    <>
+      <form
+        onSubmit={() => onSubmit(getValues() as unknown)}
+        className="space-y-6 flex flex-col gap-4 max-w-2xl"
+      >
+        <div className="space-y-4 ">
+          <div className="text-title-h6">Geral</div>
+          <div className="grid grid-cols-[1fr,auto,auto] gap-4 items-end">
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium text-text-strong-950">
+                Disponibilidade
+              </label>
+              <Select.Root>
+                <Select.Trigger>
+                  <Select.Value placeholder="Selecione os dias" />
+                </Select.Trigger>
+                <Select.Content>
+                  {daysOfWeek.map((day) => (
+                    <Select.Item key={day.value} value={day.value}>
+                      {day.label}
+                    </Select.Item>
+                  ))}
+                </Select.Content>
+              </Select.Root>
+            </div>
+          </div>
+
+          <Divider.Root />
+
+          <div className="">
+            <h3 className="text-title-h6">Horários Configurados</h3>
+            <div className="space-y-2">
+              <div className="flex justify-between items-center bg-background-soft-100 rounded">
+                <table className="mt-4 w-full max-w-[400px] text-paragraph-sm">
+                  <tbody>
+                    {[
+                      {dia: 'Segunda-feira', inicio: '09:00h', fim: '17:00h'},
+                      {dia: 'Terça-feira', inicio: '09:00h', fim: '17:00h'},
+                      {dia: 'Quarta-feira', inicio: '09:00h', fim: '17:00h'},
+                      {dia: 'Quinta-feira', inicio: '09:00h', fim: '17:00h'},
+                      {dia: 'Sexta-feira', inicio: '09:00h', fim: '17:00h'},
+                      {dia: 'Sábado', inicio: 'Indisponível', fim: ''},
+                      {dia: 'Domingo', inicio: 'Indisponível', fim: ''}
+                    ].map(({dia, inicio, fim}) => (
+                      <tr
+                        key={dia}
+                        className={`${inicio === 'Indisponível' ? 'text-text-disabled-300' : 'text-text-sub-600'}`}
+                      >
+                        <td className="py-2 text-text-strong-950">{dia}</td>
+                        <td className="py-2 text-center">{inicio}</td>
+                        {inicio !== 'Indisponível' && (
+                          <>
+                            <td className="py-2 text-center">-</td>
+                            <td className="py-2 text-center">{fim}</td>
+                          </>
+                        )}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         </div>
 
         <Divider.Root />
 
-        <div className="">
-          <h3 className="text-title-h6">Horários Configurados</h3>
-          <div className="space-y-2">
-            <div className="flex justify-between items-center bg-background-soft-100 rounded">
-              <table className="mt-4 w-full max-w-[400px] text-paragraph-sm">
-                <tbody>
-                  {[
-                    {dia: 'Segunda-feira', inicio: '09:00h', fim: '17:00h'},
-                    {dia: 'Terça-feira', inicio: '09:00h', fim: '17:00h'},
-                    {dia: 'Quarta-feira', inicio: '09:00h', fim: '17:00h'},
-                    {dia: 'Quinta-feira', inicio: '09:00h', fim: '17:00h'},
-                    {dia: 'Sexta-feira', inicio: '09:00h', fim: '17:00h'},
-                    {dia: 'Sábado', inicio: 'Indisponível', fim: ''},
-                    {dia: 'Domingo', inicio: 'Indisponível', fim: ''}
-                  ].map(({dia, inicio, fim}) => (
-                    <tr
-                      key={dia}
-                      className={`${inicio === 'Indisponível' ? 'text-text-disabled-300' : 'text-text-sub-600'}`}
-                    >
-                      <td className="py-2 text-text-strong-950">{dia}</td>
-                      <td className="py-2 text-center">{inicio}</td>
-                      {inicio !== 'Indisponível' && (
-                        <>
-                          <td className="py-2 text-center">-</td>
-                          <td className="py-2 text-center">{fim}</td>
-                        </>
-                      )}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
+        <div className="flex justify-between items-center gap-2">
+          <Button.Root mode="ghost" className="w-fit">
+            <Button.Icon as={RiGlobalLine} />
+            America/Sao_Paulo
+          </Button.Root>
+          <Button.Root mode="ghost" className="w-fit">
+            Editar Disponibilidade
+            <Button.Icon as={RiArrowRightUpLine} />
+          </Button.Root>
         </div>
-      </div>
-
-      <Divider.Root />
-
-      <div className="flex justify-between items-center gap-2">
-        <Button.Root mode="ghost" className="w-fit">
-          <Button.Icon as={RiGlobalLine} />
-          America/Sao_Paulo
-        </Button.Root>
-        <Button.Root mode="ghost" className="w-fit">
-          Editar Disponibilidade
-          <Button.Icon as={RiArrowRightUpLine} />
-        </Button.Root>
-      </div>
-    </form>
+      </form>
+      <EventAvailabilityTab isTeamEvent={false} eventType={serviceDetails} user={initialMe} />
+    </>
   );
 }
