@@ -17,6 +17,7 @@ import { usePathname } from 'next/navigation';
 import { EventType } from '@/packages/event-types/getEventTypeBySlug';
 import { ServiceBadgeColor } from '~/prisma/enums';
 import { LocationObject } from '@/core/locations';
+import { TSchedulesList } from '~/trpc/server/handlers/availability.handler';
 
 const updateServicesDetailsFormSchema = z.object({
   id: z.number(),
@@ -27,7 +28,8 @@ const updateServicesDetailsFormSchema = z.object({
   isHidden: z.boolean().optional(),
   duration: z.number().positive().int(),
   price: z.number().nonnegative(),
-  locations: z.array(z.custom<LocationObject>()).optional()
+  locations: z.array(z.custom<LocationObject>()).optional(),
+  schedule: z.number().int().gte(0).optional()
 });
 
 export type UpdateServicesDetailsFormData = z.infer<
@@ -44,6 +46,7 @@ type ServicesDetailsContextType = {
   queries: {
     serviceDetails: EventType['eventType'];
     initialMe: Me | undefined;
+    initialScheduleList: TSchedulesList['schedules'];
   };
   ServicesDetailsForm: UseFormReturn<UpdateServicesDetailsFormData>;
 };
@@ -54,12 +57,14 @@ type ServicesDetailsProviderProps = {
   children: React.ReactNode;
   initialServiceDetails: EventType['eventType'];
   initialMe: Me | undefined;
+  initialScheduleList: TSchedulesList['schedules'];
 };
 
 export function ServicesDetailsProvider({
   children,
   initialServiceDetails,
-  initialMe
+  initialMe,
+  initialScheduleList
 }: ServicesDetailsProviderProps) {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -79,8 +84,11 @@ export function ServicesDetailsProvider({
       price: initialServiceDetails?.price || 0,
       locations: initialServiceDetails?.locations || [],
       isHidden: initialServiceDetails?.hidden || false,
+      schedule: initialServiceDetails?.schedule || 0
     },
   });
+
+  const scheduleId = serviceForm.watch('schedule');
 
   const value = useMemo<ServicesDetailsContextType>(
     () => ({
@@ -92,11 +100,13 @@ export function ServicesDetailsProvider({
       },
       queries: {
         initialMe,
-        serviceDetails: initialServiceDetails
+        serviceDetails: initialServiceDetails,
+        initialScheduleList
       },
       ServicesDetailsForm: serviceForm
     }),
     [
+      scheduleId,
       pathname,
       serviceForm,
       isDeleteModalOpen,
@@ -104,7 +114,8 @@ export function ServicesDetailsProvider({
       isEditing,
       setIsEditing,
       initialServiceDetails,
-      initialMe
+      initialMe,
+      initialScheduleList
     ]
   );
 
