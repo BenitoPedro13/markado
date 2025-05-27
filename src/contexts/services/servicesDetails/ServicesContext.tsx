@@ -43,7 +43,7 @@ type ServicesDetailsContextType = {
   };
   queries: {
     serviceDetails: EventType['eventType'];
-    initialMe: Me | null;
+    initialMe: Me | undefined;
   };
   ServicesDetailsForm: UseFormReturn<UpdateServicesDetailsFormData>;
 };
@@ -53,7 +53,7 @@ const ServicesDetailsContext = createContext<ServicesDetailsContextType | null>(
 type ServicesDetailsProviderProps = {
   children: React.ReactNode;
   initialServiceDetails: EventType['eventType'];
-  initialMe: Me | null;
+  initialMe: Me | undefined;
 };
 
 export function ServicesDetailsProvider({
