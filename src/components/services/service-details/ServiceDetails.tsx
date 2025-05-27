@@ -9,6 +9,7 @@ import * as Divider from '@/components/align-ui/ui/divider';
 import {useEffect, useRef} from 'react';
 import * as Select from '@/components/align-ui/ui/select';
 import {useServicesDetails} from '@/contexts/services/servicesDetails/ServicesContext';
+import { MARKADO_DOMAIN } from '@/constants';
 
 type ServiceDetailsFormData = Pick<
   Service,
@@ -42,7 +43,7 @@ type Props = {
 export default function ServiceDetails({slug}: Props) {
   const formRef = useRef<HTMLFormElement>(null);
   const {
-    // queries: {}
+    queries: {initialMe},
     ServicesDetailsForm: {register, handleSubmit, watch, getValues, setValue}
   } = useServicesDetails();
   // const service = services.find((s) => s.slug === slug);
@@ -140,7 +141,7 @@ export default function ServiceDetails({slug}: Props) {
               Link do Serviço
             </label>
             <Input.Root>
-              <Input.Affix>app.markado.co/marcaum/</Input.Affix>
+              <Input.Affix>{`${MARKADO_DOMAIN}/${initialMe?.username}`}</Input.Affix>
               <Input.Input
                 {...register('slug')}
                 placeholder="consulta-marketing"
@@ -156,9 +157,13 @@ export default function ServiceDetails({slug}: Props) {
               Cor do Serviço
             </label>
             <Select.Root
-              // value={service?.badgeColor}
               defaultValue={getValues('badgeColor')}
               {...register('badgeColor')}
+              // value={watch('badgeColor')}
+              onValueChange={(value: string) => {
+                console.log('Selected badge color:', value);
+                setValue('badgeColor', value as ServiceBadgeColor);
+              }}
             >
               <Select.Trigger className="w-full">
                 <Select.Value placeholder="Selecione uma cor" />
