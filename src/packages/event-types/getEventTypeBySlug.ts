@@ -2,7 +2,7 @@ import {Prisma} from '~/prisma/app/generated/prisma/client';
 
 // import { getLocationGroupedOptions } from "@/app-store/server";
 // import { getEventTypeAppData } from "@/app-store/utils";
-// import type { LocationObject } from "@/core/location";
+import type { LocationObject } from "@/core/locations";
 // import { getBookingFieldsWithSystemFields } from "@/features/bookings/lib/getBookingFields";
 import {
   parseBookingLimit,
@@ -123,7 +123,7 @@ export const getEventTypeBySlug = async ({
     bookingLimits: parseBookingLimit(restEventType.bookingLimits),
     durationLimits: parseDurationLimit(restEventType.durationLimits),
     eventTypeColor: parseEventTypeColor(restEventType.eventTypeColor),
-    // locations: locations as unknown as LocationObject[],
+    locations: locations as unknown as LocationObject[],
     metadata: parsedMetaData,
     customInputs: parsedCustomInputs,
     users: rawEventType.users,
