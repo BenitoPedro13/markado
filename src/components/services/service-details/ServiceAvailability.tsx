@@ -20,7 +20,14 @@ import {
   RiGlobeLine
 } from '@remixicon/react';
 
-import {useEffect, useRef, useState, memo} from 'react';
+import {
+  useEffect,
+  useRef,
+  useCallback,
+  memo,
+  useActionState,
+  useTransition
+} from 'react';
 
 import type {UseQueryResult} from '@tanstack/react-query';
 import {Controller, useFormContext, useForm} from 'react-hook-form';
@@ -43,8 +50,11 @@ import {weekStartNum} from '@/lib/weekstart';
 import Link from 'next/link';
 import {AvailabilityById} from '@/contexts/availability/availabilityDetails/AvailabilityContext';
 import {Me} from '@/app/settings/page';
-import {TFormatedAvailabilitiesBySchedule} from '@/utils/formatAvailability';
 import {useServicesDetails} from '@/contexts/services/servicesDetails/ServicesContext';
+import {
+  findDetailedScheduleByIdAction,
+  TSchedulesList
+} from '~/trpc/server/handlers/availability.handler';
 // import {
 //   // Avatar,
 //   // Badge,
@@ -99,7 +109,7 @@ type EventTypeTeamScheduleProps = {
 
 type EventTypeScheduleProps = {
   schedulesQueryData?: Array<
-    Omit<TFormatedAvailabilitiesBySchedule, 'availability'>
+    Omit<TSchedulesList['schedules'][number], 'availability'>
   >;
   isSchedulesPending?: boolean;
   eventType: EventTypeSetup;
@@ -229,33 +239,56 @@ const EventTypeSchedule = ({
   ...rest
 }: EventTypeScheduleProps) => {
   const {t} = useLocale();
-  const formMethods = useFormContext<FormValues>();
+  const {
+    queries: {initialMe},
+    ServicesDetailsForm: {watch, setValue, getValues, register}
+  } = useServicesDetails();
   // const {
   //   shouldLockIndicator,
   //   shouldLockDisableProps,
   //   isManagedEventType,
   //   isChildrenManagedEventType
   // } = useLockedFieldsManager({eventType, translate: t, formMethods});
-  const {watch, setValue} = formMethods;
 
   const scheduleId = watch('schedule');
+
+  // Add useTransition hook
+  const [isPending, startTransition] = useTransition();
+
+  // Use useActionState for the action
+  const [schedule, action] = useActionState(
+    findDetailedScheduleByIdAction,
+    undefined as AvailabilityById | undefined
+  );
 
   useEffect(() => {
     // after data is loaded.
     if (schedulesQueryData && scheduleId !== 0 && !scheduleId) {
-      const newValue =
-        // isManagedEventType
-        false
-          ? 0
-          : schedulesQueryData.find((schedule) => schedule.isDefault)
-              ?.scheduleId;
+      const newValue = false
+        ? 0
+        : schedulesQueryData.find((schedule) => schedule.isDefault)?.id;
       if (!newValue && newValue !== 0) return;
       setValue('schedule', newValue, {
         shouldDirty: true
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scheduleId, schedulesQueryData]);
+
+  const handleScheduleAction = useCallback(() => {
+    if (scheduleId) {
+      startTransition(() => {
+        action({
+          scheduleId,
+          userId: initialMe?.id as string,
+          timeZone: initialMe?.timeZone
+        });
+      });
+    }
+  }, [scheduleId, initialMe?.id, initialMe?.timeZone, action]);
+
+  useEffect(() => {
+    handleScheduleAction();
+  }, [handleScheduleAction]);
 
   if (isSchedulesPending || !schedulesQueryData) {
     // return <SelectSkeletonLoader />;
@@ -263,8 +296,8 @@ const EventTypeSchedule = ({
   }
 
   const options = schedulesQueryData.map((schedule) => ({
-    value: schedule.scheduleId,
-    label: schedule.scheduleName,
+    value: schedule.id,
+    label: schedule.name,
     isDefault: schedule.isDefault,
     isManaged: false
   }));
@@ -283,7 +316,7 @@ const EventTypeSchedule = ({
   if (
     // isChildrenManagedEventType &&
     scheduleId &&
-    !schedulesQueryData.find((schedule) => schedule.scheduleId === scheduleId)
+    !schedulesQueryData.find((schedule) => schedule.id === scheduleId)
   ) {
     // options.push({
     //   value: scheduleId,
@@ -295,9 +328,7 @@ const EventTypeSchedule = ({
   // We push the selected schedule from the event type if it's not part of the list response. This happens if the user is an admin but not the schedule owner.
   else if (
     eventType.schedule &&
-    !schedulesQueryData.find(
-      (schedule) => schedule.scheduleId === eventType.schedule
-    )
+    !schedulesQueryData.find((schedule) => schedule.id === eventType.schedule)
   ) {
     options.push({
       value: eventType.schedule,
@@ -307,8 +338,12 @@ const EventTypeSchedule = ({
     });
   }
 
+  // const optionValue: AvailabilityOption | undefined = options.find(
+  //   (option) => option.value === scheduleId
+  // );
+
   return (
-    <div>
+    <>
       <div className="rounded-t-md ">
         <label
           htmlFor="availability"
@@ -318,66 +353,45 @@ const EventTypeSchedule = ({
           {/* {(isManagedEventType || isChildrenManagedEventType) &&
             shouldLockIndicator('schedule')} */}
         </label>
-        <Controller
-          name="schedule"
-          render={({field: {onChange, value}}) => {
-            const optionValue: AvailabilityOption | undefined = options.find(
-              (option) => option.value === value
-            );
-            return (
-              <Select.Root
-                defaultValue={optionValue?.label}
-                // isDisabled={shouldLockDisableProps('schedule').disabled}
-                // isSearchable={false}
-                onValueChange={(selected) => {
-                  if (selected) onChange(selected);
-                }}
-                // className="block w-full min-w-0 flex-1 rounded-sm text-sm"
-                // components={{Option, SingleValue}}
-                // isMulti={false}
-              >
-                <Select.Trigger className="flex w-[90px] sm:w-[100px]">
-                  <Select.Value>
-                    <span>{optionValue?.label}</span>
-                    {optionValue?.isDefault && (
-                      <Badge.Root color="blue" className="ml-2">
-                        {t('default')}
-                      </Badge.Root>
-                    )}
-                    {optionValue?.isManaged && (
-                      <Badge.Root color="gray" className="ml-2">
-                        {t('managed')}
-                      </Badge.Root>
-                    )}
-                  </Select.Value>
-                </Select.Trigger>
-                <Select.Content>
-                  {options.map((option) => (
-                    <Select.Item
-                      key={option.value}
-                      value={option.value.toString()}
-                    >
-                      <span>{option.label}</span>
-                      {option.isDefault && (
-                        <Badge.Root color="blue" className="ml-2">
-                          {t('default')}
-                        </Badge.Root>
-                      )}
-                      {option.isManaged && (
-                        <Badge.Root color="gray" className="ml-2">
-                          {t('managed')}
-                        </Badge.Root>
-                      )}
-                    </Select.Item>
-                  ))}
-                </Select.Content>
-              </Select.Root>
-            );
+
+        <Select.Root
+          {...register('schedule')}
+          // value={scheduleId?.toString() ?? ''}
+          // placeholder={'Selecione uma disponibilidade'}
+          defaultValue={scheduleId?.toString() ?? ''}
+          onValueChange={(str) => {
+            const id = parseInt(str, 10);
+            // update RHF—and trigger re-render because `watch('schedule')` will now change
+            setValue('schedule', id, {shouldDirty: true});
           }}
-        />
+        >
+          <Select.Trigger
+          // className="flex w-[90px] sm:w-[100px]"
+          >
+            <Select.Value/>
+          </Select.Trigger>
+          <Select.Content>
+            {options.map((opt) => (
+              <Select.Item key={opt.value} value={opt.value.toString()}>
+                {opt.label}
+                {opt.isDefault && (
+                  <Badge.Root color="blue" className="ml-2">
+                    {t('default')}
+                  </Badge.Root>
+                )}
+              </Select.Item>
+            ))}
+          </Select.Content>
+        </Select.Root>
       </div>
       {scheduleId !== 0 ? (
-        <EventTypeScheduleDetails {...rest} />
+        <EventTypeScheduleDetails
+          key={scheduleId}
+          scheduleQueryData={schedule}
+          isSchedulePending={isPending}
+          user={rest.user}
+          editAvailabilityRedirectUrl={rest.editAvailabilityRedirectUrl}
+        />
       ) : (
         <></>
         // isManagedEventType && (
@@ -386,7 +400,7 @@ const EventTypeSchedule = ({
         //   </p>
         // )
       )}
-    </div>
+    </>
   );
 };
 
@@ -610,7 +624,7 @@ const daysOfWeek = [
 
 export default function ServiceAvailability({slug}: Props) {
   const {
-    queries: {initialMe, serviceDetails},
+    queries: {initialMe, serviceDetails, initialScheduleList},
     ServicesDetailsForm: {register, handleSubmit, watch, getValues, setValue}
   } = useServicesDetails();
 
@@ -698,7 +712,13 @@ export default function ServiceAvailability({slug}: Props) {
           </Button.Root>
         </div>
       </form>
-      <EventAvailabilityTab isTeamEvent={false} eventType={serviceDetails} user={initialMe} />
+      <EventAvailabilityTab
+        isTeamEvent={false}
+        eventType={serviceDetails}
+        user={initialMe}
+        schedulesQueryData={initialScheduleList}
+        isSchedulesPending={initialScheduleList === undefined}
+      />
     </>
   );
 }
