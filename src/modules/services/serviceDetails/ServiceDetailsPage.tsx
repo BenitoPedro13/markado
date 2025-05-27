@@ -6,7 +6,7 @@ import * as Divider from '@/components/align-ui/ui/divider';
 function ServiceDetailsPage({slug}: {slug: string}) {
   return (
     <>
-      <ServicesDetailsHeader title="Configuração do Serviço" />
+      <ServicesDetailsHeader />
       <div className="px-8">
         <Divider.Root />
       </div>
