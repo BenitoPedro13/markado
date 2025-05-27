@@ -103,7 +103,7 @@ const aiPhoneCallConfig = z
   .optional();
 
 const hostSchema = z.object({
-  userId: z.number(),
+  userId: z.string(),
   profileId: z.number().or(z.null()).optional(),
   isFixed: z.boolean().optional(),
   priority: z.number().min(0).max(4).optional().nullable(),
@@ -113,7 +113,7 @@ const hostSchema = z.object({
 
 const childSchema = z.object({
   owner: z.object({
-    id: z.number(),
+    id: z.string(),
     name: z.string(),
     email: z.string(),
     eventTypeSlugs: z.array(z.string())
@@ -135,7 +135,7 @@ const BaseEventTypeUpdateInput = _EventTypeModel
         externalId: true
       })
       .nullable(),
-    users: z.array(stringOrNumber),
+    users: z.array(z.string()),
     children: z.array(childSchema),
     hosts: z.array(hostSchema),
     schedule: z.number().nullable(),
