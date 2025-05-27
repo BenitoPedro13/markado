@@ -13,7 +13,8 @@ import type {
   EventTypeLocation,
   TDeleteInputSchema,
   TDuplicateInputSchema,
-  TGetEventTypesFromGroupSchema
+  TGetEventTypesFromGroupSchema,
+  TGetInputSchema
 } from '~/trpc/server/schemas/services.schema';
 
 import {TRPCError} from '@trpc/server';
@@ -24,6 +25,7 @@ import {UserRepository} from '@/repositories/user';
 import {safeStringify} from '@/lib/safeStringify';
 import {hasFilter, mapEventType} from '~/trpc/server/utils/services/util';
 import {revalidatePath} from 'next/cache';
+import getEventTypeBySlug from '@/packages/event-types/getEventTypeBySlug';
 
 // Create
 
@@ -156,6 +158,52 @@ export const createServiceHandler = async ({input}: CreateOptions) => {
       }
     }
     throw new TRPCError({code: 'BAD_REQUEST'});
+  }
+};
+
+type GetOptions = {
+  input: TGetInputSchema;
+};
+
+// get detailed service by slug or id
+export const getServiceHandler = async ({input}: GetOptions) => {
+  try {
+    const session = await auth();
+
+    if (!session) {
+      throw new TRPCError({
+        code: 'UNAUTHORIZED',
+        message: 'getServiceHandler: Could not get the user session'
+      });
+    }
+
+    if (!session.user) {
+      throw new TRPCError({
+        code: 'UNAUTHORIZED',
+        message: 'getServiceHandler: Not authenticated'
+      });
+    }
+
+    const user = await UserRepository.findByIdOrThrow({id: session.user.id});
+    const enrichedUser = await UserRepository.enrichUserWithItsProfile({user});
+    const userProfile = enrichedUser.profile;
+
+
+
+    return await getEventTypeBySlug({
+      currentOrganizationId: userProfile.organizationId ?? null,
+      eventTypeSlug: input.slug,
+      userId: session.user.id,
+      prisma: prisma,
+      // isTrpcCall: true,
+      isUserOrganizationAdmin: false // !!enrichedUser?.organization?.isOrgAdmin
+    });
+  } catch (error) {
+    console.error('Error in getServiceHandler:', error);
+    throw new TRPCError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Failed to retrieve service details'
+    });
   }
 };
 
@@ -454,6 +502,7 @@ export const submitDeleteService = async (serviceId: number) => {
 
     if (!serviceResult.id) return;
 
+    revalidatePath('/services'); // revalidate the list page
     return serviceResult;
   } catch (error) {
     console.error('Error deleting Service:', error);
@@ -465,7 +514,6 @@ export const submitDeleteService = async (serviceId: number) => {
 };
 
 // Duplicate
-
 
 export const duplicateHandler = async (input: TDuplicateInputSchema) => {
   try {
@@ -666,4 +714,3 @@ export const duplicateHandler = async (input: TDuplicateInputSchema) => {
     });
   }
 };
-

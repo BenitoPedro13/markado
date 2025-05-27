@@ -30,33 +30,6 @@ export default async function AvailabilityDetailsServerPage({params}: Props) {
 
   const availabilityId = params.slug;
 
-  // Create a new QueryClient for this request
-  // const queryClient = getQueryClient();
-
-  // // Prefetch the data
-  // await queryClient.prefetchQuery({
-  //   queryKey: [
-  //     'availability',
-  //     'findDetailedScheduleById',
-  //     {
-  //       scheduleId: +availabilityId,
-  //       timeZone: 'America/Sao_Paulo'
-  //     }
-  //   ],
-  //   queryFn: () =>
-  //     findDetailedScheduleById({
-  //       scheduleId: +availabilityId,
-  //       userId: userId,
-  //       timeZone: 'America/Sao_Paulo'
-  //     })
-  // });
-
-  // // Prefetch the data
-  // await queryClient.prefetchQuery({
-  //   queryKey: ['me'],
-  //   queryFn: () => getMeByUserId(userId)
-  // });
-
   const availability = await findDetailedScheduleById({
     scheduleId: +availabilityId,
     userId: userId
