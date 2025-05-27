@@ -502,6 +502,7 @@ export const submitDeleteService = async (serviceId: number) => {
 
     if (!serviceResult.id) return;
 
+    revalidatePath('/services'); // revalidate the list page
     return serviceResult;
   } catch (error) {
     console.error('Error deleting Service:', error);
