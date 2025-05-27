@@ -8,6 +8,7 @@ import type {CustomInputSchema} from '~/prisma/zod-utils';
 import {EventTypeMetaDataSchema} from '~/prisma/zod-utils';
 
 import {TRPCError} from '@trpc/server';
+import { TUpdateInputSchema } from '~/trpc/server/schemas/services.schema';
 
 // import authedProcedure from '../../../procedures/authedProcedure';
 // import type {TUpdateInputSchema} from './types';
@@ -170,56 +171,56 @@ export function handleCustomInputs(
   };
 }
 
-// export function ensureUniqueBookingFields(
-//   fields: TUpdateInputSchema['bookingFields']
-// ) {
-//   if (!fields) {
-//     return;
-//   }
+export function ensureUniqueBookingFields(
+  fields: TUpdateInputSchema['bookingFields']
+) {
+  if (!fields) {
+    return;
+  }
 
-//   fields.reduce(
-//     (discoveredFields, field) => {
-//       if (discoveredFields[field.name]) {
-//         throw new TRPCError({
-//           code: 'BAD_REQUEST',
-//           message: `Duplicate booking field name: ${field.name}`
-//         });
-//       }
+  fields.reduce(
+    (discoveredFields, field) => {
+      if (discoveredFields[field.name]) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: `Duplicate booking field name: ${field.name}`
+        });
+      }
 
-//       discoveredFields[field.name] = true;
+      discoveredFields[field.name] = true;
 
-//       return discoveredFields;
-//     },
-//     {} as Record<string, true>
-//   );
-// }
+      return discoveredFields;
+    },
+    {} as Record<string, true>
+  );
+}
 
-// export function ensureEmailOrPhoneNumberIsPresent(
-//   fields: TUpdateInputSchema['bookingFields']
-// ) {
-//   if (!fields || fields.length === 0) {
-//     return;
-//   }
+export function ensureEmailOrPhoneNumberIsPresent(
+  fields: TUpdateInputSchema['bookingFields']
+) {
+  if (!fields || fields.length === 0) {
+    return;
+  }
 
-//   const attendeePhoneNumberField = fields.find(
-//     (field) => field.name === 'attendeePhoneNumber'
-//   );
+  const attendeePhoneNumberField = fields.find(
+    (field) => field.name === 'attendeePhoneNumber'
+  );
 
-//   const emailField = fields.find((field) => field.name === 'email');
+  const emailField = fields.find((field) => field.name === 'email');
 
-//   if (emailField?.hidden && attendeePhoneNumberField?.hidden) {
-//     throw new TRPCError({
-//       code: 'BAD_REQUEST',
-//       message: `Both Email and Attendee Phone Number cannot be hidden`
-//     });
-//   }
-//   if (!emailField?.required && !attendeePhoneNumberField?.required) {
-//     throw new TRPCError({
-//       code: 'BAD_REQUEST',
-//       message: `At least Email or Attendee Phone Number need to be required field.`
-//     });
-//   }
-// }
+  if (emailField?.hidden && attendeePhoneNumberField?.hidden) {
+    throw new TRPCError({
+      code: 'BAD_REQUEST',
+      message: `Both Email and Attendee Phone Number cannot be hidden`
+    });
+  }
+  if (!emailField?.required && !attendeePhoneNumberField?.required) {
+    throw new TRPCError({
+      code: 'BAD_REQUEST',
+      message: `At least Email or Attendee Phone Number need to be required field.`
+    });
+  }
+}
 
 type Host = {
   userId: number;
