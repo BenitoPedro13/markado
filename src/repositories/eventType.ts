@@ -33,7 +33,9 @@ const userSelect = Prisma.validator<Prisma.UserSelect>()({
 });
 
 export class EventTypeRepository {
-  private static generateCreateEventTypeData = (eventTypeCreateData: IEventType) => {
+  private static generateCreateEventTypeData = (
+    eventTypeCreateData: IEventType
+  ) => {
     const {
       userId,
       profileId,
@@ -50,62 +52,62 @@ export class EventTypeRepository {
 
     return {
       ...rest,
-      ...(userId ? { owner: { connect: { id: userId } } } : null),
+      ...(userId ? {owner: {connect: {id: userId}}} : null),
       ...(profileId
         ? {
             profile: {
               connect: {
-                id: profileId,
-              },
-            },
+                id: profileId
+              }
+            }
           }
         : null),
-      ...(teamId ? { team: { connect: { id: teamId } } } : null),
-      ...(parentId ? { parent: { connect: { id: parentId } } } : null),
-      ...(scheduleId ? { schedule: { connect: { id: scheduleId } } } : null),
-      ...(metadata ? { metadata: metadata } : null),
+      ...(teamId ? {team: {connect: {id: teamId}}} : null),
+      ...(parentId ? {parent: {connect: {id: parentId}}} : null),
+      ...(scheduleId ? {schedule: {connect: {id: scheduleId}}} : null),
+      ...(metadata ? {metadata: metadata} : null),
       ...(bookingLimits
         ? {
-            bookingLimits,
+            bookingLimits
           }
         : null),
       ...(recurringEvent
         ? {
-            recurringEvent,
+            recurringEvent
           }
         : null),
       ...(bookingFields
         ? {
-            bookingFields,
+            bookingFields
           }
         : null),
       ...(durationLimits
         ? {
-            durationLimits,
+            durationLimits
           }
-        : null),
+        : null)
     };
   };
 
   static async create(data: IEventType) {
     return await prisma.eventType.create({
-      data: this.generateCreateEventTypeData(data),
+      data: this.generateCreateEventTypeData(data)
     });
   }
 
   static async createMany(data: IEventType[]) {
     return await prisma.eventType.createMany({
-      data: data.map((d) => this.generateCreateEventTypeData(d)),
+      data: data.map((d) => this.generateCreateEventTypeData(d))
     });
   }
 
   static async findAllByUpId(
-    { upId, userId }: { upId: string; userId: string },
+    {upId, userId}: {upId: string; userId: string},
     {
       orderBy,
       where = {},
       cursor: cursorId,
-      limit,
+      limit
     }: {
       orderBy?: Prisma.EventTypeOrderByWithRelationInput[];
       where?: Prisma.EventTypeWhereInput;
@@ -115,33 +117,34 @@ export class EventTypeRepository {
   ) {
     if (!upId) return [];
     const lookupTarget = ProfileRepository.getLookupTarget(upId);
-    const profileId = lookupTarget.type === LookupTarget.User ? null : lookupTarget.id;
+    const profileId =
+      lookupTarget.type === LookupTarget.User ? null : lookupTarget.id;
     const select = {
       ...eventTypeSelect,
       hashedLink: true,
-      users: { select: userSelect },
+      users: {select: userSelect},
       children: {
         include: {
-          users: { select: userSelect },
-        },
+          users: {select: userSelect}
+        }
       },
       hosts: {
         include: {
-          user: { select: userSelect },
-        },
-      },
+          user: {select: userSelect}
+        }
+      }
     };
 
     console.log(
-      "findAllByUpId",
+      'findAllByUpId',
       safeStringify({
         upId,
         orderBy,
-        argumentWhere: where,
+        argumentWhere: where
       })
     );
 
-    const cursor = cursorId ? { id: cursorId } : undefined;
+    const cursor = cursorId ? {id: cursorId} : undefined;
     const take = limit ? limit + 1 : undefined; // We take +1 as it'll be used for the next cursor
 
     if (!profileId) {
@@ -149,12 +152,12 @@ export class EventTypeRepository {
       return await prisma.eventType.findMany({
         where: {
           userId: lookupTarget.id as string,
-          ...where,
+          ...where
         },
         select,
         cursor,
         take,
-        orderBy,
+        orderBy
       });
     }
 
@@ -168,59 +171,59 @@ export class EventTypeRepository {
             // Existing events
             {
               userId: profile.movedFromUser.id,
-              profileId: null,
+              profileId: null
             },
             // New events
             {
-              profileId,
+              profileId
             },
             // Fetch children event-types by userId because profileId is wrong
             {
               userId,
               parentId: {
-                not: null,
-              },
-            },
+                not: null
+              }
+            }
           ],
-          ...where,
+          ...where
         },
         select,
         cursor,
         take,
-        orderBy,
+        orderBy
       });
     } else {
       return await prisma.eventType.findMany({
         where: {
           OR: [
             {
-              profileId,
+              profileId
             },
             // Fetch children event-types by userId because profileId is wrong
             {
               userId: userId,
               parentId: {
-                not: null,
-              },
-            },
+                not: null
+              }
+            }
           ],
-          ...where,
+          ...where
         },
         select,
         cursor,
         take,
-        orderBy,
+        orderBy
       });
     }
   }
 
   static async findAllByUpIdWithMinimalData(
-    { upId, userId }: { upId: string; userId: string },
+    {upId, userId}: {upId: string; userId: string},
     {
       orderBy,
       where = {},
       cursor: cursorId,
-      limit,
+      limit
     }: {
       orderBy?: Prisma.EventTypeOrderByWithRelationInput[];
       where?: Prisma.EventTypeWhereInput;
@@ -230,22 +233,23 @@ export class EventTypeRepository {
   ) {
     if (!upId) return [];
     const lookupTarget = ProfileRepository.getLookupTarget(upId);
-    const profileId = lookupTarget.type === LookupTarget.User ? null : lookupTarget.id;
+    const profileId =
+      lookupTarget.type === LookupTarget.User ? null : lookupTarget.id;
     const select = {
       ...eventTypeSelect,
-      hashedLink: true,
+      hashedLink: true
     };
 
     console.log(
-      "findAllByUpIdWithMinimalData",
+      'findAllByUpIdWithMinimalData',
       safeStringify({
         upId,
         orderBy,
-        argumentWhere: where,
+        argumentWhere: where
       })
     );
 
-    const cursor = cursorId ? { id: cursorId } : undefined;
+    const cursor = cursorId ? {id: cursorId} : undefined;
     const take = limit ? limit + 1 : undefined; // We take +1 as it'll be used for the next cursor
 
     if (!profileId) {
@@ -253,12 +257,12 @@ export class EventTypeRepository {
       return await prisma.eventType.findMany({
         where: {
           userId: lookupTarget.id as string,
-          ...where,
+          ...where
         },
         select,
         cursor,
         take,
-        orderBy,
+        orderBy
       });
     }
 
@@ -272,48 +276,48 @@ export class EventTypeRepository {
             // Existing events
             {
               userId: profile.movedFromUser.id,
-              profileId: null,
+              profileId: null
             },
             // New events
             {
-              profileId,
+              profileId
             },
             // Fetch children event-types by userId because profileId is wrong
             {
               userId,
               parentId: {
-                not: null,
-              },
-            },
+                not: null
+              }
+            }
           ],
-          ...where,
+          ...where
         },
         select,
         cursor,
         take,
-        orderBy,
+        orderBy
       });
     } else {
       return await prisma.eventType.findMany({
         where: {
           OR: [
             {
-              profileId,
+              profileId
             },
             // Fetch children event-types by userId because profileId is wrong
             {
               userId: userId,
               parentId: {
-                not: null,
-              },
-            },
+                not: null
+              }
+            }
           ],
-          ...where,
+          ...where
         },
         select,
         cursor,
         take,
-        orderBy,
+        orderBy
       });
     }
   }
@@ -325,7 +329,7 @@ export class EventTypeRepository {
     limit,
     cursor,
     orderBy,
-    where = {},
+    where = {}
   }: {
     teamId: number;
     parentId?: number | null;
@@ -339,24 +343,24 @@ export class EventTypeRepository {
       name: true,
       image: true,
       username: true,
-      id: true,
+      id: true
     });
 
     const select = {
       ...eventTypeSelect,
       hashedLink: true,
-      users: { select: userSelect, take: 5 },
+      users: {select: userSelect, take: 5},
       children: {
         include: {
-          users: { select: userSelect, take: 5 },
-        },
+          users: {select: userSelect, take: 5}
+        }
       },
       hosts: {
         include: {
-          user: { select: userSelect },
+          user: {select: userSelect}
         },
-        take: 5,
-      },
+        take: 5
+      }
     };
 
     const teamMembership = await prisma.membership.findFirst({
@@ -365,49 +369,49 @@ export class EventTypeRepository {
           {
             teamId,
             userId,
-            accepted: true,
+            accepted: true
           },
           {
             team: {
               parent: {
-                ...(parentId ? { id: parentId } : {}),
+                ...(parentId ? {id: parentId} : {}),
                 members: {
                   some: {
                     userId,
                     accepted: true,
-                    role: { in: [MembershipRole.ADMIN, MembershipRole.OWNER] },
-                  },
-                },
-              },
-            },
-          },
-        ],
-      },
+                    role: {in: [MembershipRole.ADMIN, MembershipRole.OWNER]}
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
     });
 
-    if (!teamMembership) throw new TRPCError({ code: "UNAUTHORIZED" });
+    if (!teamMembership) throw new TRPCError({code: 'UNAUTHORIZED'});
 
     return await prisma.eventType.findMany({
       where: {
         teamId,
-        ...where,
+        ...where
       },
       select,
-      cursor: cursor ? { id: cursor } : undefined,
+      cursor: cursor ? {id: cursor} : undefined,
       take: limit ? limit + 1 : undefined, // We take +1 as itll be used for the next cursor
-      orderBy,
+      orderBy
     });
   }
 
-  static async findAllByUserId({ userId }: { userId: string }) {
+  static async findAllByUserId({userId}: {userId: string}) {
     return await prisma.eventType.findMany({
       where: {
-        userId,
-      },
+        userId
+      }
     });
   }
 
-  static async findById({ id, userId }: { id: number; userId: string }) {
+  static async findById({id, userId}: {id: number; userId: string}) {
     const userSelect = Prisma.validator<Prisma.UserSelect>()({
       name: true,
       image: true,
@@ -415,7 +419,7 @@ export class EventTypeRepository {
       id: true,
       email: true,
       locale: true,
-      defaultScheduleId: true,
+      defaultScheduleId: true
     });
 
     const CompleteEventTypeSelect = Prisma.validator<Prisma.EventTypeSelect>()({
@@ -462,14 +466,14 @@ export class EventTypeRepository {
       useEventTypeDestinationCalendarEmail: true,
       owner: {
         select: {
-          id: true,
-        },
+          id: true
+        }
       },
       parent: {
         select: {
           id: true,
-          teamId: true,
-        },
+          teamId: true
+        }
       },
       teamId: true,
       team: {
@@ -483,10 +487,10 @@ export class EventTypeRepository {
               slug: true,
               organizationSettings: {
                 select: {
-                  lockEventTypeCreationForUsers: true,
-                },
-              },
-            },
+                  lockEventTypeCreationForUsers: true
+                }
+              }
+            }
           },
           members: {
             select: {
@@ -497,30 +501,30 @@ export class EventTypeRepository {
                   ...userSelect,
                   eventTypes: {
                     select: {
-                      slug: true,
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
+                      slug: true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       },
       users: {
-        select: userSelect,
+        select: userSelect
       },
       schedulingType: true,
       schedule: {
         select: {
           id: true,
-          name: true,
-        },
+          name: true
+        }
       },
       instantMeetingSchedule: {
         select: {
           id: true,
-          name: true,
-        },
+          name: true
+        }
       },
       hosts: {
         select: {
@@ -528,8 +532,8 @@ export class EventTypeRepository {
           userId: true,
           priority: true,
           weight: true,
-          scheduleId: true,
-        },
+          scheduleId: true
+        }
       },
       userId: true,
       children: {
@@ -540,12 +544,12 @@ export class EventTypeRepository {
               name: true,
               username: true,
               email: true,
-              id: true,
-            },
+              id: true
+            }
           },
           hidden: true,
-          slug: true,
-        },
+          slug: true
+        }
       },
       destinationCalendar: true,
       seatsPerTimeSlot: true,
@@ -559,8 +563,8 @@ export class EventTypeRepository {
           active: true,
           eventTriggers: true,
           secret: true,
-          eventTypeId: true,
-        },
+          eventTypeId: true
+        }
       },
       workflows: {
         include: {
@@ -578,8 +582,8 @@ export class EventTypeRepository {
                   id: true,
                   slug: true,
                   name: true,
-                  members: true,
-                },
+                  members: true
+                }
               },
               activeOn: {
                 select: {
@@ -590,19 +594,19 @@ export class EventTypeRepository {
                       parentId: true,
                       _count: {
                         select: {
-                          children: true,
-                        },
-                      },
-                    },
-                  },
-                },
+                          children: true
+                        }
+                      }
+                    }
+                  }
+                }
               },
-              steps: true,
-            },
-          },
-        },
+              steps: true
+            }
+          }
+        }
       },
-      secondaryEmailId: true,
+      secondaryEmailId: true
     });
 
     return await prisma.eventType.findFirst({
@@ -613,47 +617,284 @@ export class EventTypeRepository {
               {
                 users: {
                   some: {
-                    id: userId,
-                  },
-                },
+                    id: userId
+                  }
+                }
               },
               {
                 team: {
                   members: {
                     some: {
-                      userId: userId,
-                    },
-                  },
-                },
+                      userId: userId
+                    }
+                  }
+                }
               },
               {
-                userId: userId,
-              },
-            ],
+                userId: userId
+              }
+            ]
           },
           {
-            id,
-          },
-        ],
+            id
+          }
+        ]
       },
-      select: CompleteEventTypeSelect,
+      select: CompleteEventTypeSelect
     });
   }
 
-  static async findAllByTeamIdIncludeManagedEventTypes({ teamId }: { teamId?: number }) {
+  static async findBySlug({slug, userId}: {slug: string; userId: string}) {
+    const userSelect = Prisma.validator<Prisma.UserSelect>()({
+      name: true,
+      image: true,
+      username: true,
+      id: true,
+      email: true,
+      locale: true,
+      defaultScheduleId: true
+    });
+
+    const CompleteEventTypeSelect = Prisma.validator<Prisma.EventTypeSelect>()({
+      id: true,
+      title: true,
+      slug: true,
+      description: true,
+      length: true,
+      isInstantEvent: true,
+      instantMeetingExpiryTimeOffsetInSeconds: true,
+      offsetStart: true,
+      hidden: true,
+      locations: true,
+      eventName: true,
+      customInputs: true,
+      timeZone: true,
+      periodType: true,
+      metadata: true,
+      periodDays: true,
+      periodStartDate: true,
+      periodEndDate: true,
+      periodCountCalendarDays: true,
+      lockTimeZoneToggleOnBookingPage: true,
+      requiresConfirmation: true,
+      requiresConfirmationWillBlockSlot: true,
+      requiresBookerEmailVerification: true,
+      recurringEvent: true,
+      hideCalendarNotes: true,
+      hideCalendarEventDetails: true,
+      disableGuests: true,
+      minimumBookingNotice: true,
+      beforeEventBuffer: true,
+      afterEventBuffer: true,
+      slotInterval: true,
+      hashedLink: true,
+      eventTypeColor: true,
+      bookingLimits: true,
+      onlyShowFirstAvailableSlot: true,
+      durationLimits: true,
+      assignAllTeamMembers: true,
+      successRedirectUrl: true,
+      forwardParamsSuccessRedirect: true,
+      bookingFields: true,
+      useEventTypeDestinationCalendarEmail: true,
+      owner: {
+        select: {
+          id: true
+        }
+      },
+      parent: {
+        select: {
+          id: true,
+          teamId: true
+        }
+      },
+      teamId: true,
+      team: {
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+          parentId: true,
+          parent: {
+            select: {
+              slug: true,
+              organizationSettings: {
+                select: {
+                  lockEventTypeCreationForUsers: true
+                }
+              }
+            }
+          },
+          members: {
+            select: {
+              role: true,
+              accepted: true,
+              user: {
+                select: {
+                  ...userSelect,
+                  eventTypes: {
+                    select: {
+                      slug: true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      users: {
+        select: userSelect
+      },
+      schedulingType: true,
+      schedule: {
+        select: {
+          id: true,
+          name: true
+        }
+      },
+      instantMeetingSchedule: {
+        select: {
+          id: true,
+          name: true
+        }
+      },
+      hosts: {
+        select: {
+          isFixed: true,
+          userId: true,
+          priority: true,
+          weight: true,
+          scheduleId: true
+        }
+      },
+      userId: true,
+      children: {
+        select: {
+          owner: {
+            select: {
+              image: true,
+              name: true,
+              username: true,
+              email: true,
+              id: true
+            }
+          },
+          hidden: true,
+          slug: true
+        }
+      },
+      destinationCalendar: true,
+      seatsPerTimeSlot: true,
+      seatsShowAttendees: true,
+      seatsShowAvailabilityCount: true,
+      webhooks: {
+        select: {
+          id: true,
+          subscriberUrl: true,
+          payloadTemplate: true,
+          active: true,
+          eventTriggers: true,
+          secret: true,
+          eventTypeId: true
+        }
+      },
+      workflows: {
+        include: {
+          workflow: {
+            select: {
+              name: true,
+              id: true,
+              trigger: true,
+              time: true,
+              timeUnit: true,
+              userId: true,
+              teamId: true,
+              team: {
+                select: {
+                  id: true,
+                  slug: true,
+                  name: true,
+                  members: true
+                }
+              },
+              activeOn: {
+                select: {
+                  eventType: {
+                    select: {
+                      id: true,
+                      title: true,
+                      parentId: true,
+                      _count: {
+                        select: {
+                          children: true
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              steps: true
+            }
+          }
+        }
+      },
+      secondaryEmailId: true
+    });
+
+    return await prisma.eventType.findFirst({
+      where: {
+        AND: [
+          {
+            OR: [
+              {
+                users: {
+                  some: {
+                    id: userId
+                  }
+                }
+              },
+              {
+                team: {
+                  members: {
+                    some: {
+                      userId: userId
+                    }
+                  }
+                }
+              },
+              {
+                userId: userId
+              }
+            ]
+          },
+          {
+            slug
+          }
+        ]
+      },
+      select: CompleteEventTypeSelect
+    });
+  }
+
+  static async findAllByTeamIdIncludeManagedEventTypes({
+    teamId
+  }: {
+    teamId?: number;
+  }) {
     return await prisma.eventType.findMany({
       where: {
         OR: [
           {
-            teamId,
+            teamId
           },
           {
             parent: {
-              teamId,
-            },
-          },
-        ],
-      },
+              teamId
+            }
+          }
+        ]
+      }
     });
   }
 }
