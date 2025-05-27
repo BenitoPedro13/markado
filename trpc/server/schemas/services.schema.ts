@@ -39,7 +39,7 @@ export type TCreateInputSchema = z.infer<typeof ZCreateInputSchema>;
 
 // get details by id
 export const ZGetInputSchema = z.object({
-  id: z.number()
+  slug: z.string(),
 });
 
 export type TGetInputSchema = z.infer<typeof ZGetInputSchema>;
