@@ -84,18 +84,20 @@ export default function ServiceDetails({slug}: Props) {
   // };
 
   // Expõe a função de submit para o componente pai
-  useEffect(() => {
-    const submitForm = () => {
-      formRef.current?.requestSubmit();
-    };
+  // useEffect(() => {
+  //   const submitForm = () => {
+  //     formRef.current?.requestSubmit();
+  //   };
 
-    // Adiciona ao objeto window para que o Header possa acessar
-    (window as any).submitServiceForm = submitForm;
+  //   // Adiciona ao objeto window para que o Header possa acessar
+  //   (window as any).submitServiceForm = submitForm;
 
-    return () => {
-      delete (window as any).submitServiceForm;
-    };
-  }, []);
+  //   return () => {
+  //     delete (window as any).submitServiceForm;
+  //   };
+  // }, []);
+
+  // console.log('Localizações:', watch('locations')); // Apenas para debug
 
   return (
     <form
@@ -212,10 +214,17 @@ export default function ServiceDetails({slug}: Props) {
           </label>
           <Input.Root>
             <Input.Input
-              {...register('location')}
+              {...register('locations')}
               placeholder="Ex: Online via Google Meet"
             />
           </Input.Root>
+          {/* {watch('locations') && (
+            <span className="text-paragraph-xs text-text-sub-600">
+              Esta localização será usada para identificar onde o serviço será
+              realizado. Pode ser um link de videoconferência, endereço físico
+              ou qualquer outra informação relevante.
+            </span>
+          )} */}
         </div>
       </div>
     </form>
