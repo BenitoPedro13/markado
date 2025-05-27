@@ -23,8 +23,8 @@ import {TRPCError} from '@trpc/server';
 import {MARKADO_URL} from '@/constants';
 // import {getBookerBaseUrl} from '../getBookerUrl/server';
 
-interface getEventTypeByIdProps {
-  eventTypeId: number;
+interface getEventTypeBySlugProps {
+  eventTypeSlug: string;
   userId: string;
   prisma: PrismaClient;
   isTrpcCall?: boolean;
@@ -32,16 +32,16 @@ interface getEventTypeByIdProps {
   currentOrganizationId: number | null;
 }
 
-export type EventType = Awaited<ReturnType<typeof getEventTypeById>>;
+export type EventType = Awaited<ReturnType<typeof getEventTypeBySlug>>;
 
-export const getEventTypeById = async ({
+export const getEventTypeBySlug = async ({
   currentOrganizationId,
-  eventTypeId,
+  eventTypeSlug,
   userId,
   prisma,
   isTrpcCall = false,
   isUserOrganizationAdmin
-}: getEventTypeByIdProps) => {
+}: getEventTypeBySlugProps) => {
   const userSelect = Prisma.validator<Prisma.UserSelect>()({
     name: true,
     image: true,
@@ -52,8 +52,8 @@ export const getEventTypeById = async ({
     defaultScheduleId: true
   });
 
-  const rawEventType = await EventTypeRepository.findById({
-    id: eventTypeId,
+  const rawEventType = await EventTypeRepository.findBySlug({
+    slug: eventTypeSlug,
     userId
   });
 
@@ -127,13 +127,13 @@ export const getEventTypeById = async ({
     metadata: parsedMetaData,
     customInputs: parsedCustomInputs,
     users: rawEventType.users,
-    bookerUrl: 
-    // restEventType.team
-    //   ? await getBookerBaseUrl(restEventType.team.parentId)
-    //   : restEventType.owner
-    //     ? await getBookerBaseUrl(currentOrganizationId)
-    //     : 
-        MARKADO_URL,
+    bookerUrl:
+      // restEventType.team
+      //   ? await getBookerBaseUrl(restEventType.team.parentId)
+      //   : restEventType.owner
+      //     ? await getBookerBaseUrl(currentOrganizationId)
+      //     :
+      MARKADO_URL,
     children: childrenWithUserProfile.flatMap((ch) =>
       ch.owner !== null
         ? {
@@ -218,7 +218,7 @@ export const getEventTypeById = async ({
   const eventTypeObject = Object.assign({}, eventType, {
     users: eventTypeUsers,
     periodStartDate: eventType.periodStartDate?.toString() ?? null,
-    periodEndDate: eventType.periodEndDate?.toString() ?? null,
+    periodEndDate: eventType.periodEndDate?.toString() ?? null
     // bookingFields: getBookingFieldsWithSystemFields({
     //   ...eventType,
     //   isOrgTeamEvent
@@ -270,4 +270,5 @@ export const getEventTypeById = async ({
   return finalObj;
 };
 
-export default getEventTypeById;
+export default getEventTypeBySlug;
+export type GetEventTypeBySlug = typeof getEventTypeBySlug;
