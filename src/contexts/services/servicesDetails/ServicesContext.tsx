@@ -15,13 +15,18 @@ import { useSessionStore } from '@/providers/session-store-provider';
 import { Me } from '@/app/settings/page';
 import { usePathname } from 'next/navigation';
 import { EventType } from '@/packages/event-types/getEventTypeBySlug';
+import { ServiceBadgeColor } from '~/prisma/enums';
 
 const updateServicesDetailsFormSchema = z.object({
   id: z.number(),
   name: z.string().optional(),
-  schedule: z.array(z.array(z.custom<TimeRange>())),
-  timeZone: z.string().optional(),
-  isDefault: z.boolean()
+  description: z.string().optional(),
+  slug: z.string(),
+  badgeColor: z.nativeEnum(ServiceBadgeColor),
+  isHidden: z.boolean().optional(),
+  duration: z.number().positive().int(),
+  price: z.number().nonnegative(),
+  location: z.string().optional(),
 });
 
 export type UpdateServicesDetailsFormData = z.infer<
@@ -60,16 +65,19 @@ export function ServicesDetailsProvider({
 
   const pathname = usePathname();
 
-  // Schedule form for availability scheduling
-  const scheduleForm = useForm<UpdateServicesDetailsFormData>({
+  // Service form for service details
+  const serviceForm = useForm<UpdateServicesDetailsFormData>({
     resolver: zodResolver(updateServicesDetailsFormSchema),
     defaultValues: {
       id: initialServiceDetails?.id || 0,
       name: initialServiceDetails?.title || '',
-      // schedule: initialServiceDetails?.availability,
-      timeZone: initialServiceDetails?.timeZone || '',
-      // isHidden: initialServiceDetails?.hidden || false,
-      // isDefault: initialMe?.defaultScheduleId === initialServiceDetails?.id
+      description: initialServiceDetails?.description || '',
+      slug: initialServiceDetails?.slug || '',
+      badgeColor: initialServiceDetails?.badgeColor || ServiceBadgeColor.faded,
+      duration: initialServiceDetails?.length || 15,
+      // price: initialServiceDetails?
+      // location: initialServiceDetails?.l
+      isHidden: initialServiceDetails?.hidden || false,
     },
   });
 
@@ -85,11 +93,11 @@ export function ServicesDetailsProvider({
         initialMe,
         serviceDetails: initialServiceDetails
       },
-      ServicesDetailsForm: scheduleForm
+      ServicesDetailsForm: serviceForm
     }),
     [
       pathname,
-      scheduleForm,
+      serviceForm,
       isDeleteModalOpen,
       setIsDeleteModalOpen,
       isEditing,

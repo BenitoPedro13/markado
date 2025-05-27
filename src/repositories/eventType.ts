@@ -661,6 +661,7 @@ export class EventTypeRepository {
       slug: true,
       description: true,
       length: true,
+      badgeColor: true,
       isInstantEvent: true,
       instantMeetingExpiryTimeOffsetInSeconds: true,
       offsetStart: true,
