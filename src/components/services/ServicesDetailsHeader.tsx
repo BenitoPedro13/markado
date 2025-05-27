@@ -22,7 +22,6 @@ import {usePageContext} from '@/contexts/PageContext';
 import {useLocale} from '@/hooks/use-locale';
 import {useServicesDetails} from '@/contexts/services/servicesDetails/ServicesContext';
 import {submitDeleteService, updateServiceHandler} from '~/trpc/server/handlers/services.handler';
-import { title } from 'process';
 import { TUpdateInputSchema } from '~/trpc/server/schemas/services.schema';
 
 type ServicesDetailsHeaderProps = {};
