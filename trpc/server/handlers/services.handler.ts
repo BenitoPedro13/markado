@@ -25,7 +25,7 @@ import {UserRepository} from '@/repositories/user';
 import {safeStringify} from '@/lib/safeStringify';
 import {hasFilter, mapEventType} from '~/trpc/server/utils/services/util';
 import {revalidatePath} from 'next/cache';
-import getEventTypeById from '@/packages/event-types/getEventTypeById';
+import getEventTypeBySlug from '@/packages/event-types/getEventTypeBySlug';
 
 // Create
 
@@ -165,22 +165,22 @@ type GetOptions = {
   input: TGetInputSchema;
 };
 
-// get detailed service by id
-export const getHandler = async ({input}: GetOptions) => {
+// get detailed service by slug or id
+export const getServiceHandler = async ({input}: GetOptions) => {
   try {
     const session = await auth();
 
     if (!session) {
       throw new TRPCError({
         code: 'UNAUTHORIZED',
-        message: 'getHandler: Could not get the user session'
+        message: 'getServiceHandler: Could not get the user session'
       });
     }
 
     if (!session.user) {
       throw new TRPCError({
         code: 'UNAUTHORIZED',
-        message: 'getHandler: Not authenticated'
+        message: 'getServiceHandler: Not authenticated'
       });
     }
 
@@ -188,16 +188,18 @@ export const getHandler = async ({input}: GetOptions) => {
     const enrichedUser = await UserRepository.enrichUserWithItsProfile({user});
     const userProfile = enrichedUser.profile;
 
-    return await getEventTypeById({
+
+
+    return await getEventTypeBySlug({
       currentOrganizationId: userProfile.organizationId ?? null,
-      eventTypeId: input.id,
+      eventTypeSlug: input.slug,
       userId: session.user.id,
       prisma: prisma,
       // isTrpcCall: true,
       isUserOrganizationAdmin: false // !!enrichedUser?.organization?.isOrgAdmin
     });
   } catch (error) {
-    console.error('Error in getHandler:', error);
+    console.error('Error in getServiceHandler:', error);
     throw new TRPCError({
       code: 'INTERNAL_SERVER_ERROR',
       message: 'Failed to retrieve service details'
