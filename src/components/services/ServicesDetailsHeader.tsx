@@ -23,11 +23,9 @@ import {useLocale} from '@/hooks/use-locale';
 import {useServicesDetails} from '@/contexts/services/servicesDetails/ServicesContext';
 
 type ServicesDetailsHeaderProps = {
-  title?: string;
-  subtitle?: string;
 };
 
-function ServicesDetailsHeader({title, subtitle}: ServicesDetailsHeaderProps) {
+function ServicesDetailsHeader({}: ServicesDetailsHeaderProps) {
   const {notification} = useNotification();
 
   const {
@@ -57,7 +55,7 @@ function ServicesDetailsHeader({title, subtitle}: ServicesDetailsHeaderProps) {
         </Button.Root>
         <div className="flex flex-col">
           <div className="text-text-strong-950 text-lg font-medium font-sans leading-normal">
-            {title ? (
+            {name ? (
               <div className="flex items-center gap-2">
                 {isEditing ? (
                   <Input.Root>
@@ -92,11 +90,11 @@ function ServicesDetailsHeader({title, subtitle}: ServicesDetailsHeaderProps) {
               'Configuração do Serviço'
             )}
           </div>
-          {subtitle && (
+          {/* {subtitle && (
             <div className="text-text-sub-600 text-paragraph-xs font-normal font-sans leading-tight">
               {subtitle}
             </div>
-          )}
+          )} */}
         </div>
       </div>
       <div className="flex items-center gap-3">
@@ -153,7 +151,7 @@ function ServicesDetailsHeader({title, subtitle}: ServicesDetailsHeaderProps) {
                 </div>
                 <div className="space-y-1">
                   <div className="text-label-md text-text-strong-950">
-                    Apagar {title}
+                    Apagar {name}
                   </div>
                   <div className="text-paragraph-sm text-text-sub-600">
                     Você não poderá recuperar a disponibilidade após apagá-lo.
