@@ -21,7 +21,9 @@ import * as Input from '@/components/align-ui/ui/input';
 import {usePageContext} from '@/contexts/PageContext';
 import {useLocale} from '@/hooks/use-locale';
 import {useServicesDetails} from '@/contexts/services/servicesDetails/ServicesContext';
-import {submitDeleteService} from '~/trpc/server/handlers/services.handler';
+import {submitDeleteService, updateServiceHandler} from '~/trpc/server/handlers/services.handler';
+import { title } from 'process';
+import { TUpdateInputSchema } from '~/trpc/server/schemas/services.schema';
 
 type ServicesDetailsHeaderProps = {};
 
@@ -209,15 +211,22 @@ function ServicesDetailsHeader({}: ServicesDetailsHeaderProps) {
               // Get form values from the Schedule component
               const {id, ...rest} = getValues();
 
-              const scheduleInputValues = {
-                ...rest,
-                scheduleId: id
+              const serviceInputValues: TUpdateInputSchema = {
+                id,
+                slug: rest.slug,
+                badgeColor: rest.badgeColor,
+                length: parseInt(`${rest.duration}`) || 0,
+                price: parseFloat(`${rest.price}`) || 0,
+                title: rest.name,
+                description: rest.description || '',
+                locations: rest.locations,
+                hidden: rest.isHidden
               };
 
-              // const scheduleResult =
-              //   await submitUpdateSchedule(scheduleInputValues);
+              const serviceResult =
+                await updateServiceHandler({input: serviceInputValues});
 
-              // if (!scheduleResult) return;
+              if (!serviceResult) return;
 
               notification({
                 title: 'Alterações salvas!',
