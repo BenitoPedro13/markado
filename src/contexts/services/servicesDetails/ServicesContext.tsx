@@ -14,6 +14,7 @@ import useMeQuery from '@/hooks/use-me-query';
 import { useSessionStore } from '@/providers/session-store-provider';
 import { Me } from '@/app/settings/page';
 import { usePathname } from 'next/navigation';
+import { EventType } from '@/packages/event-types/getEventTypeBySlug';
 
 const updateServicesDetailsFormSchema = z.object({
   id: z.number(),
@@ -27,9 +28,6 @@ export type UpdateServicesDetailsFormData = z.infer<
   typeof updateServicesDetailsFormSchema
 >;
 
-type AvailabilityById =
-  inferRouterOutputs<AppRouter>['availability']['findDetailedScheduleById'];
-
 type ServicesDetailsContextType = {
   state: {
     isDeleteModalOpen: boolean;
@@ -38,7 +36,7 @@ type ServicesDetailsContextType = {
     setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
   };
   queries: {
-    serviceDetails: AvailabilityById | null;
+    serviceDetails: EventType['eventType'];
     initialMe: Me | null;
   };
   ServicesDetailsForm: UseFormReturn<UpdateServicesDetailsFormData>;
@@ -48,7 +46,7 @@ const ServicesDetailsContext = createContext<ServicesDetailsContextType | null>(
 
 type ServicesDetailsProviderProps = {
   children: React.ReactNode;
-  initialServiceDetails: AvailabilityById | null;
+  initialServiceDetails: EventType['eventType'];
   initialMe: Me | null;
 };
 
@@ -67,11 +65,11 @@ export function ServicesDetailsProvider({
     resolver: zodResolver(updateServicesDetailsFormSchema),
     defaultValues: {
       id: initialServiceDetails?.id || 0,
-      name: initialServiceDetails?.name || '',
-      schedule: initialServiceDetails?.availability,
+      name: initialServiceDetails?.title || '',
+      // schedule: initialServiceDetails?.availability,
       timeZone: initialServiceDetails?.timeZone || '',
-      isDefault:
-        initialMe?.defaultScheduleId === initialServiceDetails?.id
+      // isHidden: initialServiceDetails?.hidden || false,
+      // isDefault: initialMe?.defaultScheduleId === initialServiceDetails?.id
     },
   });
 
@@ -85,7 +83,7 @@ export function ServicesDetailsProvider({
       },
       queries: {
         initialMe,
-        serviceDetails: initialServiceDetails ?? null
+        serviceDetails: initialServiceDetails
       },
       ServicesDetailsForm: scheduleForm
     }),
