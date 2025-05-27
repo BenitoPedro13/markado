@@ -28,7 +28,7 @@ export default async function ServiceDetailsServerPage({
 
   const service = await getServiceHandler({input: {slug: serviceSlug}});
 
-  const me = await getMeByUserId(userId);
+  const me = (await getMeByUserId(userId as string)) ?? undefined;
 
   return (
     <PageLayout title="Detalhes do Serviço">
