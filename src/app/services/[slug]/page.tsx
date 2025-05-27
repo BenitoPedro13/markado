@@ -4,7 +4,9 @@ import PageLayout from '@/components/PageLayout';
 import {ServicesDetailsProvider} from '@/contexts/services/servicesDetails/ServicesContext';
 
 import ServiceDetailsPage from '@/modules/services/serviceDetails/ServiceDetailsPage';
+import { get } from 'lodash';
 import { findDetailedScheduleById } from '~/trpc/server/handlers/availability.handler';
+import { getServiceHandler } from '~/trpc/server/handlers/services.handler';
 import { getMeByUserId } from '~/trpc/server/handlers/user.handler';
 
 type Props = {
@@ -21,23 +23,16 @@ export default async function ServiceDetailsServerPage({
   const userId = session?.user?.id;
 
   if (!userId) return;
+  
+  const serviceSlug = slug;
 
-  const availabilityId = slug;
+  const service = await getServiceHandler({input: {slug: serviceSlug}});
 
-  // const availability = await findDetailedScheduleById({
-  //   scheduleId: +availabilityId,
-  //   userId: userId
-  // });
   const me = await getMeByUserId(userId);
-
-  // const title = availability?.name;
 
   return (
     <PageLayout title="Detalhes do Serviço">
-      <ServicesDetailsProvider
-        initialServiceDetails={null}
-        initialMe={me}
-      >
+      <ServicesDetailsProvider initialServiceDetails={service.eventType} initialMe={me}>
         <ServiceDetailsPage slug={slug} />
       </ServicesDetailsProvider>
     </PageLayout>
