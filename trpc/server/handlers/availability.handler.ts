@@ -21,6 +21,8 @@ import {timeStringToDate} from '@/utils/time-utils';
 import {revalidatePath} from 'next/cache';
 import {auth} from '@/auth';
 import { getAvailabilityFromSchedule } from '@/lib/availability';
+import { getDefaultScheduleId } from '~/trpc/server/utils/availability/defaultSchedule';
+import { UserRepository } from '@/repositories/user';
 
 export async function getAllAvailabilitiesHandler(ctx: Context) {
   if (!ctx.session?.user) {
@@ -32,6 +34,69 @@ export async function getAllAvailabilitiesHandler(ctx: Context) {
 
   return getAllAvailabilitiesByUserId(ctx.session.user.id);
 }
+
+export const listAvailabilitiesHandler = async () => {
+  const session = await auth();
+
+  if (!session) {
+    throw new TRPCError({
+      code: 'UNAUTHORIZED',
+      message: 'listAvailabilitiesHandler: Could not get the user session'
+    });
+  }
+
+  if (!session.user) {
+    throw new TRPCError({
+      code: 'UNAUTHORIZED',
+      message: 'listAvailabilitiesHandler: Not authenticated'
+    });
+  }
+
+  const user = await UserRepository.findByIdOrThrow({id: session.user.id});
+
+  if (!user) {
+    throw new TRPCError({
+      code: 'UNAUTHORIZED',
+      message: 'listAvailabilitiesHandler: Not authenticated'
+    });
+  }
+
+  const schedules = await prisma.schedule.findMany({
+    where: {
+      userId: user.id
+    },
+    select: {
+      id: true,
+      name: true,
+      availability: true,
+      timeZone: true
+    },
+    orderBy: {
+      id: 'asc'
+    }
+  });
+
+  const defaultScheduleId = await getDefaultScheduleId(user.id, prisma);
+
+  if (!user.defaultScheduleId) {
+    await prisma.user.update({
+      where: {
+        id: user.id
+      },
+      data: {
+        defaultScheduleId
+      }
+    });
+  }
+
+  return {
+    schedules: schedules.map((schedule) => ({
+      ...schedule,
+      isDefault: schedule.id === defaultScheduleId
+    }))
+  };
+};
+
 
 export async function getAllAvailabilitiesByUserId(userId: string) {
   return prisma.availability.findMany({
