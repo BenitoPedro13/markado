@@ -40,7 +40,6 @@ import {validateIntervalLimitOrder} from '@/packages/lib';
 import {validateBookerLayouts} from '@/packages/lib/validateBookerLayouts';
 // import {WorkflowTriggerEvents} from '~/prisma/app/generated/prisma/client';
 
-
 // import type {TrpcSessionUser} from '../../../trpc';
 // import {setDestinationCalendarHandler} from '../../loggedInViewer/setDestinationCalendar.handler';
 import {
@@ -49,7 +48,7 @@ import {
   handleCustomInputs,
   handlePeriodType
 } from '~/trpc/server/utils/services/util';
-import { TUpdateInputSchema } from '~/trpc/server/schemas/services.schema';
+import {TUpdateInputSchema} from '~/trpc/server/schemas/services.schema';
 
 // Create
 
@@ -211,8 +210,6 @@ export const getServiceHandler = async ({input}: GetOptions) => {
     const user = await UserRepository.findByIdOrThrow({id: session.user.id});
     const enrichedUser = await UserRepository.enrichUserWithItsProfile({user});
     const userProfile = enrichedUser.profile;
-
-
 
     return await getEventTypeBySlug({
       currentOrganizationId: userProfile.organizationId ?? null,
@@ -469,12 +466,13 @@ const filterEventTypes = async (
 
 // Update
 
-
 type UpdateOptions = {
   input: TUpdateInputSchema;
 };
 
-export type UpdateEventTypeReturn = Awaited<ReturnType<typeof updateServiceHandler>>;
+export type UpdateEventTypeReturn = Awaited<
+  ReturnType<typeof updateServiceHandler>
+>;
 
 export const updateServiceHandler = async ({input}: UpdateOptions) => {
   const session = await auth();
@@ -975,6 +973,7 @@ export const updateServiceHandler = async ({input}: UpdateOptions) => {
   let updatedEventType: Prisma.EventTypeGetPayload<{
     select: typeof updatedEventTypeSelect;
   }>;
+  
   try {
     updatedEventType = await prisma.eventType.update({
       where: {id},
@@ -1028,7 +1027,6 @@ export const updateServiceHandler = async ({input}: UpdateOptions) => {
   revalidatePath(`/${userProfile.username}/${updatedEventType.slug}`); // revalidate the service page
   return {eventType};
 };
-
 
 // Delete
 
