@@ -1,11 +1,11 @@
 export const dynamic = 'force-dynamic';
+
 import { auth } from '@/auth';
 import PageLayout from '@/components/PageLayout';
 import {ServicesDetailsProvider} from '@/contexts/services/servicesDetails/ServicesContext';
 
 import ServiceDetailsPage from '@/modules/services/serviceDetails/ServiceDetailsPage';
-import { get } from 'lodash';
-import { findDetailedScheduleById } from '~/trpc/server/handlers/availability.handler';
+import { listAvailabilitiesHandler } from '~/trpc/server/handlers/availability.handler';
 import { getServiceHandler } from '~/trpc/server/handlers/services.handler';
 import { getMeByUserId } from '~/trpc/server/handlers/user.handler';
 
@@ -30,9 +30,11 @@ export default async function ServiceDetailsServerPage({
 
   const me = (await getMeByUserId(userId as string)) ?? undefined;
 
+  const scheduleList = await listAvailabilitiesHandler();
+
   return (
     <PageLayout title="Detalhes do Serviço">
-      <ServicesDetailsProvider initialServiceDetails={service.eventType} initialMe={me}>
+      <ServicesDetailsProvider initialServiceDetails={service.eventType} initialMe={me} initialScheduleList={scheduleList.schedules}>
         <ServiceDetailsPage slug={slug} />
       </ServicesDetailsProvider>
     </PageLayout>
