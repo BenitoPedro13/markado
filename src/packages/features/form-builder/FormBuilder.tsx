@@ -14,16 +14,9 @@ import {useLocale} from '@/hooks/use-locale';
 import {md} from '@/packages/lib/markdownIt';
 import {markdownToSafeHTMLClient} from '@/packages/lib/markdownToSafeHTMLClient';
 import turndown from '@/packages/lib/turndownService';
-// import {
 import * as Badge from '@/components/align-ui/ui/badge';
-//   BooleanToggleGroupField,
 import * as Button from '@/components/align-ui/ui/button';
-//   CheckboxField,
-//   Dialog,
-//   DialogClose,
-//   DialogContent,
-//   DialogFooter,
-//   DialogHeader,
+
 import {
   Root as Dialog,
   Content as DialogContent,
@@ -32,24 +25,39 @@ import {
   Header as DialogHeader,
   Close as DialogClose
 } from '@/components/align-ui/ui/modal';
-//   Form,
-//   Icon,
+
 import * as Input from '@/components/align-ui/ui/input';
-//   InputField,
 import * as Label from '@/components/align-ui/ui/label';
-//   SelectField,
 import {useNotification} from '@/hooks/use-notification';
-//   Editor,
 import * as Switch from '@/components/align-ui/ui/switch';
 import * as Tooltip from '@/components/align-ui/ui/tooltip';
+import * as Select from '@/components/align-ui/ui/select';
+// import {
+//   BooleanToggleGroupField,
+//   CheckboxField,
+//   Dialog,
+//   DialogClose,
+//   DialogContent,
+//   DialogFooter,
+//   DialogHeader,
+//   Icon,
+//   InputField,
+//   Editor,
 // } from "@/ui";
+
+import {Form} from '@/packages/ui';
 
 import {fieldTypesConfigMap} from './fieldTypes';
 import {fieldsThatSupportLabelAsSafeHtml} from './fieldsThatSupportLabelAsSafeHtml';
-import type {fieldsSchema} from './schema';
+import type {fieldsSchema, FieldType} from './schema';
 import {getFieldIdentifier} from './utils/getFieldIdentifier';
 import {getConfig as getVariantsConfig} from './utils/variantsConfig';
-import {RiAddLine, RiCloseLine, RiDeleteBinLine, RiXboxLine} from '@remixicon/react';
+import {
+  RiAddLine,
+  RiCloseLine,
+  RiDeleteBinLine,
+  RiXboxLine
+} from '@remixicon/react';
 
 type RhfForm = {
   fields: z.infer<typeof fieldsSchema>;
@@ -352,7 +360,7 @@ export const FormBuilder = function FormBuilder({
         )}
       </div>
       {/* Move this Dialog in another component and it would take with it fieldForm */}
-      {fieldDialog.isOpen && (
+      {/* {fieldDialog.isOpen && (
         <FieldEditDialog
           dialog={fieldDialog}
           onOpenChange={(isOpen) =>
@@ -400,401 +408,414 @@ export const FormBuilder = function FormBuilder({
           }}
           shouldConsiderRequired={shouldConsiderRequired}
         />
-      )}
+      )} */}
     </div>
   );
 };
 
-function Options({
-  label = 'Options',
-  value,
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  onChange = () => {},
-  className = '',
-  readOnly = false
-}: {
-  label?: string;
-  value: {label: string; value: string}[];
-  onChange?: (value: {label: string; value: string}[]) => void;
-  className?: string;
-  readOnly?: boolean;
-}) {
-  const [animationRef] = useAutoAnimate<HTMLUListElement>();
-  if (!value) {
-    onChange([
-      {
-        label: 'Option 1',
-        value: 'Option 1'
-      },
-      {
-        label: 'Option 2',
-        value: 'Option 2'
-      }
-    ]);
-  }
-  return (
-    <div className={className}>
-      <Label.Root>{label}</Label.Root>
-      <div className="bg-muted rounded-md p-4">
-        <ul ref={animationRef}>
-          {value?.map((option, index) => (
-            <li key={index}>
-              <div className="flex items-center">
-                <Input.Root>
-                  <Input.Input
-                    required
-                    value={option.label}
-                    onChange={(e) => {
-                      // Right now we use label of the option as the value of the option. It allows us to not separately lookup the optionId to know the optionValue
-                      // It has the same drawback that if the label is changed, the value of the option will change. It is not a big deal for now.
-                      value.splice(index, 1, {
-                        label: e.target.value,
-                        value: e.target.value.trim()
-                      });
-                      onChange(value);
-                    }}
-                    readOnly={readOnly}
-                    placeholder={`Enter Option ${index + 1}`}
-                  />
-                </Input.Root>
+// function Options({
+//   label = 'Options',
+//   value,
+//   // eslint-disable-next-line @typescript-eslint/no-empty-function
+//   onChange = () => {},
+//   className = '',
+//   readOnly = false
+// }: {
+//   label?: string;
+//   value: {label: string; value: string}[];
+//   onChange?: (value: {label: string; value: string}[]) => void;
+//   className?: string;
+//   readOnly?: boolean;
+// }) {
+//   const [animationRef] = useAutoAnimate<HTMLUListElement>();
+//   if (!value) {
+//     onChange([
+//       {
+//         label: 'Option 1',
+//         value: 'Option 1'
+//       },
+//       {
+//         label: 'Option 2',
+//         value: 'Option 2'
+//       }
+//     ]);
+//   }
+//   return (
+//     <div className={className}>
+//       <Label.Root>{label}</Label.Root>
+//       <div className="bg-muted rounded-md p-4">
+//         <ul ref={animationRef}>
+//           {value?.map((option, index) => (
+//             <li key={index}>
+//               <div className="flex items-center">
+//                 <Input.Root>
+//                   <Input.Input
+//                     required
+//                     value={option.label}
+//                     onChange={(e) => {
+//                       // Right now we use label of the option as the value of the option. It allows us to not separately lookup the optionId to know the optionValue
+//                       // It has the same drawback that if the label is changed, the value of the option will change. It is not a big deal for now.
+//                       value.splice(index, 1, {
+//                         label: e.target.value,
+//                         value: e.target.value.trim()
+//                       });
+//                       onChange(value);
+//                     }}
+//                     readOnly={readOnly}
+//                     placeholder={`Enter Option ${index + 1}`}
+//                   />
+//                 </Input.Root>
 
-                {value.length > 2 && !readOnly && (
-                  <Button.Root
-                    type="button"
-                    className="-ml-8 mb-2 hover:!bg-transparent focus:!bg-transparent focus:!outline-none focus:!ring-0"
-                    size="small"
-                    color="minimal"
-                    variant="neutral"
-                    mode="stroke"
-                    onClick={() => {
-                      if (!value) {
-                        return;
-                      }
-                      const newOptions = [...value];
-                      newOptions.splice(index, 1);
-                      onChange(newOptions);
-                    }}
-                  >
-                    <Button.Icon as={RiCloseLine} />
-                  </Button.Root>
-                )}
-              </div>
-            </li>
-          ))}
-        </ul>
-        {!readOnly && (
-          <Button.Root
-            color="minimal"
-            variant="neutral"
-            mode="stroke"
-            onClick={() => {
-              value.push({label: '', value: ''});
-              onChange(value);
-            }}
-          >
-            <Button.Icon as={RiAddLine} />
-            Add an Option
-          </Button.Root>
-        )}
-      </div>
-    </div>
-  );
-}
+//                 {value.length > 2 && !readOnly && (
+//                   <Button.Root
+//                     type="button"
+//                     className="-ml-8 mb-2 hover:!bg-transparent focus:!bg-transparent focus:!outline-none focus:!ring-0"
+//                     size="small"
+//                     color="minimal"
+//                     variant="neutral"
+//                     mode="stroke"
+//                     onClick={() => {
+//                       if (!value) {
+//                         return;
+//                       }
+//                       const newOptions = [...value];
+//                       newOptions.splice(index, 1);
+//                       onChange(newOptions);
+//                     }}
+//                   >
+//                     <Button.Icon as={RiCloseLine} />
+//                   </Button.Root>
+//                 )}
+//               </div>
+//             </li>
+//           ))}
+//         </ul>
+//         {!readOnly && (
+//           <Button.Root
+//             color="minimal"
+//             variant="neutral"
+//             mode="stroke"
+//             onClick={() => {
+//               value.push({label: '', value: ''});
+//               onChange(value);
+//             }}
+//           >
+//             <Button.Icon as={RiAddLine} />
+//             Add an Option
+//           </Button.Root>
+//         )}
+//       </div>
+//     </div>
+//   );
+// }
 
-const CheckboxFieldLabel = ({
-  fieldForm
-}: {
-  fieldForm: UseFormReturn<RhfFormField>;
-}) => {
-  const {t} = useLocale();
-  const [firstRender, setFirstRender] = useState(true);
-  return (
-    <div className="mt-6">
-      <Label.Root>{t('label')}</Label.Root>
-      <Editor
-        getText={() => md.render(fieldForm.getValues('label') || '')}
-        setText={(value: string) => {
-          fieldForm.setValue('label', turndown(value), {shouldDirty: true});
-        }}
-        excludedToolbarItems={['blockType', 'bold', 'italic']}
-        disableLists
-        firstRender={firstRender}
-        setFirstRender={setFirstRender}
-        placeholder={t(fieldForm.getValues('defaultLabel') || '')}
-      />
-    </div>
-  );
-};
+// const CheckboxFieldLabel = ({
+//   fieldForm
+// }: {
+//   fieldForm: UseFormReturn<RhfFormField>;
+// }) => {
+//   const {t} = useLocale();
+//   const [firstRender, setFirstRender] = useState(true);
+//   return (
+//     <div className="mt-6">
+//       <Label.Root>{t('label')}</Label.Root>
+//       <Editor
+//         getText={() => md.render(fieldForm.getValues('label') || '')}
+//         setText={(value: string) => {
+//           fieldForm.setValue('label', turndown(value), {shouldDirty: true});
+//         }}
+//         excludedToolbarItems={['blockType', 'bold', 'italic']}
+//         disableLists
+//         firstRender={firstRender}
+//         setFirstRender={setFirstRender}
+//         placeholder={t(fieldForm.getValues('defaultLabel') || '')}
+//       />
+//     </div>
+//   );
+// };
 
-function FieldEditDialog({
-  dialog,
-  onOpenChange,
-  handleSubmit,
-  shouldConsiderRequired
-}: {
-  dialog: {isOpen: boolean; fieldIndex: number; data: RhfFormField | null};
-  onOpenChange: (isOpen: boolean) => void;
-  handleSubmit: SubmitHandler<RhfFormField>;
-  shouldConsiderRequired?: (field: RhfFormField) => boolean | undefined;
-}) {
-  const {t} = useLocale();
-  const fieldForm = useForm<RhfFormField>({
-    defaultValues: dialog.data || {}
-    // resolver: zodResolver(fieldSchema),
-  });
-  const formFieldType = fieldForm.getValues('type');
+// function FieldEditDialog({
+//   dialog,
+//   onOpenChange,
+//   handleSubmit,
+//   shouldConsiderRequired
+// }: {
+//   dialog: {isOpen: boolean; fieldIndex: number; data: RhfFormField | null};
+//   onOpenChange: (isOpen: boolean) => void;
+//   handleSubmit: SubmitHandler<RhfFormField>;
+//   shouldConsiderRequired?: (field: RhfFormField) => boolean | undefined;
+// }) {
+//   const {t} = useLocale();
+//   const fieldForm = useForm<RhfFormField>({
+//     defaultValues: dialog.data || {}
+//     // resolver: zodResolver(fieldSchema),
+//   });
+//   const formFieldType = fieldForm.getValues('type');
 
-  useEffect(() => {
-    if (!formFieldType) {
-      return;
-    }
+//   useEffect(() => {
+//     if (!formFieldType) {
+//       return;
+//     }
 
-    const variantsConfig = getVariantsConfig({
-      type: formFieldType,
-      variantsConfig: fieldForm.getValues('variantsConfig')
-    });
+//     const variantsConfig = getVariantsConfig({
+//       type: formFieldType,
+//       variantsConfig: fieldForm.getValues('variantsConfig')
+//     });
 
-    // We need to set the variantsConfig in the RHF instead of using a derived value because RHF won't have the variantConfig for the variant that's not rendered yet.
-    fieldForm.setValue('variantsConfig', variantsConfig);
-  }, [fieldForm]);
+//     // We need to set the variantsConfig in the RHF instead of using a derived value because RHF won't have the variantConfig for the variant that's not rendered yet.
+//     fieldForm.setValue('variantsConfig', variantsConfig);
+//   }, [fieldForm]);
 
-  const isFieldEditMode = !!dialog.data;
-  const fieldType = getCurrentFieldType(fieldForm);
+//   const isFieldEditMode = !!dialog.data;
+//   const fieldType = getCurrentFieldType(fieldForm);
 
-  const variantsConfig = fieldForm.watch('variantsConfig');
+//   const variantsConfig = fieldForm.watch('variantsConfig');
 
-  const fieldTypes = Object.values(fieldTypesConfigMap);
+//   const fieldTypes = Object.values(fieldTypesConfigMap);
 
-  return (
-    <Dialog open={dialog.isOpen} onOpenChange={onOpenChange} modal={false}>
-      <DialogContent
-        className="max-h-none p-0"
-        data-testid="edit-field-dialog"
-        // forceOverlayWhenNoModal={true}
-        
-      >
-        <Form id="form-builder" form={fieldForm} handleSubmit={handleSubmit}>
-          <div className="h-auto max-h-[85vh] overflow-auto px-8 pb-7 pt-8">
-            <DialogHeader
-              title={t('add_a_booking_question')}
-              description={t('booking_questions_description')}
-            />
-            <SelectField
-              defaultValue={fieldTypesConfigMap.text}
-              data-testid="test-field-type"
-              id="test-field-type"
-              isDisabled={
-                fieldForm.getValues('editable') === 'system' ||
-                fieldForm.getValues('editable') === 'system-but-optional'
-              }
-              onChange={(e) => {
-                const value = e?.value;
-                if (!value) {
-                  return;
-                }
-                fieldForm.setValue('type', value, {shouldDirty: true});
-              }}
-              value={fieldTypesConfigMap[formFieldType]}
-              options={fieldTypes.filter((f) => !f.systemOnly)}
-              label={t('input_type')}
-            />
-            {(() => {
-              if (!variantsConfig) {
-                return (
-                  <>
-                    <InputField
-                      required
-                      {...fieldForm.register('name')}
-                      containerClassName="mt-6"
-                      onChange={(e) => {
-                        fieldForm.setValue(
-                          'name',
-                          getFieldIdentifier(e.target.value || ''),
-                          {
-                            shouldDirty: true
-                          }
-                        );
-                      }}
-                      disabled={
-                        fieldForm.getValues('editable') === 'system' ||
-                        fieldForm.getValues('editable') ===
-                          'system-but-optional'
-                      }
-                      label={t('identifier')}
-                    />
-                    <CheckboxField
-                      description={t('disable_input_if_prefilled')}
-                      {...fieldForm.register('disableOnPrefill', {
-                        setValueAs: Boolean
-                      })}
-                    />
-                    <div>
-                      {formFieldType === 'boolean' ? (
-                        <CheckboxFieldLabel fieldForm={fieldForm} />
-                      ) : (
-                        <InputField
-                          {...fieldForm.register('label')}
-                          // System fields have a defaultLabel, so there a label is not required
-                          required={
-                            !['system', 'system-but-optional'].includes(
-                              fieldForm.getValues('editable') || ''
-                            )
-                          }
-                          placeholder={t(
-                            fieldForm.getValues('defaultLabel') || ''
-                          )}
-                          containerClassName="mt-6"
-                          label={t('label')}
-                        />
-                      )}
-                    </div>
+//   return (
+//     <Dialog open={dialog.isOpen} onOpenChange={onOpenChange} modal={false}>
+//       <DialogContent
+//         className="max-h-none p-0"
+//         data-testid="edit-field-dialog"
+//         // forceOverlayWhenNoModal={true}
+//       >
+//         <Form id="form-builder" form={fieldForm} handleSubmit={handleSubmit}>
+//           <div className="h-auto max-h-[85vh] overflow-auto px-8 pb-7 pt-8">
+//             <DialogHeader
+//               title={t('add_a_booking_question')}
+//               description={t('booking_questions_description')}
+//             />
 
-                    {fieldType?.isTextType ? (
-                      <InputField
-                        {...fieldForm.register('placeholder')}
-                        containerClassName="mt-6"
-                        label={t('placeholder')}
-                        placeholder={t(
-                          fieldForm.getValues('defaultPlaceholder') || ''
-                        )}
-                      />
-                    ) : null}
-                    {fieldType?.needsOptions &&
-                    !fieldForm.getValues('getOptionsAt') ? (
-                      <Controller
-                        name="options"
-                        render={({field: {value, onChange}}) => {
-                          return (
-                            <Options
-                              onChange={onChange}
-                              value={value}
-                              className="mt-6"
-                            />
-                          );
-                        }}
-                      />
-                    ) : null}
+//             <Label.Root>{t('input_type')}</Label.Root>
+//             <Select.Root
+//               defaultValue={fieldTypesConfigMap.text.value}
+//               // data-testid="test-field-type"
+//               // id="test-field-type"
+//               disabled={
+//                 fieldForm.getValues('editable') === 'system' ||
+//                 fieldForm.getValues('editable') === 'system-but-optional'
+//               }
+//               onValueChange={(value: FieldType) => {
+//                 if (!value) {
+//                   return;
+//                 }
+//                 fieldForm.setValue('type', value, {shouldDirty: true});
+//               }}
+//               // value={fieldTypesConfigMap[formFieldType].value}
+//               // options={fieldTypes.filter((f) => !f.systemOnly)}
+//               // label={t('input_type')}
+//             >
+//               <Select.Trigger id="field-type">
+//                 <Select.Value placeholder="Selecione um tipo do campo"></Select.Value>
+//               </Select.Trigger>
+//               <Select.Content>
+//                 {fieldTypes
+//                   .filter((f) => !f.systemOnly)
+//                   .map((opt) => (
+//                     <Select.Item key={opt.value} value={opt.value}>
+//                       {opt.label}
+//                     </Select.Item>
+//                   ))}
+//               </Select.Content>
+//             </Select.Root>
+//             {(() => {
+//               if (!variantsConfig) {
+//                 return (
+//                   <>
+//                     <InputField
+//                       required
+//                       {...fieldForm.register('name')}
+//                       containerClassName="mt-6"
+//                       onChange={(e) => {
+//                         fieldForm.setValue(
+//                           'name',
+//                           getFieldIdentifier(e.target.value || ''),
+//                           {
+//                             shouldDirty: true
+//                           }
+//                         );
+//                       }}
+//                       disabled={
+//                         fieldForm.getValues('editable') === 'system' ||
+//                         fieldForm.getValues('editable') ===
+//                           'system-but-optional'
+//                       }
+//                       label={t('identifier')}
+//                     />
+//                     <CheckboxField
+//                       description={t('disable_input_if_prefilled')}
+//                       {...fieldForm.register('disableOnPrefill', {
+//                         setValueAs: Boolean
+//                       })}
+//                     />
+//                     <div>
+//                       {formFieldType === 'boolean' ? (
+//                         <CheckboxFieldLabel fieldForm={fieldForm} />
+//                       ) : (
+//                         <InputField
+//                           {...fieldForm.register('label')}
+//                           // System fields have a defaultLabel, so there a label is not required
+//                           required={
+//                             !['system', 'system-but-optional'].includes(
+//                               fieldForm.getValues('editable') || ''
+//                             )
+//                           }
+//                           placeholder={t(
+//                             fieldForm.getValues('defaultLabel') || ''
+//                           )}
+//                           containerClassName="mt-6"
+//                           label={t('label')}
+//                         />
+//                       )}
+//                     </div>
 
-                    {!!fieldType?.supportsLengthCheck ? (
-                      <FieldWithLengthCheckSupport
-                        containerClassName="mt-6"
-                        fieldForm={fieldForm}
-                      />
-                    ) : null}
+//                     {fieldType?.isTextType ? (
+//                       <InputField
+//                         {...fieldForm.register('placeholder')}
+//                         containerClassName="mt-6"
+//                         label={t('placeholder')}
+//                         placeholder={t(
+//                           fieldForm.getValues('defaultPlaceholder') || ''
+//                         )}
+//                       />
+//                     ) : null}
+//                     {fieldType?.needsOptions &&
+//                     !fieldForm.getValues('getOptionsAt') ? (
+//                       <Controller
+//                         name="options"
+//                         render={({field: {value, onChange}}) => {
+//                           return (
+//                             <Options
+//                               onChange={onChange}
+//                               value={value}
+//                               className="mt-6"
+//                             />
+//                           );
+//                         }}
+//                       />
+//                     ) : null}
 
-                    <Controller
-                      name="required"
-                      control={fieldForm.control}
-                      render={({field: {value, onChange}}) => {
-                        const isRequired = shouldConsiderRequired
-                          ? shouldConsiderRequired(fieldForm.getValues())
-                          : value;
-                        return (
-                          <BooleanToggleGroupField
-                            data-testid="field-required"
-                            disabled={
-                              fieldForm.getValues('editable') === 'system'
-                            }
-                            value={isRequired}
-                            onValueChange={(val) => {
-                              onChange(val);
-                            }}
-                            label={t('required')}
-                          />
-                        );
-                      }}
-                    />
-                  </>
-                );
-              }
+//                     {!!fieldType?.supportsLengthCheck ? (
+//                       <FieldWithLengthCheckSupport
+//                         containerClassName="mt-6"
+//                         fieldForm={fieldForm}
+//                       />
+//                     ) : null}
 
-              if (!fieldType.isTextType) {
-                throw new Error(
-                  'Variants are currently supported only with text type'
-                );
-              }
+//                     <Controller
+//                       name="required"
+//                       control={fieldForm.control}
+//                       render={({field: {value, onChange}}) => {
+//                         const isRequired = shouldConsiderRequired
+//                           ? shouldConsiderRequired(fieldForm.getValues())
+//                           : value;
+//                         return (
+//                           <BooleanToggleGroupField
+//                             data-testid="field-required"
+//                             disabled={
+//                               fieldForm.getValues('editable') === 'system'
+//                             }
+//                             value={isRequired}
+//                             onValueChange={(val) => {
+//                               onChange(val);
+//                             }}
+//                             label={t('required')}
+//                           />
+//                         );
+//                       }}
+//                     />
+//                   </>
+//                 );
+//               }
 
-              return (
-                <VariantFields
-                  variantsConfig={variantsConfig}
-                  fieldForm={fieldForm}
-                />
-              );
-            })()}
-          </div>
+//               if (!fieldType.isTextType) {
+//                 throw new Error(
+//                   'Variants are currently supported only with text type'
+//                 );
+//               }
 
-          <DialogFooter className="relative rounded px-8" showDivider>
-            <DialogClose color="secondary">{t('cancel')}</DialogClose>
-            <Button.Root data-testid="field-add-save" type="submit">
-              {isFieldEditMode ? t('save') : t('add')}
-            </Button.Root>
-          </DialogFooter>
-        </Form>
-      </DialogContent>
-    </Dialog>
-  );
-}
+//               return (
+//                 <VariantFields
+//                   variantsConfig={variantsConfig}
+//                   fieldForm={fieldForm}
+//                 />
+//               );
+//             })()}
+//           </div>
 
-function FieldWithLengthCheckSupport({
-  fieldForm,
-  containerClassName = '',
-  className,
-  ...rest
-}: {
-  fieldForm: UseFormReturn<RhfFormField>;
-  containerClassName?: string;
-} & React.HTMLAttributes<HTMLDivElement>) {
-  const {t} = useLocale();
-  const fieldType = getCurrentFieldType(fieldForm);
-  if (!fieldType.supportsLengthCheck) {
-    return null;
-  }
-  const supportsLengthCheck = fieldType.supportsLengthCheck;
-  const maxAllowedMaxLength = supportsLengthCheck.maxLength;
+//           <DialogFooter className="relative rounded px-8" showDivider>
+//             <DialogClose color="secondary">{t('cancel')}</DialogClose>
+//             <Button.Root data-testid="field-add-save" type="submit">
+//               {isFieldEditMode ? t('save') : t('add')}
+//             </Button.Root>
+//           </DialogFooter>
+//         </Form>
+//       </DialogContent>
+//     </Dialog>
+//   );
+// }
 
-  return (
-    <div className={classNames('grid grid-cols-2 gap-4', className)} {...rest}>
-      <InputField
-        {...fieldForm.register('minLength', {
-          valueAsNumber: true
-        })}
-        defaultValue={0}
-        containerClassName={containerClassName}
-        label={t('min_characters')}
-        type="number"
-        onChange={(e) => {
-          fieldForm.setValue('minLength', parseInt(e.target.value ?? 0));
-          // Ensure that maxLength field adjusts its restrictions
-          fieldForm.trigger('maxLength');
-        }}
-        min={0}
-        max={fieldForm.getValues('maxLength') || maxAllowedMaxLength}
-      />
-      <InputField
-        {...fieldForm.register('maxLength', {
-          valueAsNumber: true
-        })}
-        defaultValue={maxAllowedMaxLength}
-        containerClassName={containerClassName}
-        label={t('max_characters')}
-        type="number"
-        onChange={(e) => {
-          if (!supportsLengthCheck) {
-            return;
-          }
-          fieldForm.setValue(
-            'maxLength',
-            parseInt(e.target.value ?? maxAllowedMaxLength)
-          );
-          // Ensure that minLength field adjusts its restrictions
-          fieldForm.trigger('minLength');
-        }}
-        min={fieldForm.getValues('minLength') || 0}
-        max={maxAllowedMaxLength}
-      />
-    </div>
-  );
-}
+// function FieldWithLengthCheckSupport({
+//   fieldForm,
+//   containerClassName = '',
+//   className,
+//   ...rest
+// }: {
+//   fieldForm: UseFormReturn<RhfFormField>;
+//   containerClassName?: string;
+// } & React.HTMLAttributes<HTMLDivElement>) {
+//   const {t} = useLocale();
+//   const fieldType = getCurrentFieldType(fieldForm);
+//   if (!fieldType.supportsLengthCheck) {
+//     return null;
+//   }
+//   const supportsLengthCheck = fieldType.supportsLengthCheck;
+//   const maxAllowedMaxLength = supportsLengthCheck.maxLength;
+
+//   return (
+//     <div className={classNames('grid grid-cols-2 gap-4', className)} {...rest}>
+//       <InputField
+//         {...fieldForm.register('minLength', {
+//           valueAsNumber: true
+//         })}
+//         defaultValue={0}
+//         containerClassName={containerClassName}
+//         label={t('min_characters')}
+//         type="number"
+//         onChange={(e) => {
+//           fieldForm.setValue('minLength', parseInt(e.target.value ?? 0));
+//           // Ensure that maxLength field adjusts its restrictions
+//           fieldForm.trigger('maxLength');
+//         }}
+//         min={0}
+//         max={fieldForm.getValues('maxLength') || maxAllowedMaxLength}
+//       />
+//       <InputField
+//         {...fieldForm.register('maxLength', {
+//           valueAsNumber: true
+//         })}
+//         defaultValue={maxAllowedMaxLength}
+//         containerClassName={containerClassName}
+//         label={t('max_characters')}
+//         type="number"
+//         onChange={(e) => {
+//           if (!supportsLengthCheck) {
+//             return;
+//           }
+//           fieldForm.setValue(
+//             'maxLength',
+//             parseInt(e.target.value ?? maxAllowedMaxLength)
+//           );
+//           // Ensure that minLength field adjusts its restrictions
+//           fieldForm.trigger('minLength');
+//         }}
+//         min={fieldForm.getValues('minLength') || 0}
+//         max={maxAllowedMaxLength}
+//       />
+//     </div>
+//   );
+// }
 
 /**
  * Shows the label of the field, taking into account the current variant selected
@@ -835,158 +856,158 @@ function FieldLabel({field}: {field: RhfFormField}) {
   return <span>{t(label)}</span>;
 }
 
-function VariantSelector() {
-  // Implement a Variant selector for cases when there are more than 2 variants
-  return null;
-}
+// function VariantSelector() {
+//   // Implement a Variant selector for cases when there are more than 2 variants
+//   return null;
+// }
 
-function VariantFields({
-  fieldForm,
-  variantsConfig
-}: {
-  fieldForm: UseFormReturn<RhfFormField>;
-  variantsConfig: RhfFormField['variantsConfig'];
-}) {
-  const {t} = useLocale();
-  if (!variantsConfig) {
-    throw new Error('VariantFields component needs variantsConfig');
-  }
-  const fieldTypeConfigVariantsConfig =
-    fieldTypesConfigMap[fieldForm.getValues('type')]?.variantsConfig;
+// function VariantFields({
+//   fieldForm,
+//   variantsConfig
+// }: {
+//   fieldForm: UseFormReturn<RhfFormField>;
+//   variantsConfig: RhfFormField['variantsConfig'];
+// }) {
+//   const {t} = useLocale();
+//   if (!variantsConfig) {
+//     throw new Error('VariantFields component needs variantsConfig');
+//   }
+//   const fieldTypeConfigVariantsConfig =
+//     fieldTypesConfigMap[fieldForm.getValues('type')]?.variantsConfig;
 
-  if (!fieldTypeConfigVariantsConfig) {
-    throw new Error(
-      "Coniguration Issue: FieldType doesn't have `variantsConfig`"
-    );
-  }
+//   if (!fieldTypeConfigVariantsConfig) {
+//     throw new Error(
+//       "Coniguration Issue: FieldType doesn't have `variantsConfig`"
+//     );
+//   }
 
-  const variantToggleLabel = t(fieldTypeConfigVariantsConfig.toggleLabel || '');
+//   const variantToggleLabel = t(fieldTypeConfigVariantsConfig.toggleLabel || '');
 
-  const defaultVariant = fieldTypeConfigVariantsConfig.defaultVariant;
+//   const defaultVariant = fieldTypeConfigVariantsConfig.defaultVariant;
 
-  const variantNames = Object.keys(variantsConfig.variants);
-  const otherVariants = variantNames.filter((v) => v !== defaultVariant);
-  if (otherVariants.length > 1 && variantToggleLabel) {
-    throw new Error('More than one other variant. Remove toggleLabel ');
-  }
-  const otherVariant = otherVariants[0];
-  const variantName = fieldForm.watch('variant') || defaultVariant;
-  const variantFields =
-    variantsConfig.variants[variantName as keyof typeof variantsConfig].fields;
-  /**
-   * A variant that has just one field can be shown in a simpler way in UI.
-   */
-  const isSimpleVariant = variantFields.length === 1;
-  const isDefaultVariant = variantName === defaultVariant;
-  const supportsVariantToggle = variantNames.length === 2;
-  return (
-    <>
-      {supportsVariantToggle ? (
-        <Tooltip.Root>
-          <Tooltip.Trigger asChild>
-            <Switch.Root
-              checked={!isDefaultVariant}
-              label={variantToggleLabel}
-              data-testid="variant-toggle"
-              onCheckedChange={(checked) => {
-                fieldForm.setValue(
-                  'variant',
-                  checked ? otherVariant : defaultVariant
-                );
-              }}
-              classNames={{
-                container: 'p-2 mt-2 sm:hover:bg-muted rounded transition'
-              }}
-            />
-          </Tooltip.Trigger>
-          <Tooltip.Content size="small">{t('Toggle Variant')}</Tooltip.Content>
-        </Tooltip.Root>
-      ) : (
-        <VariantSelector />
-      )}
+//   const variantNames = Object.keys(variantsConfig.variants);
+//   const otherVariants = variantNames.filter((v) => v !== defaultVariant);
+//   if (otherVariants.length > 1 && variantToggleLabel) {
+//     throw new Error('More than one other variant. Remove toggleLabel ');
+//   }
+//   const otherVariant = otherVariants[0];
+//   const variantName = fieldForm.watch('variant') || defaultVariant;
+//   const variantFields =
+//     variantsConfig.variants[variantName as keyof typeof variantsConfig].fields;
+//   /**
+//    * A variant that has just one field can be shown in a simpler way in UI.
+//    */
+//   const isSimpleVariant = variantFields.length === 1;
+//   const isDefaultVariant = variantName === defaultVariant;
+//   const supportsVariantToggle = variantNames.length === 2;
+//   return (
+//     <>
+//       {supportsVariantToggle ? (
+//         <Tooltip.Root>
+//           <Tooltip.Trigger asChild>
+//             <Switch.Root
+//               checked={!isDefaultVariant}
+//               label={variantToggleLabel}
+//               data-testid="variant-toggle"
+//               onCheckedChange={(checked) => {
+//                 fieldForm.setValue(
+//                   'variant',
+//                   checked ? otherVariant : defaultVariant
+//                 );
+//               }}
+//               classNames={{
+//                 container: 'p-2 mt-2 sm:hover:bg-muted rounded transition'
+//               }}
+//             />
+//           </Tooltip.Trigger>
+//           <Tooltip.Content size="small">{t('Toggle Variant')}</Tooltip.Content>
+//         </Tooltip.Root>
+//       ) : (
+//         <VariantSelector />
+//       )}
 
-      <InputField
-        required
-        {...fieldForm.register('name')}
-        containerClassName="mt-6"
-        disabled={
-          fieldForm.getValues('editable') === 'system' ||
-          fieldForm.getValues('editable') === 'system-but-optional'
-        }
-        label={t('identifier')}
-      />
+//       <InputField
+//         required
+//         {...fieldForm.register('name')}
+//         containerClassName="mt-6"
+//         disabled={
+//           fieldForm.getValues('editable') === 'system' ||
+//           fieldForm.getValues('editable') === 'system-but-optional'
+//         }
+//         label={t('identifier')}
+//       />
 
-      <CheckboxField
-        description={t('disable_input_if_prefilled')}
-        {...fieldForm.register('disableOnPrefill', {setValueAs: Boolean})}
-      />
+//       <CheckboxField
+//         description={t('disable_input_if_prefilled')}
+//         {...fieldForm.register('disableOnPrefill', {setValueAs: Boolean})}
+//       />
 
-      <ul
-        className={classNames(
-          !isSimpleVariant
-            ? 'border-subtle divide-subtle mt-2 divide-y rounded-md border'
-            : ''
-        )}
-      >
-        {variantFields.map((f, index) => {
-          const rhfVariantFieldPrefix =
-            `variantsConfig.variants.${variantName}.fields.${index}` as const;
-          const fieldTypeConfigVariants =
-            fieldTypeConfigVariantsConfig.variants[
-              variantName as keyof typeof fieldTypeConfigVariantsConfig.variants
-            ];
-          const appUiFieldConfig =
-            fieldTypeConfigVariants.fieldsMap[
-              f.name as keyof typeof fieldTypeConfigVariants.fieldsMap
-            ];
-          return (
-            <li
-              className={classNames(!isSimpleVariant ? 'p-4' : '')}
-              key={f.name}
-            >
-              {!isSimpleVariant && (
-                <Label className="flex justify-between">
-                  <span>{`Field ${index + 1}`}</span>
-                  <span className="text-muted">{`${fieldForm.getValues('name')}.${f.name}`}</span>
-                </Label>
-              )}
-              <InputField
-                {...fieldForm.register(`${rhfVariantFieldPrefix}.label`)}
-                value={f.label || ''}
-                placeholder={t(appUiFieldConfig?.defaultLabel || '')}
-                containerClassName="mt-6"
-                label={t('label')}
-              />
-              <InputField
-                {...fieldForm.register(`${rhfVariantFieldPrefix}.placeholder`)}
-                key={f.name}
-                value={f.placeholder || ''}
-                containerClassName="mt-6"
-                label={t('placeholder')}
-                placeholder={t(appUiFieldConfig?.defaultPlaceholder || '')}
-              />
+//       <ul
+//         className={classNames(
+//           !isSimpleVariant
+//             ? 'border-subtle divide-subtle mt-2 divide-y rounded-md border'
+//             : ''
+//         )}
+//       >
+//         {variantFields.map((f, index) => {
+//           const rhfVariantFieldPrefix =
+//             `variantsConfig.variants.${variantName}.fields.${index}` as const;
+//           const fieldTypeConfigVariants =
+//             fieldTypeConfigVariantsConfig.variants[
+//               variantName as keyof typeof fieldTypeConfigVariantsConfig.variants
+//             ];
+//           const appUiFieldConfig =
+//             fieldTypeConfigVariants.fieldsMap[
+//               f.name as keyof typeof fieldTypeConfigVariants.fieldsMap
+//             ];
+//           return (
+//             <li
+//               className={classNames(!isSimpleVariant ? 'p-4' : '')}
+//               key={f.name}
+//             >
+//               {!isSimpleVariant && (
+//                 <Label className="flex justify-between">
+//                   <span>{`Field ${index + 1}`}</span>
+//                   <span className="text-muted">{`${fieldForm.getValues('name')}.${f.name}`}</span>
+//                 </Label>
+//               )}
+//               <InputField
+//                 {...fieldForm.register(`${rhfVariantFieldPrefix}.label`)}
+//                 value={f.label || ''}
+//                 placeholder={t(appUiFieldConfig?.defaultLabel || '')}
+//                 containerClassName="mt-6"
+//                 label={t('label')}
+//               />
+//               <InputField
+//                 {...fieldForm.register(`${rhfVariantFieldPrefix}.placeholder`)}
+//                 key={f.name}
+//                 value={f.placeholder || ''}
+//                 containerClassName="mt-6"
+//                 label={t('placeholder')}
+//                 placeholder={t(appUiFieldConfig?.defaultPlaceholder || '')}
+//               />
 
-              <Controller
-                name={`${rhfVariantFieldPrefix}.required`}
-                control={fieldForm.control}
-                render={({field: {onChange}}) => {
-                  return (
-                    <BooleanToggleGroupField
-                      data-testid="field-required"
-                      disabled={!appUiFieldConfig?.canChangeRequirability}
-                      value={f.required}
-                      onValueChange={(val) => {
-                        onChange(val);
-                      }}
-                      label={t('required')}
-                    />
-                  );
-                }}
-              />
-            </li>
-          );
-        })}
-      </ul>
-    </>
-  );
-}
+//               <Controller
+//                 name={`${rhfVariantFieldPrefix}.required`}
+//                 control={fieldForm.control}
+//                 render={({field: {onChange}}) => {
+//                   return (
+//                     <BooleanToggleGroupField
+//                       data-testid="field-required"
+//                       disabled={!appUiFieldConfig?.canChangeRequirability}
+//                       value={f.required}
+//                       onValueChange={(val) => {
+//                         onChange(val);
+//                       }}
+//                       label={t('required')}
+//                     />
+//                   );
+//                 }}
+//               />
+//             </li>
+//           );
+//         })}
+//       </ul>
+//     </>
+//   );
+// }
