@@ -80,9 +80,9 @@ export const FormBuilder = function FormBuilder({
   description,
   addFieldLabel,
   formProp,
-  disabled,
+  disabled = false,
   LockedIcon,
-  dataStore,
+  // dataStore,
   shouldConsiderRequired
 }: {
   formProp: string;
@@ -94,7 +94,7 @@ export const FormBuilder = function FormBuilder({
   /**
    * A readonly dataStore that is used to lookup the options for the fields. It works in conjunction with the field.getOptionAt property which acts as the key in options
    */
-  dataStore: {
+  dataStore?: {
     options: Record<
       string,
       {
@@ -168,23 +168,23 @@ export const FormBuilder = function FormBuilder({
             const isRequired = shouldConsiderRequired
               ? shouldConsiderRequired(field)
               : field.required;
-            if (!options && field.getOptionsAt) {
-              const {
-                source: {label: sourceLabel},
-                value
-              } =
-                dataStore.options[
-                  field.getOptionsAt as keyof typeof dataStore
-                ] ?? [];
-              options = value;
-              options.forEach((option) => {
-                sources.push({
-                  id: option.value,
-                  label: sourceLabel,
-                  type: 'system'
-                });
-              });
-            }
+            // if (!options && field.getOptionsAt) {
+            //   const {
+            //     source: {label: sourceLabel},
+            //     value
+            //   } =
+            //     dataStore.options[
+            //       field.getOptionsAt as keyof typeof dataStore
+            //     ] ?? [];
+            //   options = value;
+            //   options.forEach((option) => {
+            //     sources.push({
+            //       id: option.value,
+            //       label: sourceLabel,
+            //       type: 'system'
+            //     });
+            //   });
+            // }
 
             if (fieldsThatSupportLabelAsSafeHtml.includes(field.type)) {
               field = {
