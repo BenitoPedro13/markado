@@ -394,14 +394,15 @@ const EventTypeSchedule = ({
             <Button.Icon as={RiGlobalLine} />
             {schedule?.timeZone || <SkeletonText className="block h-5 w-32" />}
           </Button.Root>
-          {!!schedule?.id &&
-            // !scheduleQueryData.isManaged &&
-            // !scheduleQueryData.readOnly &&
-            !!rest.editAvailabilityRedirectUrl && (
-              //     <Button.Root mode="ghost" className="w-fit">
-              //   Editar Disponibilidade
-              //   <Button.Icon as={RiArrowRightUpLine} />
-              // </Button.Root>
+          {
+            !!schedule?.id && (
+              // !scheduleQueryData.isManaged &&
+              // !scheduleQueryData.readOnly &&
+              // !!rest.editAvailabilityRedirectUrl && (
+              //   //     <Button.Root mode="ghost" className="w-fit">
+              //   //   Editar Disponibilidade
+              //   //   <Button.Icon as={RiArrowRightUpLine} />
+              //   // </Button.Root>
               <Button.Root
                 asChild
                 disabled={isPending}
@@ -409,7 +410,7 @@ const EventTypeSchedule = ({
                 className="w-fit"
               >
                 <Link
-                  href={rest.editAvailabilityRedirectUrl}
+                  href={`/availability/${schedule.id}`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -418,7 +419,9 @@ const EventTypeSchedule = ({
                 </Link>
                 <Button.Icon as={RiExternalLinkLine} />
               </Button.Root>
-            )}
+            )
+            // )
+          }
         </div>
       </div>
     </div>
