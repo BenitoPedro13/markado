@@ -219,7 +219,8 @@ function ServicesDetailsHeader({}: ServicesDetailsHeaderProps) {
                 title: rest.name,
                 description: rest.description || '',
                 locations: rest.locations,
-                hidden: rest.isHidden
+                hidden: rest.isHidden,
+                schedule: rest.schedule,
               };
 
               const serviceResult =
