@@ -44,6 +44,7 @@ const userSelect = Prisma.validator<Prisma.UserSelect>()({
   weekStart: true,
   bufferTime: true,
   hideBranding: true,
+  defaultScheduleId: true,
   theme: true,
   trialEndsAt: true,
   completedOnboarding: true,

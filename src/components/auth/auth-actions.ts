@@ -59,7 +59,7 @@ export async function signUpWithEmailPassword(email: string, password: string, n
 // Sign out
 export async function signOut() {
   // Get the locale from the cookie or default to 'pt'
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const locale = cookieStore.get('NEXT_LOCALE')?.value || 'pt';
   
   // Clear the onboarding_complete cookie

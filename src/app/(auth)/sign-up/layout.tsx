@@ -7,7 +7,7 @@ import { headers } from 'next/headers';
 
 export default async function SignUpLayout({children}: PropsWithChildren ) {
   const session = await auth();
-  const headersList = headers();
+  const headersList = await headers();
   const pathname = headersList.get('x-pathname') || '';
   
   // Check if we're on the main sign-up page or email page

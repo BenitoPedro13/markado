@@ -4,7 +4,8 @@ import {
   getUserByUsernameHandler
 } from '~/trpc/server/handlers/user.handler';
 
-const SchedulingPage = async ({params}: {params: {username: string}}) => {
+const SchedulingPage = async (props: {params: Promise<{username: string}>}) => {
+  const params = await props.params;
   // 5 second timer
 
   let host = null;

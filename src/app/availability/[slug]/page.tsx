@@ -16,12 +16,13 @@ import AvailabilityDetailsHeader from '@/components/availability/AvailabilityDet
 import AvailabilityDetailsPage from '@/modules/availability/availabilityDetails/AvailabilityDetailsPage';
 
 type Props = {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 };
 
-export default async function AvailabilityDetailsServerPage({params}: Props) {
+export default async function AvailabilityDetailsServerPage(props: Props) {
+  const params = await props.params;
   const session = await auth();
 
   const userId = session?.user?.id;
@@ -29,33 +30,6 @@ export default async function AvailabilityDetailsServerPage({params}: Props) {
   if (!userId) return;
 
   const availabilityId = params.slug;
-
-  // Create a new QueryClient for this request
-  // const queryClient = getQueryClient();
-
-  // // Prefetch the data
-  // await queryClient.prefetchQuery({
-  //   queryKey: [
-  //     'availability',
-  //     'findDetailedScheduleById',
-  //     {
-  //       scheduleId: +availabilityId,
-  //       timeZone: 'America/Sao_Paulo'
-  //     }
-  //   ],
-  //   queryFn: () =>
-  //     findDetailedScheduleById({
-  //       scheduleId: +availabilityId,
-  //       userId: userId,
-  //       timeZone: 'America/Sao_Paulo'
-  //     })
-  // });
-
-  // // Prefetch the data
-  // await queryClient.prefetchQuery({
-  //   queryKey: ['me'],
-  //   queryFn: () => getMeByUserId(userId)
-  // });
 
   const availability = await findDetailedScheduleById({
     scheduleId: +availabilityId,

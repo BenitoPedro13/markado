@@ -6,9 +6,10 @@ import * as Textarea from '@/components/align-ui/ui/textarea';
 import * as Button from '@/components/align-ui/ui/button';
 import {Service, ServiceBadgeColor} from '@/types/service';
 import * as Divider from '@/components/align-ui/ui/divider';
-import {services} from '@/data/services';
 import {useEffect, useRef} from 'react';
 import * as Select from '@/components/align-ui/ui/select';
+import {useServicesDetails} from '@/contexts/services/servicesDetails/ServicesContext';
+import { MARKADO_DOMAIN } from '@/constants';
 
 type ServiceDetailsFormData = Pick<
   Service,
@@ -41,63 +42,70 @@ type Props = {
 
 export default function ServiceDetails({slug}: Props) {
   const formRef = useRef<HTMLFormElement>(null);
-  const {register, handleSubmit, watch, setValue} =
-    useForm<ServiceDetailsFormData>();
-  const description = watch('description') || '';
-  const service = services.find((s) => s.slug === slug);
+  const {
+    queries: {initialMe},
+    ServicesDetailsForm: {register, handleSubmit, watch, getValues, setValue}
+  } = useServicesDetails();
+  // const service = services.find((s) => s.slug === slug);
 
   // Carrega os dados do serviço atual
-  useEffect(() => {
-    if (service) {
-      setValue('title', service.title);
-      setValue('slug', service.slug);
-      setValue('duration', service.duration);
-      setValue('price', service.price);
-      setValue('badgeColor', service.badgeColor);
-      setValue('description', service.description || '');
-      setValue('location', service.location || '');
-    }
-  }, [slug, setValue, service]);
+  // useEffect(() => {
+  //   if (service) {
+  //     setValue('name', service.);
+  //     setValue('slug', service.slug);
+  //     setValue('duration', service.duration);
+  //     setValue('price', service.price);
+  //     setValue('badgeColor', service.badgeColor);
+  //     setValue('description', service.description || '');
+  //     setValue('location', service.location || '');
+  //   }
+  // }, [slug, setValue, service]);
 
-  const onSubmit = async (data: ServiceDetailsFormData) => {
-    try {
-      const serviceIndex = services.findIndex(
-        (service) => service.slug === slug
-      );
+  // const onSubmit = async (data: ServiceDetailsFormData) => {
+  //   try {
+  //     const serviceIndex = services.findIndex(
+  //       (service) => service.slug === slug
+  //     );
 
-      if (serviceIndex !== -1) {
-        services[serviceIndex] = {
-          ...services[serviceIndex],
-          ...data,
-          price: Number(data.price),
-          duration: Number(data.duration)
-        };
+  //     if (serviceIndex !== -1) {
+  //       services[serviceIndex] = {
+  //         ...services[serviceIndex],
+  //         ...data,
+  //         price: Number(data.price),
+  //         duration: Number(data.duration)
+  //       };
 
-        console.log('Serviço atualizado:', services[serviceIndex]);
-        alert('Serviço atualizado com sucesso!');
-      }
-    } catch (error) {
-      console.error('Erro ao atualizar serviço:', error);
-      alert('Erro ao atualizar serviço. Tente novamente.');
-    }
-  };
+  //       console.log('Serviço atualizado:', services[serviceIndex]);
+  //       alert('Serviço atualizado com sucesso!');
+  //     }
+  //   } catch (error) {
+  //     console.error('Erro ao atualizar serviço:', error);
+  //     alert('Erro ao atualizar serviço. Tente novamente.');
+  //   }
+  // };
 
   // Expõe a função de submit para o componente pai
-  useEffect(() => {
-    const submitForm = () => {
-      formRef.current?.requestSubmit();
-    };
+  // useEffect(() => {
+  //   const submitForm = () => {
+  //     formRef.current?.requestSubmit();
+  //   };
 
-    // Adiciona ao objeto window para que o Header possa acessar
-    (window as any).submitServiceForm = submitForm;
+  //   // Adiciona ao objeto window para que o Header possa acessar
+  //   (window as any).submitServiceForm = submitForm;
 
-    return () => {
-      delete (window as any).submitServiceForm;
-    };
-  }, []);
+  //   return () => {
+  //     delete (window as any).submitServiceForm;
+  //   };
+  // }, []);
+
+  // console.log('Localizações:', watch('locations')); // Apenas para debug
 
   return (
-    <form ref={formRef} onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form
+      ref={formRef}
+      // onSubmit={handleSubmit(onSubmit)}
+      className="space-y-6"
+    >
       <div className="space-y-4">
         <div className="text-title-h6">Geral</div>
         <div className="flex flex-col gap-2">
@@ -106,7 +114,7 @@ export default function ServiceDetails({slug}: Props) {
           </label>
           <Input.Root>
             <Input.Input
-              {...register('title')}
+              {...register('name')}
               placeholder="Ex: Consulta de Marketing"
             />
           </Input.Root>
@@ -120,7 +128,10 @@ export default function ServiceDetails({slug}: Props) {
             placeholder="Descreva seu serviço..."
             {...register('description')}
           >
-            <Textarea.CharCounter current={description.length} max={500} />
+            <Textarea.CharCounter
+              current={watch('description')?.length || 0}
+              max={500}
+            />
           </Textarea.Root>
         </div>
 
@@ -130,7 +141,7 @@ export default function ServiceDetails({slug}: Props) {
               Link do Serviço
             </label>
             <Input.Root>
-              <Input.Affix>app.markado.co/marcaum/</Input.Affix>
+              <Input.Affix>{`${MARKADO_DOMAIN}/${initialMe?.username}`}</Input.Affix>
               <Input.Input
                 {...register('slug')}
                 placeholder="consulta-marketing"
@@ -146,10 +157,13 @@ export default function ServiceDetails({slug}: Props) {
               Cor do Serviço
             </label>
             <Select.Root
-              value={service?.badgeColor}
-              onValueChange={(value) =>
-                setValue('badgeColor', value as ServiceBadgeColor)
-              }
+              defaultValue={getValues('badgeColor')}
+              {...register('badgeColor')}
+              // value={watch('badgeColor')}
+              onValueChange={(value: string) => {
+                console.log('Selected badge color:', value);
+                setValue('badgeColor', value as ServiceBadgeColor);
+              }}
             >
               <Select.Trigger className="w-full">
                 <Select.Value placeholder="Selecione uma cor" />
@@ -205,10 +219,17 @@ export default function ServiceDetails({slug}: Props) {
           </label>
           <Input.Root>
             <Input.Input
-              {...register('location')}
+              {...register('locations')}
               placeholder="Ex: Online via Google Meet"
             />
           </Input.Root>
+          {/* {watch('locations') && (
+            <span className="text-paragraph-xs text-text-sub-600">
+              Esta localização será usada para identificar onde o serviço será
+              realizado. Pode ser um link de videoconferência, endereço físico
+              ou qualquer outra informação relevante.
+            </span>
+          )} */}
         </div>
       </div>
     </form>

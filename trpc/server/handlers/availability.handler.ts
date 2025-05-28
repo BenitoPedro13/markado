@@ -21,6 +21,9 @@ import {timeStringToDate} from '@/utils/time-utils';
 import {revalidatePath} from 'next/cache';
 import {auth} from '@/auth';
 import { getAvailabilityFromSchedule } from '@/lib/availability';
+import { getDefaultScheduleId } from '~/trpc/server/utils/availability/defaultSchedule';
+import { UserRepository } from '@/repositories/user';
+import { AvailabilityById } from '@/contexts/availability/availabilityDetails/AvailabilityContext';
 
 export async function getAllAvailabilitiesHandler(ctx: Context) {
   if (!ctx.session?.user) {
@@ -32,6 +35,71 @@ export async function getAllAvailabilitiesHandler(ctx: Context) {
 
   return getAllAvailabilitiesByUserId(ctx.session.user.id);
 }
+
+export type TSchedulesList = Awaited<ReturnType<typeof listAvailabilitiesHandler>>
+
+export const listAvailabilitiesHandler = async () => {
+  const session = await auth();
+
+  if (!session) {
+    throw new TRPCError({
+      code: 'UNAUTHORIZED',
+      message: 'listAvailabilitiesHandler: Could not get the user session'
+    });
+  }
+
+  if (!session.user) {
+    throw new TRPCError({
+      code: 'UNAUTHORIZED',
+      message: 'listAvailabilitiesHandler: Not authenticated'
+    });
+  }
+
+  const user = await UserRepository.findByIdOrThrow({id: session.user.id});
+
+  if (!user) {
+    throw new TRPCError({
+      code: 'UNAUTHORIZED',
+      message: 'listAvailabilitiesHandler: Not authenticated'
+    });
+  }
+
+  const schedules = await prisma.schedule.findMany({
+    where: {
+      userId: user.id
+    },
+    select: {
+      id: true,
+      name: true,
+      availability: true,
+      timeZone: true
+    },
+    orderBy: {
+      id: 'asc'
+    }
+  });
+
+  const defaultScheduleId = await getDefaultScheduleId(user.id, prisma);
+
+  if (!user.defaultScheduleId) {
+    await prisma.user.update({
+      where: {
+        id: user.id
+      },
+      data: {
+        defaultScheduleId
+      }
+    });
+  }
+
+  return {
+    schedules: schedules.map((schedule) => ({
+      ...schedule,
+      isDefault: schedule.id === defaultScheduleId
+    }))
+  };
+};
+
 
 export async function getAllAvailabilitiesByUserId(userId: string) {
   return prisma.availability.findMany({
@@ -144,6 +212,67 @@ export async function findDetailedScheduleById({
     isLastSchedule: schedulesCount <= 1
     // readOnly: schedule.userId !== userId && !isManagedEventType
   };
+}
+
+export async function findDetailedScheduleByIdAction(
+  previousState: AvailabilityById | undefined,
+  input: {
+    scheduleId: number;
+    timeZone?: string;
+    userId: string;
+  }
+): Promise<AvailabilityById | undefined> {
+  try {
+    const {scheduleId, timeZone = 'America/Sao_Paulo', userId} = input;
+
+    const schedule = await prisma.schedule.findUnique({
+      where: {
+        id: scheduleId,
+        userId: userId
+      },
+      select: {
+        id: true,
+        userId: true,
+        name: true,
+        availability: true,
+        timeZone: true
+      }
+    });
+
+    if (!schedule) {
+      throw new Error('Schedule not found');
+    }
+
+    const timezone = schedule.timeZone || timeZone;
+
+    const schedulesCount = await prisma.schedule.count({
+      where: {
+        userId: schedule.userId
+      }
+    });
+
+    // revalidatePath('/services/[slug]', 'page'); // revalidate the list page
+
+    // Return the properly typed result
+    return {
+      id: schedule.id,
+      name: schedule.name,
+      workingHours: transformWorkingHours(schedule),
+      schedule: schedule.availability,
+      availability: transformAvailability(schedule),
+      timeZone: timezone,
+      dateOverrides: transformDateOverrides(schedule, timeZone),
+      isLastSchedule: schedulesCount <= 1
+    };
+
+  } catch (error) {
+    console.log(
+      'Error fetching detailed findDetailedScheduleByIdAction:',
+      error
+    );
+    // Return previous state or undefined on error
+    return previousState;
+  }
 }
 
 export async function updateDetailedAvailability({

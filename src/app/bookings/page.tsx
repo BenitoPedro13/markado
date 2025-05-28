@@ -57,13 +57,11 @@ async function getBookingData(status: ValidatedSearchParams['status']) {
 
 interface BookingPageProps {
   // params: {slug: string};
-  searchParams: {[key: string]: string | string[] | undefined};
+  searchParams: Promise<{[key: string]: string | string[] | undefined}>;
 }
 
-export default async function BookingPage({
-  // params,
-  searchParams
-}: BookingPageProps) {
+export default async function BookingPage(props: BookingPageProps) {
+  const searchParams = await props.searchParams;
   let {status, search, sort, view} = ValidateSearchParams(searchParams);
 
   const bookings = (await getBookingData(status)).filter((booking) => {

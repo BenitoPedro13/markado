@@ -17,7 +17,7 @@ import {
   createAvailabilityHandler,
   updateDetailedAvailability
 } from '~/trpc/server/handlers/availability.handler';
-import { redirect } from 'next/navigation';
+import {redirect} from 'next/navigation';
 
 export async function getAllSchedulesHandler(ctx: Context) {
   if (!ctx.session?.user) {
@@ -425,7 +425,8 @@ export async function duplicateScheduleHandler(scheduleId: number) {
   if (!originalSchedule) {
     throw new TRPCError({
       code: 'NOT_FOUND',
-      message: 'Schedule not found or you do not have permission to duplicate it'
+      message:
+        'Schedule not found or you do not have permission to duplicate it'
     });
   }
   // Create the new schedule and its availabilities in one call
@@ -444,8 +445,85 @@ export async function duplicateScheduleHandler(scheduleId: number) {
         }))
       }
     },
-    include: { availability: true }
+    include: {availability: true}
   });
   revalidatePath('/availability');
   return newSchedule;
 }
+
+// get all scheadules by user id
+
+import {hasReadPermissionsForUserId} from '@/packages/lib/hasEditPermissionForUser';
+
+import {getDefaultScheduleId} from '~/trpc/server/utils/availability/defaultSchedule';
+import type {TGetAllByUserIdInputSchema} from '~/trpc/server/schemas/availability.schema';
+import { UserRepository } from '@/repositories/user';
+
+type GetOptions = {
+  input: TGetAllByUserIdInputSchema;
+};
+
+export type GetAllSchedulesByUserIdQueryType = typeof getAllSchedulesByUserIdHandler;
+
+export const getAllSchedulesByUserIdHandler = async ({input}: GetOptions) => {
+  const session = await auth();
+
+  if (!session) {
+    throw new TRPCError({
+      code: 'UNAUTHORIZED',
+      message: 'getAllSchedulesByUserIdHandler: Could not get the user session'
+    });
+  }
+
+  if (!session.user) {
+    throw new TRPCError({
+      code: 'UNAUTHORIZED',
+      message: 'getAllSchedulesByUserIdHandler: Not authenticated'
+    });
+  }
+
+  const user = await UserRepository.findByIdOrThrow({id: session.user.id});
+
+  const isCurrentUserPartOfTeam = hasReadPermissionsForUserId({
+    memberId: input?.userId,
+    userId: user.id
+  });
+
+  const isCurrentUserOwner = input?.userId === user.id;
+
+  if (!isCurrentUserPartOfTeam && !isCurrentUserOwner) {
+    throw new TRPCError({
+      code: 'UNAUTHORIZED'
+    });
+  }
+
+  const schedules = await prisma.schedule.findMany({
+    where: {
+      userId: input.userId
+    },
+    select: {
+      id: true,
+      userId: true,
+      name: true
+    }
+  });
+
+  if (!schedules) {
+    console.error(`No Schedules found for userId:${input.userId}`);
+    throw new TRPCError({
+      code: 'NOT_FOUND'
+    });
+  }
+
+  const defaultScheduleId = await getDefaultScheduleId(input.userId, prisma);
+
+  return {
+    schedules: schedules.map((schedule) => {
+      return {
+        ...schedule,
+        isDefault: schedule.id === defaultScheduleId,
+        readOnly: schedule.userId !== user.id
+      };
+    })
+  };
+};

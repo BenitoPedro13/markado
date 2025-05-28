@@ -69,3 +69,11 @@ export const ZUpdateInputSchema = z.object({
 });
 
 export type TUpdateInputSchema = z.infer<typeof ZUpdateInputSchema>;
+
+export const ZGetAllByUserIdInputSchema = z.object({
+  userId: z.string()
+});
+
+export type TGetAllByUserIdInputSchema = z.infer<
+  typeof ZGetAllByUserIdInputSchema
+>;

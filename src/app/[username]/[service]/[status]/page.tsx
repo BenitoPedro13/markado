@@ -2,11 +2,12 @@ import ServiceFinalizationForm from '@/modules/scheduling/services/ServiceFinali
 import {getServiceBySlugAndUsername} from '~/trpc/server/handlers/service.handler';
 import {getHostUserByUsername} from '~/trpc/server/handlers/user.handler';
 
-const ServiceSchedulingFinalizationPage = async ({
-  params
-}: {
-  params: {username: string; service: string};
-}) => {
+const ServiceSchedulingFinalizationPage = async (
+  props: {
+    params: Promise<{username: string; service: string}>;
+  }
+) => {
+  const params = await props.params;
   const host = await getHostUserByUsername(params.username);
   const service = await getServiceBySlugAndUsername(
     params.service,
