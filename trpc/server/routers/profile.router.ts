@@ -35,7 +35,7 @@ export const profileRouter = router({
       
       if (input.personalComplete) {
         // Set a cookie to mark the personal step as complete
-        cookies().set('personal_step_complete', 'true', { 
+        (await cookies()).set('personal_step_complete', 'true', { 
           maxAge: 60 * 60 * 24, // 1 day
           path: '/' 
         });
@@ -44,7 +44,7 @@ export const profileRouter = router({
       
       if (input.calendarComplete) {
         // Set a cookie to mark the calendar step as complete
-        cookies().set('calendar_step_complete', 'true', { 
+        (await cookies()).set('calendar_step_complete', 'true', { 
           maxAge: 60 * 60 * 24, // 1 day
           path: '/' 
         });
@@ -53,7 +53,7 @@ export const profileRouter = router({
       
       if (input.availabilityComplete) {
         // Set a cookie to mark the availability step as complete
-        cookies().set('availability_step_complete', 'true', { 
+        (await cookies()).set('availability_step_complete', 'true', { 
           maxAge: 60 * 60 * 24, // 1 day
           path: '/' 
         });
@@ -62,7 +62,7 @@ export const profileRouter = router({
 
       if (input.profileComplete) {
         // Set a cookie to mark the profile step as complete
-        cookies().set('profile_step_complete', 'true', { 
+        (await cookies()).set('profile_step_complete', 'true', { 
           maxAge: 60 * 60 * 24, // 1 day
           path: '/' 
         });
@@ -71,7 +71,7 @@ export const profileRouter = router({
       
       if (input.onboardingComplete) {
         // Set a cookie to mark the onboarding as complete
-        cookies().set('onboarding_complete', 'true', { 
+        (await cookies()).set('onboarding_complete', 'true', { 
           maxAge: 60 * 60 * 24, // 1 day
           path: '/' 
         });

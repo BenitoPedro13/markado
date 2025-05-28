@@ -10,20 +10,24 @@ import { getServiceHandler } from '~/trpc/server/handlers/services.handler';
 import { getMeByUserId } from '~/trpc/server/handlers/user.handler';
 
 type Props = {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 };
 
-export default async function ServiceDetailsServerPage({
-  params: {slug}
-}: Props) {
+export default async function ServiceDetailsServerPage(props: Props) {
+  const params = await props.params;
+
+  const {
+    slug
+  } = params;
+
   const session = await auth();
 
   const userId = session?.user?.id;
 
   if (!userId) return;
-  
+
   const serviceSlug = slug;
 
   const service = await getServiceHandler({input: {slug: serviceSlug}});
