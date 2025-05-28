@@ -14,7 +14,7 @@ import { getMeByUserId } from '~/trpc/server/handlers/user.handler';
 
 
 export async function generateMetadata() {
-  const locale = cookies().get('NEXT_LOCALE')?.value || routing.defaultLocale;
+  const locale = (await cookies()).get('NEXT_LOCALE')?.value || routing.defaultLocale;
   const t = await getTranslations({locale, namespace: 'LocaleLayout'});
 
   return {
@@ -28,7 +28,7 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 });
 
 export default async function RootLayout({children}: PropsWithChildren) {
-  const locale = cookies().get('NEXT_LOCALE')?.value || routing.defaultLocale;
+  const locale = (await cookies()).get('NEXT_LOCALE')?.value || routing.defaultLocale;
   const session = await auth();
   const userId = session?.user.id || null;
   const user = userId ? await getMeByUserId(userId) : null;

@@ -8,17 +8,18 @@ import {getHostUserByUsername} from '~/trpc/server/handlers/user.handler';
 import * as Button from '@/components/align-ui/ui/button';
 import {RiArrowLeftSLine} from '@remixicon/react';
 
-const ServiceSchedulingPage = async ({
-  params,
-  searchParams
-}: {
-  params: {username: string; service: string};
-  searchParams: {
-    tz: string | undefined;
-    d: string | undefined;
-    t: string | undefined;
-  };
-}) => {
+const ServiceSchedulingPage = async (
+  props: {
+    params: Promise<{username: string; service: string}>;
+    searchParams: Promise<{
+      tz: string | undefined;
+      d: string | undefined;
+      t: string | undefined;
+    }>;
+  }
+) => {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   const host = await getHostUserByUsername(params.username);
   const service = await getServiceBySlugAndUsername(
     params.service,

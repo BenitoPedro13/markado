@@ -16,12 +16,13 @@ import AvailabilityDetailsHeader from '@/components/availability/AvailabilityDet
 import AvailabilityDetailsPage from '@/modules/availability/availabilityDetails/AvailabilityDetailsPage';
 
 type Props = {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 };
 
-export default async function AvailabilityDetailsServerPage({params}: Props) {
+export default async function AvailabilityDetailsServerPage(props: Props) {
+  const params = await props.params;
   const session = await auth();
 
   const userId = session?.user?.id;

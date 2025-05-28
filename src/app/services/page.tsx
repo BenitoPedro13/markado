@@ -13,11 +13,12 @@ export type TInitialServices = Awaited<
 >['eventTypes'];
 
 /** Services page of the website. */
-export default async function ServicesPage({
-  searchParams
-}: {
-  searchParams?: {filter?: string; search?: string};
-}) {
+export default async function ServicesPage(
+  props: {
+    searchParams?: Promise<{filter?: string; search?: string}>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const session = await auth();
 
   const userId = session?.user?.id;

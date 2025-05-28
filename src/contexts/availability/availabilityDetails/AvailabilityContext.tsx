@@ -27,7 +27,7 @@ export type UpdateAvailabilityDetailsFormData = z.infer<
   typeof updateAvailabilityDetailsFormSchema
 >;
 
-type AvailabilityById =
+export type AvailabilityById =
   inferRouterOutputs<AppRouter>['availability']['findDetailedScheduleById'];
 
 type AvailabilityDetailsContextType = {
