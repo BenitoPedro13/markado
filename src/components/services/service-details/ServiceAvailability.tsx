@@ -26,7 +26,8 @@ import {
   useCallback,
   memo,
   useActionState,
-  useTransition
+  useTransition,
+  Fragment
 } from 'react';
 
 import type {UseQueryResult} from '@tanstack/react-query';
@@ -141,7 +142,9 @@ const EventTypeScheduleDetails = memo(
     const timeFormat = user?.timeFormat;
     const {t, locale} = useLocale();
 
-    const weekStart = weekStartNum(user?.weekStart);
+    const weekStart = weekStartNum('Monday'); // Default to Monday
+    //   user?.weekStart
+    // );
 
     const filterDays = (dayNum: number) =>
       scheduleQueryData?.schedule?.filter((item) =>
@@ -149,81 +152,57 @@ const EventTypeScheduleDetails = memo(
       ) || [];
 
     return (
-      <div>
-        <div className="space-y-4 p-4">
-          <ol className="table border-collapse text-sm">
-            {weekdayNames(locale, weekStart, 'long').map((day, index) => {
-              const isAvailable = !!filterDays(index).length;
-              return (
-                <li
-                  key={day}
-                  className="my-6 flex border-transparent last:mb-2"
-                >
-                  <span
-                    className={classNames(
-                      'w-20 font-medium sm:w-32 ',
-                      !isAvailable ? 'text-subtle line-through' : 'text-default'
-                    )}
-                  >
-                    {day}
-                  </span>
-                  {isSchedulePending ? (
-                    <SkeletonText className="block h-5 w-60" />
-                  ) : isAvailable ? (
-                    <div className="space-y-3 text-right">
-                      {filterDays(index).map((dayRange, i) => (
-                        <div
-                          key={i}
-                          className="text-default flex items-center leading-4"
-                        >
-                          <span className="w-16 sm:w-28 sm:text-left">
-                            {format(dayRange.startTime, timeFormat === 12)}
-                          </span>
-                          <span className="ms-4">-</span>
-                          <div className="ml-6 sm:w-28">
-                            {format(dayRange.endTime, timeFormat === 12)}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <span className="text-subtle ml-6 sm:ml-0">
-                      {t('unavailable')}
-                    </span>
-                  )}
-                </li>
-              );
-            })}
-          </ol>
-        </div>
-        <div className="flex flex-col justify-center gap-2 rounded-b-md pl-4 sm:flex-row sm:justify-between">
-          <span className="text-default flex items-center justify-center text-sm sm:justify-start">
-            <RiGlobeLine className="h-3.5 w-3.5 ltr:mr-2 rtl:ml-2" />
-            {scheduleQueryData?.timeZone || (
-              <SkeletonText className="block h-5 w-32" />
-            )}
-          </span>
-          {!!scheduleQueryData?.id &&
-            // !scheduleQueryData.isManaged &&
-            // !scheduleQueryData.readOnly &&
-            !!editAvailabilityRedirectUrl && (
-              <Button.Root
-                asChild
-                disabled={isSchedulePending}
-                color="minimal"
-                mode="stroke"
-                variant="neutral"
-              >
-                <Link
-                  href={editAvailabilityRedirectUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {t('edit_availability')}
-                </Link>
-                <Button.Icon as={RiExternalLinkLine} />
-              </Button.Root>
-            )}
+      <div className="">
+        <h3 className="text-title-h6">Horários Configurados</h3>
+        <div className="space-y-2">
+          <div className="flex justify-between items-center bg-background-soft-100 rounded">
+            <table className="mt-4 w-full max-w-[400px] text-paragraph-sm">
+              <tbody>
+                {weekdayNames(locale, weekStart, 'long').map((day, index) => {
+                  const isAvailable = !!filterDays(index).length;
+                  return (
+                    <>
+                      <tr
+                        key={day}
+                        className={`w-full ${!isAvailable ? 'text-text-disabled-300' : 'text-text-sub-600'}`}
+                      >
+                        <td className="py-2 text-text-strong-950 capitalize align-top">
+                          {day}
+                        </td>
+                        {isSchedulePending ? (
+                          <SkeletonText className="inline-table h-5 py-2 w-60 align-middle" />
+                        ) : isAvailable ? (
+                          <>
+                            {filterDays(index).map((dayRange, i) => (
+                              <tr key={i} className="w-full">
+                                <td className="py-2 text-center w-1/3">
+                                  {format(
+                                    dayRange.startTime,
+                                    timeFormat === 12
+                                  )}
+                                </td>
+                                <td className="py-2 text-center mx-auto w-1/3">
+                                  -
+                                </td>
+                                <td className="py-2 text-center w-1/3">
+                                  {format(dayRange.endTime, timeFormat === 12)}
+                                </td>
+                              </tr>
+                            ))}
+                          </>
+                        ) : (
+                          <td className="py-2 text-start">
+                            Indisponível
+                            {/* {t('unavailable')} */}
+                          </td>
+                        )}
+                      </tr>
+                    </>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     );
@@ -338,69 +317,111 @@ const EventTypeSchedule = ({
     });
   }
 
-  // const optionValue: AvailabilityOption | undefined = options.find(
-  //   (option) => option.value === scheduleId
-  // );
-
   return (
-    <>
-      <div className="rounded-t-md ">
-        <label
-          htmlFor="availability"
-          className="text-default mb-2 block text-sm font-medium leading-none"
-        >
-          {t('availability')}
-          {/* {(isManagedEventType || isChildrenManagedEventType) &&
-            shouldLockIndicator('schedule')} */}
-        </label>
-
-        <Select.Root
-          {...register('schedule')}
-          // value={scheduleId?.toString() ?? ''}
-          // placeholder={'Selecione uma disponibilidade'}
-          defaultValue={scheduleId?.toString() ?? ''}
-          onValueChange={(str) => {
-            const id = parseInt(str, 10);
-            // update RHF—and trigger re-render because `watch('schedule')` will now change
-            setValue('schedule', id, {shouldDirty: true});
-          }}
-        >
-          <Select.Trigger
-          // className="flex w-[90px] sm:w-[100px]"
-          >
-            <Select.Value/>
-          </Select.Trigger>
-          <Select.Content>
-            {options.map((opt) => (
-              <Select.Item key={opt.value} value={opt.value.toString()}>
-                {opt.label}
-                {opt.isDefault && (
-                  <Badge.Root color="blue" className="ml-2">
-                    {t('default')}
-                  </Badge.Root>
-                )}
-              </Select.Item>
-            ))}
-          </Select.Content>
-        </Select.Root>
+    <div className="space-y-6 flex flex-col gap-4 max-w-2xl">
+      <div className="space-y-4 ">
+        <div className="text-title-h6">Geral</div>
+        <div className="grid grid-cols-[1fr,auto,auto] gap-4 items-end">
+          <div className="flex flex-col gap-2">
+            <label
+              htmlFor="schedule"
+              className="text-sm font-medium text-text-strong-950"
+            >
+              Disponibilidade
+              {/* {t('availability')} */}
+              {/* {(isManagedEventType || isChildrenManagedEventType) &&
+                shouldLockIndicator('schedule')}
+              */}
+            </label>
+            <Select.Root
+              {...register('schedule')}
+              // value={scheduleId?.toString() ?? ''}
+              defaultValue={scheduleId?.toString() ?? ''}
+              onValueChange={(str) => {
+                const id = parseInt(str, 10);
+                // update RHF—and trigger re-render because `watch('schedule')` will now change
+                setValue('schedule', id, {shouldDirty: true});
+              }}
+            >
+              <Select.Trigger
+                // className="flex w-[90px] sm:w-[100px]"
+                id="schedule"
+              >
+                <Select.Value placeholder="Selecione uma disponibilidade" />
+              </Select.Trigger>
+              <Select.Content>
+                {options.map((opt) => (
+                  <Select.Item key={opt.value} value={opt.value.toString()}>
+                    {opt.label}
+                    {opt.isDefault && (
+                      <Badge.Root color="blue" className="ml-2">
+                        Padrão
+                        {/* {t('default')} */}
+                      </Badge.Root>
+                    )}
+                  </Select.Item>
+                ))}
+              </Select.Content>
+            </Select.Root>
+          </div>
+        </div>
+        <Divider.Root />
+        {scheduleId !== 0 ? (
+          <EventTypeScheduleDetails
+            key={scheduleId}
+            scheduleQueryData={schedule}
+            isSchedulePending={isPending}
+            user={rest.user}
+            editAvailabilityRedirectUrl={rest.editAvailabilityRedirectUrl}
+          />
+        ) : (
+          <></>
+          // isManagedEventType && (
+          //   <p className="!mt-2 ml-1 text-sm text-gray-600">
+          //     {t('members_default_schedule_description')}
+          //   </p>
+          // )
+        )}
+        <Divider.Root />
+        <div className="flex justify-between items-center gap-2">
+          {/* <span className="text-default flex items-center justify-center text-sm sm:justify-start">
+            <RiGlobeLine className="h-3.5 w-3.5 ltr:mr-2 rtl:ml-2" />
+            {scheduleQueryData?.timeZone || (
+              <SkeletonText className="block h-5 w-32" />
+            )}
+          </span> */}
+          <Button.Root mode="ghost" className="w-fit">
+            <Button.Icon as={RiGlobalLine} />
+            {schedule?.timeZone || <SkeletonText className="block h-5 w-32" />}
+          </Button.Root>
+          {!!schedule?.id &&
+            // !scheduleQueryData.isManaged &&
+            // !scheduleQueryData.readOnly &&
+            !!rest.editAvailabilityRedirectUrl && (
+              //     <Button.Root mode="ghost" className="w-fit">
+              //   Editar Disponibilidade
+              //   <Button.Icon as={RiArrowRightUpLine} />
+              // </Button.Root>
+              <Button.Root
+                asChild
+                disabled={isPending}
+                mode="ghost"
+                className="w-fit"
+              >
+                <Link
+                  href={rest.editAvailabilityRedirectUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Editar Disponibilidade
+                  {/* {t('edit_availability')} */}
+                </Link>
+                <Button.Icon as={RiExternalLinkLine} />
+              </Button.Root>
+            )}
+        </div>
       </div>
-      {scheduleId !== 0 ? (
-        <EventTypeScheduleDetails
-          key={scheduleId}
-          scheduleQueryData={schedule}
-          isSchedulePending={isPending}
-          user={rest.user}
-          editAvailabilityRedirectUrl={rest.editAvailabilityRedirectUrl}
-        />
-      ) : (
-        <></>
-        // isManagedEventType && (
-        //   <p className="!mt-2 ml-1 text-sm text-gray-600">
-        //     {t('members_default_schedule_description')}
-        //   </p>
-        // )
-      )}
-    </>
+    </div>
   );
 };
 
@@ -635,7 +656,7 @@ export default function ServiceAvailability({slug}: Props) {
 
   return (
     <>
-      <form
+      {/* <form
         onSubmit={() => onSubmit(getValues() as unknown)}
         className="space-y-6 flex flex-col gap-4 max-w-2xl"
       >
@@ -711,7 +732,7 @@ export default function ServiceAvailability({slug}: Props) {
             <Button.Icon as={RiArrowRightUpLine} />
           </Button.Root>
         </div>
-      </form>
+      </form> */}
       <EventAvailabilityTab
         isTeamEvent={false}
         eventType={serviceDetails}
