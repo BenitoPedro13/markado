@@ -2,7 +2,7 @@ import {auth} from '@/auth';
 import {prisma} from '@/lib/prisma';
 import {FetchCreateContextFnOptions} from '@trpc/server/adapters/fetch';
 import {getMeByUserId} from './handlers/user.handler';
-import {Me} from '@/app/settings/page';
+import { Me } from '~/trpc/server/handlers/user.handler';
 import {Session} from 'next-auth';
 import type {PrismaClient} from '~/prisma/app/generated/prisma/client';
 
