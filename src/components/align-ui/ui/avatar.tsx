@@ -1,16 +1,16 @@
 // AlignUI Avatar v0.0.0
 
-import { Slot } from '@radix-ui/react-slot';
+import {Slot} from '@radix-ui/react-slot';
 import * as React from 'react';
 import Image from 'next/image';
 
 import {
   IconEmptyCompany,
-  IconEmptyUser,
+  IconEmptyUser
 } from '@/components/align-ui/ui/avatar-empty-icons';
-import { cn } from '@/utils/cn';
-import { recursiveCloneChildren } from '@/utils/recursive-clone-children';
-import { tv, type VariantProps } from '@/utils/tv';
+import {cn} from '@/utils/cn';
+import {recursiveCloneChildren} from '@/utils/recursive-clone-children';
+import {tv, type VariantProps} from '@/utils/tv';
 
 export const AVATAR_ROOT_NAME = 'AvatarRoot';
 const AVATAR_IMAGE_NAME = 'AvatarImage';
@@ -24,117 +24,117 @@ export const avatarVariants = tv({
   slots: {
     root: [
       'relative flex shrink-0 items-center justify-center rounded-full',
-      'select-none text-center uppercase',
+      'select-none text-center uppercase'
     ],
     image: 'size-full rounded-full object-cover',
     indicator:
-      'absolute flex size-8 items-center justify-center drop-shadow-[0_2px_4px_#1b1c1d0a]',
+      'absolute flex size-8 items-center justify-center drop-shadow-[0_2px_4px_#1b1c1d0a]'
   },
   variants: {
     size: {
       '80': {
-        root: 'size-20 text-title-h5',
+        root: 'size-20 text-title-h5'
       },
       '72': {
-        root: 'size-[72px] text-title-h5',
+        root: 'size-[72px] text-title-h5'
       },
       '64': {
-        root: 'size-16 text-title-h5',
+        root: 'size-16 text-title-h5'
       },
       '56': {
-        root: 'size-14 text-label-lg',
+        root: 'size-14 text-label-lg'
       },
       '48': {
-        root: 'size-12 text-label-lg',
+        root: 'size-12 text-label-lg'
       },
       '40': {
-        root: 'size-10 text-label-md',
+        root: 'size-10 text-label-md'
       },
       '32': {
-        root: 'size-8 text-label-sm',
+        root: 'size-8 text-label-sm'
       },
       '24': {
-        root: 'size-6 text-label-xs',
+        root: 'size-6 text-label-xs'
       },
       '20': {
-        root: 'size-5 text-label-xs',
-      },
+        root: 'size-5 text-label-xs'
+      }
     },
     color: {
       gray: {
-        root: 'bg-bg-soft-200 text-static-black',
+        root: 'bg-bg-soft-200 text-static-black'
       },
       yellow: {
-        root: 'bg-yellow-200 text-yellow-950',
+        root: 'bg-yellow-200 text-yellow-950'
       },
       blue: {
-        root: 'bg-blue-200 text-blue-950',
+        root: 'bg-blue-200 text-blue-950'
       },
       sky: {
-        root: 'bg-sky-200 text-sky-950',
+        root: 'bg-sky-200 text-sky-950'
       },
       purple: {
-        root: 'bg-purple-200 text-purple-950',
+        root: 'bg-purple-200 text-purple-950'
       },
       red: {
-        root: 'bg-red-200 text-red-950',
-      },
-    },
+        root: 'bg-red-200 text-red-950'
+      }
+    }
   },
   compoundVariants: [
     {
       size: ['80', '72'],
       class: {
-        indicator: '-right-2',
-      },
+        indicator: '-right-2'
+      }
     },
     {
       size: '64',
       class: {
-        indicator: '-right-2 scale-[.875]',
-      },
+        indicator: '-right-2 scale-[.875]'
+      }
     },
     {
       size: '56',
       class: {
-        indicator: '-right-1.5 scale-75',
-      },
+        indicator: '-right-1.5 scale-75'
+      }
     },
     {
       size: '48',
       class: {
-        indicator: '-right-1.5 scale-[.625]',
-      },
+        indicator: '-right-1.5 scale-[.625]'
+      }
     },
     {
       size: '40',
       class: {
-        indicator: '-right-1.5 scale-[.5625]',
-      },
+        indicator: '-right-1.5 scale-[.5625]'
+      }
     },
     {
       size: '32',
       class: {
-        indicator: '-right-1.5 scale-50',
-      },
+        indicator: '-right-1.5 scale-50'
+      }
     },
     {
       size: '24',
       class: {
-        indicator: '-right-1 scale-[.375]',
-      },
+        indicator: '-right-1 scale-[.375]'
+      }
     },
     {
       size: '20',
       class: {
-        indicator: '-right-1 scale-[.3125]',
-      },
-    },
+        indicator: '-right-1 scale-[.3125]'
+      }
+    }
   ],
   defaultVariants: {
     size: '80',
-    color: 'gray',
-  },
+    color: 'gray'
+  }
 });
 
 type AvatarSharedProps = VariantProps<typeof avatarVariants>;
@@ -158,21 +158,21 @@ const AvatarRoot = React.forwardRef<HTMLDivElement, AvatarRootProps>(
       fallbackText,
       ...rest
     },
-    forwardedRef,
+    forwardedRef
   ) => {
     const uniqueId = React.useId();
     const Component = asChild ? Slot : 'div';
-    const { root } = avatarVariants({ size, color });
+    const {root} = avatarVariants({size, color});
 
     const sharedProps: AvatarSharedProps = {
       size,
-      color,
+      color
     };
 
     // use placeholder icon if no children provided
     if (!children) {
       return (
-        <div className={root({ class: className })} {...rest}>
+        <div className={root({class: className})} {...rest}>
           <AvatarImage asChild>
             {placeholderType === 'company' ? (
               <IconEmptyCompany />
@@ -187,23 +187,26 @@ const AvatarRoot = React.forwardRef<HTMLDivElement, AvatarRootProps>(
     // Process children to handle fallback text
     const processedChildren = React.Children.map(children, (child) => {
       if (React.isValidElement(child) && child.type === AvatarImage) {
+        // Type assertion to access props safely
+        const childProps = child.props as {src?: string};
+
         // If we have an image and it has a src, use it
-        if (child.props.src) {
+        if (childProps.src) {
           return child;
         }
-        
+
         // If we have fallback text, create a fallback component
         if (fallbackText) {
           // Get initials (max 2 letters)
           const initials = fallbackText
             .split(' ')
-            .map(name => name.charAt(0))
+            .map((name) => name.charAt(0))
             .join('')
             .toUpperCase()
             .substring(0, 2);
-            
+
           return (
-            <div className={root({ class: `${className} text-text-strong-950` })}>
+            <div className={root({class: `${className} text-text-strong-950`})}>
               {initials}
             </div>
           );
@@ -217,31 +220,44 @@ const AvatarRoot = React.forwardRef<HTMLDivElement, AvatarRootProps>(
       sharedProps,
       [AVATAR_IMAGE_NAME, AVATAR_INDICATOR_NAME],
       uniqueId,
-      asChild,
+      asChild
     );
 
     return (
       <Component
         ref={forwardedRef}
-        className={root({ class: className })}
+        className={root({class: className})}
         {...rest}
       >
         {extendedChildren}
       </Component>
     );
-  },
+  }
 );
 AvatarRoot.displayName = AVATAR_ROOT_NAME;
 
 type AvatarImageProps = AvatarSharedProps &
-  Omit<React.ImgHTMLAttributes<HTMLImageElement>, 'color'> & {
+  Omit<React.ImgHTMLAttributes<HTMLImageElement>, 'color' | 'src'> & {
     asChild?: boolean;
     useNextImage?: boolean;
+    src?: string;
   };
 
 const AvatarImage = React.forwardRef<HTMLImageElement, AvatarImageProps>(
-  ({ asChild, className, size, color, useNextImage = true, src, alt = '', ...rest }, forwardedRef) => {
-    const { image } = avatarVariants({ size, color });
+  (
+    {
+      asChild,
+      className,
+      size,
+      color,
+      useNextImage = true,
+      src,
+      alt = '',
+      ...rest
+    },
+    forwardedRef
+  ) => {
+    const {image} = avatarVariants({size, color});
 
     // Get size from the avatarVariants
     const sizeMap = {
@@ -253,32 +269,31 @@ const AvatarImage = React.forwardRef<HTMLImageElement, AvatarImageProps>(
       '40': 40,
       '32': 32,
       '24': 24,
-      '20': 20,
+      '20': 20
     };
-    
-    const sizeValue = sizeMap[size as keyof typeof sizeMap] || 80;
-    
-    const restProps = rest;
 
+    const sizeValue = sizeMap[size as keyof typeof sizeMap] || 80;
+
+    const restProps = rest;
 
     // If using asChild, let the parent component handle the rendering
     if (asChild) {
       return (
         <Slot
           ref={forwardedRef}
-          className={image({ class: className })}
+          className={image({class: className})}
           {...rest}
         />
       );
     }
-    
+
     // If using Next.js Image
     if (useNextImage) {
       // Ensure src is not undefined for Next.js Image
       if (!src) {
         return null;
       }
-      
+
       const {width, height, ...rest} = restProps;
 
       return (
@@ -293,18 +308,18 @@ const AvatarImage = React.forwardRef<HTMLImageElement, AvatarImageProps>(
         />
       );
     }
-    
+
     // For regular img element
     return (
       <img
         ref={forwardedRef}
-        className={image({ class: className })}
+        className={image({class: className})}
         src={src}
         alt={alt}
         {...rest}
       />
     );
-  },
+  }
 );
 AvatarImage.displayName = AVATAR_IMAGE_NAME;
 
@@ -318,13 +333,13 @@ function AvatarIndicator({
   React.HTMLAttributes<HTMLDivElement> & {
     position?: 'top' | 'bottom';
   }) {
-  const { indicator } = avatarVariants({ size, color });
+  const {indicator} = avatarVariants({size, color});
 
   return (
     <div
-      className={cn(indicator({ class: className }), {
+      className={cn(indicator({class: className}), {
         'top-0 origin-top-right': position === 'top',
-        'bottom-0 origin-bottom-right': position === 'bottom',
+        'bottom-0 origin-bottom-right': position === 'bottom'
       })}
       {...rest}
     />
@@ -339,12 +354,12 @@ export const avatarStatusVariants = tv({
       online: 'bg-success-base',
       offline: 'bg-faded-base',
       busy: 'bg-error-base',
-      away: 'bg-away-base',
-    },
+      away: 'bg-away-base'
+    }
   },
   defaultVariants: {
-    status: 'online',
-  },
+    status: 'online'
+  }
 });
 
 function AvatarStatus({
@@ -355,7 +370,7 @@ function AvatarStatus({
   React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={avatarStatusVariants({ status, class: className })}
+      className={avatarStatusVariants({status, class: className})}
       {...rest}
     />
   );
@@ -369,7 +384,7 @@ type AvatarBrandLogoProps = React.ImgHTMLAttributes<HTMLImageElement> & {
 const AvatarBrandLogo = React.forwardRef<
   HTMLImageElement,
   AvatarBrandLogoProps
->(({ asChild, className, ...rest }, forwardedRef) => {
+>(({asChild, className, ...rest}, forwardedRef) => {
   const Component = asChild ? Slot : 'img';
 
   return (
@@ -377,7 +392,7 @@ const AvatarBrandLogo = React.forwardRef<
       ref={forwardedRef}
       className={cn(
         'box-content size-6 rounded-full border-2 border-bg-white-0',
-        className,
+        className
       )}
       {...rest}
     />
@@ -393,7 +408,7 @@ function AvatarNotification({
     <div
       className={cn(
         'box-content size-3 rounded-full border-2 border-bg-white-0 bg-error-base',
-        className,
+        className
       )}
       {...rest}
     />
@@ -402,11 +417,10 @@ function AvatarNotification({
 AvatarNotification.displayName = AVATAR_NOTIFICATION_NAME;
 
 export {
-  AvatarBrandLogo as BrandLogo, 
+  AvatarBrandLogo as BrandLogo,
   AvatarImage as Image,
-  AvatarIndicator as Indicator, 
-  AvatarNotification as Notification, 
-  AvatarRoot as Root, 
-  AvatarStatus as Status,
+  AvatarIndicator as Indicator,
+  AvatarNotification as Notification,
+  AvatarRoot as Root,
+  AvatarStatus as Status
 };
-

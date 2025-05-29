@@ -19,12 +19,13 @@ import {useTRPC} from '@/utils/trpc';
 import {AppRouter} from '~/trpc/server';
 import useMeQuery from '@/hooks/use-me-query';
 import {useSessionStore} from '@/providers/session-store-provider';
-import {Me} from '@/app/settings/page';
+
 import {usePathname} from 'next/navigation';
 import {
   groupAvailabilitiesBySchedule,
   TFormatedAvailabilitiesBySchedule
 } from '@/utils/formatAvailability';
+import { Me } from '~/trpc/server/handlers/user.handler';
 
 const updateAvailabilityFormSchema = z.object({
   id: z.number(),
