@@ -5,14 +5,10 @@ import * as Avatar from '@/components/align-ui/ui/avatar';
 import * as Input from '@/components/align-ui/ui/input';
 import * as Textarea from '@/components/align-ui/ui/textarea';
 import * as Hint from '@/components/align-ui/ui/hint';
-import {
-  RiArrowRightSLine,
-  RiErrorWarningFill,
-  RiErrorWarningLine
-} from '@remixicon/react';
+import {RiArrowRightSLine, RiErrorWarningFill} from '@remixicon/react';
 import {getMeByUserId} from '~/trpc/server/handlers/user.handler';
 import {useActionState, useRef, useState} from 'react';
-import {FormActionState} from '@/app/settings/profile/page';
+import {FormActionState} from '@/types/formTypes';
 
 interface ProfileFieldProps {
   name: string;

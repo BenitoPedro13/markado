@@ -5,11 +5,7 @@ import {ZUpdateProfileInputSchema} from '~/trpc/server/schemas/profile.schema';
 import {updateProfileSettingsHandler} from '~/trpc/server/handlers/profile.handler';
 import ProfileForm from '@/components/settings/profile/ProfileForm';
 import {revalidatePath} from 'next/cache';
-
-export type FormActionState = {
-  success: boolean;
-  errors?: Record<string, string[]>;
-};
+import {FormActionState} from '@/types/formTypes';
 
 export default async function SettingsProfilePage() {
   const session = await auth();
