@@ -25,7 +25,17 @@
     "identifier": "Identificador único",
     "disable_input_if_prefilled": "Desabilitar entrada se o identificador de URL já estiver preenchido",
     "label": "Rótulo",
-    "placeholder": "Texto padrão"
+    "placeholder": "Texto padrão",
+    "requires_confirmation": "Necessita de Confirmação Manual",
+    "requires_confirmation_description": "A reserva exige uma confirmação manual antes de ser enviada para integrações e para o envio de um e-mail de confirmação ao usuário.",
+    "always_requires_confirmation": "Sempre pedir confirmação",
+    "requires_confirmation_will_block_slot_description": "Reservas não confirmadas ainda bloqueiam vagas no calendário",
+    "when_booked_with_less_than": "Quando reservado com menos de",
+    "notice": "de antecedência",
+    "minute_timeUnit": "minutos",
+    "hour_timeUnit": "horas",
+    "lock_timezone_toggle_on_booking_page": "Fixar fuso horário na página de reservas",
+    "description_lock_timezone_toggle_on_booking_page": "Manter o fuso horário fixo na página de reservas, ideal para eventos que exigem a presença física"
   },
   "Error": {
     "description": "<p>Infelizmente encontramos um erro.</p><p>Você pode tentar <retry>recarregar a página</retry> que estava tentando visitar.</p>",

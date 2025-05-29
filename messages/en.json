@@ -24,8 +24,18 @@
     "input_type": "Question Type",
     "identifier": "Unique Identifier",
     "disable_input_if_prefilled": "Disable input if URL identifier is already filled in",
-    "label":"Label",
-    "placeholder": "Placeholder"
+    "label": "Label",
+    "placeholder": "Default text",
+    "requires_confirmation": "Requires manual confirmation",
+    "requires_confirmation_description": "The reservation requires manual confirmation before it can be sent to integrations and a confirmation email sent to the user",
+    "always_requires_confirmation": "Always ask for confirmation",
+    "requires_confirmation_will_block_slot_description": "Unconfirmed reservations still block slots on the calendar",
+    "when_booked_with_less_than": "When booked with less than",
+    "notice": "in advance",
+    "minute_timeUnit": "minutes",
+    "hour_timeUnit": "hours",
+    "lock_timezone_toggle_on_booking_page": "Lock timezone on booking page",
+    "description_lock_timezone_toggle_on_booking_page": "Keep the timezone fixed on the booking page, ideal for events that require physical presence"
   },
   "Error": {
     "description": "<p>Unfortunately we encountered an error.</p><p>You can try to <retry>reload the page</retry> you were trying to visit.</p>",
@@ -273,7 +283,7 @@
   },
   "Middleware": {
     "redirect_to_personal": "You need to complete your personal information first",
-    "redirect_to_calendar": "You need to connect your calendar first", 
+    "redirect_to_calendar": "You need to connect your calendar first",
     "redirect_to_availability": "You need to set your availability first",
     "onboarding_required": "You need to complete the onboarding process",
     "authentication_required": "You need to sign in to access this page"
