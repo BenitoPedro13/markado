@@ -27,6 +27,8 @@ import {cn as classNames} from '@/utils/cn';
 import {useLocale} from '@/hooks/use-locale';
 import type {EventTypeMetaDataSchema} from '~/prisma/zod-utils';
 import {CheckboxField} from '@/packages/features/form-builder/FormBuilder';
+import {SettingsToggle} from '@/packages/ui';
+import {useServicesDetails} from '@/contexts/services/servicesDetails/ServicesContext';
 // import {
 //   Input,
 //   SettingsToggle,
@@ -183,107 +185,29 @@ export function RequiresConfirmationController({
                     {(requiresConfirmationSetup === undefined || true) && (
                       // || !requiresConfirmationLockedProps.disabled
 
-                      <>
+                      <div className="inline-flex gap-1">
                         <RadioGroup.Item
                           // label={t('always_requires_confirmation')}
                           // disabled={requiresConfirmationLockedProps.disabled}
                           disabled={false}
                           id="always"
                           value="always"
-                        >
-                          <Label.Root className="text-text-sub-600 text-label-sm peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                            {t('always_requires_confirmation')}
-                          </Label.Root>
-                        </RadioGroup.Item>
-                      </>
+                        ></RadioGroup.Item>
+                        <Label.Root className="text-text-sub-600 text-label-sm peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                          {t('always_requires_confirmation')}
+                        </Label.Root>
+                      </div>
                     )}
                     {(requiresConfirmationSetup !== undefined || true) && (
                       // || !requiresConfirmationLockedProps.disabled
-
                       <>
-                        <RadioGroup.Item
-                          // disabled={requiresConfirmationLockedProps.disabled}
-                          disabled={false}
-                          className="items-center"
-                          // label={
-                          //   <>
-                          //     <Trans
-                          //       i18nKey="when_booked_with_less_than_notice"
-                          //       defaults="When booked with less than <time></time> notice"
-                          //       components={{
-                          //         time: (
-                          //           <div className="mx-2 inline-flex">
-                          //             <Input
-                          //               type="number"
-                          //               min={1}
-                          //               // disabled={requiresConfirmationLockedProps.disabled}
-                          //               disabled={false}
-                          //               onChange={(evt) => {
-                          //                 const val = Number(
-                          //                   evt.target?.value
-                          //                 );
-                          //                 setRequiresConfirmationSetup({
-                          //                   unit:
-                          //                     requiresConfirmationSetup?.unit ??
-                          //                     defaultRequiresConfirmationSetup.unit,
-                          //                   time: val
-                          //                 });
-                          //                 formMethods.setValue(
-                          //                   'metadata.requiresConfirmationThreshold.time',
-                          //                   val,
-                          //                   {shouldDirty: true}
-                          //                 );
-                          //               }}
-                          //               className="border-default !m-0 block w-16 rounded-r-none border-r-0 text-sm [appearance:textfield] focus:z-10 focus:border-r"
-                          //               defaultValue={
-                          //                 metadata
-                          //                   ?.requiresConfirmationThreshold
-                          //                   ?.time || 30
-                          //               }
-                          //             />
-                          //             <label
-                          //               className={classNames(
-                          //                 // requiresConfirmationLockedProps.disabled
-                          //                 false && 'cursor-not-allowed'
-                          //               )}
-                          //             >
-                          //               <Select
-                          //                 inputId="notice"
-                          //                 options={options}
-                          //                 isSearchable={false}
-                          //                 // isDisabled={
-                          //                 //   requiresConfirmationLockedProps.disabled
-                          //                 // }
-                          //                 isDisabled={false}
-                          //                 innerClassNames={{
-                          //                   control:
-                          //                     'rounded-l-none bg-subtle'
-                          //                 }}
-                          //                 onChange={(opt) => {
-                          //                   setRequiresConfirmationSetup({
-                          //                     time:
-                          //                       requiresConfirmationSetup?.time ??
-                          //                       defaultRequiresConfirmationSetup.time,
-                          //                     unit: opt?.value as UnitTypeLongPlural
-                          //                   });
-                          //                   formMethods.setValue(
-                          //                     'metadata.requiresConfirmationThreshold.unit',
-                          //                     opt?.value as UnitTypeLongPlural,
-                          //                     {shouldDirty: true}
-                          //                   );
-                          //                 }}
-                          //                 defaultValue={defaultValue}
-                          //               />
-                          //             </label>
-                          //           </div>
-                          //         )
-                          //       }}
-                          //     />
-                          //   </>
-                          // }
-                          id="notice"
-                          value="notice"
-                        >
+                        <div className="inline-flex gap-1">
+                          <RadioGroup.Item
+                            disabled={false}
+                            className="items-center"
+                            id="notice"
+                            value="notice"
+                          ></RadioGroup.Item>
                           <Label.Root className="text-text-sub-600 text-label-sm peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                             When booked with less than{' '}
                             <div className="mx-2 inline-flex">
@@ -370,7 +294,8 @@ export function RequiresConfirmationController({
                             </div>{' '}
                             notice
                           </Label.Root>
-                        </RadioGroup.Item>
+                        </div>
+
                         <CheckboxField
                           checked={requiresConfirmationWillBlockSlot}
                           // descriptionAsLabel
@@ -402,13 +327,27 @@ export function RequiresConfirmationController({
 }
 
 export default function ServiceAdvanced({slug}: Props) {
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // TODO: Implementar atualização das configurações avançadas
-  };
+  // const handleSubmit = (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   // TODO: Implementar atualização das configurações avançadas
+  // };
+
+  const {
+    queries: {serviceDetails},
+    ServicesDetailsForm: {register, handleSubmit, watch, getValues, setValue}
+  } = useServicesDetails();
+
+  const seatsEnabled = watch('seatsPerTimeSlotEnabled');
+
+  const [requiresConfirmation, setRequiresConfirmation] = useState(
+    getValues('requiresConfirmation')
+  );
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
+    <div
+      //  onSubmit={handleSubmit}
+      className="space-y-6 max-w-2xl"
+    >
       <div className="space-y-4">
         <div className="flex flex-col">
           <div className="text-title-h6">Configurações Avançadas</div>
@@ -417,7 +356,7 @@ export default function ServiceAdvanced({slug}: Props) {
           </div>
         </div>
         <div className="border border-stroke-soft-200 rounded-lg ">
-          <div className="p-4 flex items-center justify-between">
+          {/* <div className="p-4 flex items-center justify-between">
             <div>
               <h3 className="font-medium">Necessita de Confirmação Manual</h3>
               <p className="text-paragraph-sm text-text-sub-600">
@@ -427,7 +366,17 @@ export default function ServiceAdvanced({slug}: Props) {
               </p>
             </div>
             <Switch.Root />
-          </div>
+          </div> */}
+          <RequiresConfirmationController
+            eventType={serviceDetails}
+            seatsEnabled={seatsEnabled}
+            metadata={getValues('metadata')}
+            requiresConfirmation={requiresConfirmation}
+            requiresConfirmationWillBlockSlot={getValues(
+              'requiresConfirmationWillBlockSlot'
+            )}
+            onRequiresConfirmation={setRequiresConfirmation}
+          />
 
           <Divider.Root />
           <div className="p-4 flex items-center justify-between">
@@ -465,6 +414,6 @@ export default function ServiceAdvanced({slug}: Props) {
           </div> */}
         </div>
       </div>
-    </form>
+    </div>
   );
 }
