@@ -36,7 +36,8 @@ const updateServicesDetailsFormSchema = z.object({
   seatsPerTimeSlot: z.number().int().nullable(),
   requiresConfirmation: z.boolean(),
   requiresConfirmationWillBlockSlot: z.boolean(),
-  metadata: EventTypeMetaDataSchema
+  metadata: EventTypeMetaDataSchema,
+  lockTimeZoneToggleOnBookingPage: z.boolean(),
 });
 
 export type UpdateServicesDetailsFormData = z.infer<
@@ -93,11 +94,17 @@ export function ServicesDetailsProvider({
       isHidden: initialServiceDetails?.hidden || false,
       schedule: initialServiceDetails?.schedule || 0,
       bookingFields: initialServiceDetails?.bookingFields,
-      seatsPerTimeSlotEnabled: !initialServiceDetails?.seatsPerTimeSlot ? false: true,
+      seatsPerTimeSlotEnabled: !initialServiceDetails?.seatsPerTimeSlot
+        ? false
+        : true,
       seatsPerTimeSlot: initialServiceDetails?.seatsPerTimeSlot,
-      requiresConfirmation: initialServiceDetails?.requiresConfirmation || false,
-      requiresConfirmationWillBlockSlot: initialServiceDetails?.requiresConfirmationWillBlockSlot || true,
-      metadata: initialServiceDetails?.metadata || {} as EventTypeMetadata
+      requiresConfirmation:
+        initialServiceDetails?.requiresConfirmation || false,
+      requiresConfirmationWillBlockSlot:
+        initialServiceDetails?.requiresConfirmationWillBlockSlot || false,
+      metadata: initialServiceDetails?.metadata || ({} as EventTypeMetadata),
+      lockTimeZoneToggleOnBookingPage:
+        initialServiceDetails?.lockTimeZoneToggleOnBookingPage || false,
     }
   });
 
