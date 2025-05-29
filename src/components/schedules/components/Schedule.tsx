@@ -7,7 +7,8 @@ import {
   useMemo,
   useRef,
   forwardRef,
-  useState
+  useState,
+  JSX
 } from 'react';
 import type {
   ArrayPath,
