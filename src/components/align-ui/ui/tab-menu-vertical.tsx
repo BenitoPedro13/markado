@@ -4,6 +4,7 @@ import * as React from 'react';
 import * as TabsPrimitive from '@radix-ui/react-tabs';
 import { cn } from '@/utils/cn';
 import { PolymorphicComponentProps } from '@/utils/polymorphic';
+import { RemixiconComponentType } from '@remixicon/react';
 
 const TabMenuVerticalContent = TabsPrimitive.Content;
 TabMenuVerticalContent.displayName = 'TabMenuVerticalContent';
@@ -65,8 +66,8 @@ const TabMenuVerticalTrigger = React.forwardRef<
 TabMenuVerticalTrigger.displayName = 'TabMenuVerticalTrigger';
 
 interface TabMenuVerticalIconProps extends React.HTMLAttributes<HTMLDivElement> {
-  iconLine: React.ReactElement;
-  iconFill: React.ReactElement;
+  iconLine: React.ReactElement<any>;
+  iconFill: React.ReactElement<any>;
 }
 
 function TabMenuVerticalIcon({
@@ -83,18 +84,24 @@ function TabMenuVerticalIcon({
         'transition duration-200 ease-out',
         // active
         'group-data-[state=active]/tab-item:text-primary-base',
-        className,
+        className
       )}
       {...rest}
     >
       <div className="hidden group-data-[state=active]/tab-item:block">
         {React.cloneElement(iconFill, {
-          className: cn('w-full h-full', iconFill.props.className)
+          className: cn(
+            'w-full h-full',
+            (iconFill.props as {className?: string}).className
+          )
         })}
       </div>
       <div className="block group-data-[state=active]/tab-item:hidden">
         {React.cloneElement(iconLine, {
-          className: cn('w-full h-full', iconLine.props.className)
+          className: cn(
+            'w-full h-full',
+            (iconLine.props as {className?: string}).className
+          )
         })}
       </div>
     </div>
