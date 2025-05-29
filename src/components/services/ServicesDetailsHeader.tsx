@@ -221,6 +221,7 @@ function ServicesDetailsHeader({}: ServicesDetailsHeaderProps) {
                 locations: rest.locations,
                 hidden: rest.isHidden,
                 schedule: rest.schedule,
+                bookingFields: rest.bookingFields,
               };
 
               const serviceResult =
