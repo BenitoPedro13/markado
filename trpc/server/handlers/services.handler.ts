@@ -30,11 +30,11 @@ import getEventTypeBySlug from '@/packages/event-types/getEventTypeBySlug';
 // import type {NextApiResponse, GetServerSidePropsContext} from 'next';
 
 // import type {appDataSchemas} from '@/app-store/apps.schemas.generated';
-// import updateChildrenEventTypes from '@/features/ee/managed-event-types/lib/handleChildrenEventTypes';
+// import updateChildrenEventTypes from '@/features/core/managed-event-types/lib/handleChildrenEventTypes';
 // import {
 //   allowDisablingAttendeeConfirmationEmails,
 //   allowDisablingHostConfirmationEmails
-// } from '@/features/ee/workflows/lib/allowDisablingStandardEmails';
+// } from '@/features/core/workflows/lib/allowDisablingStandardEmails';
 import {validateIntervalLimitOrder} from '@/packages/lib';
 // import {getTranslation} from '@/lib/server';
 import {validateBookerLayouts} from '@/packages/lib/validateBookerLayouts';

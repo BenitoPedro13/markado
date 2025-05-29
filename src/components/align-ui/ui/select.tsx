@@ -27,7 +27,7 @@ export const selectVariants = tv({
       // disabled
       'disabled:pointer-events-none disabled:bg-bg-weak-50 disabled:text-text-disabled-300 disabled:shadow-none disabled:ring-transparent data-[placeholder]:disabled:text-text-disabled-300',
       // placeholder state
-      'data-[placeholder]:text-text-sub-600',
+      'data-[placeholder]:text-text-sub-600'
     ],
     triggerArrow: [
       // base
@@ -44,7 +44,7 @@ export const selectVariants = tv({
       // disabled
       'group-disabled/trigger:text-text-disabled-300 group-data-[placeholder]/trigger:group-disabled/trigger:text-text-disabled-300',
       // open
-      'group-data-[state=open]/trigger:rotate-180',
+      'group-data-[state=open]/trigger:rotate-180'
     ],
     triggerIcon: [
       // base
@@ -56,35 +56,35 @@ export const selectVariants = tv({
       'group-hover/trigger:text-text-sub-600 group-data-[placeholder]/trigger:group-hover:text-text-sub-600',
       // disabled
       'group-disabled/trigger:text-text-disabled-300 group-data-[placeholder]/trigger:group-disabled/trigger:text-text-disabled-300',
-      'group-disabled/trigger:[&:not(.remixicon)]:opacity-[.48]',
+      'group-disabled/trigger:[&:not(.remixicon)]:opacity-[.48]'
     ],
     selectItemIcon: [
       'size-5 shrink-0 bg-[length:1.25rem] text-text-sub-600',
       // 'group-has-[&]-ml-0.5',
       // disabled
-      '[[data-disabled]_&:not(.remixicon)]:opacity-[.48] [[data-disabled]_&]:text-text-disabled-300',
-    ],
+      '[[data-disabled]_&:not(.remixicon)]:opacity-[.48] [[data-disabled]_&]:text-text-disabled-300'
+    ]
   },
   variants: {
     size: {
       medium: {},
       small: {},
-      xsmall: {},
+      xsmall: {}
     },
     variant: {
       default: {
-        triggerRoot: 'w-full',
+        triggerRoot: 'w-full'
       },
       compact: {
-        triggerRoot: 'w-auto',
+        triggerRoot: 'w-auto'
       },
       compactForInput: {
         triggerRoot: [
           // base
           'w-auto rounded-none shadow-none ring-0',
           // focus
-          'focus:bg-bg-weak-50 focus:shadow-none focus:ring-0 focus:ring-transparent',
-        ],
+          'focus:bg-bg-weak-50 focus:shadow-none focus:ring-0 focus:ring-transparent'
+        ]
       },
       inline: {
         triggerRoot: [
@@ -95,7 +95,7 @@ export const selectVariants = tv({
           // focus
           'focus:shadow-none',
           // open
-          'data-[state=open]:text-text-strong-950',
+          'data-[state=open]:text-text-strong-950'
         ],
         triggerIcon: [
           // base
@@ -103,7 +103,7 @@ export const selectVariants = tv({
           // hover
           'group-hover/trigger:text-text-sub-600',
           // open
-          'group-data-[state=open]/trigger:text-text-sub-600',
+          'group-data-[state=open]/trigger:text-text-sub-600'
         ],
         triggerArrow: [
           // base
@@ -111,11 +111,11 @@ export const selectVariants = tv({
           // hover
           'group-hover/trigger:text-text-strong-950',
           // open
-          'group-data-[state=open]/trigger:text-text-strong-950',
+          'group-data-[state=open]/trigger:text-text-strong-950'
         ],
         selectItemIcon:
-          'text-text-soft-400 group-hover/trigger:text-text-sub-600',
-      },
+          'text-text-soft-400 group-hover/trigger:text-text-sub-600'
+      }
     },
     hasError: {
       true: {
@@ -123,10 +123,10 @@ export const selectVariants = tv({
           // base
           'ring-error-base',
           // focus
-          'focus:shadow-button-error-focus focus:ring-error-base',
-        ],
-      },
-    },
+          'focus:shadow-button-error-focus focus:ring-error-base'
+        ]
+      }
+    }
   },
   compoundVariants: [
     //#region default
@@ -134,22 +134,22 @@ export const selectVariants = tv({
       size: 'medium',
       variant: 'default',
       class: {
-        triggerRoot: 'h-10 min-h-10 gap-2 rounded-10 pl-3 pr-2.5',
-      },
+        triggerRoot: 'h-10 min-h-10 gap-2 rounded-10 pl-3 pr-2.5'
+      }
     },
     {
       size: 'small',
       variant: 'default',
       class: {
-        triggerRoot: 'h-9 min-h-9 gap-2 rounded-lg pl-2.5 pr-2',
-      },
+        triggerRoot: 'h-9 min-h-9 gap-2 rounded-lg pl-2.5 pr-2'
+      }
     },
     {
       size: 'xsmall',
       variant: 'default',
       class: {
-        triggerRoot: 'h-8 min-h-8 gap-1.5 rounded-lg pl-2 pr-1.5',
-      },
+        triggerRoot: 'h-5 min-h-5 gap-1.5 rounded-lg pl-2 pr-1.5'
+      }
     },
     //#endregion
 
@@ -160,8 +160,8 @@ export const selectVariants = tv({
       class: {
         triggerRoot: 'h-10 gap-1 rounded-10 pl-3 pr-2.5',
         triggerIcon: '-ml-0.5',
-        selectItemIcon: 'group-has-[&]/trigger:-ml-0.5',
-      },
+        selectItemIcon: 'group-has-[&]/trigger:-ml-0.5'
+      }
     },
     {
       size: 'small',
@@ -169,8 +169,8 @@ export const selectVariants = tv({
       class: {
         triggerRoot: 'h-9 gap-1 rounded-lg pl-3 pr-2',
         triggerIcon: '-ml-0.5',
-        selectItemIcon: 'group-has-[&]/trigger:-ml-0.5',
-      },
+        selectItemIcon: 'group-has-[&]/trigger:-ml-0.5'
+      }
     },
     {
       size: 'xsmall',
@@ -178,8 +178,8 @@ export const selectVariants = tv({
       class: {
         triggerRoot: 'h-8 gap-0.5 rounded-lg pl-2.5 pr-1.5',
         triggerIcon: '-ml-0.5 size-4',
-        selectItemIcon: 'size-4 bg-[length:1rem] group-has-[&]/trigger:-ml-0.5',
-      },
+        selectItemIcon: 'size-4 bg-[length:1rem] group-has-[&]/trigger:-ml-0.5'
+      }
     },
     //#endregion
 
@@ -190,8 +190,8 @@ export const selectVariants = tv({
       class: {
         triggerRoot: 'pl-2.5 pr-2',
         triggerIcon: 'mr-2',
-        triggerArrow: 'ml-0.5',
-      },
+        triggerArrow: 'ml-0.5'
+      }
     },
     {
       size: 'small',
@@ -199,8 +199,8 @@ export const selectVariants = tv({
       class: {
         triggerRoot: 'px-2',
         triggerIcon: 'mr-2',
-        triggerArrow: 'ml-0.5',
-      },
+        triggerArrow: 'ml-0.5'
+      }
     },
     {
       size: 'xsmall',
@@ -209,15 +209,15 @@ export const selectVariants = tv({
         triggerRoot: 'pl-2 pr-1.5',
         triggerIcon: 'mr-1.5 size-4',
         triggerArrow: 'ml-0.5',
-        selectItemIcon: 'size-4 bg-[length:1rem]',
-      },
-    },
+        selectItemIcon: 'size-4 bg-[length:1rem]'
+      }
+    }
     //#endregion
   ],
   defaultVariants: {
     variant: 'default',
-    size: 'medium',
-  },
+    size: 'medium'
+  }
 });
 
 type SelectContextType = Pick<

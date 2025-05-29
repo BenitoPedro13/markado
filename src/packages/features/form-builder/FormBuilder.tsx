@@ -90,11 +90,12 @@ interface CheckboxFieldProps {
   label?: string;
   description?: string;
   checked?: boolean;
+  defaultChecked?: boolean;
   onCheckedChange?: (checked: boolean) => void;
   name?: string;
 }
 
-const CheckboxField = React.forwardRef<HTMLButtonElement, CheckboxFieldProps>(
+export const CheckboxField = React.forwardRef<HTMLButtonElement, CheckboxFieldProps>(
   ({label, description, ...props}, ref) => {
     return (
       <div className="flex items-center space-x-2 mt-4">

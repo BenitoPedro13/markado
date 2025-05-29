@@ -21,8 +21,11 @@ import * as Input from '@/components/align-ui/ui/input';
 import {usePageContext} from '@/contexts/PageContext';
 import {useLocale} from '@/hooks/use-locale';
 import {useServicesDetails} from '@/contexts/services/servicesDetails/ServicesContext';
-import {submitDeleteService, updateServiceHandler} from '~/trpc/server/handlers/services.handler';
-import { TUpdateInputSchema } from '~/trpc/server/schemas/services.schema';
+import {
+  submitDeleteService,
+  updateServiceHandler
+} from '~/trpc/server/handlers/services.handler';
+import {TUpdateInputSchema} from '~/trpc/server/schemas/services.schema';
 
 type ServicesDetailsHeaderProps = {};
 
@@ -222,10 +225,21 @@ function ServicesDetailsHeader({}: ServicesDetailsHeaderProps) {
                 hidden: rest.isHidden,
                 schedule: rest.schedule,
                 bookingFields: rest.bookingFields,
+                // seatsPerTimeSlotEnabled:
+                //   !initialServiceDetails?.seatsPerTimeSlot ? false : true,
+                seatsPerTimeSlot: rest?.seatsPerTimeSlot,
+                requiresConfirmation: rest?.requiresConfirmation,
+                requiresConfirmationWillBlockSlot:
+                  rest?.requiresConfirmationWillBlockSlot,
+                metadata: rest?.metadata,
+                lockTimeZoneToggleOnBookingPage:
+                  rest?.lockTimeZoneToggleOnBookingPage,
+                successRedirectUrl: rest?.successRedirectUrl
               };
 
-              const serviceResult =
-                await updateServiceHandler({input: serviceInputValues});
+              const serviceResult = await updateServiceHandler({
+                input: serviceInputValues
+              });
 
               if (!serviceResult) return;
 
