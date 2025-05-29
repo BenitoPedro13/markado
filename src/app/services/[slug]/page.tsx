@@ -32,7 +32,7 @@ export default async function ServiceDetailsServerPage(props: Props) {
 
   const service = await getServiceHandler({input: {slug: serviceSlug}});
 
-  const me = (await getMeByUserId(userId as string)) ?? undefined;
+  const me = (await getMeByUserId(userId as string));
 
   const scheduleList = await listAvailabilitiesHandler();
 

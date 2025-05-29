@@ -12,7 +12,7 @@ import {
 import {useRouter, useSearchParams} from 'next/navigation';
 
 import {TInitialServices} from '@/app/services/page';
-import {Me} from '@/app/settings/page';
+import { Me } from '~/trpc/server/handlers/user.handler';
 
 export enum FilterType {
   ALL = 'ALL',
