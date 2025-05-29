@@ -9,6 +9,7 @@ import {RiArrowRightSLine, RiErrorWarningFill} from '@remixicon/react';
 import {getMeByUserId} from '~/trpc/server/handlers/user.handler';
 import {useActionState, useRef, useState} from 'react';
 import {FormActionState} from '@/types/formTypes';
+import { updateProfileAction } from '~/trpc/server/handlers/profile.handler';
 
 interface ProfileFieldProps {
   name: string;
@@ -49,11 +50,7 @@ const ProfileField = ({
 );
 
 interface ProfileFormProps {
-  user: NonNullable<Awaited<ReturnType<typeof getMeByUserId>>>;
-  submitAction: (
-    previousState: FormActionState,
-    formData: FormData
-  ) => Promise<FormActionState>;
+  me: NonNullable<Awaited<ReturnType<typeof getMeByUserId>>>;
 }
 
 const initialState: FormActionState = {
@@ -61,13 +58,13 @@ const initialState: FormActionState = {
   errors: undefined
 };
 
-export default function ProfileForm({user, submitAction}: ProfileFormProps) {
+export default function ProfileForm({me}: ProfileFormProps) {
   const [state, formAction, isPending] = useActionState(
-    submitAction,
+    updateProfileAction,
     initialState
   );
 
-  const [bio, setBio] = useState(user?.biography || '');
+  const [bio, setBio] = useState(me?.biography || '');
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
@@ -129,8 +126,8 @@ export default function ProfileForm({user, submitAction}: ProfileFormProps) {
         <div className="flex items-center gap-4">
           <Avatar.Root size="48">
             <Avatar.Image
-              src={imagePreview || user?.image || ''}
-              alt={`Foto de perfil de ${user?.name || 'Usuário'}`}
+              src={imagePreview || me?.image || ''}
+              alt={`Foto de perfil de ${me?.name || 'Usuário'}`}
             />
           </Avatar.Root>
           <Button.Root
@@ -163,21 +160,21 @@ export default function ProfileForm({user, submitAction}: ProfileFormProps) {
 
       <ProfileField
         label="Nome do usuário"
-        defaultValue={user?.username || ''}
+        defaultValue={me?.username || ''}
         description="Aparece na URL. Escolha algo simples e único."
         name="username"
       />
 
       <ProfileField
         label="Nome completo"
-        defaultValue={user?.name || ''}
+        defaultValue={me?.name || ''}
         description="Seu nome completo."
         name="name"
       />
 
       <ProfileField
         label="E-mail"
-        defaultValue={user?.email || ''}
+        defaultValue={me?.email || ''}
         description="Seu endereço de e-mail principal."
         name="email"
       />
@@ -194,7 +191,7 @@ export default function ProfileForm({user, submitAction}: ProfileFormProps) {
           </div>
           <div className="w-[400px] flex flex-col gap-2">
             <Textarea.Root
-              placeholder={`Meu nome é ${user.name || 'Fulano de Tal'}, eu sou...`}
+              placeholder={`Meu nome é ${me.name || 'Fulano de Tal'}, eu sou...`}
               name="biography"
               value={bio}
               onChange={(e) => setBio(e.target.value)}
