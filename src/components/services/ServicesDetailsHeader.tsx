@@ -233,7 +233,8 @@ function ServicesDetailsHeader({}: ServicesDetailsHeaderProps) {
                   rest?.requiresConfirmationWillBlockSlot,
                 metadata: rest?.metadata,
                 lockTimeZoneToggleOnBookingPage:
-                  rest?.lockTimeZoneToggleOnBookingPage
+                  rest?.lockTimeZoneToggleOnBookingPage,
+                successRedirectUrl: rest?.successRedirectUrl
               };
 
               const serviceResult = await updateServiceHandler({
