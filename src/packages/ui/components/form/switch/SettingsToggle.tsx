@@ -57,14 +57,11 @@ function SettingsToggle({
             >
               <div>
                 <div
-                  className="flex items-center gap-x-2"
+                  className="flex items-center gap-x-2 text-"
                   data-testid={`${rest['data-testid']}-title`}
                 >
                   <Label.Root
-                    className={classNames(
-                      'mt-0.5 text-text-strong-950 text-label-sm',
-                      labelClassName
-                    )}
+                    className={classNames('mt-0.5', labelClassName)}
                     // htmlFor=""
                   >
                     {title}
@@ -75,7 +72,7 @@ function SettingsToggle({
                 {description && (
                   <p
                     className={classNames(
-                      'text-default -mt-1.5 text-sm leading-normal',
+                      'text-paragraph-sm text-text-sub-600',
                       descriptionClassName
                     )}
                     data-testid={`${rest['data-testid']}-description`}
