@@ -90,6 +90,7 @@ interface CheckboxFieldProps {
   label?: string;
   description?: string;
   checked?: boolean;
+  defaultChecked?: boolean;
   onCheckedChange?: (checked: boolean) => void;
   name?: string;
 }
