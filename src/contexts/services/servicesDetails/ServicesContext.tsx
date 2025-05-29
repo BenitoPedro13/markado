@@ -31,13 +31,14 @@ const updateServicesDetailsFormSchema = z.object({
   price: z.number().nonnegative(),
   locations: z.array(z.custom<LocationObject>()).optional(),
   schedule: z.number().int().gte(0).optional(),
-  bookingFields: z.custom<typeof eventTypeBookingFields>(),
+  bookingFields: eventTypeBookingFields,
   seatsPerTimeSlotEnabled: z.boolean(),
   seatsPerTimeSlot: z.number().int().nullable(),
   requiresConfirmation: z.boolean(),
   requiresConfirmationWillBlockSlot: z.boolean(),
   metadata: EventTypeMetaDataSchema,
   lockTimeZoneToggleOnBookingPage: z.boolean(),
+  successRedirectUrl: z.string(),
 });
 
 export type UpdateServicesDetailsFormData = z.infer<
@@ -105,6 +106,7 @@ export function ServicesDetailsProvider({
       metadata: initialServiceDetails?.metadata || ({} as EventTypeMetadata),
       lockTimeZoneToggleOnBookingPage:
         initialServiceDetails?.lockTimeZoneToggleOnBookingPage || false,
+      successRedirectUrl: initialServiceDetails?.successRedirectUrl || ''
     }
   });
 
