@@ -9,45 +9,11 @@ import {FormActionState} from '@/types/formTypes';
 
 export default async function SettingsProfilePage() {
   const session = await auth();
-  const user = await getMeByUserId(session!.user.id);
+  const me = await getMeByUserId(session!.user.id);
 
-  if (!user) {
+  if (!me) {
     redirect('/login');
   }
 
-  async function updateProfile(
-    previousState: FormActionState,
-    profileFormData: FormData
-  ) {
-    'use server';
-    const validatedForm = ZUpdateProfileInputSchema.safeParse({
-      name: profileFormData.get('name')?.toString(),
-      username: profileFormData.get('username')?.toString(),
-      email: profileFormData.get('email')?.toString(),
-      image: profileFormData.get('image')?.toString(),
-      biography: profileFormData.get('biography')?.toString()
-    });
-
-    if (!validatedForm.success) {
-      console.error('Validation failed:', validatedForm.error);
-      return {
-        errors: validatedForm.error.flatten().fieldErrors,
-        success: false
-      };
-    }
-
-    console.log('Validated form data:', validatedForm.data);
-
-    try {
-      const result = await updateProfileSettingsHandler(validatedForm.data);
-      console.log('Profile updated successfully:', result);
-      revalidatePath('/settings/profile');
-      return {success: true};
-    } catch (error) {
-      console.error('Error updating profile:', error);
-      return {errors: {form: ['Erro ao atualizar perfil']}, success: false};
-    }
-  }
-
-  return <ProfileForm user={user} submitAction={updateProfile} />;
+  return <ProfileForm me={me} />;
 }
