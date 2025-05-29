@@ -4,7 +4,7 @@ import * as Input from '@/components/align-ui/ui/input';
 import LocaleSwitcher from '@/components/LocaleSwitcher';
 import {TimezoneSelectWithStyle} from '@/components/TimezoneSelectWithStyle';
 import * as Select from '@/components/align-ui/ui/select';
-import { Me } from '@/app/settings/page';
+import {getMeByUserId} from '~/trpc/server/handlers/user.handler';
 
 interface GeneralFieldProps {
   label: string;
@@ -13,9 +13,11 @@ interface GeneralFieldProps {
   onChange: (value: string) => void;
 }
 
+type Props = {
+  me: NonNullable<Awaited<ReturnType<typeof getMeByUserId>>>;
+};
 
-
-export default function General({me}: {me: Me}) {
+export default function General({me}: Props) {
   return (
     <div className="space-y-8">
       <div className="border border-stroke-soft-200 rounded-lg ">
@@ -36,7 +38,9 @@ export default function General({me}: {me: Me}) {
         <div className="p-6 border-b border-stroke-soft-200">
           <div className="flex justify-between items-start">
             <div className="space-y-1 w-[280px]">
-              <h3 className="text-paragraph-md text-text-strong-950">Fuso Horário</h3>
+              <h3 className="text-paragraph-md text-text-strong-950">
+                Fuso Horário
+              </h3>
               <p className="text-paragraph-sm text-text-sub-600">
                 Alinhe com sua localização atual.
               </p>
@@ -56,7 +60,9 @@ export default function General({me}: {me: Me}) {
         <div className="p-6 border-b border-stroke-soft-200">
           <div className="flex justify-between items-start">
             <div className="space-y-1 w-[280px]">
-              <h3 className="text-paragraph-md text-text-strong-950">Formato de hora</h3>
+              <h3 className="text-paragraph-md text-text-strong-950">
+                Formato de hora
+              </h3>
               <p className="text-paragraph-sm text-text-sub-600">
                 Escolha entre 24h ou 12h (AM/PM).
               </p>
@@ -78,7 +84,9 @@ export default function General({me}: {me: Me}) {
         <div className="p-6 border-b border-stroke-soft-200">
           <div className="flex justify-between items-start">
             <div className="space-y-1 w-[280px]">
-              <h3 className="text-paragraph-md text-text-strong-950">Início da semana</h3>
+              <h3 className="text-paragraph-md text-text-strong-950">
+                Início da semana
+              </h3>
               <p className="text-paragraph-sm text-text-sub-600">
                 Dia inicial, geralmente domingo ou segunda-feira.
               </p>

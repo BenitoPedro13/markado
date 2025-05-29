@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import {useState} from 'react';
 import Header from '@/components/navigation/Header';
 import * as TabMenuVertical from '@/components/align-ui/ui/tab-menu-vertical';
 import * as Divider from '@/components/align-ui/ui/divider';
@@ -23,7 +23,7 @@ import {
   RiStoreLine,
   RiStoreFill
 } from '@remixicon/react';
-import Profile from '@/components/settings/profile/Profile';
+import ProfileForm from '@/components/settings/profile/ProfileForm';
 import General from '@/components/settings/general/General';
 import Calendars from '@/components/settings/calendars/Calendars';
 import Conference from '@/components/settings/conference/Conference';
@@ -38,7 +38,7 @@ const menuItems = [
     label: 'Perfil',
     iconLine: RiUser3Line,
     iconFill: RiUser3Fill,
-    component: Profile
+    component: ProfileForm
   },
   {
     value: 'business',
@@ -88,14 +88,14 @@ const menuItems = [
     iconLine: RiWalletLine,
     iconFill: RiWalletFill,
     component: Payment
-  },
+  }
 ];
 
 type SettingsLayoutProps = {
   me: any;
 };
 
-export default function SettingsLayout({ me }: SettingsLayoutProps) {
+export default function SettingsLayout({me}: SettingsLayoutProps) {
   const [selectedMenuItem, setSelectedMenuItem] = useState(menuItems[0]);
 
   return (
@@ -109,7 +109,7 @@ export default function SettingsLayout({ me }: SettingsLayoutProps) {
           defaultValue="profile"
           className="px-8 w-full items-start justify-center flex gap-8"
           onValueChange={(value) => {
-            const selectedItem = menuItems.find(item => item.value === value);
+            const selectedItem = menuItems.find((item) => item.value === value);
             if (selectedItem) {
               setSelectedMenuItem(selectedItem);
             }
@@ -149,4 +149,4 @@ export default function SettingsLayout({ me }: SettingsLayoutProps) {
       </div>
     </>
   );
-} 
+}

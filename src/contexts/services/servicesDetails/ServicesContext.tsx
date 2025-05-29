@@ -18,6 +18,7 @@ import { EventType } from '@/packages/event-types/getEventTypeBySlug';
 import { ServiceBadgeColor } from '~/prisma/enums';
 import { LocationObject } from '@/core/locations';
 import { TSchedulesList } from '~/trpc/server/handlers/availability.handler';
+import {eventTypeBookingFields, EventTypeMetaDataSchema, EventTypeMetadata} from '~/prisma/zod-utils';
 
 const updateServicesDetailsFormSchema = z.object({
   id: z.number(),
@@ -29,7 +30,15 @@ const updateServicesDetailsFormSchema = z.object({
   duration: z.number().positive().int(),
   price: z.number().nonnegative(),
   locations: z.array(z.custom<LocationObject>()).optional(),
-  schedule: z.number().int().gte(0).optional()
+  schedule: z.number().int().gte(0).optional(),
+  bookingFields: eventTypeBookingFields,
+  seatsPerTimeSlotEnabled: z.boolean(),
+  seatsPerTimeSlot: z.number().int().nullable(),
+  requiresConfirmation: z.boolean(),
+  requiresConfirmationWillBlockSlot: z.boolean(),
+  metadata: EventTypeMetaDataSchema,
+  lockTimeZoneToggleOnBookingPage: z.boolean(),
+  successRedirectUrl: z.string(),
 });
 
 export type UpdateServicesDetailsFormData = z.infer<
@@ -84,8 +93,21 @@ export function ServicesDetailsProvider({
       price: initialServiceDetails?.price || 0,
       locations: initialServiceDetails?.locations || [],
       isHidden: initialServiceDetails?.hidden || false,
-      schedule: initialServiceDetails?.schedule || 0
-    },
+      schedule: initialServiceDetails?.schedule || 0,
+      bookingFields: initialServiceDetails?.bookingFields,
+      seatsPerTimeSlotEnabled: !initialServiceDetails?.seatsPerTimeSlot
+        ? false
+        : true,
+      seatsPerTimeSlot: initialServiceDetails?.seatsPerTimeSlot,
+      requiresConfirmation:
+        initialServiceDetails?.requiresConfirmation || false,
+      requiresConfirmationWillBlockSlot:
+        initialServiceDetails?.requiresConfirmationWillBlockSlot || false,
+      metadata: initialServiceDetails?.metadata || ({} as EventTypeMetadata),
+      lockTimeZoneToggleOnBookingPage:
+        initialServiceDetails?.lockTimeZoneToggleOnBookingPage || false,
+      successRedirectUrl: initialServiceDetails?.successRedirectUrl || ''
+    }
   });
 
   const scheduleId = serviceForm.watch('schedule');

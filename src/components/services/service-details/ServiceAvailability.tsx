@@ -37,7 +37,7 @@ import {Controller, useFormContext, useForm} from 'react-hook-form';
 import {GetAllSchedulesByUserIdQueryType} from '~/trpc/server/handlers/schedule.handler';
 import dayjs from '@/lib/dayjs';
 // import {SelectSkeletonLoader} from '@/features/availability/components/SkeletonLoader';
-// import useLockedFieldsManager from '@/features/ee/managed-event-types/hooks/useLockedFieldsManager';
+// import useLockedFieldsManager from '@/features/core/managed-event-types/hooks/useLockedFieldsManager';
 // import type {TeamMembers} from '@/features/eventtypes/components/EventType';
 import type {
   AvailabilityOption,

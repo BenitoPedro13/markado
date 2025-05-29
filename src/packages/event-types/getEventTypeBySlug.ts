@@ -3,7 +3,7 @@ import {Prisma} from '~/prisma/app/generated/prisma/client';
 // import { getLocationGroupedOptions } from "@/app-store/server";
 // import { getEventTypeAppData } from "@/app-store/utils";
 import type { LocationObject } from "@/core/locations";
-// import { getBookingFieldsWithSystemFields } from "@/features/bookings/lib/getBookingFields";
+import { getBookingFieldsWithSystemFields } from "@/packages/features/bookings/lib/getBookingFields";
 import {
   parseBookingLimit,
   parseDurationLimit,
@@ -218,11 +218,11 @@ export const getEventTypeBySlug = async ({
   const eventTypeObject = Object.assign({}, eventType, {
     users: eventTypeUsers,
     periodStartDate: eventType.periodStartDate?.toString() ?? null,
-    periodEndDate: eventType.periodEndDate?.toString() ?? null
-    // bookingFields: getBookingFieldsWithSystemFields({
-    //   ...eventType,
-    //   isOrgTeamEvent
-    // })
+    periodEndDate: eventType.periodEndDate?.toString() ?? null,
+    bookingFields: getBookingFieldsWithSystemFields({
+      ...eventType,
+      isOrgTeamEvent
+    })
   });
 
   const isOrgEventType = !!eventTypeObject.team?.parentId;
