@@ -7,11 +7,12 @@ import * as RadioGroup from '@/components/align-ui/ui/radio';
 import * as Input from '@/components/align-ui/ui/input';
 import * as Select from '@/components/align-ui/ui/select';
 import * as Label from '@/components/align-ui/ui/label';
+import * as Hint from '@/components/align-ui/ui/hint';
 
 type Props = {
   slug: string;
 };
-
+import {RiErrorWarningFill} from '@remixicon/react';
 // import * as RadioGroup from '@radix-ui/react-radio-group';
 import type {UnitTypeLongPlural} from 'dayjs';
 // import {Trans} from 'next-i18next';
@@ -61,9 +62,7 @@ export function RequiresConfirmationController({
     time: 30,
     unit: 'minutes' as UnitTypeLongPlural
   };
-    const {
-      ServicesDetailsForm: formMethods
-    } = useServicesDetails();
+  const {ServicesDetailsForm: formMethods} = useServicesDetails();
 
   useEffect(() => {
     if (!requiresConfirmation) {
@@ -260,7 +259,7 @@ export function RequiresConfirmationController({
                                 // innerClassNames={{
                                 //   control: 'rounded-l-none bg-subtle'
                                 // }}
-                                size='xsmall'
+                                size="xsmall"
                                 onValueChange={(opt: string) => {
                                   setRequiresConfirmationSetup({
                                     time:
@@ -426,7 +425,22 @@ export default function ServiceAdvanced({slug}: Props) {
                 }}
               >
                 <div className="border-subtle border-t-0 pt-4">
-                  <TextField
+                  <Label.Root className="mb-1">{t('redirect_success_booking')}</Label.Root>
+                  <Input.Root>
+                    <Input.Input
+                      className="w-full"
+                      // label={t('redirect_success_booking')}
+                      // labelSrOnly
+                      // disabled={successRedirectUrlLocked.disabled}
+                      disabled={false}
+                      placeholder={t('external_redirect_url')}
+                      // data-testid="external-redirect-url"
+                      required={redirectUrlVisible}
+                      type="text"
+                      {...register('successRedirectUrl')}
+                    />
+                  </Input.Root>
+                  {/* <TextField
                     className="w-full"
                     label={t('redirect_success_booking')}
                     labelSrOnly
@@ -437,7 +451,7 @@ export default function ServiceAdvanced({slug}: Props) {
                     required={redirectUrlVisible}
                     type="text"
                     {...register('successRedirectUrl')}
-                  />
+                  /> */}
 
                   {/* <div className="mt-4">
                     <Controller
@@ -452,17 +466,19 @@ export default function ServiceAdvanced({slug}: Props) {
                       )}
                     />
                   </div> */}
-                  <div
+                  <Hint.Root
                     className={classNames(
-                      'p-1 text-sm text-orange-600',
-                      getValues('successRedirectUrl')
-                        ? 'block'
-                        : 'hidden'
+                      'text-error-base  gap-1 mt-1',
+                      getValues('successRedirectUrl') ? 'flex' : 'hidden'
                     )}
-                    data-testid="redirect-url-warning"
                   >
+                    <Hint.Icon
+                      as={RiErrorWarningFill}
+                      className="text-error-base"
+                    />
+
                     {t('redirect_url_warning')}
-                  </div>
+                  </Hint.Root>
                 </div>
               </SettingsToggle>
             </>
