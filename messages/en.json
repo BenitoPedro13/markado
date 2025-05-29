@@ -20,7 +20,12 @@
     "add_a_booking_question": "Add a question",
     "booking_questions_title": "Booking Form",
     "show_on_booking_page": "Show on booking page",
-    "booking_questions_description": "Customize the questions asked on the booking page"
+    "booking_questions_description": "Customize the questions asked on the booking page",
+    "input_type": "Question Type",
+    "identifier": "Unique Identifier",
+    "disable_input_if_prefilled": "Disable input if URL identifier is already filled in",
+    "label":"Label",
+    "placeholder": "Placeholder"
   },
   "Error": {
     "description": "<p>Unfortunately we encountered an error.</p><p>You can try to <retry>reload the page</retry> you were trying to visit.</p>",
