@@ -35,7 +35,11 @@
     "minute_timeUnit": "minutos",
     "hour_timeUnit": "horas",
     "lock_timezone_toggle_on_booking_page": "Fixar fuso horário na página de reservas",
-    "description_lock_timezone_toggle_on_booking_page": "Manter o fuso horário fixo na página de reservas, ideal para eventos que exigem a presença física"
+    "description_lock_timezone_toggle_on_booking_page": "Manter o fuso horário fixo na página de reservas, ideal para eventos que exigem a presença física",
+    "redirect_success_booking": "Redirecionamento pós-reserva",
+    "redirect_url_description": "Defina uma URL específica para a qual o usuário será direcionado logo após concluir uma reserva",
+    "external_redirect_url": "https://example.com/page",
+    "redirect_url_warning": "Adicionar um redirecionamento desabilitará a página de sucesso"
   },
   "Error": {
     "description": "<p>Infelizmente encontramos um erro.</p><p>Você pode tentar <retry>recarregar a página</retry> que estava tentando visitar.</p>",

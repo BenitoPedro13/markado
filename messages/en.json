@@ -35,7 +35,11 @@
     "minute_timeUnit": "minutes",
     "hour_timeUnit": "hours",
     "lock_timezone_toggle_on_booking_page": "Lock timezone on booking page",
-    "description_lock_timezone_toggle_on_booking_page": "Keep the timezone fixed on the booking page, ideal for events that require physical presence"
+    "description_lock_timezone_toggle_on_booking_page": "Keep the timezone fixed on the booking page, ideal for events that require physical presence",
+    "redirect_success_booking":"Redirecionamento pós-reserva",
+    "redirect_url_description":"Defina uma URL específica para a qual o usuário será direcionado logo após concluir uma reserva",
+    "external_redirect_url": "https://example.com/page",
+    "redirect_url_warning": "Adding a redirect will disable the success page"
   },
   "Error": {
     "description": "<p>Unfortunately we encountered an error.</p><p>You can try to <retry>reload the page</retry> you were trying to visit.</p>",
