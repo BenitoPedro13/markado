@@ -12,13 +12,13 @@ import {useTRPC} from '@/utils/trpc';
 import {AppRouter} from '~/trpc/server';
 import useMeQuery from '@/hooks/use-me-query';
 import { useSessionStore } from '@/providers/session-store-provider';
-import { Me } from '@/app/settings/page';
 import { usePathname } from 'next/navigation';
 import { EventType } from '@/packages/event-types/getEventTypeBySlug';
 import { ServiceBadgeColor } from '~/prisma/enums';
 import { LocationObject } from '@/core/locations';
 import { TSchedulesList } from '~/trpc/server/handlers/availability.handler';
 import {eventTypeBookingFields, EventTypeMetaDataSchema, EventTypeMetadata} from '~/prisma/zod-utils';
+import { Me } from '~/trpc/server/handlers/user.handler';
 
 const updateServicesDetailsFormSchema = z.object({
   id: z.number(),
@@ -54,7 +54,7 @@ type ServicesDetailsContextType = {
   };
   queries: {
     serviceDetails: EventType['eventType'];
-    initialMe: Me | undefined;
+    initialMe: Me;
     initialScheduleList: TSchedulesList['schedules'];
   };
   ServicesDetailsForm: UseFormReturn<UpdateServicesDetailsFormData>;
@@ -65,7 +65,7 @@ const ServicesDetailsContext = createContext<ServicesDetailsContextType | null>(
 type ServicesDetailsProviderProps = {
   children: React.ReactNode;
   initialServiceDetails: EventType['eventType'];
-  initialMe: Me | undefined;
+  initialMe: Me;
   initialScheduleList: TSchedulesList['schedules'];
 };
 
