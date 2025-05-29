@@ -1,9 +1,9 @@
 // AlignUI Input v0.0.0
 
-import type { PolymorphicComponentProps } from '@/utils/polymorphic';
-import { recursiveCloneChildren } from '@/utils/recursive-clone-children';
-import { tv, type VariantProps } from '@/utils/tv';
-import { Slot } from '@radix-ui/react-slot';
+import type {PolymorphicComponentProps} from '@/utils/polymorphic';
+import {recursiveCloneChildren} from '@/utils/recursive-clone-children';
+import {tv, type VariantProps} from '@/utils/tv';
+import {Slot} from '@radix-ui/react-slot';
 import * as React from 'react';
 
 const INPUT_ROOT_NAME = 'InputRoot';
@@ -29,14 +29,14 @@ export const inputVariants = tv({
       // focus
       'has-[input:focus]:shadow-button-important-focus has-[input:focus]:before:ring-stroke-strong-950',
       // disabled
-      'has-[input:disabled]:shadow-none has-[input:disabled]:before:ring-transparent',
+      'has-[input:disabled]:shadow-none has-[input:disabled]:before:ring-transparent'
     ],
     wrapper: [
       // base
       'group/input-wrapper flex w-full cursor-text items-center bg-bg-white-0',
       'transition duration-200 ease-out',
       // disabled
-      'has-[input:disabled]:pointer-events-none has-[input:disabled]:bg-bg-weak-50',
+      'has-[input:disabled]:pointer-events-none has-[input:disabled]:bg-bg-weak-50'
     ],
     input: [
       // base
@@ -51,7 +51,7 @@ export const inputVariants = tv({
       // focus placeholder
       'group-has-[input:focus]:placeholder:text-text-sub-600',
       // disabled
-      'disabled:text-text-disabled-300 disabled:placeholder:text-text-disabled-300',
+      'disabled:text-text-disabled-300 disabled:placeholder:text-text-disabled-300'
     ],
     icon: [
       // base
@@ -66,7 +66,7 @@ export const inputVariants = tv({
       // focus
       'group-has-[:placeholder-shown]:group-has-[input:focus]/input-wrapper:text-text-sub-600',
       // disabled
-      'group-has-[input:disabled]/input-wrapper:text-text-disabled-300',
+      'group-has-[input:disabled]/input-wrapper:text-text-disabled-300'
     ],
     affix: [
       // base
@@ -76,7 +76,7 @@ export const inputVariants = tv({
       // placeholder state
       'group-has-[:placeholder-shown]:text-text-soft-400',
       // focus state
-      'group-has-[:placeholder-shown]:group-has-[input:focus]:text-text-sub-600',
+      'group-has-[:placeholder-shown]:group-has-[input:focus]:text-text-sub-600'
     ],
     inlineAffix: [
       // base
@@ -84,26 +84,26 @@ export const inputVariants = tv({
       // placeholder state
       'group-has-[:placeholder-shown]:text-text-soft-400',
       // focus state
-      'group-has-[:placeholder-shown]:group-has-[input:focus]:text-text-sub-600',
-    ],
+      'group-has-[:placeholder-shown]:group-has-[input:focus]:text-text-sub-600'
+    ]
   },
   variants: {
     size: {
       medium: {
         root: 'rounded-10',
         wrapper: 'gap-2 px-3',
-        input: 'h-10',
+        input: 'h-10'
       },
       small: {
         root: 'rounded-lg',
         wrapper: 'gap-2 px-2.5',
-        input: 'h-9',
+        input: 'h-9'
       },
       xsmall: {
         root: 'rounded-lg',
         wrapper: 'gap-1.5 px-2',
-        input: 'h-8',
-      },
+        input: 'h-8'
+      }
     },
     hasError: {
       true: {
@@ -113,39 +113,39 @@ export const inputVariants = tv({
           // base
           'hover:before:ring-error-base hover:[&:not(&:has(input:focus)):has(>:only-child)]:before:ring-error-base',
           // focus
-          'has-[input:focus]:shadow-button-error-focus has-[input:focus]:before:ring-error-base',
-        ],
+          'has-[input:focus]:shadow-button-error-focus has-[input:focus]:before:ring-error-base'
+        ]
       },
       false: {
         root: [
           // hover
-          'hover:[&:not(:has(input:focus)):has(>:only-child)]:before:ring-transparent',
-        ],
-      },
-    },
+          'hover:[&:not(:has(input:focus)):has(>:only-child)]:before:ring-transparent'
+        ]
+      }
+    }
   },
   compoundVariants: [
     //#region affix
     {
       size: 'medium',
       class: {
-        affix: 'px-3',
-      },
+        affix: 'px-3'
+      }
     },
     {
       size: ['small', 'xsmall'],
       class: {
-        affix: 'px-2.5',
-      },
-    },
+        affix: 'px-2.5'
+      }
+    }
     //#endregion
   ],
   defaultVariants: {
-    size: 'medium',
-  },
+    size: 'medium'
+  }
 });
 
-type InputSharedProps = VariantProps<typeof inputVariants>;
+export type InputSharedProps = VariantProps<typeof inputVariants>;
 
 function InputRoot({
   className,
@@ -161,14 +161,14 @@ function InputRoot({
   const uniqueId = React.useId();
   const Component = asChild ? Slot : 'div';
 
-  const { root } = inputVariants({
+  const {root} = inputVariants({
     size,
-    hasError,
+    hasError
   });
 
   const sharedProps: InputSharedProps = {
     size,
-    hasError,
+    hasError
   };
 
   const extendedChildren = recursiveCloneChildren(
@@ -179,14 +179,14 @@ function InputRoot({
       INPUT_EL_NAME,
       INPUT_ICON_NAME,
       INPUT_AFFIX_NAME,
-      INPUT_INLINE_AFFIX_NAME,
+      INPUT_INLINE_AFFIX_NAME
     ],
     uniqueId,
-    asChild,
+    asChild
   );
 
   return (
-    <Component className={root({ class: className })} {...rest}>
+    <Component className={root({class: className})} {...rest}>
       {extendedChildren}
     </Component>
   );
@@ -206,13 +206,13 @@ function InputWrapper({
   }) {
   const Component = asChild ? Slot : 'label';
 
-  const { wrapper } = inputVariants({
+  const {wrapper} = inputVariants({
     size,
-    hasError,
+    hasError
   });
 
   return (
-    <Component className={wrapper({ class: className })} {...rest}>
+    <Component className={wrapper({class: className})} {...rest}>
       {children}
     </Component>
   );
@@ -227,25 +227,25 @@ const Input = React.forwardRef<
     }
 >(
   (
-    { className, type = 'text', size, hasError, asChild, ...rest },
-    forwardedRef,
+    {className, type = 'text', size, hasError, asChild, ...rest},
+    forwardedRef
   ) => {
     const Component = asChild ? Slot : 'input';
 
-    const { input } = inputVariants({
+    const {input} = inputVariants({
       size,
-      hasError,
+      hasError
     });
 
     return (
       <Component
         type={type}
-        className={input({ class: className })}
+        className={input({class: className})}
         ref={forwardedRef}
         {...rest}
       />
     );
-  },
+  }
 );
 Input.displayName = INPUT_EL_NAME;
 
@@ -257,9 +257,9 @@ function InputIcon<T extends React.ElementType = 'div'>({
   ...rest
 }: PolymorphicComponentProps<T, InputSharedProps>) {
   const Component = as || 'div';
-  const { icon } = inputVariants({ size, hasError });
+  const {icon} = inputVariants({size, hasError});
 
-  return <Component className={icon({ class: className })} {...rest} />;
+  return <Component className={icon({class: className})} {...rest} />;
 }
 InputIcon.displayName = INPUT_ICON_NAME;
 
@@ -270,13 +270,13 @@ function InputAffix({
   hasError,
   ...rest
 }: React.HTMLAttributes<HTMLDivElement> & InputSharedProps) {
-  const { affix } = inputVariants({
+  const {affix} = inputVariants({
     size,
-    hasError,
+    hasError
   });
 
   return (
-    <div className={affix({ class: className })} {...rest}>
+    <div className={affix({class: className})} {...rest}>
       {children}
     </div>
   );
@@ -290,13 +290,13 @@ function InputInlineAffix({
   hasError,
   ...rest
 }: React.HTMLAttributes<HTMLSpanElement> & InputSharedProps) {
-  const { inlineAffix } = inputVariants({
+  const {inlineAffix} = inputVariants({
     size,
-    hasError,
+    hasError
   });
 
   return (
-    <span className={inlineAffix({ class: className })} {...rest}>
+    <span className={inlineAffix({class: className})} {...rest}>
       {children}
     </span>
   );
@@ -304,7 +304,10 @@ function InputInlineAffix({
 InputInlineAffix.displayName = INPUT_INLINE_AFFIX_NAME;
 
 export {
-  InputAffix as Affix, InputIcon as Icon, InputInlineAffix as InlineAffix, Input, InputRoot as Root,
+  InputAffix as Affix,
+  InputIcon as Icon,
+  InputInlineAffix as InlineAffix,
+  Input,
+  InputRoot as Root,
   InputWrapper as Wrapper
 };
-
