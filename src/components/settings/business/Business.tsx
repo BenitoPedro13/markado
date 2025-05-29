@@ -1,4 +1,5 @@
-import {Me} from '@/app/settings/page';
+'use client';
+
 import * as Input from '@/components/align-ui/ui/input';
 import {
   RiStoreLine,
@@ -15,11 +16,11 @@ import * as Avatar from '@/components/align-ui/ui/avatar';
 import * as Button from '@/components/align-ui/ui/button';
 import * as Select from '@/components/align-ui/ui/select';
 import {ServiceBadgeColor} from '@/types/service';
-import * as Divider from '@/components/align-ui/ui/divider';
 import ServicesSchedulingForm from '@/modules/scheduling/services/ServicesSchedulingForm';
 import {BookingProvider} from '@/contexts/bookings/BookingContext';
 import * as Textarea from '@/components/align-ui/ui/textarea';
 import {useState, createContext, useContext} from 'react';
+import {getMeByUserId} from '~/trpc/server/handlers/user.handler';
 
 // Array com as opções de cores e seus emojis
 const colorOptions: {value: ServiceBadgeColor; label: string}[] = [
@@ -69,7 +70,7 @@ export const BusinessContext = createContext<{
 export const useBusiness = () => useContext(BusinessContext);
 
 type Props = {
-  me: Me;
+  me: NonNullable<Awaited<ReturnType<typeof getMeByUserId>>>;
 };
 
 export default function Business({me}: Props) {
@@ -299,10 +300,9 @@ export default function Business({me}: Props) {
                 <RiMoreLine className="text-bg-sub-300" />
               </div>
             </div>
-            <BookingProvider 
+            <BookingProvider
             // username={me.username || ''}
             >
-
               <ServicesSchedulingForm fullHeight={false} />
             </BookingProvider>
           </div>

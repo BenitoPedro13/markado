@@ -4,9 +4,9 @@ import * as Button from '@/components/align-ui/ui/button';
 import * as Input from '@/components/align-ui/ui/input';
 import * as Textarea from '@/components/align-ui/ui/textarea';
 import * as StatusBadge from '@/components/align-ui/ui/status-badge';
-import { Me } from '@/app/settings/page';
-import { RiBankCardLine } from '@remixicon/react';
+import {RiBankCardLine} from '@remixicon/react';
 import Image from 'next/image';
+import {getMeByUserId} from '~/trpc/server/handlers/user.handler';
 const paymentHistory = [
   {
     date: '28 Abr 2024',
@@ -31,7 +31,11 @@ const paymentHistory = [
   }
 ];
 
-export default function Payment({me}: {me: Me}) {
+type Props = {
+  me: NonNullable<Awaited<ReturnType<typeof getMeByUserId>>>;
+};
+
+export default function Payment({me}: Props) {
   return (
     <div className="space-y-8">
       {/* Métodos de Pagamento */}
@@ -56,10 +60,19 @@ export default function Payment({me}: {me: Me}) {
         <div className="p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Image src="/logos/Stripe.svg" alt="Stripe" width={38} height={38} />
+              <Image
+                src="/logos/Stripe.svg"
+                alt="Stripe"
+                width={38}
+                height={38}
+              />
               <div className="space-y-1">
-                <h4 className="text-paragraph-md text-text-strong-950">Stripe</h4>
-                <p className="text-paragraph-sm text-text-sub-600">marcus@mainnet.design</p>
+                <h4 className="text-paragraph-md text-text-strong-950">
+                  Stripe
+                </h4>
+                <p className="text-paragraph-sm text-text-sub-600">
+                  marcus@mainnet.design
+                </p>
               </div>
             </div>
             <StatusBadge.Root status="completed" variant="light">
@@ -116,16 +129,29 @@ export default function Payment({me}: {me: Me}) {
             <tbody className="divide-y divide-stroke-soft-200">
               {paymentHistory.map((payment, index) => (
                 <tr key={index} className="text-paragraph-sm">
-                  <td className="py-4 px-6 text-text-strong-950">{payment.date}</td>
-                  <td className="py-4 px-6 text-text-strong-950">{payment.method}</td>
-                  <td className="py-4 px-6 text-text-sub-600">{payment.email}</td>
+                  <td className="py-4 px-6 text-text-strong-950">
+                    {payment.date}
+                  </td>
+                  <td className="py-4 px-6 text-text-strong-950">
+                    {payment.method}
+                  </td>
+                  <td className="py-4 px-6 text-text-sub-600">
+                    {payment.email}
+                  </td>
                   <td className="py-4 px-6">
-                    <StatusBadge.Root status={payment.status as any} variant="light">
+                    <StatusBadge.Root
+                      status={payment.status as any}
+                      variant="light"
+                    >
                       <StatusBadge.Dot />
-                      {payment.status === 'completed' ? 'Concluído' : 'Pendente'}
+                      {payment.status === 'completed'
+                        ? 'Concluído'
+                        : 'Pendente'}
                     </StatusBadge.Root>
                   </td>
-                  <td className="py-4 px-6 text-text-strong-950 text-right">{payment.amount}</td>
+                  <td className="py-4 px-6 text-text-strong-950 text-right">
+                    {payment.amount}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -134,4 +160,4 @@ export default function Payment({me}: {me: Me}) {
       </div>
     </div>
   );
-} 
+}
