@@ -1,51 +1,63 @@
 'use client';
 
+import type {Prisma} from '~/prisma/app/generated/prisma/client';
+import {z} from 'zod';
 import * as Button from '@/components/align-ui/ui/button';
-import { ServiceFormFields } from '@/types/service';
+import {ServiceFormFields} from '@/types/service';
 import RequiredFormItem from './RequiredFormItem';
-import OptionalFormItem from './OptionalFormItem';  
+import OptionalFormItem from './OptionalFormItem';
+import {useLocale} from '@/hooks/use-locale';
+import {FormBuilder} from '@/packages/features/form-builder/FormBuilder';
+import {fieldSchema} from '@/packages/features/form-builder/schema';
+import {useFormContext} from 'react-hook-form';
+import {FormValues, EventTypeSetupProps} from '@/features/eventtypes/lib/types';
+import getLocationsOptionsForSelect from '@/packages/features/bookings/lib/getLocationOptionsForSelect';
 
 type Props = {
   slug: string;
 };
 
-export default function ServiceForm({ slug }: Props) {
+type BookingField = z.infer<typeof fieldSchema>;
+
+export default function ServiceForm({slug}: Props) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // TODO: Implementar atualização dos campos do formulário
   };
 
+  const formMethods = useFormContext<FormValues>();
+
+  const bookingFields: Prisma.JsonObject = {};
+
+  const {t} = useLocale();
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
-      <div className="space-y-4">
-        <div className="flex flex-col">
-          <div className="text-title-h6">Formulário da Reserva</div>
-          <div className="text-paragraph-sm text-text-sub-600">
-            Personalize as perguntas feitas na página de reservas
-          </div>
-        </div>
-        <div className="rounded-lg flex flex-col border border-stroke-soft-200">
-          <RequiredFormItem 
-            title="Nome"
-            description="Digite o seu nome"
-          />
-          <RequiredFormItem 
-            title="E-mail"
-            description="Solicitar o e-mail do cliente"
-          />
-          <OptionalFormItem 
-            title="Telefone"
-            description="Solicitar o telefone do cliente"
-            defaultChecked={true}
-          />
-          <OptionalFormItem 
-            title="Participantes Adicionais"
-            description="Permitir adicionar e-mails de participantes adicionais"
-            defaultChecked={false}
-            showDivider={false}
-          />
-        </div>
-      </div>
-    </form>
+    <>
+      <FormBuilder
+        title={t('booking_questions_title')}
+        description={t('booking_questions_description')}
+        addFieldLabel={t('add_a_booking_question')}
+        formProp="bookingFields"
+        // {...shouldLockDisableProps('bookingFields')}
+        dataStore={{
+          options: {
+            locations: {
+              // FormBuilder doesn't handle plural for non-english languages. So, use english(Location) only. This is similar to 'Workflow'
+              source: {label: 'Location'},
+              value: getLocationsOptionsForSelect(
+                formMethods.getValues('locations') ?? [],
+                t
+              )
+            }
+          }
+        }}
+        disabled={false}
+        LockedIcon={false}
+        shouldConsiderRequired={(field: BookingField) => {
+          // Location field has a default value at backend so API can send no location but we don't allow it in UI and thus we want to show it as required to user
+          return field.name === 'location' ? true : field.required;
+        }}
+      />
+    </>
   );
-} 
+}
