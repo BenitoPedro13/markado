@@ -50,12 +50,12 @@ import {weekdayNames} from '@/lib/weekday';
 import {weekStartNum} from '@/lib/weekstart';
 import Link from 'next/link';
 import {AvailabilityById} from '@/contexts/availability/availabilityDetails/AvailabilityContext';
-import {Me} from '@/app/settings/page';
 import {useServicesDetails} from '@/contexts/services/servicesDetails/ServicesContext';
 import {
   findDetailedScheduleByIdAction,
   TSchedulesList
 } from '~/trpc/server/handlers/availability.handler';
+import { Me } from '~/trpc/server/handlers/user.handler';
 // import {
 //   // Avatar,
 //   // Badge,
@@ -83,7 +83,7 @@ type EventTypeScheduleDetailsProps = {
     >;
   };
   isSchedulePending?: boolean;
-  user?: Pick<Me, 'timeFormat' | 'weekStart'>;
+  user: Me,
   editAvailabilityRedirectUrl?: string;
 };
 
