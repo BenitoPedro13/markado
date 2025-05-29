@@ -3,10 +3,8 @@ import {auth} from '@/auth';
 import {redirect} from 'next/navigation';
 import {ZUpdateProfileInputSchema} from '~/trpc/server/schemas/profile.schema';
 import {updateProfileSettingsHandler} from '~/trpc/server/handlers/profile.handler';
-import ProfileForm from '@/components/settings/profile/ProfileForm';
 import {revalidatePath} from 'next/cache';
 import {FormActionState} from '@/types/formTypes';
-import Business from '@/components/settings/business/Business';
 import Privacy from '@/components/settings/privacy/Privacy';
 
 export default async function SettingsBusinessPage() {
