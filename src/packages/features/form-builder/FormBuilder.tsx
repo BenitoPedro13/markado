@@ -20,12 +20,13 @@ import * as Checkbox from '@/components/align-ui/ui/checkbox';
 import {
   Root as Dialog,
   Content as DialogContent,
-  Trigger as DialogTrigger,
+  Body as DialogBody,
   Footer as DialogFooter,
   Header as DialogHeader,
   Close as DialogClose
 } from '@/components/align-ui/ui/modal';
 
+import * as SegmentedControl from '@/components/align-ui/ui/segmented-control';
 import * as FancyButton from '@/components/align-ui/ui/fancy-button';
 import * as Input from '@/components/align-ui/ui/input';
 import * as Label from '@/components/align-ui/ui/label';
@@ -71,7 +72,11 @@ const InputField = React.forwardRef<HTMLInputElement, InputFieldProps>(
   ({label, containerClassName, error, className, ...props}, ref) => {
     return (
       <div className={containerClassName}>
-        {label && <Label.Root htmlFor={props.name}>{label}</Label.Root>}
+        {label && (
+          <Label.Root htmlFor={props.name} className="mb-1">
+            {label}
+          </Label.Root>
+        )}
         <Input.Root>
           <Input.Input ref={ref} className={className} {...props} />
         </Input.Root>
@@ -96,12 +101,12 @@ const CheckboxField = React.forwardRef<HTMLButtonElement, CheckboxFieldProps>(
         <Checkbox.Root ref={ref} {...props} />
         <div className="grid gap-1.5 leading-none">
           {label && (
-            <Label.Root className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+            <Label.Root className="text-text-sub-600 text-label-sm peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
               {label}
             </Label.Root>
           )}
           {description && (
-            <p className="text-sm text-muted-foreground">{description}</p>
+            <p className="text-text-sub-600 text-label-sm ">{description}</p>
           )}
         </div>
       </div>
@@ -112,7 +117,7 @@ const CheckboxField = React.forwardRef<HTMLButtonElement, CheckboxFieldProps>(
 interface BooleanToggleGroupFieldProps {
   label?: string;
   value?: boolean;
-  onValueChange?: (value: boolean) => void;
+  onValueChange: (value: boolean) => void;
   disabled?: boolean;
   'data-testid'?: string;
 }
@@ -121,18 +126,39 @@ const BooleanToggleGroupField: React.FC<BooleanToggleGroupFieldProps> = ({
   label,
   value,
   onValueChange,
-  disabled,
+  disabled = false,
   'data-testid': dataTestId
 }) => {
+  const valueString = value ? 'yes' : 'no';
+
   return (
-    <div className="flex items-center justify-between mt-4">
-      {label && <Label.Root>{label}</Label.Root>}
-      <Switch.Root
+    <div className="mt-4">
+      {label && <Label.Root className="mb-1">{label}</Label.Root>}
+      {/* <Switch.Root
         checked={value}
         onCheckedChange={onValueChange}
         disabled={disabled}
         data-testid={dataTestId}
-      />
+      /> */}
+      <SegmentedControl.Root
+        defaultValue={valueString}
+        onValueChange={(value) => onValueChange(value === 'yes')}
+      >
+        <SegmentedControl.List>
+          <SegmentedControl.Trigger
+            value={'yes'}
+            disabled={disabled}
+          >
+            Sim
+          </SegmentedControl.Trigger>
+          <SegmentedControl.Trigger
+            value={'no'}
+            disabled={disabled}
+          >
+            Não
+          </SegmentedControl.Trigger>
+        </SegmentedControl.List>
+      </SegmentedControl.Root>
     </div>
   );
 };
@@ -352,7 +378,7 @@ export const FormBuilder = function FormBuilder({
                 >
                   <div>
                     <div className="flex flex-col lg:flex-row lg:items-center">
-                      <div className="text-default text-sm font-semibold ltr:mr-2 rtl:ml-2">
+                      <div className="text-text-strong-950 text-label-sm ltr:mr-2 rtl:ml-2">
                         <FieldLabel field={field} />
                       </div>
                       <div className="flex items-center space-x-2">
@@ -383,7 +409,7 @@ export const FormBuilder = function FormBuilder({
                         )}
                       </div>
                     </div>
-                    <p className="text-subtle max-w-[280px] break-words pt-1 text-sm sm:max-w-[500px]">
+                    <p className="text-text-soft-400 text-paragraph-sm max-w-[280px] break-words pt-1 sm:max-w-[500px]">
                       {fieldType.label}
                     </p>
                   </div>
@@ -394,14 +420,14 @@ export const FormBuilder = function FormBuilder({
                         !disabled && (
                           // <Tooltip.Root>
                           //   <Tooltip.Trigger>
-                              <Switch.Root
-                                data-testid="toggle-field"
-                                disabled={isFieldEditableSystem}
-                                checked={!field.hidden}
-                                onCheckedChange={(checked) => {
-                                  update(index, {...field, hidden: !checked});
-                                }}
-                              />
+                          <Switch.Root
+                            data-testid="toggle-field"
+                            disabled={isFieldEditableSystem}
+                            checked={!field.hidden}
+                            onCheckedChange={(checked) => {
+                              update(index, {...field, hidden: !checked});
+                            }}
+                          />
                           //   </Tooltip.Trigger>
                           //   <Tooltip.Content size="small">
                           //     {t('show_on_booking_page')}
@@ -438,7 +464,7 @@ export const FormBuilder = function FormBuilder({
               );
             })}
           </ul>
-          {!disabled && (
+          {/* {!disabled && (
             <FancyButton.Root
               variant="neutral"
               data-testid="add-field"
@@ -447,8 +473,8 @@ export const FormBuilder = function FormBuilder({
             >
               <Button.Icon as={RiAddLine} />
               {addFieldLabel}
-            </FancyButton.Root>
-          )}
+            </FancyButton.Root> 
+          )} */}
         </div>
         {/* Move this Dialog in another component and it would take with it fieldForm */}
         {fieldDialog.isOpen && (
@@ -536,9 +562,9 @@ function Options({
   }
   return (
     <div className={className}>
-      <Label.Root>{label}</Label.Root>
+      <Label.Root className="mb-1">{label}</Label.Root>
       <div className="bg-muted rounded-md p-4">
-        <ul ref={animationRef}>
+        <ul ref={animationRef} className="space-y-1">
           {value?.map((option, index) => (
             <li key={index}>
               <div className="flex items-center">
@@ -612,7 +638,7 @@ const CheckboxFieldLabel = ({
   const [firstRender, setFirstRender] = useState(true);
   return (
     <div className="mt-6">
-      <Label.Root>{t('label')}</Label.Root>
+      <Label.Root className="mb-1">{t('label')}</Label.Root>
       <Editor
         getText={() => md.render(fieldForm.getValues('label') || '')}
         setText={(value: string) => {
@@ -668,18 +694,18 @@ function FieldEditDialog({
   return (
     <Dialog open={dialog.isOpen} onOpenChange={onOpenChange}>
       <DialogContent
-        className="max-h-none p-0"
         data-testid="edit-field-dialog"
         // forceOverlayWhenNoModal={true}
+        className="max-w-lg"
       >
         <Form id="form-builder" form={fieldForm} handleSubmit={handleSubmit}>
-          <div className="h-auto max-h-[85vh] overflow-auto px-8 pb-7 pt-8">
-            <DialogHeader
-              title={t('add_a_booking_question')}
-              description={t('booking_questions_description')}
-            />
-
-            <Label.Root>{t('input_type')}</Label.Root>
+          {/* <div className="h-auto max-h-[85vh] overflow-auto px-8 pb-7 pt-8"> */}
+          <DialogHeader
+            title={t('add_a_booking_question')}
+            description={t('booking_questions_description')}
+          />
+          <DialogBody>
+            <Label.Root className="mb-1">{t('input_type')}</Label.Root>
             <Select.Root
               defaultValue={fieldTypesConfigMap.text.value}
               // data-testid="test-field-type"
@@ -834,7 +860,7 @@ function FieldEditDialog({
                 />
               );
             })()}
-          </div>
+          </DialogBody>
 
           <DialogFooter className="relative rounded px-8">
             <DialogClose color="secondary">{t('cancel')}</DialogClose>
@@ -923,7 +949,8 @@ function FieldLabel({field}: {field: RhfFormField}) {
   if (!fieldTypeConfigVariants || !variantsConfig) {
     if (fieldsThatSupportLabelAsSafeHtml.includes(field.type)) {
       return (
-        <span
+        <label
+          className="text-text-strong-950 text-label-sm "
           dangerouslySetInnerHTML={{
             // Derive from field.label because label might change in b/w and field.labelAsSafeHtml will not be updated.
             __html:
@@ -933,7 +960,11 @@ function FieldLabel({field}: {field: RhfFormField}) {
         />
       );
     } else {
-      return <span>{field.label || t(field.defaultLabel || '')}</span>;
+      return (
+        <label className="text-text-strong-950 text-label-sm ">
+          {field.label || t(field.defaultLabel || '')}
+        </label>
+      );
     }
   }
   const variant = field.variant || defaultVariant;
@@ -945,7 +976,10 @@ function FieldLabel({field}: {field: RhfFormField}) {
   const label =
     variantsConfigVariants?.[variant as keyof typeof fieldTypeConfigVariants]
       ?.fields?.[0]?.label || '';
-  return <span>{t(label)}</span>;
+
+  return (
+    <label className="text-text-strong-950 text-label-sm ">{t(label)}</label>
+  );
 }
 
 function VariantSelector() {
@@ -994,7 +1028,7 @@ function VariantFields({
   const supportsVariantToggle = variantNames.length === 2;
   return (
     <>
-      {supportsVariantToggle ? (
+      {/* {supportsVariantToggle ? (
         <Tooltip.Root>
           <Tooltip.Trigger>
             <Label.Root>{variantToggleLabel}</Label.Root>
@@ -1015,9 +1049,9 @@ function VariantFields({
           </Tooltip.Trigger>
           <Tooltip.Content size="small">{t('Toggle Variant')}</Tooltip.Content>
         </Tooltip.Root>
-      ) : (
+      ) : ( */}
         <VariantSelector />
-      )}
+      {/* )} */}
 
       <InputField
         required
@@ -1066,10 +1100,15 @@ function VariantFields({
               )}
               <InputField
                 {...fieldForm.register(`${rhfVariantFieldPrefix}.label`)}
-                value={f.label || ''}
+                value={
+                  fieldForm.getValues('editable') === 'system'
+                    ? t(f.label || '')
+                    : f.label || ''
+                }
                 placeholder={t(appUiFieldConfig?.defaultLabel || '')}
                 containerClassName="mt-6"
                 label={t('label')}
+                disabled={fieldForm.getValues('editable') === 'system'}
               />
               <InputField
                 {...fieldForm.register(`${rhfVariantFieldPrefix}.placeholder`)}
