@@ -7,11 +7,20 @@
     "cancel": "Cancelar",
     "delete": "Excluir",
     "edit": "Editar",
+    "hidden": "Escondido",
     "create": "Criar",
     "search": "Pesquisar",
     "noResults": "Nenhum resultado encontrado",
     "required": "Obrigatório",
-    "optional": "Opcional"
+    "optional": "Opcional",
+    "phone_number": "Telefone",
+    "additional_guests": "+ Participantes Adicionais",
+    "email_address": "Endereço de e-mail",
+    "your_name": "Seu nome",
+    "add_a_booking_question": "Adicione uma pergunta",
+    "booking_questions_title": "Formulário da Reserva",
+    "show_on_booking_page": "Mostrar na página de agendamento",
+    "booking_questions_description": "Personalize as perguntas feitas na página de reservas"
   },
   "Error": {
     "description": "<p>Infelizmente encontramos um erro.</p><p>Você pode tentar <retry>recarregar a página</retry> que estava tentando visitar.</p>",

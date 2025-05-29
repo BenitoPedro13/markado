@@ -6,12 +6,21 @@
     "save": "Save",
     "cancel": "Cancel",
     "delete": "Delete",
+    "hidden": "Hidden",
     "edit": "Edit",
     "create": "Create",
     "search": "Search",
     "noResults": "No results found",
     "required": "Required",
-    "optional": "Optional"
+    "optional": "Optional",
+    "phone_number": "Phone number",
+    "additional_guests": "+ Additional guests",
+    "email_address": "Email address",
+    "your_name": "Your name",
+    "add_a_booking_question": "Add a question",
+    "booking_questions_title": "Booking Form",
+    "show_on_booking_page": "Show on booking page",
+    "booking_questions_description": "Customize the questions asked on the booking page"
   },
   "Error": {
     "description": "<p>Unfortunately we encountered an error.</p><p>You can try to <retry>reload the page</retry> you were trying to visit.</p>",
