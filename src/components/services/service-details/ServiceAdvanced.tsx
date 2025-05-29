@@ -61,7 +61,9 @@ export function RequiresConfirmationController({
     time: 30,
     unit: 'minutes' as UnitTypeLongPlural
   };
-  const formMethods = useFormContext<FormValues>();
+    const {
+      ServicesDetailsForm: formMethods
+    } = useServicesDetails();
 
   useEffect(() => {
     if (!requiresConfirmation) {
@@ -107,7 +109,7 @@ export function RequiresConfirmationController({
           control={formMethods.control}
           render={() => (
             <SettingsToggle
-              labelClassName="text-sm"
+              labelClassName="text-text-strong-950 font-medium text-label-md"
               toggleSwitchAtTheEnd={true}
               switchContainerClassName={classNames(
                 // "py-6 px-4 sm:px-6",
@@ -209,9 +211,12 @@ export function RequiresConfirmationController({
                             value="notice"
                           ></RadioGroup.Item>
                           <Label.Root className="text-text-sub-600 text-label-sm peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                            When booked with less than{' '}
-                            <div className="mx-2 inline-flex">
-                              <Input.Root>
+                            {t('when_booked_with_less_than')}{' '}
+                            <div className="mx-2 inline-flex items-center">
+                              <Input.Root
+                                // size="xsmall"
+                                className="!m-0 block w-16 h-5 rounded-r-none border-r-0 text-sm [appearance:textfield] focus:z-10 focus:border-r"
+                              >
                                 <Input.Input
                                   type="number"
                                   min={1}
@@ -231,7 +236,7 @@ export function RequiresConfirmationController({
                                       {shouldDirty: true}
                                     );
                                   }}
-                                  // className="border-default !m-0 block w-16 rounded-r-none border-r-0 text-sm [appearance:textfield] focus:z-10 focus:border-r"
+                                  className=" py-0 h-fit"
                                   defaultValue={
                                     metadata?.requiresConfirmationThreshold
                                       ?.time || 30
@@ -239,65 +244,68 @@ export function RequiresConfirmationController({
                                 />
                               </Input.Root>
 
-                              <label
+                              {/* <label
                                 className={classNames(
                                   // requiresConfirmationLockedProps.disabled
                                   false && 'cursor-not-allowed'
                                 )}
+                              > */}
+                              <Select.Root
+                                // options={options}
+                                // isSearchable={false}
+                                // isDisabled={
+                                //   requiresConfirmationLockedProps.disabled
+                                // }
+                                // isDisabled={false}
+                                // innerClassNames={{
+                                //   control: 'rounded-l-none bg-subtle'
+                                // }}
+                                size='xsmall'
+                                onValueChange={(opt: string) => {
+                                  setRequiresConfirmationSetup({
+                                    time:
+                                      requiresConfirmationSetup?.time ??
+                                      defaultRequiresConfirmationSetup.time,
+                                    unit: opt as UnitTypeLongPlural
+                                  });
+                                  formMethods.setValue(
+                                    'metadata.requiresConfirmationThreshold.unit',
+                                    opt as UnitTypeLongPlural,
+                                    {shouldDirty: true}
+                                  );
+                                }}
+                                defaultValue={defaultValue?.value ?? 'minutes'}
+                                // className=" "
                               >
-                                <Select.Root
-                                  // options={options}
-                                  // isSearchable={false}
-                                  // isDisabled={
-                                  //   requiresConfirmationLockedProps.disabled
-                                  // }
-                                  // isDisabled={false}
-                                  // innerClassNames={{
-                                  //   control: 'rounded-l-none bg-subtle'
-                                  // }}
-                                  onValueChange={(opt: string) => {
-                                    setRequiresConfirmationSetup({
-                                      time:
-                                        requiresConfirmationSetup?.time ??
-                                        defaultRequiresConfirmationSetup.time,
-                                      unit: opt as UnitTypeLongPlural
-                                    });
-                                    formMethods.setValue(
-                                      'metadata.requiresConfirmationThreshold.unit',
-                                      opt as UnitTypeLongPlural,
-                                      {shouldDirty: true}
-                                    );
-                                  }}
-                                  defaultValue={
-                                    defaultValue?.value ?? 'minutes'
-                                  }
+                                <Select.Trigger
+                                  className="flex w-[90px] sm:w-[100px] rounded-l-none"
+                                  // disabled=
+                                  id="notice"
                                 >
-                                  <Select.Trigger
-                                    // className="flex w-[90px] sm:w-[100px]"
-                                    // disabled=
-                                    id="notice"
-                                  >
-                                    <Select.Value placeholder="Selecione uma unidade" />
-                                  </Select.Trigger>
-                                  <Select.Content>
-                                    {options.map((opt) => (
-                                      <Select.Item
-                                        key={opt.value}
-                                        value={opt.value}
-                                      >
-                                        {opt.label}
-                                      </Select.Item>
-                                    ))}
-                                  </Select.Content>
-                                </Select.Root>
-                              </label>
+                                  <Select.Value
+                                    className=" "
+                                    placeholder="Selecione uma unidade"
+                                  />
+                                </Select.Trigger>
+                                <Select.Content>
+                                  {options.map((opt) => (
+                                    <Select.Item
+                                      key={opt.value}
+                                      value={opt.value}
+                                    >
+                                      {opt.label}
+                                    </Select.Item>
+                                  ))}
+                                </Select.Content>
+                              </Select.Root>
+                              {/* </label> */}
                             </div>{' '}
-                            notice
+                            {t('notice')}
                           </Label.Root>
                         </div>
 
                         <CheckboxField
-                          checked={requiresConfirmationWillBlockSlot}
+                          defaultChecked={requiresConfirmationWillBlockSlot}
                           // descriptionAsLabel
                           label={t(
                             'requires_confirmation_will_block_slot_description'
@@ -343,20 +351,26 @@ export default function ServiceAdvanced({slug}: Props) {
     getValues('requiresConfirmation')
   );
 
+  const [redirectUrlVisible, setRedirectUrlVisible] = useState(
+    !!getValues('successRedirectUrl')
+  );
+
+  const {t} = useLocale();
+
   return (
     <div
       //  onSubmit={handleSubmit}
       className="space-y-6 max-w-2xl"
     >
-      <div className="space-y-4">
-        <div className="flex flex-col">
+      {/* <div className="space-y-4"> */}
+      {/* <div className="flex flex-col">
           <div className="text-title-h6">Configurações Avançadas</div>
           <div className="text-paragraph-sm text-text-sub-600">
             Personalize as configurações avançadas do serviço
           </div>
-        </div>
-        <div className="border border-stroke-soft-200 rounded-lg ">
-          {/* <div className="p-4 flex items-center justify-between">
+        </div> */}
+      <div className="space-y-6">
+        {/* <div className="p-4 flex items-center justify-between">
             <div>
               <h3 className="font-medium">Necessita de Confirmação Manual</h3>
               <p className="text-paragraph-sm text-text-sub-600">
@@ -367,43 +381,126 @@ export default function ServiceAdvanced({slug}: Props) {
             </div>
             <Switch.Root />
           </div> */}
-          <RequiresConfirmationController
-            eventType={serviceDetails}
-            seatsEnabled={seatsEnabled}
-            metadata={getValues('metadata')}
-            requiresConfirmation={requiresConfirmation}
-            requiresConfirmationWillBlockSlot={getValues(
-              'requiresConfirmationWillBlockSlot'
-            )}
-            onRequiresConfirmation={setRequiresConfirmation}
-          />
+        <RequiresConfirmationController
+          eventType={serviceDetails}
+          seatsEnabled={seatsEnabled}
+          metadata={getValues('metadata')}
+          requiresConfirmation={requiresConfirmation}
+          requiresConfirmationWillBlockSlot={getValues(
+            'requiresConfirmationWillBlockSlot'
+          )}
+          onRequiresConfirmation={setRequiresConfirmation}
+        />
 
-          <Divider.Root />
-          <div className="p-4 flex items-center justify-between">
-            <div>
-              <h3 className="font-medium">Redirecionamento pós-reserva</h3>
-              <p className="text-paragraph-sm text-text-sub-600">
-                Defina uma URL específica para a qual o usuário será direcionado
-                logo após concluir uma reserva
-              </p>
-            </div>
-            <Switch.Root defaultChecked />
+        <Divider.Root />
+        {/* <div className="p-4 flex items-center justify-between">
+          <div>
+            <h3 className="font-medium">Redirecionamento pós-reserva</h3>
+            <p className="text-paragraph-sm text-text-sub-600">
+              Defina uma URL específica para a qual o usuário será direcionado
+              logo após concluir uma reserva
+            </p>
           </div>
-          <Divider.Root />
-          <div className="p-4 flex items-center justify-between">
-            <div>
-              <h3 className="font-medium">
-                Fixar Fuso Horário na Página de Reservas
-              </h3>
-              <p className="text-paragraph-sm text-text-sub-600">
-                Manter o fuso horário fixo na página de reservas, ideal para
-                eventos que exigem a presença física.
-              </p>
-            </div>
-            <Switch.Root defaultChecked />
+          <Switch.Root defaultChecked />
+        </div> */}
+        <Controller
+          name="successRedirectUrl"
+          render={({field: {value, onChange}}) => (
+            <>
+              <SettingsToggle
+                labelClassName="text-text-strong-950 font-medium text-label-md"
+                toggleSwitchAtTheEnd={true}
+                switchContainerClassName={classNames(
+                  'border-subtle rounded-lg',
+                  redirectUrlVisible && 'rounded-b-none'
+                )}
+                childrenClassName="lg:ml-0"
+                title={t('redirect_success_booking')}
+                data-testid="redirect-success-booking"
+                // {...successRedirectUrlLocked}
+                description={t('redirect_url_description')}
+                checked={redirectUrlVisible}
+                onCheckedChange={(e) => {
+                  setRedirectUrlVisible(e);
+                  onChange(e ? value : '');
+                }}
+              >
+                <div className="border-subtle border-t-0 pt-4">
+                  <TextField
+                    className="w-full"
+                    label={t('redirect_success_booking')}
+                    labelSrOnly
+                    // disabled={successRedirectUrlLocked.disabled}
+                    disabled={false}
+                    placeholder={t('external_redirect_url')}
+                    data-testid="external-redirect-url"
+                    required={redirectUrlVisible}
+                    type="text"
+                    {...register('successRedirectUrl')}
+                  />
+
+                  {/* <div className="mt-4">
+                    <Controller
+                      name="forwardParamsSuccessRedirect"
+                      render={({field: {value, onChange}}) => (
+                        <CheckboxField
+                          description={t('forward_params_redirect')}
+                          disabled={successRedirectUrlLocked.disabled}
+                          onChange={(e) => onChange(e)}
+                          checked={value}
+                        />
+                      )}
+                    />
+                  </div> */}
+                  <div
+                    className={classNames(
+                      'p-1 text-sm text-orange-600',
+                      getValues('successRedirectUrl')
+                        ? 'block'
+                        : 'hidden'
+                    )}
+                    data-testid="redirect-url-warning"
+                  >
+                    {t('redirect_url_warning')}
+                  </div>
+                </div>
+              </SettingsToggle>
+            </>
+          )}
+        />
+        <Divider.Root />
+        {/* <div className="p-4 flex items-center justify-between">
+          <div>
+            <h3 className="font-medium">
+              Fixar Fuso Horário na Página de Reservas
+            </h3>
+            <p className="text-paragraph-sm text-text-sub-600">
+              Manter o fuso horário fixo na página de reservas, ideal para
+              eventos que exigem a presença física.
+            </p>
           </div>
-          <Divider.Root />
-          {/* <div className="p-4 flex items-center justify-between">
+          <Switch.Root defaultChecked />
+        </div> */}
+        <Controller
+          name="lockTimeZoneToggleOnBookingPage"
+          render={({field: {value, onChange}}) => (
+            <SettingsToggle
+              labelClassName="text-text-strong-950 font-medium text-label-md"
+              toggleSwitchAtTheEnd={true}
+              // switchContainerClassName="border-subtle rounded-lg"
+              title={t('lock_timezone_toggle_on_booking_page')}
+              // {...lockTimeZoneToggleOnBookingPageLocked}
+              description={t(
+                'description_lock_timezone_toggle_on_booking_page'
+              )}
+              checked={value}
+              onCheckedChange={(e) => onChange(e)}
+              data-testid="lock-timezone-toggle"
+            />
+          )}
+        />
+        <Divider.Root />
+        {/* <div className="p-4 flex items-center justify-between">
             <div>
               <h3 className="font-medium">Diferenciação por Cor para Tipos de Serviço</h3>
               <p className="text-paragraph-sm text-text-sub-600">
@@ -412,8 +509,8 @@ export default function ServiceAdvanced({slug}: Props) {
             </div>
             <Switch.Root />
           </div> */}
-        </div>
       </div>
+      {/* </div> */}
     </div>
   );
 }
