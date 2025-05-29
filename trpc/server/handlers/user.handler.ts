@@ -8,6 +8,9 @@ import {Context} from '../context';
 import {ZUserInputSchema} from '../schemas/user.schema';
 import {serializeObject} from '@/lib/utils';
 
+
+export type Me = Awaited<ReturnType<typeof getMeByUserId>>;
+
 export async function getUserHandler(ctx: Context) {
   if (!ctx.session?.user) {
     throw new TRPCError({
