@@ -12,7 +12,7 @@ import {useTRPC} from '@/utils/trpc';
 import {AppRouter} from '~/trpc/server';
 import useMeQuery from '@/hooks/use-me-query';
 import { useSessionStore } from '@/providers/session-store-provider';
-import { Me } from '@/app/settings/page';
+import { Me } from '~/trpc/server/handlers/user.handler';
 import { usePathname } from 'next/navigation';
 
 const updateAvailabilityDetailsFormSchema = z.object({
