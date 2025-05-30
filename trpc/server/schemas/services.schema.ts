@@ -58,7 +58,8 @@ export const filterQuerySchemaStrict = z.object({
   teamIds: z.number().array().optional(),
   // A user can only filter by only his userId
   upIds: z.string().array().max(1).optional(),
-  schedulingTypes: z.nativeEnum(SchedulingType).array().optional()
+  schedulingTypes: z.nativeEnum(SchedulingType).array().optional(),
+  hidden: z.boolean().nullable()
 });
 
 export const ZEventTypeInputSchema = z
