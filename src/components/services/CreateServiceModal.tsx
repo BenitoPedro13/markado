@@ -18,7 +18,7 @@ import {createServiceHandler} from '~/trpc/server/handlers/services.handler';
 import {useNotification} from '@/hooks/use-notification';
 import {useLocale} from '@/hooks/use-locale';
 import slugify from '@/lib/slugify';
-
+import {useRouter} from 'next/navigation';
 type CreateServiceFormData = Omit<Service, 'status'>;
 
 const colorOptions = [
@@ -205,7 +205,7 @@ function StepOneFields({
 export default function CreateServiceModal() {
   const {notification} = useNotification();
   const {t} = useLocale('Services');
-
+  const router = useRouter();
   const {
     state: {
       isCreateServiceModalOpen: open,
@@ -289,21 +289,23 @@ export default function CreateServiceModal() {
             };
 
             try {
-              const serviceResult = await createServiceHandler({input});
+              const {eventType} = await createServiceHandler({input});
               onOpenChange(false);
               // handleBackStep();
               // console.log('serviceResult', serviceResult);
-              if (serviceResult) {
+              if (eventType) {
                 reset();
                 notification({
                   title: t('service_created_success'),
                   variant: 'stroke',
                   status: 'success'
                 });
+                router.push(`/services/${eventType.slug}`);
               }
             } catch (error) {
               console.log('error', error);
             }
+          }}
           }}
         >
           <Modal.Body>
