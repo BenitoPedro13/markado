@@ -132,75 +132,75 @@ function StepOneFields({
   );
 }
 
-function StepTwoFields({
-  register,
-  errors
-}: {
-  register: UseFormRegister<CreateServiceFormData>;
-  errors: Record<string, any>;
-}) {
-  return (
-    <div className="space-y-4">
-      <div className="flex gap-4 w-full">
-        <div className="space-y-2 w-full">
-          <label className="text-sm font-medium text-text-strong-950">
-            Duração (minutos)
-          </label>
-          <Input.Root className="w-full" hasError={!!errors.duration}>
-            <Input.Input
-              type="number"
-              placeholder="Digite a duração em minutos"
-              {...register('duration', {required: true, min: 1})}
-            />
-          </Input.Root>
-          {errors.duration && (
-            <Hint.Root className="text-error-base">
-              <Hint.Icon as={RiErrorWarningFill} className="text-error-base" />A
-              duração é obrigatória
-            </Hint.Root>
-          )}
-        </div>
+// function StepTwoFields({
+//   register,
+//   errors
+// }: {
+//   register: UseFormRegister<CreateServiceFormData>;
+//   errors: Record<string, any>;
+// }) {
+//   return (
+//     <div className="space-y-4">
+//       <div className="flex gap-4 w-full">
+//         <div className="space-y-2 w-full">
+//           <label className="text-sm font-medium text-text-strong-950">
+//             Duração (minutos)
+//           </label>
+//           <Input.Root className="w-full" hasError={!!errors.duration}>
+//             <Input.Input
+//               type="number"
+//               placeholder="Digite a duração em minutos"
+//               {...register('duration', {required: true, min: 1})}
+//             />
+//           </Input.Root>
+//           {errors.duration && (
+//             <Hint.Root className="text-error-base">
+//               <Hint.Icon as={RiErrorWarningFill} className="text-error-base" />A
+//               duração é obrigatória
+//             </Hint.Root>
+//           )}
+//         </div>
 
-        <div className="space-y-2 w-full">
-          <label className="text-sm font-medium text-text-strong-950">
-            Preço (R$)
-          </label>
-          <Input.Root className="w-full" hasError={!!errors.price}>
-            <Input.Input
-              type="number"
-              placeholder="Digite o preço"
-              {...register('price', {required: true, min: 0})}
-            />
-          </Input.Root>
-          {errors.price && (
-            <Hint.Root className="text-error-base">
-              <Hint.Icon as={RiErrorWarningFill} className="text-error-base" />O
-              preço é obrigatório
-            </Hint.Root>
-          )}
-        </div>
-      </div>
+//         <div className="space-y-2 w-full">
+//           <label className="text-sm font-medium text-text-strong-950">
+//             Preço (R$)
+//           </label>
+//           <Input.Root className="w-full" hasError={!!errors.price}>
+//             <Input.Input
+//               type="number"
+//               placeholder="Digite o preço"
+//               {...register('price', {required: true, min: 0})}
+//             />
+//           </Input.Root>
+//           {errors.price && (
+//             <Hint.Root className="text-error-base">
+//               <Hint.Icon as={RiErrorWarningFill} className="text-error-base" />O
+//               preço é obrigatório
+//             </Hint.Root>
+//           )}
+//         </div>
+//       </div>
 
-      <div className="space-y-2">
-        <label className="text-sm font-medium text-text-strong-950">
-          Local
-        </label>
-        <Input.Root hasError={!!errors.location}>
-          <Input.Input
-            placeholder="Digite o local do serviço"
-            {...register('location', {required: true})}
-          />
-        </Input.Root>
-        {errors.location && (
-          <Hint.Root className="text-error-base">
-            <Hint.Icon as={RiErrorWarningFill} className="text-error-base" />O
-            local é obrigatório
-          </Hint.Root>
-        )}
-      </div>
-    </div>
-  );
-}
+//       <div className="space-y-2">
+//         <label className="text-sm font-medium text-text-strong-950">
+//           Local
+//         </label>
+//         <Input.Root hasError={!!errors.location}>
+//           <Input.Input
+//             placeholder="Digite o local do serviço"
+//             {...register('location', {required: true})}
+//           />
+//         </Input.Root>
+//         {errors.location && (
+//           <Hint.Root className="text-error-base">
+//             <Hint.Icon as={RiErrorWarningFill} className="text-error-base" />O
+//             local é obrigatório
+//           </Hint.Root>
+//         )}
+//       </div>
+//     </div>
+//   );
+// }
 
 export default function CreateServiceModal() {
   const {notification} = useNotification();
@@ -213,7 +213,7 @@ export default function CreateServiceModal() {
     }
   } = useServices();
 
-  const [step, setStep] = useState(1);
+  // const [step, setStep] = useState(1);
 
   const {
     register,
@@ -254,17 +254,14 @@ export default function CreateServiceModal() {
   };
 
   const handleNextStep = () => {
-    if (step === 1) {
+    // if (step === 1) {
       const isValid = validateFirstStep();
-      if (isValid) {
-        setStep(2);
-      }
-    }
+    // }
   };
 
-  const handleBackStep = () => {
-    setStep(1);
-  };
+  // const handleBackStep = () => {
+  //   setStep(1);
+  // };
 
   return (
     <Modal.Root open={open} onOpenChange={onOpenChange}>
@@ -275,10 +272,10 @@ export default function CreateServiceModal() {
 
         <form
           action={async () => {
-            if (step < 2) {
-              handleNextStep();
-              return;
-            }
+            // if (step < 2) {
+            //   handleNextStep();
+            //   return;
+            // }
 
             const formData = getValues();
 
@@ -294,8 +291,8 @@ export default function CreateServiceModal() {
             try {
               const serviceResult = await createServiceHandler({input});
               onOpenChange(false);
-              setStep(1);
-              console.log('serviceResult', serviceResult);
+              // handleBackStep();
+              // console.log('serviceResult', serviceResult);
               if (serviceResult) {
                 reset();
                 notification({
@@ -310,56 +307,39 @@ export default function CreateServiceModal() {
           }}
         >
           <Modal.Body>
-            {step === 1 ? (
-              <StepOneFields
-                register={register}
-                errors={errors}
-                setValue={setValue}
-              />
-            ) : (
-              <StepTwoFields register={register} errors={errors} />
-            )}
+            {/* {step === 1 ? ( */}
+            <StepOneFields
+              register={register}
+              errors={errors}
+              setValue={setValue}
+            />
+            {/* // ) : (
+            //   <StepTwoFields register={register} errors={errors} />
+            // )} */}
           </Modal.Body>
 
           <Modal.Footer>
-            {step === 1 ? (
-              <>
-                <Modal.Close asChild>
-                  <Button.Root
-                    type="reset"
-                    variant="neutral"
-                    mode="stroke"
-                    size="small"
-                  >
-                    Cancelar
-                  </Button.Root>
-                </Modal.Close>
+            <>
+              <Modal.Close asChild>
                 <Button.Root
-                  type="button"
-                  variant="neutral"
-                  size="small"
-                  onClick={handleNextStep}
-                  disabled={!validateFirstStep()}
-                >
-                  Próximo
-                </Button.Root>
-              </>
-            ) : (
-              <>
-                <Button.Root
-                  type="button"
+                  type="reset"
                   variant="neutral"
                   mode="stroke"
                   size="small"
-                  onClick={handleBackStep}
                 >
-                  Voltar
+                  Cancelar
                 </Button.Root>
-                <Button.Root variant="neutral" size="small" type="submit">
-                  Criar Serviço
-                </Button.Root>
-              </>
-            )}
+              </Modal.Close>
+              <Button.Root
+                onClick={handleNextStep}
+                disabled={!validateFirstStep()}
+                variant="neutral"
+                size="small"
+                type="submit"
+              >
+                Criar Serviço
+              </Button.Root>
+            </>
           </Modal.Footer>
         </form>
       </Modal.Content>
