@@ -5,7 +5,6 @@ import {
   useContext,
   ReactNode,
   useState,
-  useEffect,
   useMemo,
   useOptimistic
 } from 'react';
@@ -21,8 +20,6 @@ export enum FilterType {
 }
 
 type ServicesContextType = {
-  // filteredServices: TInitialServices;
-  // updateServiceStatus: (slug: string, status: 'active' | 'disabled') => void;
   currentFilter: FilterType;
   setFilter: (filter: FilterType) => void;
   setSearch: (search: string) => void;
@@ -69,30 +66,6 @@ export function ServicesProvider({
     }
   );
 
-  // useEffect(() => {
-  //   let filtered = services;
-  //   if (searchValue) {
-  //     filtered = filtered.filter((service) =>
-  //       service.title.toLowerCase().includes(searchValue.toLowerCase())
-  //     );
-  //   }
-  //   if (currentFilter === FilterType.ALL) {
-  //     filtered = filtered
-  //   } else if (currentFilter === FilterType.DISABLED) {
-  //     filtered = filtered.filter(service => service.hidden === true)
-  //   } else if (currentFilter === FilterType.ACTIVE) {
-  //     filtered = filtered.filter((service) => service.hidden === false);
-  //   }
-  //   setFilteredServices(filtered);
-  // }, [currentFilter, services]);
-
-  // const updateServiceStatus = (slug: string, status: 'active' | 'disabled') => {
-  //   setServices((prevServices) =>
-  //     prevServices.map((service) =>
-  //       service.slug === slug ? {...service, status} : service
-  //     )
-  //   );
-  // };
 
   // Update filter in URL
   const setFilter = (filter: FilterType) => {
