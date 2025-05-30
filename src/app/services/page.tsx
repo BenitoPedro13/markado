@@ -6,18 +6,16 @@ import {getEventTypesFromGroup} from '~/trpc/server/handlers/services.handler';
 import {redirect} from 'next/navigation';
 import {auth} from '@/auth';
 import ServicesListPage from '@/modules/services/ServicesListPage';
-import { getMeByUserId } from '~/trpc/server/handlers/user.handler';
-
+import {getMeByUserId} from '~/trpc/server/handlers/user.handler';
+import {FilterType} from '@/contexts/services/ServicesContext';
 export type TInitialServices = Awaited<
   ReturnType<typeof getEventTypesFromGroup>
 >['eventTypes'];
 
 /** Services page of the website. */
-export default async function ServicesPage(
-  props: {
-    searchParams?: Promise<{filter?: string; search?: string}>;
-  }
-) {
+export default async function ServicesPage(props: {
+  searchParams?: Promise<{filter?: string; search?: string}>;
+}) {
   const searchParams = await props.searchParams;
   const session = await auth();
 
@@ -31,12 +29,37 @@ export default async function ServicesPage(
   const filter = searchParams?.filter;
   const search = searchParams?.search;
 
+
+  const getHiddenFilterInputValue = (filter: string) => {
+    let hidden = null;
+
+    switch (filter) {
+      case 'DISABLED':
+        hidden = true;
+        break;
+      case 'ACTIVE':
+        hidden = false;
+        break;
+      case 'ALL':
+        hidden = null;
+        break;
+
+      default:
+        hidden = null;
+        break;
+    }
+
+    return hidden;
+  };
+
   // Map filter to your schema if needed
   const filters = filter
     ? {
-        /* ...map filter string to object... */
+        hidden: getHiddenFilterInputValue(filter)
       }
-    : undefined;
+    : {
+        hidden: null
+      };
 
   const input = {
     group: {teamId: null, parentId: null},
