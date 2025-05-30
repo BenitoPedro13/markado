@@ -346,7 +346,7 @@ const fetchEventTypesBatch = async (
             ...(searchQuery
               ? {title: {contains: searchQuery, mode: 'insensitive'}}
               : {}),
-            ...(filters.hidden !== null 
+            ...(filters && filters.hidden !== null 
               ? {hidden: filters.hidden} 
               : {})
           },
