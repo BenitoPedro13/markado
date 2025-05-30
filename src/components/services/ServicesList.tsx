@@ -21,7 +21,7 @@ export default function ServicesList({initialAllServices}: ServicesListProps) {
               slug={service.slug}
               duration={service.length}
               price={service.price}
-              status={service.hidden ? 'disabled' : 'active'}
+              hidden={service.hidden}
               badgeColor={service.badgeColor}
             />
             {idx !== initialAllServices.length - 1 && <Divider.Root />}

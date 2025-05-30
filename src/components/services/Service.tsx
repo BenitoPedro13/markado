@@ -24,7 +24,8 @@ import {useNotification} from '@/hooks/use-notification';
 import {useLocale} from '@/hooks/use-locale';
 import {
   duplicateHandler,
-  submitDeleteService
+  submitDeleteService,
+  changeServiceHiddenStatus
 } from '~/trpc/server/handlers/services.handler';
 
 import {ServiceBadgeColor} from '~/prisma/enums';
@@ -38,11 +39,10 @@ export type ServicesProps = {
   slug: string;
   duration: number;
   price: number;
-  status: 'active' | 'disabled';
+  hidden: boolean;
   description?: string;
   location?: string;
   badgeColor: ServiceBadgeColor;
-  // username: string;
 };
 
 function Service({
@@ -51,13 +51,12 @@ function Service({
   slug,
   duration,
   price,
-  status,
+  hidden,
   badgeColor
-  // username
 }: ServicesProps) {
   const {notification} = useNotification();
   // const {updateServiceStatus} = useServices();
-  const [isEnabled, setIsEnabled] = useState(status === 'active');
+  // const [isEnabled, setIsEnabled] = useState(status);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const router = useRouter();
   const {
@@ -65,10 +64,6 @@ function Service({
   } = useServices();
 
   const {t} = useLocale('Services');
-
-  useEffect(() => {
-    setIsEnabled(status === 'active');
-  }, [status]);
 
   // const handleSwitchChange = () => {
   //   const newStatus = !isEnabled ? 'active' : 'disabled';
@@ -139,11 +134,38 @@ function Service({
         {/* Trailing */}
         <div
           className="flex gap-2 items-center"
-          onClick={(e) => e.stopPropagation()}
         >
           <Switch.Root
-            checked={isEnabled}
-            // onCheckedChange={handleSwitchChange}
+            defaultChecked={!hidden}
+            onCheckedChange={async (checked) => {
+              try {
+                const {id: serviceId} = await changeServiceHiddenStatus({
+                  input: {id, hidden: !checked}
+                });
+
+                if (!serviceId) {
+                  throw new Error(
+                    "Error when trying to update service's hidden status"
+                  );
+                }
+
+                notification({
+                  title: 'Status do serviço atualizado!',
+                  variant: 'stroke',
+                  status: 'success'
+                });
+              } catch (error) {
+                console.log(
+                  'changeServiceHiddenStatus: services list hidden switch error:',
+                  error
+                );
+                notification({
+                  title: 'Erro ao atualizar status do serviço',
+                  variant: 'stroke',
+                  status: 'error'
+                });
+              }
+            }}
           />
           <ButtonGroup.Root>
             <Tooltip.Root>
