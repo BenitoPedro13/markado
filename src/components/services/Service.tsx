@@ -65,18 +65,6 @@ function Service({
 
   const {t} = useLocale('Services');
 
-  // const handleSwitchChange = () => {
-  //   const newStatus = !isEnabled ? 'active' : 'disabled';
-  //   setIsEnabled(!isEnabled);
-  //   updateServiceStatus(slug, newStatus);
-  // };
-
-  // const handleDeleteService = () => {
-  //   // Implementar a lógica de exclusão aqui
-  //   console.log('Deletando serviço:', slug);
-  //   setIsDeleteModalOpen(false);
-  // };
-
   // Mapeia as cores do tema para as cores aceitas pelo Badge
   const getBadgeColor = () => {
     const colorMap = {
@@ -217,7 +205,9 @@ function Service({
                   <Dropdown.ItemIcon as={RiFileCopyLine} />
                   Duplicar serviço
                 </Dropdown.Item>
-                <Dropdown.Item>
+                <Dropdown.Item onClick={() => {
+                  router.push(`/services/${slug}`)
+                }}>
                   <Dropdown.ItemIcon as={RiPencilLine} />
                   Editar serviço
                 </Dropdown.Item>
