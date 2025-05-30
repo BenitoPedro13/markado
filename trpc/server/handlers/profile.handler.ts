@@ -5,7 +5,7 @@ import {Context} from '../context';
 import {ZUpdateProfileInputSchema} from '../schemas/profile.schema';
 import {auth} from '@/auth';
 import {FormActionState} from '@/types/formTypes';
-import { revalidatePath } from 'next/cache';
+import {revalidatePath} from 'next/cache';
 
 export async function updateProfileHandler(
   ctx: Context,
@@ -73,38 +73,47 @@ export async function updateProfileHandler(
 }
 
 export async function updateProfileAction(
-    previousState: FormActionState,
-    profileFormData: FormData
-  ) {
-    'use server';
-    const validatedForm = ZUpdateProfileInputSchema.safeParse({
-      name: profileFormData.get('name')?.toString(),
-      username: profileFormData.get('username')?.toString(),
-      email: profileFormData.get('email')?.toString(),
-      image: profileFormData.get('image')?.toString(),
-      biography: profileFormData.get('biography')?.toString()
-    });
+  previousState: FormActionState,
+  profileFormData: FormData
+) {
+  'use server';
 
-    if (!validatedForm.success) {
-      console.error('Validation failed:', validatedForm.error);
-      return {
-        errors: validatedForm.error.flatten().fieldErrors,
-        success: false
-      };
-    }
+  console.log(
+    '\n\nReceived profile form data:',
+    Object.fromEntries(profileFormData.entries())
+  );
 
-    console.log('Validated form data:', validatedForm.data);
+  const validatedForm = ZUpdateProfileInputSchema.safeParse({
+    name: profileFormData.get('name')?.toString(),
+    username: profileFormData.get('username')?.toString(),
+    email: profileFormData.get('email')?.toString(),
+    image:
+      profileFormData.get('image')?.toString() !== ''
+        ? profileFormData.get('image')?.toString()
+        : undefined,
+    biography: profileFormData.get('biography')?.toString()
+  });
 
-    try {
-      const result = await updateProfileSettingsHandler(validatedForm.data);
-      console.log('Profile updated successfully:', result);
-      revalidatePath('/settings/profile');
-      return {success: true};
-    } catch (error) {
-      console.error('Error updating profile:', error);
-      return {errors: {form: ['Erro ao atualizar perfil']}, success: false};
-    }
+  if (!validatedForm.success) {
+    console.error('Validation failed:', validatedForm.error);
+    return {
+      errors: validatedForm.error.flatten().fieldErrors,
+      success: false
+    };
   }
+
+  console.log('Validated form data:', validatedForm.data);
+
+  try {
+    const result = await updateProfileSettingsHandler(validatedForm.data);
+    console.log('Profile updated successfully:', result);
+    revalidatePath('/settings/profile');
+    return {success: true};
+  } catch (error) {
+    console.error('Error updating profile:', error);
+    return {errors: {form: ['Erro ao atualizar perfil']}, success: false};
+  }
+}
 
 export async function updateProfileSettingsHandler(
   input: typeof ZUpdateProfileInputSchema._type
