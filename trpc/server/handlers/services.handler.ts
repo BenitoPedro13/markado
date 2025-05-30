@@ -345,6 +345,9 @@ const fetchEventTypesBatch = async (
             schedulingType: null,
             ...(searchQuery
               ? {title: {contains: searchQuery, mode: 'insensitive'}}
+              : {}),
+            ...(filters.hidden !== null 
+              ? {hidden: filters.hidden} 
               : {})
           },
           orderBy: [
