@@ -11,7 +11,7 @@ import {
 import {useRouter, useSearchParams} from 'next/navigation';
 
 import {TInitialServices} from '@/app/services/page';
-import { Me } from '~/trpc/server/handlers/user.handler';
+import {Me} from '~/trpc/server/handlers/user.handler';
 
 export enum FilterType {
   ALL = 'ALL',
@@ -66,7 +66,6 @@ export function ServicesProvider({
     }
   );
 
-
   // Update filter in URL
   const setFilter = (filter: FilterType) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -89,12 +88,7 @@ export function ServicesProvider({
     router.replace(`?${params.toString()}`);
   };
 
-  const value = useMemo<
-    ServicesContextType & {
-      setSearch: (search: string) => void;
-      searchValue: string;
-    }
-  >(
+  const value = useMemo<ServicesContextType>(
     () => ({
       // filteredServices,
       // updateServiceStatus,
@@ -113,15 +107,15 @@ export function ServicesProvider({
       }
     }),
     [
-      // filteredServices,
-      // updateServiceStatus,
-      // deleteService,
-      // createService,
       currentFilter,
       setFilter,
       isCreateServiceModalOpen,
+      setIsCreateServiceModalOpen,
       setSearch,
-      searchValue
+      searchValue,
+      optimisticServicesList,
+      addOptimisticServicesList,
+      initialMe
     ]
   );
 
