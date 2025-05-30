@@ -973,7 +973,7 @@ export const updateServiceHandler = async ({input}: UpdateOptions) => {
   let updatedEventType: Prisma.EventTypeGetPayload<{
     select: typeof updatedEventTypeSelect;
   }>;
-  
+
   try {
     updatedEventType = await prisma.eventType.update({
       where: {id},
@@ -1029,6 +1029,58 @@ export const updateServiceHandler = async ({input}: UpdateOptions) => {
 };
 
 // Delete
+
+type ChangeServiceHiddenStatusOptions = {
+  input: {id: number; hidden: boolean};
+};
+export const changeServiceHiddenStatus = async ({
+  input: {id, hidden}
+}: ChangeServiceHiddenStatusOptions) => {
+  const session = await auth();
+
+  if (!session) {
+    throw new TRPCError({
+      code: 'UNAUTHORIZED',
+      message: 'changeServiceHiddenStatus: Could not get the user session'
+    });
+  }
+
+  if (!session.user) {
+    throw new TRPCError({
+      code: 'UNAUTHORIZED',
+      message: 'changeServiceHiddenStatus: Not authenticated'
+    });
+  }
+
+  const existingService = await prisma.eventType.findFirst({
+    where: {
+      id,
+      userId: session.user.id
+    }
+  });
+
+  if (!existingService) {
+    throw new Error(
+      "Service not found or you don't have permission to edit it"
+    );
+  }
+
+  console.log(`Updating Service for user ${session.user.id}:`, id);
+
+  await prisma.eventType.update({
+    where: {
+      id,
+      userId: session.user.id
+    },
+    data: {
+      id,
+      hidden
+    }
+  });
+  revalidatePath('/services'); // revalidate the list page
+
+  return {id};
+};
 
 export const deleteService = async (input: TDeleteInputSchema) => {
   const session = await auth();
