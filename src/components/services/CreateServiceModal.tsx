@@ -306,7 +306,6 @@ export default function CreateServiceModal() {
               console.log('error', error);
             }
           }}
-          }}
         >
           <Modal.Body>
             {/* {step === 1 ? ( */}
