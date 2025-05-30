@@ -39,18 +39,18 @@ export default function ServiceForm({slug}: Props) {
         addFieldLabel={t('add_a_booking_question')}
         formProp="bookingFields"
         // {...shouldLockDisableProps('bookingFields')}
-        dataStore={{
-          options: {
-            locations: {
-              // FormBuilder doesn't handle plural for non-english languages. So, use english(Location) only. This is similar to 'Workflow'
-              source: {label: 'Location'},
-              value: getLocationsOptionsForSelect(
-                formMethods.getValues('locations') ?? [],
-                t
-              )
-            }
-          }
-        }}
+        // dataStore={{
+        //   options: {
+        //     locations: {
+        //       // FormBuilder doesn't handle plural for non-english languages. So, use english(Location) only. This is similar to 'Workflow'
+        //       source: {label: 'Location'},
+        //       value: getLocationsOptionsForSelect(
+        //         formMethods.getValues('locations') ?? [],
+        //         t
+        //       )
+        //     }
+        //   }
+        // }}
         disabled={false}
         LockedIcon={false}
         shouldConsiderRequired={(field: BookingField) => {
