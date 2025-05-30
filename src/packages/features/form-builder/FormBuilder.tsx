@@ -221,7 +221,7 @@ export const FormBuilder = function FormBuilder({
   formProp,
   disabled = false,
   LockedIcon,
-  dataStore,
+  // dataStore,
   shouldConsiderRequired
 }: {
   formProp: string;
@@ -233,15 +233,15 @@ export const FormBuilder = function FormBuilder({
   /**
    * A readonly dataStore that is used to lookup the options for the fields. It works in conjunction with the field.getOptionAt property which acts as the key in options
    */
-  dataStore: {
-    options: Record<
-      string,
-      {
-        source: {label: string};
-        value: {label: string; value: string; inputPlaceholder?: string}[];
-      }
-    >;
-  };
+  // dataStore: {
+  //   options: Record<
+  //     string,
+  //     {
+  //       source: {label: string};
+  //       value: {label: string; value: string; inputPlaceholder?: string}[];
+  //     }
+  //   >;
+  // };
   /**
    * This is kind of a hack to allow certain fields to be just shown as required when they might not be required in a strict sense
    * e.g. Location field has a default value at backend so API can send no location but formBuilder in UI doesn't allow it.
@@ -305,21 +305,21 @@ export const FormBuilder = function FormBuilder({
                 ? shouldConsiderRequired(field)
                 : field.required;
               if (!options && field.getOptionsAt) {
-                const {
-                  source: {label: sourceLabel},
-                  value
-                } =
-                  dataStore.options[
-                    field.getOptionsAt as keyof typeof dataStore
-                  ] ?? [];
-                options = value;
-                options.forEach((option) => {
-                  sources.push({
-                    id: option.value,
-                    label: sourceLabel,
-                    type: 'system'
-                  });
-                });
+                // const {
+                //   source: {label: sourceLabel},
+                //   value
+                // } =
+                //   dataStore.options[
+                //     field.getOptionsAt as keyof typeof dataStore
+                //   ] ?? [];
+                // options = value;
+                // options.forEach((option) => {
+                //   sources.push({
+                //     id: option.value,
+                //     label: sourceLabel,
+                //     type: 'system'
+                //   });
+                // });
               }
 
               if (fieldsThatSupportLabelAsSafeHtml.includes(field.type)) {
