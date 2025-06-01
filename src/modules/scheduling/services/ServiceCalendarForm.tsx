@@ -241,7 +241,7 @@ const ServiceCalendarForm = ({
           </CalendarSectionItem>
           <CalendarSectionItem>
             <RiTimeLine size={20} color="var(--text-sub-600)" />
-            {parseServiceDuration(service.duration)}
+            {parseServiceDuration(service.length)}
           </CalendarSectionItem>
           <CalendarSectionItem>
             <RiTicketLine size={20} color="var(--text-sub-600)" />
