@@ -33,7 +33,7 @@ type RawEventType = BaseEventType & {
 const getEventTypesWithHiddenFromDB = async (userId: string) => {
   const eventTypes = await prisma.$queryRaw<RawEventType[]>`
     SELECT data."id", data."title", data."description", data."length", data."schedulingType"::text,
-      data."recurringEvent", data."slug", data."hidden", data."price", data."currency",
+      data."recurringEvent", data."badgeColor", data."slug", data."hidden", data."price", data."currency",
       data."lockTimeZoneToggleOnBookingPage", data."requiresConfirmation", data."requiresBookerEmailVerification",
       data."metadata"
       FROM (
