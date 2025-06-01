@@ -16,7 +16,8 @@ import {getUsernameList} from '@/packages/lib/defaultEvents';
 import {markdownToSafeHTML} from '@/packages/lib/markdownToSafeHTML';
 import {stripMarkdown} from '@/packages/lib/stripMarkdown';
 import {getEventTypesPublic} from '@/packages/event-types/getEventTypesPublic';
-
+import {redirect} from 'next/navigation';
+import {notFound} from 'next/navigation';
 const SchedulingPage = async (props: {params: Promise<{username: string}>}) => {
   const params = await props.params;
   // 5 second timer
@@ -95,6 +96,11 @@ const SchedulingPage = async (props: {params: Promise<{username: string}>}) => {
   //   } as const;
   // }
 
+  // Check if user exists
+  if (!usersInOrgContext.length) {
+    notFound();
+  }
+
   const [user] = usersInOrgContext; //to be used when dealing with single user, not dynamic group
 
   const profile = {
@@ -131,13 +137,7 @@ const SchedulingPage = async (props: {params: Promise<{username: string}>}) => {
     // const {query} = context;
     // const urlQuery = new URLSearchParams(encode(query));
 
-    return {
-      redirect: {
-        permanent: false,
-        destination: `${urlDestination}`
-        // destination: `${urlDestination}?${urlQuery}`
-      }
-    };
+    redirect(urlDestination);
   }
 
   const safeBio = markdownToSafeHTML(user.biography) || '';
