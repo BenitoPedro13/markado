@@ -1,0 +1,81 @@
+import type {Prisma} from '~/prisma/app/generated/prisma/client';
+import {prisma} from '@/lib/prisma';
+import type {baseEventTypeSelect} from '~/prisma/selects';
+import {EventTypeMetaDataSchema} from '~/prisma/zod-utils';
+import { markdownToSafeHTML } from '../lib/markdownToSafeHTML';
+
+// import {markdownToSafeHTML} from '../markdownToSafeHTML';
+
+// const log = logger.getSubLogger({prefix: ['getEventTypesPublic']});
+
+export type EventTypesPublic = Awaited<ReturnType<typeof getEventTypesPublic>>;
+
+export async function getEventTypesPublic(userId: string) {
+  const eventTypesWithHidden = await getEventTypesWithHiddenFromDB(userId);
+
+  const eventTypesRaw = eventTypesWithHidden.filter((evt) => !evt.hidden);
+
+  return eventTypesRaw.map((eventType) => ({
+    ...eventType,
+    metadata: EventTypeMetaDataSchema.parse(eventType.metadata || {}),
+    descriptionAsSafeHTML: markdownToSafeHTML(eventType.description)
+  }));
+}
+
+type BaseEventType = Prisma.EventTypeGetPayload<{
+  select: typeof baseEventTypeSelect;
+}>;
+
+type RawEventType = BaseEventType & {
+  metadata: Record<string, any> | null;
+};
+
+const getEventTypesWithHiddenFromDB = async (userId: string) => {
+  const eventTypes = await prisma.$queryRaw<RawEventType[]>`
+    SELECT data."id", data."title", data."description", data."length", data."schedulingType"::text,
+      data."recurringEvent", data."slug", data."hidden", data."price", data."currency",
+      data."lockTimeZoneToggleOnBookingPage", data."requiresConfirmation", data."requiresBookerEmailVerification",
+      data."metadata"
+      FROM (
+        SELECT "EventType"."id", "EventType"."title", "EventType"."description",
+          "EventType"."position", "EventType"."length", "EventType"."schedulingType"::text,
+          "EventType"."recurringEvent","EventType"."badgeColor", "EventType"."slug", "EventType"."hidden",
+          "EventType"."price", "EventType"."currency",
+          "EventType"."lockTimeZoneToggleOnBookingPage", "EventType"."requiresConfirmation",
+          "EventType"."requiresBookerEmailVerification", "EventType"."metadata"
+        FROM "EventType"
+        WHERE "EventType"."teamId" IS NULL AND "EventType"."userId" = ${userId}
+        UNION
+        SELECT "EventType"."id", "EventType"."title", "EventType"."description",
+        "EventType"."position", "EventType"."length", "EventType"."schedulingType"::text,
+        "EventType"."recurringEvent","EventType"."badgeColor", "EventType"."slug", "EventType"."hidden",
+        "EventType"."price", "EventType"."currency",
+        "EventType"."lockTimeZoneToggleOnBookingPage", "EventType"."requiresConfirmation",
+        "EventType"."requiresBookerEmailVerification", "EventType"."metadata"
+        FROM "EventType"
+        WHERE "EventType"."teamId" IS NULL
+        AND "EventType"."id" IN (
+          SELECT "uet1"."A" FROM "_user_eventtype" AS "uet1"
+          INNER JOIN "users" AS "u1" ON "u1"."id" = "uet1"."B"
+          WHERE "u1"."id" = ${userId} AND "uet1"."A" IS NOT NULL
+      )
+    ) data
+    ORDER BY data."position" DESC, data."id" ASC`;
+
+  // map and filter metadata, exclude eventType entirely when faulty metadata is found.
+  // report error to exception so we don't lose the error.
+  return eventTypes.reduce<typeof eventTypes>((eventTypes, eventType) => {
+    const parsedMetadata = EventTypeMetaDataSchema.safeParse(
+      eventType.metadata
+    );
+    if (!parsedMetadata.success) {
+      console.error(parsedMetadata.error);
+      return eventTypes;
+    }
+    eventTypes.push({
+      ...eventType,
+      metadata: parsedMetadata.data
+    });
+    return eventTypes;
+  }, []);
+};
