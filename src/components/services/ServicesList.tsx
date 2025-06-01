@@ -19,7 +19,7 @@ export default function ServicesList({initialAllServices}: ServicesListProps) {
               id={service.id}
               title={service.title}
               slug={service.slug}
-              duration={service.length}
+              length={service.length}
               price={service.price}
               hidden={service.hidden}
               badgeColor={service.badgeColor}

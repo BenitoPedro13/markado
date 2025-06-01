@@ -37,7 +37,7 @@ export type ServicesProps = {
   id: number;
   title: string;
   slug: string;
-  duration: number;
+  length: number;
   price: number;
   hidden: boolean;
   description?: string;
@@ -49,7 +49,7 @@ function Service({
   id,
   title,
   slug,
-  duration,
+  length,
   price,
   hidden,
   badgeColor
@@ -93,7 +93,7 @@ function Service({
 
   return (
     <>
-      <div className="p-4 flex hover:bg-bg-weak-50 transition-colors duration-200">
+      <div className="p-4 flex hover:bg-bg-weak-50 transition-colors length-200">
         {/* Leading */}
         <Link href={`services/${slug}`} className="w-full cursor-pointer">
           <div className="w-full flex flex-col gap-2">
@@ -108,9 +108,9 @@ function Service({
             <div className="flex gap-2 items-center">
               <Badge.Root variant="light" color={getBadgeColor()} size="medium">
                 <Badge.Icon as={RiTimeLine} />
-                {duration > 60
-                  ? `${Math.floor(duration / 60)}h ${duration % 60}m`
-                  : `${duration}m`}
+                {length > 60
+                  ? `${Math.floor(length / 60)}h ${length % 60}m`
+                  : `${length}m`}
               </Badge.Root>
               <span className="text-paragraph-md text-text-strong-950">
                 R$ {price}
@@ -120,9 +120,7 @@ function Service({
         </Link>
 
         {/* Trailing */}
-        <div
-          className="flex gap-2 items-center"
-        >
+        <div className="flex gap-2 items-center">
           <Switch.Root
             defaultChecked={!hidden}
             onCheckedChange={async (checked) => {
@@ -198,16 +196,18 @@ function Service({
                       title: `${title} (Copy)`,
                       slug: `${slug}-copy`,
                       description: '',
-                      length: duration
+                      length: length
                     })
                   }
                 >
                   <Dropdown.ItemIcon as={RiFileCopyLine} />
                   Duplicar serviço
                 </Dropdown.Item>
-                <Dropdown.Item onClick={() => {
-                  router.push(`/services/${slug}`)
-                }}>
+                <Dropdown.Item
+                  onClick={() => {
+                    router.push(`/services/${slug}`);
+                  }}
+                >
                   <Dropdown.ItemIcon as={RiPencilLine} />
                   Editar serviço
                 </Dropdown.Item>
