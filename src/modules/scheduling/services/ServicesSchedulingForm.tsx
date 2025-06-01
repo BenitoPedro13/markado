@@ -19,8 +19,16 @@ import {
   RiTwitterXLine
 } from '@remixicon/react';
 import Link from 'next/link';
-import {useEffect} from 'react';
-import {getHostUserByUsername} from '~/trpc/server/handlers/user.handler';
+
+import {UserProfile} from '@/types/UserProfile';
+import type {EventTypeMetaDataSchema} from '~/prisma/zod-utils';
+import {
+  // RedirectType,
+  type EventType,
+  type User
+} from '~/prisma/app/generated/prisma/client';
+import {z} from 'zod';
+import { getHostUserByUsername } from '~/trpc/server/handlers/user.handler';
 
 type BadgeColor = NonNullable<VariantProps<typeof badgeVariants>['color']>;
 
@@ -73,22 +81,79 @@ const mapServiceColorToBadgeColor = (
   }
 };
 
+type SchedulingPageProps = {
+  profile: {
+    name: string;
+    image: string | null;
+    theme: string | null;
+    // brandColor: string;
+    // darkBrandColor: string;
+    organization: {
+      requestedSlug: string | null;
+      slug: string | null;
+      id: number | null;
+    } | null;
+    allowSEOIndexing: boolean;
+    username: string | null;
+  };
+  users: (Pick<
+    User,
+    'name' | 'username' | 'biography' | 'verified' | 'image'
+  > & {
+    profile: UserProfile;
+  })[];
+  themeBasis: string | null;
+  markdownStrippedBio: string;
+  safeBio: string;
+  // entity: {
+  //   logoUrl?: string | null;
+  //   considerUnpublished: boolean;
+  //   orgSlug?: string | null;
+  //   name?: string | null;
+  //   teamSlug?: string | null;
+  // };
+  eventTypes: ({
+    descriptionAsSafeHTML: string;
+    metadata: z.infer<typeof EventTypeMetaDataSchema>;
+  } & Pick<
+    EventType,
+    | 'id'
+    | 'title'
+    | 'slug'
+    | 'length'
+    | 'hidden'
+    | 'lockTimeZoneToggleOnBookingPage'
+    | 'requiresConfirmation'
+    | 'requiresBookerEmailVerification'
+    | 'price'
+    | 'currency'
+    | 'recurringEvent'
+  >)[];
+};
+
 type ServicesSchedulingFormProps = {
   fullHeight?: boolean;
   host?: Awaited<ReturnType<typeof getHostUserByUsername>>;
+  servicesSchedulingFormProps?: SchedulingPageProps;
 };
 
 const ServicesSchedulingForm = ({
   fullHeight = true,
-  host
+  host,
+  servicesSchedulingFormProps
 }: ServicesSchedulingFormProps) => {
   const {businessName, businessColor, businessDescription, socialLinks} =
     useBusiness();
 
+  const services = servicesSchedulingFormProps?.eventTypes ?? initialServices;
+
   return (
     <main className="p-8 flex flex-col md:flex-row items-center md:items-start gap-6 w-full max-w-[624px]">
       <div className="w-full md:flex-1 flex flex-col items-center md:items-start gap-4">
-        <Avatar.Root size={'48'} fallbackText={businessName || host?.name || ''}>
+        <Avatar.Root
+          size={'48'}
+          fallbackText={businessName || host?.name || ''}
+        >
           <Avatar.Image
             src={host?.image || ''}
             alt={businessName || host?.name || 'User'}
@@ -157,7 +222,7 @@ const ServicesSchedulingForm = ({
         </div>
       </div>
       <div className="bg-bg-white-0 w-full md:min-w-[332px] md:flex-1 overflow-hidden flex flex-col rounded-3xl border border-stroke-soft-200">
-        {initialServices.map((service, index) => (
+        {services.map((service, index) => (
           <Link
             key={service.slug}
             href={`/${host?.username}/${service.slug}`}
@@ -178,7 +243,7 @@ const ServicesSchedulingForm = ({
                   size="medium"
                 >
                   <Badge.Icon as={RiTimeLine} />
-                  {formatDuration(service.duration)}
+                  {formatDuration(service.length)}
                 </Badge.Root>
 
                 <p className="text-label-sm text-text-sub-600">
