@@ -49,6 +49,7 @@ export const userSelect = Prisma.validator<Prisma.UserDefaultArgs>()({
     locale: true,
     hideBranding: true,
     theme: true,
+    // badgeColor: true,
     brandColor: true,
     darkBrandColor: true,
     // metadata: true,
