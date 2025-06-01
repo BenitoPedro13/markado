@@ -215,9 +215,9 @@ const ServiceInviteForm = ({
           </CalendarSectionItem>
           <CalendarSectionItem>
             <RiTimeLine size={20} color="var(--text-sub-600)" />
-            {parseServiceDuration(service.duration)}
+            {parseServiceDuration(service.length)}
             {`, ${dateToTimeString(date)}h até ${dateToTimeString(
-              new Date(date.getTime() + service.duration * 60 * 1000)
+              new Date(date.getTime() + service.length * 60 * 1000)
             )}h`}
           </CalendarSectionItem>
           <CalendarSectionItem>
