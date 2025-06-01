@@ -11,6 +11,7 @@ export const baseEventTypeSelect = Prisma.validator<Prisma.EventTypeSelect>()({
   hidden: true,
   price: true,
   currency: true,
+  badgeColor: true,
   lockTimeZoneToggleOnBookingPage: true,
   requiresConfirmation: true,
   requiresBookerEmailVerification: true,
@@ -55,8 +56,8 @@ export const bookEventTypeSelect = Prisma.validator<Prisma.EventTypeSelect>()({
       username: true,
       name: true,
       email: true,
-      bio: true,
-      avatarUrl: true,
+      biography: true,
+      image: true,
       theme: true,
     },
   },
@@ -111,7 +112,7 @@ export const availiblityPageEventTypeSelect = Prisma.validator<Prisma.EventTypeS
   users: {
     select: {
       id: true,
-      avatarUrl: true,
+      image: true,
       name: true,
       username: true,
       hideBranding: true,
