@@ -2,15 +2,10 @@ import LocaleSwitcher from '@/components/LocaleSwitcher';
 
 interface SchedulingLayoutProps {
   children: React.ReactNode;
-  params: {
-    username: string;
-  };
+  params: Promise<{username: string}>;
 }
 
-export default function SchedulingLayout({
-  children,
-  params
-}: SchedulingLayoutProps) {
+export default function SchedulingLayout({children}: SchedulingLayoutProps) {
   return (
     <div className="w-full h-full px-11 py-6 flex flex-col">
       {/* Content */}
