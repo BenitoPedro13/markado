@@ -122,6 +122,7 @@ type SchedulingPageProps = {
     | 'slug'
     | 'length'
     | 'hidden'
+    | 'badgeColor'
     | 'lockTimeZoneToggleOnBookingPage'
     | 'requiresConfirmation'
     | 'requiresBookerEmailVerification'
@@ -239,7 +240,7 @@ const ServicesSchedulingForm = ({
               <div className="flex items-center gap-2">
                 <Badge.Root
                   variant="light"
-                  color={mapServiceColorToBadgeColor(businessColor)}
+                  color={mapServiceColorToBadgeColor(service.badgeColor ?? businessColor )}
                   size="medium"
                 >
                   <Badge.Icon as={RiTimeLine} />

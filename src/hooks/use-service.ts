@@ -1,9 +1,10 @@
 import {useState, useEffect} from 'react';
-import {Service} from '@/types/service';
+// import {Service} from '@/types/service';
 import {services} from '@/data/services';
+import { ServicesProps } from '@/components/services/Service';
 
 export function useService(slug: string) {
-  const [service, setService] = useState<Service | null>(null);
+  const [service, setService] = useState<ServicesProps | undefined>(undefined);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
