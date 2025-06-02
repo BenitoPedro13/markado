@@ -2,7 +2,7 @@ import type {Prisma} from '~/prisma/app/generated/prisma/client';
 
 // import { DailyLocationType } from "@/core/locations";
 import slugify from '@/lib/slugify';
-import {PeriodType, SchedulingType} from '~/prisma/enums';
+import {PeriodType, SchedulingType, ServiceBadgeColor} from '~/prisma/enums';
 import type {userSelect} from '~/prisma/selects';
 import type {CustomInputSchema} from '~/prisma/zod-utils';
 import {EventTypeMetaDataSchema} from '~/prisma/zod-utils';
@@ -104,6 +104,7 @@ const commons = {
   owner: null,
   workflows: [],
   users: [user],
+  badgeColor: 'faded' as ServiceBadgeColor,
   hosts: [],
   metadata: EventTypeMetaDataSchema.parse({}),
   bookingFields: [],

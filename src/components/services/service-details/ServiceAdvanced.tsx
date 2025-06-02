@@ -22,8 +22,8 @@ import {Controller, useFormContext} from 'react-hook-form';
 import type z from 'zod';
 
 // import useLockedFieldsManager from '@/features/core/managed-event-types/hooks/useLockedFieldsManager';
-import type {EventTypeSetup} from '@/features/eventtypes/lib/types';
-import type {FormValues} from '@/features/eventtypes/lib/types';
+import type {EventTypeSetup} from '@/packages/features/eventtypes/lib/types';
+import type {FormValues} from '@/packages/features/eventtypes/lib/types';
 import {cn as classNames} from '@/utils/cn';
 import {useLocale} from '@/hooks/use-locale';
 import type {EventTypeMetaDataSchema} from '~/prisma/zod-utils';
