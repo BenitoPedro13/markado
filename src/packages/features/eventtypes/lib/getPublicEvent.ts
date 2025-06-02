@@ -129,7 +129,7 @@ const publicEventSelect = Prisma.validator<Prisma.EventTypeSelect>()({
       timeZone: true
     }
   },
-
+  badgeColor: true,
   hidden: true,
   assignAllTeamMembers: true
   // rescheduleWithSameRoundRobinHost: true,
@@ -484,9 +484,10 @@ export const getPublicEvent = async (
     description: markdownToSafeHTML(eventWithUserProfiles.description),
     metadata: eventMetaData,
     customInputs: customInputSchema.array().parse(event.customInputs || []),
-    locations: privacyFilteredLocations(
-      (eventWithUserProfiles.locations || []) as LocationObject[]
-    ),
+    // locations: privacyFilteredLocations(
+    //   (eventWithUserProfiles.locations || []) as LocationObject[]
+    // ),
+    locations: privacyFilteredLocations([] as LocationObject[]),
     bookingFields: getBookingFieldsWithSystemFields(event),
     recurringEvent: isRecurringEvent(eventWithUserProfiles.recurringEvent)
       ? parseRecurringEvent(event.recurringEvent)
