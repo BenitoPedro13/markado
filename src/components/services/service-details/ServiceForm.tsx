@@ -10,7 +10,7 @@ import {useLocale} from '@/hooks/use-locale';
 import {FormBuilder} from '@/packages/features/form-builder/FormBuilder';
 import {fieldSchema} from '@/packages/features/form-builder/schema';
 import {useFormContext} from 'react-hook-form';
-import {FormValues, EventTypeSetupProps} from '@/features/eventtypes/lib/types';
+import {FormValues, EventTypeSetupProps} from '@/packages/features/eventtypes/lib/types';
 import getLocationsOptionsForSelect from '@/packages/features/bookings/lib/getLocationOptionsForSelect';
 
 type Props = {
