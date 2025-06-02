@@ -1,6 +1,6 @@
 // import { getBookerBaseUrlSync } from "./getBookerBaseUrlSync";
 
-// export { getBookerBaseUrlSync } from "./getBookerBaseUrlSync";
+export { getBookerBaseUrlSync } from "./getBookerBaseUrlSync";
 // export const getTeamUrlSync = (
 //   {
 //     orgSlug,
