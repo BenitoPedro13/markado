@@ -4,8 +4,8 @@ import { shallow } from "zustand/shallow";
 import { useEmbedType, useEmbedUiConfig, useIsEmbed } from "@/embed-core/embed-iframe";
 import type { BookerEvent } from "@/features/bookings/types";
 import useMediaQuery from "@/lib/hooks/useMediaQuery";
-import type { BookerLayouts } from "@/prisma/zod-utils";
-import { defaultBookerLayoutSettings } from "@/prisma/zod-utils";
+import type { BookerLayouts } from "~/prisma/zod-utils";
+import { defaultBookerLayoutSettings } from "~/prisma/zod-utils";
 
 import { extraDaysConfig } from "../../config";
 import { useBookerStore } from "../../store";
