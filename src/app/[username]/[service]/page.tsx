@@ -211,7 +211,7 @@ type Props = {
 //   };
 // }
 
-async function getUserPageProps({
+export async function getUserPageProps({
   username,
   slug
 }: {
