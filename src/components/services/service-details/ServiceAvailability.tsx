@@ -43,7 +43,7 @@ import type {
   AvailabilityOption,
   FormValues,
   EventTypeSetup
-} from '@/features/eventtypes/lib/types';
+} from '@/packages/features/eventtypes/lib/types';
 import {cn as classNames} from '@/utils/cn';
 import {useLocale} from '@/hooks/use-locale';
 import {weekdayNames} from '@/lib/weekday';

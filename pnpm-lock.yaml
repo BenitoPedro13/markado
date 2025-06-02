@@ -149,6 +149,9 @@ dependencies:
   kysely:
     specifier: ^0.28.2
     version: 0.28.2
+  libphonenumber-js:
+    specifier: ^1.12.8
+    version: 1.12.8
   lodash:
     specifier: ^4.17.21
     version: 4.17.21
@@ -8565,6 +8568,10 @@ packages:
     dependencies:
       prelude-ls: 1.2.1
       type-check: 0.4.0
+
+  /libphonenumber-js@1.12.8:
+    resolution: {integrity: sha512-f1KakiQJa9tdc7w1phC2ST+DyxWimy9c3g3yeF+84QtEanJr2K77wAmBPP22riU05xldniHsvXuflnLZ4oysqA==}
+    dev: false
 
   /lilconfig@2.1.0:
     resolution: {integrity: sha512-utWOt/GHzuUxnLKxB6dk81RoOeoNeHgbrXiuGk4yyF5qlRz+iIVWu56E2fqGHFrXz0QNUhLB/8nKqvRH66JKGQ==}
