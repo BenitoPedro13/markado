@@ -30,6 +30,8 @@ import {ProfileDropdown} from '@/components/navigation/ProfileDropdown';
 import {useSidebarStore} from '@/stores/sidebar-store';
 import Logo from './Logo';
 
+import {SUPORT_WHATSAPP_NUMBER} from '@/constants';
+
 interface sidebarItem {
   iconLine: ReactElement;
   iconFill: ReactElement;
@@ -47,19 +49,19 @@ const mainItems: sidebarItem[] = [
     iconLine: <RiCalendarLine />,
     iconFill: <RiCalendarFill />,
     label: 'Agendamentos',
-    link: 'bookings'
+    link: '/bookings'
   },
   {
     iconLine: <RiTimeLine />,
     iconFill: <RiTimeFill />,
     label: 'Disponibilidade',
-    link: 'availability'
+    link: '/availability'
   },
   {
     iconLine: <RiLinksLine />,
     iconFill: <RiLinksFill />,
     label: 'Serviços',
-    link: 'services'
+    link: '/services'
   }
 ];
 
@@ -68,13 +70,13 @@ const settingsItems: sidebarItem[] = [
     iconLine: <RiSettings2Line />,
     iconFill: <RiSettings2Fill />,
     label: 'Configurações',
-    link: 'settings'
+    link: '/settings'
   },
   {
     iconLine: <RiHeadphoneLine />,
     iconFill: <RiHeadphoneFill />,
     label: 'Suporte',
-    link: 'support'
+    link: `https://wa.me/${SUPORT_WHATSAPP_NUMBER}`
   }
 ];
 
@@ -157,7 +159,7 @@ const Sidebar = ({children}: PropsWithChildren) => {
                   </h4>
                   <TabMenuVertical.List className="relative h-full">
                     {mainItems.map(({label, iconLine, iconFill, link}) => (
-                      <Link href={`/${link}`} key={label}>
+                      <Link href={link} key={label}>
                         <TabMenuVertical.Trigger
                           value={label}
                           className={`${isCollapsed ? 'justify-center flex items-center' : ''} ${isActive(link) ? 'bg-primary-50 text-primary-600' : ''}`}
@@ -176,7 +178,11 @@ const Sidebar = ({children}: PropsWithChildren) => {
                     >
                       {settingsItems.map(
                         ({label, iconLine, iconFill, link}) => (
-                          <Link href={`/${link}`} key={label}>
+                          <Link
+                            href={link}
+                            key={label}
+                            target={label === 'Suporte' ? '_blank' : '_self'}
+                          >
                             <TabMenuVertical.Trigger
                               value={label}
                               className={`${isCollapsed ? 'justify-center flex items-center' : ''} ${isActive(link) ? 'bg-primary-50 text-primary-600' : ''}`}
