@@ -31,6 +31,8 @@ import {UserRepository} from '@/repositories/user';
 // import {auth} from '@/auth';
 import eventHandler from '~/trpc/server/handlers/events.handler';
 
+import {SUPORT_WHATSAPP_NUMBER} from '@/constants';
+
 type Props = {
   eventData: Pick<
     NonNullable<Awaited<ReturnType<typeof getPublicEvent>>>,
@@ -424,7 +426,11 @@ const ServiceSchedulingPage = async (props: {
           </Button.Root>
         </Link>
 
-        <Link href={`/${host.username}`} className="flex items-center gap-x-2">
+        <Link
+          href={`https://wa.me/${SUPORT_WHATSAPP_NUMBER}`}
+          className="flex items-center gap-x-2"
+          target="_blank"
+        >
           <Button.Root variant="neutral" mode="stroke">
             <span className="text-text-sub-600">Precisa de ajuda?</span>
           </Button.Root>
