@@ -33,7 +33,7 @@ import {
   DEFAULT_DARK_BRAND_COLOR,
   WEBAPP_URL
 } from '@/constants';
-import {useRouterQuery} from '@/hooks/useRouterQuery';
+import {useRouterQuery} from '@/packages/lib/hooks/useRouterQuery';
 import {BookerLayouts} from '~/prisma/zod-utils';
 
 type BookerWrapperProps = BookerProps;
@@ -81,11 +81,11 @@ export const BookerWrapper = (props: BookerWrapperProps) => {
 
   const [bookerState, _] = useBookerStore(
     (state) => [state.state, state.setState],
-    shallow
+    // shallow
   );
   const [dayCount] = useBookerStore(
     (state) => [state.dayCount, state.setDayCount],
-    shallow
+    // shallow
   );
 
   const {data: session} = useSession();
