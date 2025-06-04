@@ -1,6 +1,6 @@
 import useGetBrandingColours from "@/lib/getBrandColours";
 import useTheme from "@/lib/hooks/useTheme";
-import { useCalcomTheme } from "@/ui";
+import { useMarkadoTheme } from "@/ui";
 
 export const useBrandColors = ({
   brandColor,
@@ -16,6 +16,6 @@ export const useBrandColors = ({
     darkVal: darkBrandColor,
   });
 
-  useCalcomTheme(brandTheme);
+  useMarkadoTheme(brandTheme);
   useTheme(theme);
 };
