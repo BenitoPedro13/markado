@@ -161,53 +161,53 @@ export type BookerStore = {
  * See comments in interface above for more information on it's specific values.
  */
 export const useBookerStore = create<BookerStore>((set, get) => ({
-  state: "loading",
-  setState: (state: BookerState) => set({ state }),
+  state: 'loading',
+  setState: (state: BookerState) => set({state}),
   layout: BookerLayouts.MONTH_VIEW,
   setLayout: (layout: BookerLayout) => {
     // If we switch to a large layout and don't have a date selected yet,
     // we selected it here, so week title is rendered properly.
-    if (["week_view", "column_view"].includes(layout) && !get().selectedDate) {
-      set({ selectedDate: dayjs().format("YYYY-MM-DD") });
+    if (['week_view', 'column_view'].includes(layout) && !get().selectedDate) {
+      set({selectedDate: dayjs().format('YYYY-MM-DD')});
     }
-    updateQueryParam("layout", layout);
-    return set({ layout });
+    updateQueryParam('layout', layout);
+    return set({layout});
   },
-  selectedDate: getQueryParam("date") || null,
+  selectedDate: getQueryParam('date') || null,
   setSelectedDate: (selectedDate: string | null) => {
     // unset selected date
     if (!selectedDate) {
-      removeQueryParam("date");
+      removeQueryParam('date');
       return;
     }
 
     const currentSelection = dayjs(get().selectedDate);
     const newSelection = dayjs(selectedDate);
-    set({ selectedDate });
-    updateQueryParam("date", selectedDate ?? "");
+    set({selectedDate});
+    updateQueryParam('date', selectedDate ?? '');
 
     // Setting month make sure small calendar in fullscreen layouts also updates.
     if (newSelection.month() !== currentSelection.month()) {
-      set({ month: newSelection.format("YYYY-MM") });
-      updateQueryParam("month", newSelection.format("YYYY-MM"));
+      set({month: newSelection.format('YYYY-MM')});
+      updateQueryParam('month', newSelection.format('YYYY-MM'));
     }
   },
   selectedDatesAndTimes: null,
   setSelectedDatesAndTimes: (selectedDatesAndTimes) => {
-    set({ selectedDatesAndTimes });
+    set({selectedDatesAndTimes});
   },
   addToSelectedDate: (days: number) => {
     const currentSelection = dayjs(get().selectedDate);
-    const newSelection = currentSelection.add(days, "day");
-    const newSelectionFormatted = newSelection.format("YYYY-MM-DD");
+    const newSelection = currentSelection.add(days, 'day');
+    const newSelectionFormatted = newSelection.format('YYYY-MM-DD');
 
     if (newSelection.month() !== currentSelection.month()) {
-      set({ month: newSelection.format("YYYY-MM") });
-      updateQueryParam("month", newSelection.format("YYYY-MM"));
+      set({month: newSelection.format('YYYY-MM')});
+      updateQueryParam('month', newSelection.format('YYYY-MM'));
     }
 
-    set({ selectedDate: newSelectionFormatted });
-    updateQueryParam("date", newSelectionFormatted);
+    set({selectedDate: newSelectionFormatted});
+    updateQueryParam('date', newSelectionFormatted);
   },
   username: null,
   eventSlug: null,
@@ -215,32 +215,36 @@ export const useBookerStore = create<BookerStore>((set, get) => ({
   rescheduledBy: null,
   verifiedEmail: null,
   setVerifiedEmail: (email: string | null) => {
-    set({ verifiedEmail: email });
+    set({verifiedEmail: email});
   },
-  month: getQueryParam("month") || getQueryParam("date") || dayjs().format("YYYY-MM"),
+  month:
+    getQueryParam('month') ||
+    getQueryParam('date') ||
+    dayjs().format('YYYY-MM'),
   setMonth: (month: string | null) => {
     if (!month) {
-      removeQueryParam("month");
+      removeQueryParam('month');
       return;
     }
-    set({ month, selectedTimeslot: null });
-    updateQueryParam("month", month ?? "");
+    set({month, selectedTimeslot: null});
+    updateQueryParam('month', month ?? '');
     get().setSelectedDate(null);
   },
-  dayCount: BOOKER_NUMBER_OF_DAYS_TO_LOAD > 0 ? BOOKER_NUMBER_OF_DAYS_TO_LOAD : null,
+  dayCount:
+    BOOKER_NUMBER_OF_DAYS_TO_LOAD > 0 ? BOOKER_NUMBER_OF_DAYS_TO_LOAD : null,
   setDayCount: (dayCount: number | null) => {
-    set({ dayCount });
+    set({dayCount});
   },
   isTeamEvent: false,
   seatedEventData: {
     seatsPerTimeSlot: undefined,
     attendees: undefined,
     bookingUid: undefined,
-    showAvailableSeatsCount: true,
+    showAvailableSeatsCount: true
   },
   setSeatedEventData: (seatedEventData: SeatedEventData) => {
-    set({ seatedEventData });
-    updateQueryParam("bookingUid", seatedEventData.bookingUid ?? "null");
+    set({seatedEventData});
+    updateQueryParam('bookingUid', seatedEventData.bookingUid ?? 'null');
   },
   initialize: ({
     username,
@@ -256,7 +260,7 @@ export const useBookerStore = create<BookerStore>((set, get) => ({
     durationConfig,
     org,
     isInstantMeeting,
-    teamMemberEmail,
+    teamMemberEmail
   }: StoreInitializeType) => {
     const selectedDateInStore = get().selectedDate;
 
@@ -288,16 +292,18 @@ export const useBookerStore = create<BookerStore>((set, get) => ({
       // Preselect today's date in week / column view, since they use this to show the week title.
       selectedDate:
         selectedDateInStore ||
-        (["week_view", "column_view"].includes(layout) ? dayjs().format("YYYY-MM-DD") : null),
-      teamMemberEmail,
+        (['week_view', 'column_view'].includes(layout)
+          ? dayjs().format('YYYY-MM-DD')
+          : null),
+      teamMemberEmail
     });
 
-    if (durationConfig?.includes(Number(getQueryParam("duration")))) {
+    if (durationConfig?.includes(Number(getQueryParam('duration')))) {
       set({
-        selectedDuration: Number(getQueryParam("duration")),
+        selectedDuration: Number(getQueryParam('duration'))
       });
     } else {
-      removeQueryParam("duration");
+      removeQueryParam('duration');
     }
 
     // Unset selected timeslot if user is rescheduling. This could happen
@@ -307,61 +313,62 @@ export const useBookerStore = create<BookerStore>((set, get) => ({
     // Also, fetch the original booking duration if user is rescheduling and
     // update the selectedDuration
     if (rescheduleUid && bookingData) {
-      set({ selectedTimeslot: null });
+      set({selectedTimeslot: null});
       const originalBookingLength = dayjs(bookingData?.endTime).diff(
         dayjs(bookingData?.startTime),
-        "minutes"
+        'minutes'
       );
-      set({ selectedDuration: originalBookingLength });
-      updateQueryParam("duration", originalBookingLength ?? "");
+      set({selectedDuration: originalBookingLength});
+      updateQueryParam('duration', originalBookingLength ?? '');
     }
-    if (month) set({ month });
+    if (month) set({month});
 
     if (isInstantMeeting) {
-      const month = dayjs().format("YYYY-MM");
-      const selectedDate = dayjs().format("YYYY-MM-DD");
+      const month = dayjs().format('YYYY-MM');
+      const selectedDate = dayjs().format('YYYY-MM-DD');
       const selectedTimeslot = new Date().toISOString();
       set({
         month,
         selectedDate,
         selectedTimeslot,
-        isInstantMeeting,
+        isInstantMeeting
       });
-      updateQueryParam("month", month);
-      updateQueryParam("date", selectedDate ?? "");
-      updateQueryParam("slot", selectedTimeslot ?? "", false);
+      updateQueryParam('month', month);
+      updateQueryParam('date', selectedDate ?? '');
+      updateQueryParam('slot', selectedTimeslot ?? '', false);
     }
     //removeQueryParam("layout");
   },
   durationConfig: null,
   selectedDuration: null,
   setSelectedDuration: (selectedDuration: number | null) => {
-    set({ selectedDuration });
-    updateQueryParam("duration", selectedDuration ?? "");
+    set({selectedDuration});
+    updateQueryParam('duration', selectedDuration ?? '');
   },
   setBookingData: (bookingData: GetBookingType | null | undefined) => {
-    set({ bookingData: bookingData ?? null });
+    set({bookingData: bookingData ?? null});
   },
   recurringEventCount: null,
-  setRecurringEventCount: (recurringEventCount: number | null) => set({ recurringEventCount }),
+  setRecurringEventCount: (recurringEventCount: number | null) =>
+    set({recurringEventCount}),
   occurenceCount: null,
-  setOccurenceCount: (occurenceCount: number | null) => set({ occurenceCount }),
+  setOccurenceCount: (occurenceCount: number | null) => set({occurenceCount}),
   rescheduleUid: null,
   bookingData: null,
   bookingUid: null,
-  selectedTimeslot: getQueryParam("slot") || null,
+  selectedTimeslot: getQueryParam('slot') || null,
   setSelectedTimeslot: (selectedTimeslot: string | null) => {
-    set({ selectedTimeslot });
-    updateQueryParam("slot", selectedTimeslot ?? "", false);
+    set({selectedTimeslot});
+    updateQueryParam('slot', selectedTimeslot ?? '', false);
   },
   formValues: {},
   setFormValues: (formValues: Record<string, any>) => {
-    set({ formValues });
+    set({formValues});
   },
   org: null,
   setOrg: (org: string | null | undefined) => {
-    set({ org });
-  },
+    set({org});
+  }
 }));
 
 export const useInitializeBookerStore = ({
