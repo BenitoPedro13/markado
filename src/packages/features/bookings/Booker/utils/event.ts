@@ -22,7 +22,7 @@ export type useScheduleForEventReturnType = ReturnType<typeof useScheduleForEven
 export const useEvent = (props?: { fromRedirectOfNonOrgLink?: boolean }) => {
   const [username, eventSlug, isTeamEvent, org] = useBookerStore(
     (state) => [state.username, state.eventSlug, state.isTeamEvent, state.org],
-    shallow
+    // shallow
   );
 
   const event = trpc.viewer.public.event.useQuery(
@@ -91,7 +91,7 @@ export const useScheduleForEvent = ({
   const { timezone } = useTimePreferences();
   const [usernameFromStore, eventSlugFromStore, monthFromStore, durationFromStore] = useBookerStore(
     (state) => [state.username, state.eventSlug, state.month, state.selectedDuration],
-    shallow
+    // shallow
   );
 
   const searchParams = useCompatSearchParams();
