@@ -26,6 +26,9 @@ export const BOOKER_NUMBER_OF_DAYS_TO_LOAD = parseInt(
   0
 );
 
+export const DEFAULT_LIGHT_BRAND_COLOR = '#292929';
+export const DEFAULT_DARK_BRAND_COLOR = '#fafafa';
+
 export {
   MARKADO_URL,
   MARKADO_DOMAIN,
