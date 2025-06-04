@@ -21,6 +21,11 @@ export const AVATAR_FALLBACK = '/avatar.svg';
 
 export const SUPORT_WHATSAPP_NUMBER = process.env.SUPORT_WHATSAPP_NUMBER
 
+export const BOOKER_NUMBER_OF_DAYS_TO_LOAD = parseInt(
+  process.env.NEXT_PUBLIC_BOOKER_NUMBER_OF_DAYS_TO_LOAD ?? '0',
+  0
+);
+
 export {
   MARKADO_URL,
   MARKADO_DOMAIN,
