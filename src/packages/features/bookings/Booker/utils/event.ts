@@ -1,11 +1,11 @@
 import { usePathname } from "next/navigation";
 import { shallow } from "zustand/shallow";
 
-import { useSchedule } from "@/features/schedules";
-import { useCompatSearchParams } from "@/lib/hooks/useCompatSearchParams";
-import { trpc } from "@/trpc/react";
+import { useSchedule } from "@/packages/features/schedules";
+import { useCompatSearchParams } from "@/packages/lib/hooks/useCompatSearchParams";
+// import { trpc } from "@/trpc/react";
 
-import { useTimePreferences } from "../../lib/timePreferences";
+import { useTimePreferences } from "@/packages/features/bookings/lib/timePreferences";
 import { useBookerStore } from "../store";
 
 export type useEventReturnType = ReturnType<typeof useEvent>;
