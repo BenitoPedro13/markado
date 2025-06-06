@@ -45,6 +45,7 @@ export type TimezoneSelectWithStyleProps = {
   autoDetect?: boolean;
   hint?: boolean;
   variant?: 'default' | 'compact' | 'compactForInput' | 'inline';
+  name?: string;
 };
 
 export function TimezoneSelectWithStyle({
@@ -58,7 +59,8 @@ export function TimezoneSelectWithStyle({
   isLoading = false,
   autoDetect = true,
   defaultValue = '',
-  variant = 'default'
+  variant = 'default',
+  name = 'timeZone'
 }: TimezoneSelectWithStyleProps) {
   const {options, parseTimezone} = useTimezoneSelect({labelStyle});
   const [currentTime, setCurrentTime] = useState<string>('');
@@ -224,6 +226,7 @@ export function TimezoneSelectWithStyle({
         value={selectedTimezone}
         defaultValue={defaultValue}
         variant={variant}
+        name={name}
       >
         <Select.Trigger
           className={cn(
