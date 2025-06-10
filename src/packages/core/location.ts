@@ -129,7 +129,7 @@ export const defaultLocations: DefaultEventLocationType[] = [
     variable: 'address',
     organizerInputType: null,
     messageForOrganizer:
-      'Cal will ask your invitee to enter an address before scheduling.',
+      'Markado will ask your invitee to enter an address before scheduling.',
     attendeeInputType: 'attendeeAddress',
     attendeeInputPlaceholder: 'enter_address',
     defaultValueVariable: 'attendeeAddress',
@@ -144,7 +144,7 @@ export const defaultLocations: DefaultEventLocationType[] = [
     variable: 'address',
     organizerInputType: null,
     messageForOrganizer:
-      'Cal will ask your invitee to enter any location before scheduling.',
+      'Markado  will ask your invitee to enter any location before scheduling.',
     attendeeInputType: 'somewhereElse',
     attendeeInputPlaceholder: 'any_location',
     defaultValueVariable: 'somewhereElse',
@@ -199,7 +199,7 @@ export const defaultLocations: DefaultEventLocationType[] = [
     attendeeInputPlaceholder: `enter_phone_number`,
     defaultValueVariable: 'phone',
     messageForOrganizer:
-      'Cal will ask your invitee to enter a phone number before scheduling.',
+      'Markado  will ask your invitee to enter a phone number before scheduling.',
     // This isn't inputType phone because organizer doesn't need to provide it.
     // inputType: "phone"
     iconUrl: '/phone.svg',
