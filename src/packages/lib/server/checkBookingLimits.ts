@@ -58,7 +58,7 @@ export async function checkBookingLimit({
   rescheduleUid?: string | undefined;
   timeZone?: string | null;
   teamId?: number;
-  user?: { id: number; email: string };
+  user?: { id: string; email: string };
   includeManagedEvents?: boolean;
 }) {
   {
