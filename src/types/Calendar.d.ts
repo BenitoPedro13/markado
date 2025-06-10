@@ -14,3 +14,15 @@ export interface RecurringEvent {
   until?: Date | undefined;
   tzid?: string | undefined;
 }
+
+export type EventBusyDate = {
+  start: Date | string;
+  end: Date | string;
+  source?: string | null;
+};
+
+export type EventBusyDetails = EventBusyDate & {
+  title?: string;
+  source?: string | null;
+  userId?: string | null;
+};
