@@ -23,7 +23,7 @@ export function getPiiFreeCalendarEvent(calEvent: CalendarEvent) {
     endTime: calEvent.endTime,
     schedulingType: calEvent.schedulingType,
     seatsPerTimeSlot: calEvent.seatsPerTimeSlot,
-    appsStatus: calEvent.appsStatus,
+    // appsStatus: calEvent.appsStatus,
     recurringEvent: calEvent.recurringEvent,
     recurrence: calEvent.recurrence,
     requiresConfirmation: calEvent.requiresConfirmation,
