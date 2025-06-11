@@ -4,7 +4,7 @@ import type { z } from "zod";
 import { useBookerStore } from "@/packages/features/bookings/Booker/store";
 import type getBookingResponsesSchema from "@/packages/features/bookings/lib/getBookingResponsesSchema";
 import { getBookingResponsesPartialSchema } from "@/packages/features/bookings/lib/getBookingResponsesSchema";
-import type { BookerEvent } from "@/features/bookings/types";
+import type { BookerEvent } from "@/packages/features/bookings/types";
 
 export type useInitialFormValuesReturnType = ReturnType<typeof useInitialFormValues>;
 
