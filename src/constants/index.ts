@@ -19,6 +19,8 @@ const RESERVED_SUBDOMAINS = JSON.parse(`[${process.env.RESERVED_SUBDOMAINS || ""
 
 export const AVATAR_FALLBACK = '/avatar.svg';
 
+export const MINUTES_TO_BOOK = process.env.NEXT_PUBLIC_MINUTES_TO_BOOK || '5';
+
 export const SUPORT_WHATSAPP_NUMBER = process.env.SUPORT_WHATSAPP_NUMBER
 
 export const BOOKER_NUMBER_OF_DAYS_TO_LOAD = parseInt(
