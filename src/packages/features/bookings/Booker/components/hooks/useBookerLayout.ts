@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { shallow } from "zustand/shallow";
 
 import { useEmbedType, useEmbedUiConfig, useIsEmbed } from "@/embed-core/embed-iframe";
-import type { BookerEvent } from "@/features/bookings/types";
+import type { BookerEvent } from "@/packages/features/bookings/types";
 import useMediaQuery from "@/lib/hooks/useMediaQuery";
 import type { BookerLayouts } from "~/prisma/zod-utils";
 import { defaultBookerLayoutSettings } from "~/prisma/zod-utils";
