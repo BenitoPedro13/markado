@@ -9,7 +9,7 @@ import { sdkActionManager } from "@/embed-core/embed-iframe";
 import { useBookerStore } from "@/packages/features/bookings/Booker/store";
 import { updateQueryParam, getQueryParam } from "@/packages/features/bookings/Booker/utils/query-param";
 import { createBooking, createRecurringBooking, createInstantBooking } from "@/packages/features/bookings/lib";
-import type { BookerEvent } from "@/features/bookings/types";
+import type { BookerEvent } from "@/packages/features/bookings/types";
 import { getFullName } from "@/packages/features/form-builder/utils";
 import { useBookingSuccessRedirect } from "@/packages/lib/bookingSuccessRedirect";
 import { useLocale } from "@/hooks/use-locale";
