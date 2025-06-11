@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 import { shallow } from "zustand/shallow";
 
-import dayjs from "@/dayjs";
-import { useBookerStore } from "@/features/bookings/Booker/store";
-import { useSlotReservationId } from "@/features/bookings/Booker/useSlotReservationId";
-import type { BookerEvent } from "@/features/bookings/types";
+import dayjs from "@/lib/dayjs";
+import { useBookerStore } from "@/packages/features/bookings/Booker/store";
+import { useSlotReservationId } from "@/packages/features/bookings/Booker/useSlotReservationId";
+import type { BookerEvent } from "@/packages/features/bookings/types";
 import { MINUTES_TO_BOOK } from "@/lib/constants";
 import { trpc } from "@/trpc";
 
