@@ -3,10 +3,10 @@ import { useRef, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import type { EventLocationType } from "@/core/locations";
+import type { EventLocationType } from "@/packages/core/location";
 import { useBookerStore } from "@/packages/features/bookings/Booker/store";
 import getBookingResponsesSchema from "@/packages/features/bookings/lib/getBookingResponsesSchema";
-import type { BookerEvent } from "@/features/bookings/types";
+import type { BookerEvent } from "@/packages/features/bookings/types";
 import { useLocale } from "@/hooks/use-locale";
 
 import { useInitialFormValues } from "./useInitialFormValues";
