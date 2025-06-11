@@ -42,7 +42,7 @@ export function getPiiFreeCalendarEvent(calEvent: CalendarEvent) {
 export function getPiiFreeBooking(booking: {
   id: number;
   uid: string;
-  userId: number | null;
+  userId: string | null;
   startTime: Date;
   endTime: Date;
   title: string;
