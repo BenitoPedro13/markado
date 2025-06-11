@@ -54,10 +54,10 @@ export const useBookingForm = ({
 
   type BookingFormValues = {
     locationType?: EventLocationType["type"];
-    responses: z.infer<typeof bookingFormSchema>["responses"] | null;
+    responses: z.infer<typeof bookingFormSchema>["responses"] | {};
     // Key is not really part of form values, but only used to have a key
     // to set generic error messages on. Needed until RHF has implemented root error keys.
-    globalError: undefined;
+    // globalError: undefined;
   };
   const isRescheduling = !!rescheduleUid && !!bookingData;
 
@@ -102,15 +102,15 @@ export const useBookingForm = ({
     // It shouldn't be possible that this method is fired without having event data,
     // but since in theory (looking at the types) it is possible, we still handle that case.
     if (!event) {
-      bookingForm.setError("globalError", { message: t("error_booking_event") });
+      // bookingForm.setError("globalError", { message: t("error_booking_event") });
       return;
     }
   };
 
-  const errors = {
-    hasFormErrors: Boolean(bookingForm.formState.errors["globalError"]),
-    formErrors: bookingForm.formState.errors["globalError"],
-  };
+  // const errors = {
+  //   hasFormErrors: Boolean(bookingForm.formState.errors["globalError"]),
+  //   formErrors: bookingForm.formState.errors["globalError"],
+  // };
 
   return {
     bookingForm,
@@ -119,7 +119,7 @@ export const useBookingForm = ({
     formEmail: email,
     formName: name,
     beforeVerifyEmail,
-    formErrors: errors,
-    errors,
+    // formErrors: errors,
+    // errors,
   };
 };
