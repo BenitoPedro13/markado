@@ -14,7 +14,7 @@ import type { SelectedCalendar } from "~/prisma/app/generated/prisma/client";
 import { BookingStatus } from "~/prisma/enums";
 import { stringToDayjs } from "~/prisma/zod-utils";
 import type { EventBusyDetails, IntervalLimit } from "@/types/Calendar";
-import type { CredentialPayload } from "@/types/Credential";
+import type { CredentialPayload } from "@/packages/types/Credential";
 
 import { getDefinedBufferTimes } from "../features/eventtypes/lib/getDefinedBufferTimes";
 
