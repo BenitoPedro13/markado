@@ -18,15 +18,23 @@ import {useState} from 'react';
 
 const FinalizationItem = ({
   label,
-  value
+  value,
+  variant = 'default'
 }: {
   label: string;
   value: string | number;
+  variant?: 'default' | 'cancelled' | 'blank';
 }) => {
   return (
     <div className="flex justify-between items-center">
-      <p className="text-paragraph-lg text-text-strong-950">{label}:</p>
-      <p className="text-label-lg font-medium text-text-strong-950">{value}</p>
+      {variant !== 'blank' && (
+        <p className="text-paragraph-lg text-text-strong-950">{label}:</p>
+      )}
+      <p
+        className={`text-label-lg font-medium text-text-strong-950 text-end ${variant === 'cancelled' && 'line-through'}`}
+      >
+        {value}
+      </p>
     </div>
   );
 };
@@ -36,7 +44,7 @@ interface ServiceFinalizationFormProps {
   service: Awaited<ReturnType<typeof getServiceBySlugAndUsername>>;
 }
 
-const ServiceFinalizationForm = ({
+const ServiceRescheduledView = ({
   host,
   service
 }: ServiceFinalizationFormProps) => {
@@ -116,10 +124,10 @@ const ServiceFinalizationForm = ({
             height={100}
           />
           <h1 className="text-label-xl font-medium text-center">
-            Reunião marcada com sucesso!
+            Reunião reagendada com sucesso!
           </h1>
           <p className="text-paragraph-lg text-text-strong-950 text-center">
-            Um e-mail com detalhes sobre a reunião foi enviado para todos os
+            Um e-mail com detalhes sobre a alteração foi enviado para todos os
             participantes.
           </p>
         </div>
@@ -127,13 +135,15 @@ const ServiceFinalizationForm = ({
         <FinalizationItem label="Assunto" value={service.title} />
 
         <FinalizationItem
-          label="Data marcada"
-          value={dayjs().format('DD/MM/YYYY')}
+          label="Horário anterior"
+          value={`${dayjs().format('dddd, DD [de] MMMM [de] YYYY')} ${dayjs().format('HH:mm')} até ${dayjs()
+            .add(1, 'hour')
+            .format('HH:mm')}`}
+          variant="cancelled"
         />
-
         <FinalizationItem
-          label="Hora marcada"
-          value={`${dayjs().format('HH:mm')} até ${dayjs()
+          label="Novo horário"
+          value={`${dayjs().add(2, 'day').format('dddd, DD [de] MMMM [de] YYYY')} ${dayjs().format('HH:mm')} até ${dayjs()
             .add(1, 'hour')
             .format('HH:mm')}`}
         />
@@ -148,4 +158,4 @@ const ServiceFinalizationForm = ({
   );
 };
 
-export default ServiceFinalizationForm;
+export default ServiceRescheduledView;
