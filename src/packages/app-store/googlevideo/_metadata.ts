@@ -1,8 +1,6 @@
 import { validJson } from "@/packages/lib/jsonUtils";
 import type { AppMeta } from "@/packages/types/App";
 
-const pkgj = require("./package.json");
-
 export const metadata = {
   name: 'Google Meet',
   description:
