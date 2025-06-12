@@ -33,7 +33,10 @@ interface ServiceFinalizationFormProps {
   service: Awaited<ReturnType<typeof getServiceBySlugAndUsername>>;
 }
 
-const ServiceCancelForm = ({host, service}: ServiceFinalizationFormProps) => {
+const ServiceCancelledView = ({
+  host,
+  service
+}: ServiceFinalizationFormProps) => {
   dayjs.locale('pt-br');
 
   return (
@@ -79,4 +82,4 @@ const ServiceCancelForm = ({host, service}: ServiceFinalizationFormProps) => {
   );
 };
 
-export default ServiceCancelForm;
+export default ServiceCancelledView;
