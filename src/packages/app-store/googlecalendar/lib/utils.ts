@@ -1,6 +1,6 @@
 import type { calendar_v3 } from "googleapis";
 
-// import logger from "@calcom/lib/logger";
+// import logger from "@/lib/logger";
 
 export async function getAllCalendars(
   calendar: calendar_v3.Calendar,
