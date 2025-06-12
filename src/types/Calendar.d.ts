@@ -63,7 +63,6 @@ export type TeamMember = {
   language: {translate: TFunction; locale: string};
 };
 
-
 export interface ConferenceData {
   createRequest?: calendar_v3.Schema$CreateConferenceRequest;
 }
@@ -165,3 +164,71 @@ export interface CalendarEvent {
   platformBookingUrl?: string | null;
   oneTimePassword?: string | null;
 }
+
+export type AdditionalInfo = Record<string, unknown> & {calWarnings?: string[]};
+
+export type NewCalendarEventType = {
+  uid: string;
+  id: string;
+  thirdPartyRecurringEventId?: string | null;
+  type: string;
+  password: string;
+  url: string;
+  additionalInfo: AdditionalInfo;
+  iCalUID?: string | null;
+  location?: string | null;
+  hangoutLink?: string | null;
+  conferenceData?: ConferenceData;
+};
+
+export interface IntegrationCalendar
+  extends Ensure<Partial<SelectedCalendar>, 'externalId'> {
+  primary?: boolean;
+  name?: string;
+  readOnly?: boolean;
+  // For displaying the connected email address
+  email?: string;
+  primaryEmail?: string;
+  credentialId?: number | null;
+  integrationTitle?: string;
+}
+
+export type EventBusyDate = {
+  start: Date | string;
+  end: Date | string;
+  source?: string | null;
+};
+
+export interface Calendar {
+  createEvent(
+    event: CalendarEvent,
+    credentialId: number
+  ): Promise<NewCalendarEventType>;
+
+  updateEvent(
+    uid: string,
+    event: CalendarEvent,
+    externalCalendarId?: string | null
+  ): Promise<NewCalendarEventType | NewCalendarEventType[]>;
+
+  deleteEvent(
+    uid: string,
+    event: CalendarEvent,
+    externalCalendarId?: string | null
+  ): Promise<unknown>;
+
+  getAvailability(
+    dateFrom: string,
+    dateTo: string,
+    selectedCalendars: IntegrationCalendar[]
+  ): Promise<EventBusyDate[]>;
+
+  listCalendars(event?: CalendarEvent): Promise<IntegrationCalendar[]>;
+}
+
+/**
+ * @see [How to inference class type that implements an interface](https://stackoverflow.com/a/64765554/6297100)
+ */
+type Class<I, Args extends any[] = any[]> = new (...args: Args) => I;
+
+export type CalendarClass = Class<Calendar, [CredentialPayload]>;
