@@ -14,6 +14,7 @@ export type {VideoCallData} from './VideoApiAdapter';
 import type {bookingResponse} from '@/packages/features/bookings/lib/getBookingResponsesSchema';
 
 import type {Ensure} from './utils';
+import type { AppMeta } from "@/packages/types/App";
 
 export type IntervalLimitUnit = 'day' | 'week' | 'month' | 'year';
 
@@ -108,6 +109,15 @@ export type CalEventResponses = Record<
   }
 >;
 
+export type AppsStatus = {
+  appName: string;
+  type: AppMeta['type'];
+  success: number;
+  failures: number;
+  errors: string[];
+  warnings?: string[];
+};
+
 // If modifying this interface, probably should update builders/calendarEvent files
 export interface CalendarEvent {
   // Instead of sending this per event.
@@ -146,7 +156,7 @@ export interface CalendarEvent {
   recurrence?: string;
   recurringEvent?: RecurringEvent | null;
   eventTypeId?: number | null;
-  // appsStatus?: AppsStatus[];
+  appsStatus?: AppsStatus[];
   seatsShowAttendees?: boolean | null;
   seatsShowAvailabilityCount?: boolean | null;
   attendeeSeatId?: string;
