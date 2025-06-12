@@ -1,6 +1,8 @@
 // is production
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 
+// is development
+const IS_DEV = process.env.NODE_ENV === 'development';
 const MARKADO_URL = process.env.MARKADO_URL || (process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://app.markado.co');
 
 /** https://app.markado.co */
@@ -30,6 +32,10 @@ export const BOOKER_NUMBER_OF_DAYS_TO_LOAD = parseInt(
 
 export const DEFAULT_LIGHT_BRAND_COLOR = '#292929';
 export const DEFAULT_DARK_BRAND_COLOR = '#fafafa';
+
+// OAuth needs to have HTTPS(which is not generally setup locally) and a valid tld(*.local isn't a valid tld)
+// So for development purpose, we would stick to localhost only
+export const WEBAPP_URL_FOR_OAUTH = IS_PRODUCTION || IS_DEV ? WEBAPP_URL : "http://localhost:3000";
 
 export {
   MARKADO_URL,
