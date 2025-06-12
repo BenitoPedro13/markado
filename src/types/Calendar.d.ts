@@ -13,6 +13,8 @@ import type {calendar_v3} from 'googleapis';
 export type {VideoCallData} from './VideoApiAdapter';
 import type {bookingResponse} from '@/packages/features/bookings/lib/getBookingResponsesSchema';
 
+import type {Ensure} from './utils';
+
 export type IntervalLimitUnit = 'day' | 'week' | 'month' | 'year';
 
 export type IntervalLimit = Partial<
