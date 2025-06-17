@@ -29,7 +29,7 @@ type ResourceOwner =
       type: "team";
     }
   | {
-      id: number | null;
+      id: string | null;
       type: "user";
     };
 
