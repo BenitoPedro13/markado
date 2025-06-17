@@ -4,7 +4,7 @@ import type {
   DestinationCalendar,
   SelectedCalendar
 } from '~/prisma/app/generated/prisma/client';
-
+import type {Dayjs} from 'dayjs';
 import type {SchedulingType} from '~/prisma/enums';
 
 import type {Prisma} from '~/prisma/app/generated/prisma/client';
@@ -192,6 +192,32 @@ export type NewCalendarEventType = {
   hangoutLink?: string | null;
   conferenceData?: ConferenceData;
 };
+
+export type CalendarEventType = {
+  uid: string;
+  etag: string;
+  /** This is the actual caldav event url, not the location url. */
+  url: string;
+  summary: string;
+  description: string;
+  location: string;
+  sequence: number;
+  startDate: Date | Dayjs;
+  endDate: Date | Dayjs;
+  duration: {
+    weeks: number;
+    days: number;
+    hours: number;
+    minutes: number;
+    seconds: number;
+    isNegative: boolean;
+  };
+  organizer: string;
+  attendees: any[][];
+  recurrenceId: Time;
+  timezone: any;
+};
+
 
 export interface IntegrationCalendar
   extends Ensure<Partial<SelectedCalendar>, 'externalId'> {
