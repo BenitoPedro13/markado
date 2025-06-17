@@ -1,10 +1,10 @@
 import { useSearchParams } from "next/navigation";
 import { useEffect } from "react";
-import { shallow } from "zustand/shallow";
+// import { shallow } from "zustand/shallow";
 
-import { useTimePreferences } from "@/features/bookings/lib";
-import { localStorage } from "@/lib/webstorage";
-import { trpc } from "@/trpc/react";
+import { useTimePreferences } from "@/packages/features/bookings/lib";
+import { localStorage } from "@/packages/lib/webstorage";
+// import { trpc } from "@/trpc/react";
 
 import { useBookerStore } from "../../store";
 import { useOverlayCalendarStore } from "../OverlayCalendar/store";
@@ -30,47 +30,64 @@ export const useCalendars = ({ hasSession }: UseCalendarsProps) => {
     credentialId: number;
     externalId: string;
   }>("toggledConnectedCalendars", []);
-  const utils = trpc.useUtils();
+  // const utils = trpc.useUtils();
 
   const [calendarSettingsOverlay] = useOverlayCalendarStore(
     (state) => [state.calendarSettingsOverlayModal, state.setCalendarSettingsOverlayModal],
-    shallow
+    // shallow
   );
 
-  const { data: overlayBusyDates, isError } = trpc.viewer.availability.calendarOverlay.useQuery(
-    {
-      loggedInUsersTz: timezone || "Europe/London",
-      dateFrom: selectedDate,
-      dateTo: selectedDate,
-      calendarsToLoad: Array.from(set).map((item) => ({
-        credentialId: item.credentialId,
-        externalId: item.externalId,
-      })),
-    },
-    {
-      enabled: hasSession && set.size > 0 && switchEnabled,
-    }
-  );
+  // const {data: overlayBusyDates, isError} =
+  //   trpc.viewer.availability.calendarOverlay.useQuery(
+  //     {
+  //       loggedInUsersTz: timezone || 'Europe/London',
+  //       dateFrom: selectedDate,
+  //       dateTo: selectedDate,
+  //       calendarsToLoad: Array.from(set).map((item) => ({
+  //         credentialId: item.credentialId,
+  //         externalId: item.externalId
+  //       }))
+  //     },
+  //     {
+  //       // enabled: hasSession && set.size > 0 && switchEnabled,
+  //       enabled: false
+  //     }
+  //   );
+
+  // useEffect(
+  //   function refactorMeWithoutEffect() {
+  //     if (!isError) return;
+  //     clearSet();
+  //   },
+  //   [isError]
+  // );
 
   useEffect(
     function refactorMeWithoutEffect() {
-      if (!isError) return;
+      if (!false) return;
       clearSet();
     },
-    [isError]
+    [false]
   );
 
-  const { data, isPending } = trpc.viewer.connectedCalendars.useQuery(undefined, {
-    enabled: !!calendarSettingsOverlay || Boolean(searchParams?.get("overlayCalendar")),
-  });
+  // const {data, isPending} = trpc.viewer.connectedCalendars.useQuery(undefined, {
+  //   // enabled:
+  //   //   !!calendarSettingsOverlay ||
+  //   //   Boolean(searchParams?.get('overlayCalendar')),
+  //   enabled:
+  //     false
+  // });
 
   return {
-    overlayBusyDates,
+    // overlayBusyDates,
+    overlayBusyDates: undefined,
     isOverlayCalendarEnabled: switchEnabled,
-    connectedCalendars: data?.connectedCalendars || [],
-    loadingConnectedCalendar: isPending,
+    // connectedCalendars: data?.connectedCalendars || [],
+    connectedCalendars: [],
+    // loadingConnectedCalendar: isPending,
+    loadingConnectedCalendar: false,
     onToggleCalendar: (data: ToggledConnectedCalendars) => {
-      utils.viewer.availability.calendarOverlay.reset();
-    },
+      // utils.viewer.availability.calendarOverlay.reset();
+    }
   };
 };
