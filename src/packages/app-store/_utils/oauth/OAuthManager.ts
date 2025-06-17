@@ -571,7 +571,7 @@ export class OAuthManager {
 }
 
 function ensureValidResourceOwner(
-  resourceOwner: { id: number | null; type: "team" } | { id: number | null; type: "user" }
+  resourceOwner: { id: number | null; type: "team" } | { id: string | null; type: "user" }
 ) {
   if (resourceOwner.type === "team") {
     throw new Error("Teams are not supported");
