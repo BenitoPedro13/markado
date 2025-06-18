@@ -60,7 +60,7 @@ import { Optional } from "@/types/utils";
 
 // export type EventLocationType = DefaultEventLocationType | EventLocationTypeFromApp;
 
-// export const DailyLocationType = "integrations:daily";
+export const DailyLocationType = "integrations:daily";
 
 export const MeetLocationType = "integrations:google:meet";
 
