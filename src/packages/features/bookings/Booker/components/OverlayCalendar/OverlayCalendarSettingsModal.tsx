@@ -98,7 +98,7 @@ export function OverlayCalendarSettingsModal({
                                     )}
                                     src={
                                       isPlatform
-                                        ? `https://app.cal.com${item.integration.logo}`
+                                        ? `https://app.markado.co${item.integration.logo}`
                                         : item.integration.logo
                                     }
                                     alt={`${item.integration.title} logo`}
