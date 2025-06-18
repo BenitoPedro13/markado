@@ -78,9 +78,9 @@ export type RecurringBookingCreateBody = BookingCreateBody & {
   schedulingType?: SchedulingType;
 };
 
-// export type BookingResponse = Awaited<
-//   ReturnType<typeof import("@/features/bookings/lib/handleNewBooking").default>
-// >;
+export type BookingResponse = Awaited<
+  ReturnType<typeof import("@/packages/features/bookings/lib/handleNewBooking").default>
+>;
 
 // export type InstantBookingResponse = Awaited<
 //   ReturnType<typeof import("@/features/instant-meeting/handleInstantMeeting").default>
