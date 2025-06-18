@@ -120,6 +120,7 @@
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@types/bcryptjs": "^3.0.0",
+    "@types/express": "^5.0.3",
     "@types/jest": "^29.5.14",
     "@types/lodash": "^4.17.17",
     "@types/markdown-it": "^14.1.2",
