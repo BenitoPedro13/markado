@@ -28,7 +28,7 @@ export type DefaultEventLocationType = {
   label: string;
   messageForOrganizer: string;
   category: 'in person' | 'conferencing' | 'other' | 'phone';
-  linkType: 'static';
+  linkType: 'static' | 'dynamic';
 
   iconUrl: string;
   urlRegExp?: string;
@@ -72,6 +72,8 @@ export type EventLocationTypeFromApp = Ensure<
 export type EventLocationType =
   | DefaultEventLocationType
   | EventLocationTypeFromApp;
+
+export const DailyLocationType = "integrations:daily";
 
 export const MeetLocationType = 'integrations:google:meet';
 
@@ -260,4 +262,40 @@ export const getTranslatedLocation = (
       : locationKey;
 
   return translatedLocation;
+};
+
+/**
+ * It converts a static link based video location type(e.g. integrations:campfire_video) to it's value (e.g. https://campfire.to/my_link) set in the eventType.
+ * If the type provided is already a value(when displayLocationPublicly is on), it would just return that.
+ * For, dynamic link based video location apps, it doesn't do anything.
+ */
+export const getLocationValueForDB = (
+  bookingLocationTypeOrValue: EventLocationType["type"],
+  eventLocations: LocationObject[]
+) => {
+  let bookingLocation = bookingLocationTypeOrValue;
+  let conferenceCredentialId = undefined;
+
+  eventLocations.forEach((location) => {
+    if (location.type === bookingLocationTypeOrValue) {
+      const eventLocationType = getEventLocationType(bookingLocationTypeOrValue);
+      conferenceCredentialId = location.credentialId;
+      if (!eventLocationType) {
+        return;
+      }
+      if (!eventLocationType.default && eventLocationType.linkType === "dynamic") {
+        // Dynamic link based locations should still be saved as type. The beyond logic generates meeting URL based on the type.
+        // This difference can be avoided when we start storing both type and value of a location
+        return;
+      }
+
+      bookingLocation = location[eventLocationType.defaultValueVariable] || bookingLocation;
+    }
+  });
+
+  if (bookingLocation.trim().length === 0) {
+    bookingLocation = DailyLocationType;
+  }
+
+  return { bookingLocation, conferenceCredentialId };
 };
