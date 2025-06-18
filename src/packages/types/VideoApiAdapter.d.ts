@@ -1,13 +1,15 @@
-// import type {
-//   TSubmitBatchProcessorJobRes,
-//   batchProcessorBody,
-//   TGetTranscriptAccessLink,
-// } from "@/app-store/dailyvideo/zod";
-// import type { GetRecordingsResponseSchema, GetAccessLinkResponseSchema } from "@/prisma/zod-utils";
+import type {
+  TSubmitBatchProcessorJobRes,
+  batchProcessorBody,
+  TGetTranscriptAccessLink,
+} from "@/packages/app-store/dailyvideo/zod";
+import type { GetRecordingsResponseSchema, GetAccessLinkResponseSchema } from "@/prisma/zod-utils";
 
-// import type { EventBusyDate } from "./Calendar";
-// import type { CredentialPayload } from "./Credential";
-// import type {CalendarEvent} from '@/types/Calendar';
+import type { EventBusyDate } from "./Calendar";
+import type { CredentialPayload } from "./Credential";
+import type {CalendarEvent} from '@/types/Calendar';
+
+import type {PartialReference} from '@/packages/types/EventManager';
 
 export interface VideoCallData {
   type: string;
@@ -16,35 +18,35 @@ export interface VideoCallData {
   url: string;
 }
 
-// // VideoApiAdapter is defined by the Video App. The App currently can choose to not define it. So, consider in type that VideoApiAdapter can be undefined.
-// export type VideoApiAdapter =
-//   | {
-//       createMeeting(event: CalendarEvent): Promise<VideoCallData>;
+// VideoApiAdapter is defined by the Video App. The App currently can choose to not define it. So, consider in type that VideoApiAdapter can be undefined.
+export type VideoApiAdapter =
+  | {
+      createMeeting(event: CalendarEvent): Promise<VideoCallData>;
 
-//       updateMeeting(bookingRef: PartialReference, event: CalendarEvent): Promise<VideoCallData>;
+      updateMeeting(bookingRef: PartialReference, event: CalendarEvent): Promise<VideoCallData>;
 
-//       deleteMeeting(uid: string): Promise<unknown>;
+      deleteMeeting(uid: string): Promise<unknown>;
 
-//       getAvailability(dateFrom?: string, dateTo?: string): Promise<EventBusyDate[]>;
+      getAvailability(dateFrom?: string, dateTo?: string): Promise<EventBusyDate[]>;
 
-//       getRecordings?(roomName: string): Promise<GetRecordingsResponseSchema>;
+      getRecordings?(roomName: string): Promise<GetRecordingsResponseSchema>;
 
-//       getRecordingDownloadLink?(recordingId: string): Promise<GetAccessLinkResponseSchema>;
+      getRecordingDownloadLink?(recordingId: string): Promise<GetAccessLinkResponseSchema>;
 
-//       createInstantCalVideoRoom?(endTime: string): Promise<VideoCallData>;
+      createInstantCalVideoRoom?(endTime: string): Promise<VideoCallData>;
 
-//       getAllTranscriptsAccessLinkFromRoomName?(roomName: string): Promise<Array<string>>;
+      getAllTranscriptsAccessLinkFromRoomName?(roomName: string): Promise<Array<string>>;
 
-//       getAllTranscriptsAccessLinkFromMeetingId?(meetingId: string): Promise<Array<string>>;
+      getAllTranscriptsAccessLinkFromMeetingId?(meetingId: string): Promise<Array<string>>;
 
-//       submitBatchProcessorJob?(body: batchProcessorBody): Promise<TSubmitBatchProcessorJobRes>;
+      submitBatchProcessorJob?(body: batchProcessorBody): Promise<TSubmitBatchProcessorJobRes>;
 
-//       getTranscriptsAccessLinkFromRecordingId?(
-//         recordingId: string
-//       ): Promise<TGetTranscriptAccessLink["transcription"] | { message: string }>;
+      getTranscriptsAccessLinkFromRecordingId?(
+        recordingId: string
+      ): Promise<TGetTranscriptAccessLink["transcription"] | { message: string }>;
 
-//       checkIfRoomNameMatchesInRecording?(roomName: string, recordingId: string): Promise<boolean>;
-//     }
-//   | undefined;
+      checkIfRoomNameMatchesInRecording?(roomName: string, recordingId: string): Promise<boolean>;
+    }
+  | undefined;
 
-// export type VideoApiAdapterFactory = (credential: CredentialPayload) => VideoApiAdapter;
+export type VideoApiAdapterFactory = (credential: CredentialPayload) => VideoApiAdapter;
