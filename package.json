@@ -93,6 +93,7 @@
     "next-themes": "^0.4.3",
     "nodemailer": "^6.10.1",
     "prisma-kysely": "^1.8.0",
+    "qs-stringify": "^1.2.1",
     "react": "19.1.0",
     "react-aria-components": "^1.4.1",
     "react-day-picker": "8.10.1",
