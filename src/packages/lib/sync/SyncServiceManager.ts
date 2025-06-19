@@ -1,5 +1,5 @@
 import logger from "@/packages/lib/logger";
-import type { MembershipRole } from "~/prisma/enums";
+// import type { MembershipRole } from "~/prisma/enums";
 
 import { safeStringify } from "@/lib/safeStringify";
 import type { ConsoleUserInfoType, TeamInfoType, WebUserInfoType } from "./ISyncService";
@@ -8,29 +8,29 @@ import services from "./services";
 
 const log = logger.getSubLogger({ prefix: [`[[SyncServiceManager] `] });
 
-export const createConsoleUser = async (user: ConsoleUserInfoType | null | undefined) => {
-  if (user) {
-    log.debug("createConsoleUser", safeStringify({ user }));
-    try {
-      Promise.all(
-        services.map(async (serviceClass) => {
-          const service = new serviceClass();
-          if (service.ready()) {
-            if (service.console.user.upsert) {
-              await service.console.user.upsert(user);
-            } else {
-              await service.console.user.create(user);
-            }
-          }
-        })
-      );
-    } catch (e) {
-      log.warn("createConsoleUser", safeStringify({ error: e }));
-    }
-  } else {
-    log.warn("createConsoleUser:noUser", safeStringify({ user }));
-  }
-};
+// export const createConsoleUser = async (user: ConsoleUserInfoType | null | undefined) => {
+//   if (user) {
+//     log.debug("createConsoleUser", safeStringify({ user }));
+//     try {
+//       Promise.all(
+//         services.map(async (serviceClass) => {
+//           const service = new serviceClass();
+//           if (service.ready()) {
+//             if (service.console.user.upsert) {
+//               await service.console.user.upsert(user);
+//             } else {
+//               await service.console.user.create(user);
+//             }
+//           }
+//         })
+//       );
+//     } catch (e) {
+//       log.warn("createConsoleUser", safeStringify({ error: e }));
+//     }
+//   } else {
+//     log.warn("createConsoleUser:noUser", safeStringify({ user }));
+//   }
+// };
 
 export const createWebUser = async (user: WebUserInfoType | null | undefined) => {
   if (user) {
