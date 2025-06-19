@@ -1,7 +1,10 @@
 import logger from "@/packages/lib/logger";
 
-import type { SendgridFieldOptions, SendgridNewContact } from "../../Sendgrid";
-import Sendgrid from "../../Sendgrid";
+import type {
+  SendgridFieldOptions,
+  SendgridNewContact
+} from '@/packages/lib/Sendgrid';
+import Sendgrid from "@/packages/lib/Sendgrid";
 import type { ConsoleUserInfoType, WebUserInfoType } from "../ISyncService";
 import type ISyncService from "../ISyncService";
 import SyncServiceCore from "../ISyncService";
@@ -18,7 +21,7 @@ const markadoCoCustomContactFields: SendgridFieldOptions = [
 const serviceName = "sendgrid_service";
 
 export default class SendgridService extends SyncServiceCore implements ISyncService {
-  // protected declare service: Sendgrid;
+  protected declare service: Sendgrid;
   constructor() {
     super(serviceName, Sendgrid, logger.getSubLogger({ prefix: [`[[sync] ${serviceName}`] }));
   }
