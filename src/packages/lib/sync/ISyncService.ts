@@ -4,7 +4,7 @@ import { prisma as webPrisma } from "@/lib/prisma";
 export type UserInfo = {
   email: string;
   name: string | null;
-  id: number;
+  id: string;
   username: string | null;
   createdDate: Date;
 };
