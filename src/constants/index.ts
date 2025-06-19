@@ -16,6 +16,8 @@ export const WEBAPP_URL =
 export const WEBSITE_URL =
   process.env.NEXT_PUBLIC_WEBSITE_URL || 'https://markado.co';
 
+export const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME || 'Markado.co';
+
 // Extract just the domain part from the URL
 const MARKADO_DOMAIN = MARKADO_URL.includes('://')
   ? MARKADO_URL.split('://')[1].replace(/\/$/, '')
