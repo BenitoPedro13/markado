@@ -1,6 +1,6 @@
 import type {Prisma} from '~/prisma/app/generated/prisma/client';
 
-// import { DailyLocationType } from "@/core/locations";
+import { DailyLocationType } from "@/core/locations";
 import slugify from '@/lib/slugify';
 import {PeriodType, SchedulingType, ServiceBadgeColor} from '~/prisma/enums';
 import type {userSelect} from '~/prisma/selects';
@@ -67,7 +67,7 @@ const commons = {
   periodDays: null,
   slotInterval: null,
   offsetStart: 0,
-  // locations: [{ type: DailyLocationType }],
+  locations: [{ type: DailyLocationType }],
   customInputs,
   disableGuests: true,
   minimumBookingNotice: 120,
@@ -112,7 +112,8 @@ const commons = {
   rescheduleWithSameRoundRobinHost: false,
   useEventTypeDestinationCalendarEmail: false,
   secondaryEmailId: null,
-  secondaryEmail: null
+  secondaryEmail: null,
+  profile: null
 };
 
 export const dynamicEvent = {
