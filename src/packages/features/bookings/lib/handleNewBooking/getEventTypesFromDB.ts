@@ -165,9 +165,10 @@ export const getEventTypesFromDB = async (eventTypeId: number) => {
 
   const isOrgTeamEvent =
     'team' in eventType && !!eventType?.team && !!profile!?.organizationId;
-
+    
   return {
     ...eventType,
+    profile: eventType.profile,
     metadata: EventTypeMetaDataSchema.parse(eventType?.metadata || {}),
     recurringEvent: parseRecurringEvent(eventType?.recurringEvent),
     customInputs: customInputSchema.array().parse(eventType?.customInputs || []),
