@@ -137,6 +137,8 @@ model User {
   destinationCalendar DestinationCalendar?
   allowDynamicBooking Boolean?                @default(true)
   allowSEOIndexing    Boolean?                @default(true)
+  /// @zod.custom(imports.userMetadata)
+  metadata            Json?
   verified            Boolean?                @default(false)
   role                UserPermissionRole      @default(USER)
   apiKeys             ApiKey[]
@@ -1109,6 +1111,8 @@ model Booking {
   /// @zod.custom(imports.bookingMetadataSchema)
   metadata                     Json?
   isRecorded                   Boolean                        @default(false)
+  iCalUID                      String?                        @default("")
+  iCalSequence                 Int                            @default(0)
   instantMeetingToken          InstantMeetingToken?
   rating                       Int?
   ratingFeedback               String?
