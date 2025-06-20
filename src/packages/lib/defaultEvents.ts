@@ -97,7 +97,7 @@ const commons = {
   bookingLimits: null,
   durationLimits: null,
   hidden: false,
-  userId: 0,
+  userId: "",
   parentId: null,
   parent: null,
   owner: null,
