@@ -78,6 +78,7 @@
     "eslint-config-prettier": "^10.1.1",
     "express": "^5.1.0",
     "googleapis": "^148.0.0",
+    "handlebars": "^4.7.8",
     "ical.js": "^2.1.0",
     "ics": "^3.8.1",
     "js-cookie": "^3.0.5",
