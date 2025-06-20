@@ -102,7 +102,7 @@ export function getPiiFreeEventType(eventType: Partial<Omit<EventType, "recurrin
 }
 
 export function getPiiFreeUser(user: {
-  id?: number;
+  id?: string;
   username?: string | null;
   isFixed?: boolean;
   timeZone?: string;
