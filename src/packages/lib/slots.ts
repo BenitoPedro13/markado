@@ -124,14 +124,6 @@ function buildSlots({
     return startOfInviteeDay.tz(inviteeTimeZone).add(minutes, "minutes");
   };
   for (const item of Object.values(slotsTimeFrameAvailable)) {
-    /*
-     * @calcom/web:dev: 2022-11-06T00:00:00-04:00
-     * @calcom/web:dev: 2022-11-06T01:00:00-04:00
-     * @calcom/web:dev: 2022-11-06T01:00:00-04:00 <-- note there is no offset change, but we did lose an hour.
-     * @calcom/web:dev: 2022-11-06T02:00:00-04:00
-     * @calcom/web:dev: 2022-11-06T03:00:00-04:00
-     * ...
-     */
     slots.push({
       userIds: item.userIds,
       time: getTime(item.startTime),
