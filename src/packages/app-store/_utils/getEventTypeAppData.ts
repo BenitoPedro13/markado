@@ -1,13 +1,15 @@
-import type { z } from "zod";
+import type {z} from 'zod';
 
-import type { BookerEvent } from "@/packages/features/bookings/types";
-import type { EventTypeMetaDataSchema } from "~/prisma/zod-utils";
-
-export type EventTypeApps = NonNullable<NonNullable<z.infer<typeof EventTypeMetaDataSchema>>["apps"]>;
+import type {BookerEvent} from '@/packages/features/bookings/types';
+import type {EventTypeMetaDataSchema} from '~/prisma/zod-utils';
+import type {paymentOptionEnum} from '@/packages/app-store/stripepayment/zod';
+export type EventTypeApps = NonNullable<
+  NonNullable<z.infer<typeof EventTypeMetaDataSchema>>['apps']
+>;
 export type EventTypeAppsList = keyof EventTypeApps;
 
 export const getEventTypeAppData = <T extends EventTypeAppsList>(
-  eventType: Pick<BookerEvent, "price" | "currency" | "metadata">,
+  eventType: Pick<BookerEvent, 'price' | 'currency' | 'metadata'>,
   appId: T,
   forcedGet?: boolean
 ): EventTypeApps[T] => {
@@ -39,7 +41,7 @@ export const getEventTypeAppData = <T extends EventTypeAppsList>(
       price: eventType.price,
       // Currency default is "usd" in DB.So, it would also be available always
       currency: eventType.currency,
-      paymentOption: 'ON_BOOKING'
+      paymentOption: 'ON_BOOKING' as z.infer<typeof paymentOptionEnum>
     },
     giphy: {
       enabled: !!eventType.metadata?.giphyThankYouPage,
@@ -51,6 +53,6 @@ export const getEventTypeAppData = <T extends EventTypeAppsList>(
   const legacyAppData =
     legacyAppsData[appId as Extract<T, keyof typeof legacyAppsData>];
   // const allowDataGet = forcedGet ? true : legacyAppData?.enabled;
-  const allowDataGet = true
+  const allowDataGet = true;
   return allowDataGet ? legacyAppData : undefined;
 };
