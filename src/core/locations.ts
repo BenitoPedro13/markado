@@ -10,6 +10,7 @@ import { appStoreMetadata } from "@/packages/app-store/bookerAppsMetaData";
 // import type { Ensure, Optional } from "@/types/utils";
 
 import type { EventLocationTypeFromAppMeta } from "@/packages/types/App";
+import { TFunction } from "next-i18next";
 
 // export type DefaultEventLocationType = {
 //   default: true;
@@ -332,25 +333,25 @@ export const privacyFilteredLocations = (locations: LocationObject[]): PrivacyFi
 //  * @param translationFunction
 //  * @returns
 //  */
-// export const getHumanReadableLocationValue = (
-//   linkValue: string | undefined | null,
-//   translationFunction: TFunction
-// ): string => {
-//   if (!linkValue) {
-//     return translationFunction("no_location");
-//   }
+export const getHumanReadableLocationValue = (
+  linkValue: string | undefined | null,
+  translationFunction: TFunction
+): string => {
+  if (!linkValue) {
+    return translationFunction("no_location");
+  }
 
-//   // Just in case linkValue is a `locationType.type`(for old bookings)
-//   const eventLocationType = getEventLocationType(linkValue);
-//   const isDefault = eventLocationType?.default;
-//   if (eventLocationType) {
-//     // If we can find a video location based on linkValue then it means that the linkValue is something like integrations:google-meet and in that case we don't have the meeting URL to show.
-//     // Show a generic message in that case.
-//     return isDefault ? translationFunction(eventLocationType.label) : `${eventLocationType.label}`;
-//   }
-//   // Otherwise just show the available link value.
-//   return linkValue || "";
-// };
+  // Just in case linkValue is a `locationType.type`(for old bookings)
+  const eventLocationType = getEventLocationType(linkValue);
+  const isDefault = eventLocationType?.default;
+  if (eventLocationType) {
+    // If we can find a video location based on linkValue then it means that the linkValue is something like integrations:google-meet and in that case we don't have the meeting URL to show.
+    // Show a generic message in that case.
+    return isDefault ? translationFunction(eventLocationType.label) : `${eventLocationType.label}`;
+  }
+  // Otherwise just show the available link value.
+  return linkValue || "";
+};
 
 // export const locationKeyToString = (location: LocationObject) => {
 //   const eventLocationType = getEventLocationType(location.type);
