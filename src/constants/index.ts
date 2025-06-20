@@ -50,6 +50,12 @@ export const DEFAULT_DARK_BRAND_COLOR = '#fafafa';
 export const WEBAPP_URL_FOR_OAUTH =
   IS_PRODUCTION || IS_DEV ? WEBAPP_URL : 'http://localhost:3000';
 
+/**
+ * The maximum number of days we should check for if we don't find all required bookable days
+ * Counter start from current day and we would like to not go beyond 2 months(max days possible) from current day.
+ */
+export const ROLLING_WINDOW_PERIOD_MAX_DAYS_TO_CHECK = 30 + 31;
+
 export {
   MARKADO_URL,
   MARKADO_DOMAIN,
