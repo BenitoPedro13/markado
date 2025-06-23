@@ -25,7 +25,7 @@ export const getScheduleSchema = z
     isTeamEvent: z.boolean().optional().default(false),
     orgSlug: z.string().nullish(),
     teamMemberEmail: z.string().nullish(),
-    routedTeamMemberIds: z.array(z.number()).nullish(),
+    routedTeamMemberIds: z.array(z.string()).nullish(),
     skipContactOwner: z.boolean().nullish(),
     _enableTroubleshooter: z.boolean().optional(),
     _bypassCalendarBusyTimes: z.boolean().optional(),
@@ -61,7 +61,7 @@ export const reserveSlotSchema = z
 
 export type Slot = {
   time: string;
-  userIds?: number[];
+  userIds?: string[];
   attendees?: number;
   bookingUid?: string;
   users?: string[];
