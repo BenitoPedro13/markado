@@ -23,7 +23,7 @@ export type NewSeatedBookingObject = {
   bookerPhoneNumber?: string | null;
   tAttendees: TFunction;
   bookingSeat: BookingSeat;
-  reqUserId: number | undefined;
+  reqUserId: string | undefined;
   rescheduleReason: RescheduleReason;
   reqBodyUser: string | string[] | undefined;
   noEmail: NoEmail;
