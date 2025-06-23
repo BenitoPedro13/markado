@@ -42,7 +42,7 @@ export type NewSeatedBookingObject = {
   eventTrigger: WebhookTriggerEvents;
   responses: z.infer<ReturnType<typeof getBookingDataSchema>>["responses"] | null;
   rescheduledBy?: string;
-  workflows: Workflow[];
+  // workflows: Workflow[];
 };
 
 export type RescheduleSeatedBookingObject = NewSeatedBookingObject & { rescheduleUid: string };
