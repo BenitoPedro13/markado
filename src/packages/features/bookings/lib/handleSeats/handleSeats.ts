@@ -30,7 +30,7 @@ const handleSeats = async (newSeatedBookingObject: NewSeatedBookingObject) => {
     subscriberOptions,
     eventTrigger,
     evt,
-    workflows,
+    // workflows,
     rescheduledBy,
   } = newSeatedBookingObject;
 
