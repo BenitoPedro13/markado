@@ -202,7 +202,7 @@ export const useBookingSuccessRedirect = () => {
     // Ensures that the param is added both to external redirect url and booking success page URL
     query = {
       ...query,
-      'cal.rerouting': searchParams.get('cal.rerouting')
+      'markado.rerouting': searchParams.get('markado.rerouting')
     };
 
     if (successRedirectUrl) {
