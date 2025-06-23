@@ -82,9 +82,9 @@ export type BookingResponse = Awaited<
   ReturnType<typeof import("@/packages/features/bookings/lib/handleNewBooking").default>
 >;
 
-// export type InstantBookingResponse = Awaited<
-//   ReturnType<typeof import("@/features/instant-meeting/handleInstantMeeting").default>
-// >;
+export type InstantBookingResponse = Awaited<
+  ReturnType<typeof import("@/packages/features/instant-meeting/handleInstantMeeting").default>
+>;
 
 // export type MarkNoShowResponse = Awaited<
 //   ReturnType<typeof import("@/features/handleMarkNoShow").default>
