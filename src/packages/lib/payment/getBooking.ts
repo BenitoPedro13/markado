@@ -1,4 +1,4 @@
-// import { workflowSelect } from "@/ee/workflows/lib/getAllWorkflows";
+import { workflowSelect } from "@/packages/features/workflows/lib/getAllWorkflows";
 import {getCalEventResponses} from '@/packages/features/bookings/lib/getCalEventResponses';
 import {isPrismaObjOrUndefined, parseRecurringEvent} from '@/packages/lib';
 import {HttpError as HttpCode} from '@/packages/lib/http-error';
@@ -54,7 +54,7 @@ export async function getBooking(bookingId: number) {
           workflows: {
             select: {
               workflow: {
-                // select: workflowSelect
+                select: workflowSelect
               }
             }
           },
