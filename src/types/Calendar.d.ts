@@ -49,7 +49,7 @@ export type Person = {
   timeZone: string;
   language: {translate: TFunction; locale: string};
   username?: string;
-  id?: number | string;
+  id?: string;
   bookingId?: number | null;
   locale?: string | null;
   timeFormat?: TimeFormat;
