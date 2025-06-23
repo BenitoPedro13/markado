@@ -154,31 +154,42 @@ export default class EventManager {
       // See if cal video is enabled & has keys
       const calVideo = await prisma.app.findFirst({
         where: {
-          slug: "daily-video",
+          slug: 'daily-video'
         },
         select: {
           keys: true,
-          enabled: true,
-        },
+          enabled: true
+        }
       });
 
       const calVideoKeys = calVideoKeysSchema.safeParse(calVideo?.keys);
 
-      if (calVideo?.enabled && calVideoKeys.success) evt["location"] = "integrations:daily";
+      if (calVideo?.enabled && calVideoKeys.success)
+        evt['location'] = 'integrations:daily';
     }
 
-    // Fallback to Cal Video if Google Meet is selected w/o a Google Cal
+    // Fallback to Markado Video if Google Meet is selected w/o a Google Cal
     // @NOTE: destinationCalendar it's an array now so as a fallback we will only check the first one
     const [mainHostDestinationCalendar] =
-      (evt.destinationCalendar as [undefined | NonNullable<typeof evt.destinationCalendar>[number]]) ?? [];
-    if (evt.location === MeetLocationType && mainHostDestinationCalendar?.integration !== "google_calendar") {
-      log.warn("Falling back to Cal Video integration as Google Calendar not installed");
-      evt["location"] = "integrations:daily";
-      evt["conferenceCredentialId"] = undefined;
+      (evt.destinationCalendar as [
+        undefined | NonNullable<typeof evt.destinationCalendar>[number]
+      ]) ?? [];
+    if (
+      evt.location === MeetLocationType &&
+      mainHostDestinationCalendar?.integration !== 'google_calendar'
+    ) {
+      log.warn(
+        'Falling back to Markado Video integration as Google Calendar not installed'
+      );
+      evt['location'] = 'integrations:daily';
+      evt['conferenceCredentialId'] = undefined;
     }
-    const isDedicated = evt.location ? isDedicatedIntegration(evt.location) : null;
+    const isDedicated = evt.location
+      ? isDedicatedIntegration(evt.location)
+      : null;
 
-    const results: Array<EventResult<Exclude<Event, AdditionalInformation>>> = [];
+    const results: Array<EventResult<Exclude<Event, AdditionalInformation>>> =
+      [];
 
     // If and only if event type is a dedicated meeting, create a dedicated video meeting.
     if (isDedicated) {
@@ -190,12 +201,12 @@ export default class EventManager {
         result.type = result.createdEvent.type;
         //responses data is later sent to webhook
         if (evt.location && evt.responses) {
-          evt.responses["location"] = {
-            ...(evt.responses["location"] ?? {}),
+          evt.responses['location'] = {
+            ...(evt.responses['location'] ?? {}),
             value: {
-              optionValue: "",
-              value: evt.location,
-            },
+              optionValue: '',
+              value: evt.location
+            }
           };
         }
       }
@@ -213,7 +224,7 @@ export default class EventManager {
     const isCalendarResult = (
       result: (typeof results)[number]
     ): result is EventResult<NewCalendarEventType> => {
-      return result.type.includes("_calendar");
+      return result.type.includes('_calendar');
     };
 
     // results.push(...(await this.createAllCRMEvents(clonedCalEvent)));
@@ -222,30 +233,43 @@ export default class EventManager {
     const referencesToCreate = results.map((result) => {
       let thirdPartyRecurringEventId;
       let createdEventObj: createdEventSchema | null = null;
-      if (typeof result?.createdEvent === "string") {
-        createdEventObj = createdEventSchema.parse(JSON.parse(result.createdEvent));
+      if (typeof result?.createdEvent === 'string') {
+        createdEventObj = createdEventSchema.parse(
+          JSON.parse(result.createdEvent)
+        );
       }
       const isCalendarType = isCalendarResult(result);
       if (isCalendarType) {
         evt.iCalUID = result.iCalUID || event.iCalUID || undefined;
-        thirdPartyRecurringEventId = result.createdEvent?.thirdPartyRecurringEventId;
+        thirdPartyRecurringEventId =
+          result.createdEvent?.thirdPartyRecurringEventId;
       }
 
       return {
         type: result.type,
-        uid: createdEventObj ? createdEventObj.id : result.createdEvent?.id?.toString() ?? "",
-        thirdPartyRecurringEventId: isCalendarType ? thirdPartyRecurringEventId : undefined,
-        meetingId: createdEventObj ? createdEventObj.id : result.createdEvent?.id?.toString(),
-        meetingPassword: createdEventObj ? createdEventObj.password : result.createdEvent?.password,
-        meetingUrl: createdEventObj ? createdEventObj.onlineMeetingUrl : result.createdEvent?.url,
+        uid: createdEventObj
+          ? createdEventObj.id
+          : (result.createdEvent?.id?.toString() ?? ''),
+        thirdPartyRecurringEventId: isCalendarType
+          ? thirdPartyRecurringEventId
+          : undefined,
+        meetingId: createdEventObj
+          ? createdEventObj.id
+          : result.createdEvent?.id?.toString(),
+        meetingPassword: createdEventObj
+          ? createdEventObj.password
+          : result.createdEvent?.password,
+        meetingUrl: createdEventObj
+          ? createdEventObj.onlineMeetingUrl
+          : result.createdEvent?.url,
         externalCalendarId: isCalendarType ? result.externalId : undefined,
-        credentialId: result?.credentialId || undefined,
+        credentialId: result?.credentialId || undefined
       };
     });
 
     return {
       results,
-      referencesToCreate,
+      referencesToCreate
     };
   }
 
@@ -756,15 +780,16 @@ export default class EventManager {
     }
 
     /** @fixme potential bug since Google Meet are saved as `integrations:google:meet` and there are no `google:meet` type in our DB */
-    const integrationName = event.location.replace("integrations:", "");
+    const integrationName = event.location.replace('integrations:', '');
     let videoCredential;
     if (event.conferenceCredentialId) {
       videoCredential = this.videoCredentials.find(
         (credential) => credential.id === event.conferenceCredentialId
       );
     } else {
-      videoCredential = this.videoCredentials.find((credential: CredentialPayload) =>
-        credential.type.includes(integrationName)
+      videoCredential = this.videoCredentials.find(
+        (credential: CredentialPayload) =>
+          credential.type.includes(integrationName)
       );
       log.warn(
         `Could not find conferenceCredentialId for event with location: ${event.location}, trying to use last added video credential`
@@ -772,14 +797,14 @@ export default class EventManager {
     }
 
     /**
-     * This might happen if someone tries to use a location with a missing credential, so we fallback to Cal Video.
+     * This might happen if someone tries to use a location with a missing credential, so we fallback to Markado Video.
      * @todo remove location from event types that has missing credentials
      * */
     if (!videoCredential) {
       log.warn(
         `Falling back to "daily" video integration for event with location: ${event.location} because credential is missing for the app`
       );
-      videoCredential = { ...FAKE_DAILY_CREDENTIAL };
+      videoCredential = {...FAKE_DAILY_CREDENTIAL};
     }
 
     return videoCredential;
