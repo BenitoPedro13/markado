@@ -298,7 +298,7 @@ export const bookingCreateBodySchema = z.object({
   seatReferenceUid: z.string().optional(),
   orgSlug: z.string().optional(),
   teamMemberEmail: z.string().nullish(),
-  routedTeamMemberIds: z.array(z.number()).nullish(),
+  routedTeamMemberIds: z.array(z.string()).nullish(),
   routingFormResponseId: z.number().optional(),
   skipContactOwner: z.boolean().optional(),
 
@@ -350,7 +350,7 @@ export const extendedBookingCreateBody = bookingCreateBodySchema.merge(
         })
       )
       .optional(),
-    luckyUsers: z.array(z.number()).optional(),
+    luckyUsers: z.array(z.string()).optional(),
     customInputs: z.undefined().optional()
   })
 );
