@@ -1,3 +1,5 @@
+"use server"
+
 import type { IncomingMessage } from "http";
 
 import type { TGetScheduleInputSchema } from "~/trpc/server/schemas/public/getSchedule.schema";

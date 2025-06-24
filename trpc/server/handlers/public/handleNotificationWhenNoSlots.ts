@@ -1,3 +1,5 @@
+"use server"
+
 import type { Dayjs } from "@/lib/dayjs";
 // import { sendOrganizationAdminNoSlotsNotification } from "@/emails";
 // import { RedisService } from "@/features/redis/RedisService";
