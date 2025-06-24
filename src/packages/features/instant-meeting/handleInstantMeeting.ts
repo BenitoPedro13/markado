@@ -223,7 +223,7 @@ async function handler(req: NextApiRequest) {
   const calVideoMeeting = await createInstantMeetingWithCalVideo(dayjs.utc(reqBody.end).toISOString());
 
   if (!calVideoMeeting) {
-    throw new Error("Cal Video Meeting Creation Failed");
+    throw new Error("Markado Video Meeting Creation Failed");
   }
 
   const bookingReferenceToCreate = [
