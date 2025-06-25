@@ -20,14 +20,14 @@ const getEnabledAppsFromCredentials = async (
     where?: Prisma.AppWhereInput;
     filterOnCredentials?: boolean;
   }
-) => {
-  const { where: _where = {}, filterOnCredentials = false } = options || {};
+): Promise<EnabledApp[]> => {
+  const {where: _where = {}, filterOnCredentials = false} = options || {};
   const filterOnIds = {
     credentials: {
       some: {
-        OR: [] as Prisma.CredentialWhereInput[],
-      },
-    },
+        OR: [] as Prisma.CredentialWhereInput[]
+      }
+    }
   } satisfies Prisma.AppWhereInput;
 
   if (filterOnCredentials) {
@@ -38,25 +38,29 @@ const getEnabledAppsFromCredentials = async (
       if (credential.userId) userIds.push(credential.userId);
       if (credential.teamId) teamIds.push(credential.teamId);
     }
-    if (userIds.length) filterOnIds.credentials.some.OR.push({ userId: { in: userIds } });
-    if (teamIds.length) filterOnIds.credentials.some.OR.push({ teamId: { in: teamIds } });
+    if (userIds.length)
+      filterOnIds.credentials.some.OR.push({userId: {in: userIds}});
+    if (teamIds.length)
+      filterOnIds.credentials.some.OR.push({teamId: {in: teamIds}});
   }
 
   const where: Prisma.AppWhereInput = {
     enabled: true,
     ..._where,
-    ...(filterOnIds.credentials.some.OR.length && filterOnIds),
+    ...(filterOnIds.credentials.some.OR.length && filterOnIds)
   };
 
   const enabledApps = await prisma.app.findMany({
     where,
-    select: { slug: true, enabled: true },
+    select: {slug: true, enabled: true}
   });
   const apps = getApps(credentials, filterOnCredentials);
   const filteredApps = apps.reduce((reducedArray, app) => {
-    const appDbQuery = enabledApps.find((metadata) => metadata.slug === app.slug);
+    const appDbQuery = enabledApps.find(
+      (metadata) => metadata.slug === app.slug
+    );
     if (appDbQuery?.enabled || app.isGlobal) {
-      reducedArray.push({ ...app, enabled: true });
+      reducedArray.push({...app, enabled: true});
     }
     return reducedArray;
   }, [] as EnabledApp[]);
