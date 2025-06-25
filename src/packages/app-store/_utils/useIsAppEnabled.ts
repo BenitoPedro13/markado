@@ -1,11 +1,12 @@
 import { useState } from "react";
 
 import { useAppContextWithSchema } from "@/packages/app-store/EventTypeAppContext";
+import { eventTypeAppCardZod } from "@/packages/app-store/eventTypeAppCardZod";
 
 import type { EventTypeAppCardApp } from "../types";
 
 function useIsAppEnabled(app: EventTypeAppCardApp) {
-  const { getAppData, setAppData } = useAppContextWithSchema();
+  const { getAppData, setAppData } = useAppContextWithSchema<typeof eventTypeAppCardZod>();
   const [enabled, setEnabled] = useState(() => {
     const isAppEnabled = getAppData("enabled");
 
