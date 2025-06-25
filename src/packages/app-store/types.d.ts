@@ -2,6 +2,7 @@ import type React from "react";
 import type { z } from "zod";
 
 import type { EventTypeFormMetadataSchema } from "~/prisma/zod-utils";
+import { integrationsHandler } from "~/trpc/server/handlers/integrations.handler";
 // import type { RouterOutputs } from "@/trpc/react";
 // import type { ButtonProps } from "@/ui";
 
@@ -22,10 +23,18 @@ export type CredentialOwner = {
   readOnly?: boolean;
 };
 
-export type EventTypeAppCardApp = RouterOutputs["viewer"]["integrations"]["items"][number] & {
+export type EventTypeAppCardApp = Awaited<
+  ReturnType<typeof integrationsHandler>
+>['items'][number] & {
   credentialOwner?: CredentialOwner;
   credentialIds?: number[];
 };
+
+
+// export type EventTypeAppCardApp = RouterOutputs["viewer"]["integrations"]["items"][number] & {
+//   credentialOwner?: CredentialOwner;
+//   credentialIds?: number[];
+// };
 
 type AppScript = { attrs?: Record<string, string> } & { src?: string; content?: string };
 

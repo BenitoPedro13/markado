@@ -45,7 +45,9 @@ export const integrationsHandler = async ({input}: IntegrationsOptions) => {
   const session = await auth();
 
   if(!session) {
-    return
+    return {
+      items: []
+    };
   }
 
   const {
