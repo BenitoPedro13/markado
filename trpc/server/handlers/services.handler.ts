@@ -8,7 +8,7 @@ import {EventTypeRepository} from '@/repositories/eventType';
 import {generateHashedLink} from '@/lib/generateHashedLink';
 // import {setDestinationCalendarHandler} from './destinationCalendar.handler';
 import type {PrismaClient} from '~/prisma/app/generated/prisma/client';
-import {SchedulingType, UserPermissionRole} from '~/prisma/enums';
+import {SchedulingType, ServiceBadgeColor, UserPermissionRole} from '~/prisma/enums';
 import type {
   EventTypeLocation,
   TDeleteInputSchema,
@@ -246,6 +246,80 @@ type EnrichedUser = Awaited<
   >
 >;
 
+type CreateServicesBatchInput = {
+  teamId?: number;
+};
+
+export const createServicesBatch = async ({ teamId }: CreateServicesBatchInput ) => {
+  const session = await auth();
+
+  if (!session) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "createServicesBatch: Could not get the user session",
+    });
+  }
+
+  if (!session.user) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "createServicesBatch: Not authenticated",
+    });
+  }
+
+  const user = await UserRepository.findByIdOrThrow({ id: session.user.id });
+  const enrichedUser = await UserRepository.enrichUserWithItsProfile({ user });
+  const profile = enrichedUser.profile;
+
+  const userId = session.user.id;
+
+  const servicesToCreate = [
+    {
+      title: "Consulta Rápida 15min",
+      slug: "consulta-rapida-15min",
+      length: 15,
+      price: 50,
+      badgeColor: "faded" as ServiceBadgeColor,
+      hidden: false,
+      description: "Serviço padrão para consultas rápidas",
+      teamId: teamId ?? null,
+      userId,
+      profileId: profile.id,
+    },
+    {
+      title: "Consulta Completa 60min",
+      slug: "consulta-completa-60min",
+      length: 60,
+      price: 150,
+      badgeColor: "success" as ServiceBadgeColor,
+      hidden: false,
+      description: "Serviço padrão para consultas completas",
+      teamId: teamId ?? null,
+      userId,
+      profileId: profile.id,
+    },
+    {
+      title: "Avaliação Inicial 30min",
+      slug: "avaliacao-inicial-30min",
+      length: 30,
+      price: 80,
+      badgeColor: "warning" as ServiceBadgeColor,
+      hidden: false,
+      description: "Serviço padrão para avaliação inicial",
+      teamId: teamId ?? null,
+      userId,
+      profileId: profile.id,
+    },
+  ];
+
+  const created = await prisma.eventType.createMany({
+    data: servicesToCreate,
+    skipDuplicates: true,
+  });
+
+  return created;
+};
+
 export const getEventTypesFromGroup = async ({
   // ctx,
   input
@@ -310,6 +384,29 @@ export const getEventTypesFromGroup = async ({
   while (eventTypes.length < limit && (nextCursor || isFetchingForFirstTime)) {
     await fetchAndFilterEventTypes();
     isFetchingForFirstTime = false;
+  }
+
+  if (eventTypes.length === 0) {
+    await createServicesBatch({ teamId: group.teamId ?? undefined });
+    const newBatch = await fetchEventTypesBatch(
+      enrichedUser,
+      input,
+      shouldListUserEvents,
+      null,
+      searchQuery
+    );
+
+    const filteredBatch = await filterEventTypes(
+      newBatch.eventTypes,
+      enrichedUser.id,
+      shouldListUserEvents,
+      group.teamId
+    );
+
+    return {
+      eventTypes: filteredBatch,
+      nextCursor: newBatch.nextCursor ?? undefined
+    };
   }
 
   return {
