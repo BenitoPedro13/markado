@@ -49,6 +49,7 @@ import {
   handlePeriodType
 } from '~/trpc/server/utils/services/util';
 import {TUpdateInputSchema} from '~/trpc/server/schemas/services.schema';
+import { baseServices } from '@/data/services';
 
 // Create
 
@@ -246,21 +247,10 @@ type EnrichedUser = Awaited<
   >
 >;
 
-type CreateServicesBatchInput = {
-  teamId?: number;
-};
-
-export const createServicesBatch = async ({ teamId }: CreateServicesBatchInput ) => {
+export const createServicesBatch = async () => {
   const session = await auth();
 
-  if (!session) {
-    throw new TRPCError({
-      code: "UNAUTHORIZED",
-      message: "createServicesBatch: Could not get the user session",
-    });
-  }
-
-  if (!session.user) {
+  if (!session || !session.user) {
     throw new TRPCError({
       code: "UNAUTHORIZED",
       message: "createServicesBatch: Not authenticated",
@@ -270,55 +260,39 @@ export const createServicesBatch = async ({ teamId }: CreateServicesBatchInput )
   const user = await UserRepository.findByIdOrThrow({ id: session.user.id });
   const enrichedUser = await UserRepository.enrichUserWithItsProfile({ user });
   const profile = enrichedUser.profile;
-
   const userId = session.user.id;
 
-  const servicesToCreate = [
-    {
-      title: "Consulta Rápida 15min",
-      slug: "consulta-rapida-15min",
-      length: 15,
-      price: 50,
-      badgeColor: "faded" as ServiceBadgeColor,
-      hidden: false,
-      description: "Serviço padrão para consultas rápidas",
-      teamId: teamId ?? null,
-      userId,
-      profileId: profile.id,
-    },
-    {
-      title: "Consulta Completa 60min",
-      slug: "consulta-completa-60min",
-      length: 60,
-      price: 150,
-      badgeColor: "success" as ServiceBadgeColor,
-      hidden: false,
-      description: "Serviço padrão para consultas completas",
-      teamId: teamId ?? null,
-      userId,
-      profileId: profile.id,
-    },
-    {
-      title: "Avaliação Inicial 30min",
-      slug: "avaliacao-inicial-30min",
-      length: 30,
-      price: 80,
-      badgeColor: "warning" as ServiceBadgeColor,
-      hidden: false,
-      description: "Serviço padrão para avaliação inicial",
-      teamId: teamId ?? null,
-      userId,
-      profileId: profile.id,
-    },
-  ];
+  const servicesToCreate = baseServices.map(service => ({
+  ...service,
+  userId,
+  profileId: profile.id,
+  hidden: false,
+  locations: service.locations ? JSON.parse(JSON.stringify(service.locations)) : null,
+}));
 
-  const created = await prisma.eventType.createMany({
-    data: servicesToCreate,
-    skipDuplicates: true,
-  });
+  try {
+    await prisma.eventType.createMany({
+      data: servicesToCreate,
+      skipDuplicates: true,
+    });
 
-  return created;
-};
+  } catch (e) {
+    console.warn("Erro ao criar batch de serviços:", e);
+    if (e instanceof PrismaClientKnownRequestError) {
+      if (
+        e.code === "P2002" &&
+        Array.isArray(e.meta?.target) &&
+        e.meta.target.includes("slug")
+      ) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "One or more service slugs already exist for the user.",
+        });
+      }
+    }
+    throw new TRPCError({ code: "BAD_REQUEST", message: "Failed to create services batch." });
+  }
+}
 
 export const getEventTypesFromGroup = async ({
   // ctx,
@@ -387,7 +361,7 @@ export const getEventTypesFromGroup = async ({
   }
 
   if (eventTypes.length === 0) {
-    await createServicesBatch({ teamId: group.teamId ?? undefined });
+    await createServicesBatch();
     const newBatch = await fetchEventTypesBatch(
       enrichedUser,
       input,
