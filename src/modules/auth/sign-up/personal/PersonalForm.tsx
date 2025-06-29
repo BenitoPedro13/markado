@@ -35,7 +35,7 @@ const PersonalForm = ({user}: PersonalFormProps) => {
         // Set a specific cookie to bypass middleware on the next step ONLY
         console.log('[PersonalForm] Setting temporary next_step cookie');
         setNextStep('/sign-up/calendar');
-        
+
         // Finally, navigate to next step
         console.log('[PersonalForm] Profile and progress updated, navigating to calendar step');
         goToStep('/sign-up/calendar');
@@ -47,24 +47,24 @@ const PersonalForm = ({user}: PersonalFormProps) => {
     trpc.profile.update.mutationOptions({
       onSuccess: () => {
         console.log('[PersonalForm] Profile updated, updating onboarding progress');
-        
+
         // Set the personal step completion cookie directly
         setStepComplete('personal');
-        
+
         // Clear the edit_mode cookie if it exists
         clearEditMode();
-        
+
         // Only set next_step cookie if we're not in edit mode
         if (!isEditMode()) {
           // Set a temporary one-time navigation cookie
           setNextStep('/sign-up/calendar');
         }
-        
+
         console.log('[PersonalForm] Cookies set, navigating to next step');
-        
+
         // After setting cookies, update progress in backend (even if we've set cookies directly)
-        updateOnboardingProgressMutation.mutate({ 
-          personalComplete: true 
+        updateOnboardingProgressMutation.mutate({
+          personalComplete: true
         });
       }
     })
@@ -167,8 +167,8 @@ const PersonalForm = ({user}: PersonalFormProps) => {
               forms.personal.setValue('timeZone', value);
               forms.personal.trigger();
             }}
-            autoDetect={!user?.timeZone}
-            defaultValue={user?.timeZone || 'America/Sao_Paulo'}
+            autoDetect
+            defaultValue={user?.timeZone ?? timeZone}
           />
           {forms.personal.formState.errors.timeZone && (
             <span className="text-paragraph-xs text-red-500">
