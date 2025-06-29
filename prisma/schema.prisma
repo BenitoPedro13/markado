@@ -106,7 +106,7 @@ model User {
   emailVerified       DateTime?
   biography           String?
   image               String?
-  timeZone            String                  @default("America/Sao_Paulo")
+  timeZone            String?
   completedOnboarding Boolean                 @default(false)
   availability        Availability[]
   defaultScheduleId   Int?
