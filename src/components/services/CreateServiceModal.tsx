@@ -314,7 +314,7 @@ export default function CreateServiceModal() {
                   variant: 'stroke',
                   status: 'success'
                 });
-                router.push(`/services`);
+                router.push(`/services/${eventType.slug}`);
               }
             } catch (error) {
               console.log('error', error);

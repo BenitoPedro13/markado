@@ -50,6 +50,7 @@ import {
 } from '~/trpc/server/utils/services/util';
 import {TUpdateInputSchema} from '~/trpc/server/schemas/services.schema';
 import { baseServices } from '@/data/services';
+import { log } from 'console';
 
 // Create
 
@@ -332,6 +333,20 @@ export const getEventTypesFromGroup = async ({
     isUpIdInFilter ||
     (isFilterSet && filters?.upIds && !isUpIdInFilter);
 
+  // Primeiro, verificar se o usuário tem algum serviço no banco (sem filtros)
+  const hasAnyServices = await prisma.eventType.findFirst({
+    where: {
+      userId: user.id,
+      teamId: null,
+      schedulingType: null
+    }
+  });
+
+  // Se não tem nenhum serviço, criar os serviços padrão
+  if (!hasAnyServices) {
+    await createServicesBatch();
+  }
+
   const eventTypes: MappedEventType[] = [];
   const currentCursor = cursor;
   let nextCursor: number | null | undefined = undefined;
@@ -359,29 +374,7 @@ export const getEventTypesFromGroup = async ({
     await fetchAndFilterEventTypes();
     isFetchingForFirstTime = false;
   }
-
-  if (eventTypes.length === 0) {
-    await createServicesBatch();
-    const newBatch = await fetchEventTypesBatch(
-      enrichedUser,
-      input,
-      shouldListUserEvents,
-      null,
-      searchQuery
-    );
-
-    const filteredBatch = await filterEventTypes(
-      newBatch.eventTypes,
-      enrichedUser.id,
-      shouldListUserEvents,
-      group.teamId
-    );
-
-    return {
-      eventTypes: filteredBatch,
-      nextCursor: newBatch.nextCursor ?? undefined
-    };
-  }
+  console.log('eventTypes', eventTypes);
 
   return {
     eventTypes,
