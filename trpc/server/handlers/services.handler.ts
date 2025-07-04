@@ -1,14 +1,11 @@
 'use server';
 
 import {Prisma} from '~/prisma/app/generated/prisma/client';
-// import type {Prisma as PrismaType}  from '~/prisma/app/generated/prisma/client';
 import {PrismaClientKnownRequestError} from '@prisma/client/runtime/library';
 import {prisma} from '@/lib/prisma';
 import {EventTypeRepository} from '@/repositories/eventType';
 import {generateHashedLink} from '@/lib/generateHashedLink';
-// import {setDestinationCalendarHandler} from './destinationCalendar.handler';
-import type {PrismaClient} from '~/prisma/app/generated/prisma/client';
-import {SchedulingType, UserPermissionRole} from '~/prisma/enums';
+import {SchedulingType} from '~/prisma/enums';
 import type {
   EventTypeLocation,
   TDeleteInputSchema,
@@ -16,9 +13,7 @@ import type {
   TGetEventTypesFromGroupSchema,
   TGetInputSchema
 } from '~/trpc/server/schemas/services.schema';
-
 import {TRPCError} from '@trpc/server';
-import {userMetadataType} from '~/prisma/zod-utils';
 import type {TCreateInputSchema} from '~/trpc/server/schemas/services.schema';
 import {auth} from '@/auth';
 import {UserRepository} from '@/repositories/user';
@@ -26,22 +21,8 @@ import {safeStringify} from '@/lib/safeStringify';
 import {hasFilter, mapEventType} from '~/trpc/server/utils/services/util';
 import {revalidatePath} from 'next/cache';
 import getEventTypeBySlug from '@/packages/event-types/getEventTypeBySlug';
-
-// import type {NextApiResponse, GetServerSidePropsContext} from 'next';
-
-// import type {appDataSchemas} from '@/app-store/apps.schemas.generated';
-// import updateChildrenEventTypes from '@/features/core/managed-event-types/lib/handleChildrenEventTypes';
-// import {
-//   allowDisablingAttendeeConfirmationEmails,
-//   allowDisablingHostConfirmationEmails
-// } from '@/features/core/workflows/lib/allowDisablingStandardEmails';
 import {validateIntervalLimitOrder} from '@/packages/lib';
-// import {getTranslation} from '@/lib/server';
 import {validateBookerLayouts} from '@/packages/lib/validateBookerLayouts';
-// import {WorkflowTriggerEvents} from '~/prisma/app/generated/prisma/client';
-
-// import type {TrpcSessionUser} from '../../../trpc';
-// import {setDestinationCalendarHandler} from '../../loggedInViewer/setDestinationCalendar.handler';
 import {
   ensureUniqueBookingFields,
   ensureEmailOrPhoneNumberIsPresent,
@@ -49,9 +30,9 @@ import {
   handlePeriodType
 } from '~/trpc/server/utils/services/util';
 import {TUpdateInputSchema} from '~/trpc/server/schemas/services.schema';
+import { baseServices } from '@/data/services';
 
 // Create
-
 type CreateOptions = {
   input: TCreateInputSchema;
 };
@@ -246,6 +227,56 @@ type EnrichedUser = Awaited<
   >
 >;
 
+export const createServicesBatch = async () => {
+  const session = await auth();
+
+  if (!session || !session.user) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "createServicesBatch: Not authenticated",
+    });
+  }
+
+  const user = await UserRepository.findByIdOrThrow({ id: session.user.id });
+  const enrichedUser = await UserRepository.enrichUserWithItsProfile({ user });
+
+  try {
+    for (const service of baseServices) {
+      const input = {
+        title: service.title,
+        slug: service.slug,
+        description: service.description,
+        length: service.length,
+        price: service.price,
+        badgeColor: service.badgeColor,
+        hidden: false,
+        locations: service.locations ? service.locations.map(location => ({
+          type: 'integrations:google:meet',
+          address: location
+        })) : undefined,
+      };
+
+      await createServiceHandler({ input });
+    }
+
+  } catch (e) {
+    console.warn("Erro ao criar batch de serviços:", e);
+    if (e instanceof PrismaClientKnownRequestError) {
+      if (
+        e.code === "P2002" &&
+        Array.isArray(e.meta?.target) &&
+        e.meta.target.includes("slug")
+      ) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "One or more service slugs already exist for the user.",
+        });
+      }
+    }
+    throw new TRPCError({ code: "BAD_REQUEST", message: "Failed to create services batch." });
+  }
+}
+
 export const getEventTypesFromGroup = async ({
   // ctx,
   input
@@ -284,6 +315,20 @@ export const getEventTypesFromGroup = async ({
     isUpIdInFilter ||
     (isFilterSet && filters?.upIds && !isUpIdInFilter);
 
+  // Primeiro, verificar se o usuário tem algum serviço no banco (sem filtros)
+  const hasAnyServices = await prisma.eventType.findFirst({
+    where: {
+      userId: user.id,
+      teamId: null,
+      schedulingType: null
+    }
+  });
+
+  // Se não tem nenhum serviço, criar os serviços padrão
+  if (!hasAnyServices) {
+    await createServicesBatch();
+  }
+
   const eventTypes: MappedEventType[] = [];
   const currentCursor = cursor;
   let nextCursor: number | null | undefined = undefined;
@@ -311,6 +356,7 @@ export const getEventTypesFromGroup = async ({
     await fetchAndFilterEventTypes();
     isFetchingForFirstTime = false;
   }
+  console.log('eventTypes', eventTypes);
 
   return {
     eventTypes,
