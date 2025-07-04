@@ -63,6 +63,11 @@ const userSelect = Prisma.validator<Prisma.UserSelect>()({
   role: true,
   organizationId: true,
   organization: true,
+  instagram: true,
+  linkedin: true,
+  twitter: true,
+  facebook: true,
+  website: true,
 });
 
 export class UserRepository {
@@ -119,7 +124,6 @@ export class UserRepository {
       orgSlug,
       usernameList,
     });
-    console.log("findUsersByUsername", safeStringify({ where, profiles }));
 
     return (
       await prisma.user.findMany({
@@ -127,7 +131,6 @@ export class UserRepository {
         where,
       })
     ).map((user) => {
-      console.log("findUsersByUsername", safeStringify({ user }));
       // User isn't part of any organization
       if (!profiles) {
         return {

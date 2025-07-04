@@ -11,12 +11,7 @@ import {cn} from '@/utils/cn';
 import type {VariantProps} from '@/utils/tv';
 import {
   RiArrowRightSLine,
-  RiFacebookFill,
-  RiGlobalLine,
-  RiInstagramLine,
-  RiLinkedinFill,
-  RiTimeLine,
-  RiTwitterXLine
+  RiTimeLine
 } from '@remixicon/react';
 import Link from 'next/link';
 
@@ -29,6 +24,7 @@ import {
 } from '~/prisma/app/generated/prisma/client';
 import {z} from 'zod';
 import { getHostUserByUsername } from '~/trpc/server/handlers/user.handler';
+import SocialIcons from '@/components/SocialIcons';
 
 type BadgeColor = NonNullable<VariantProps<typeof badgeVariants>['color']>;
 
@@ -143,8 +139,21 @@ const ServicesSchedulingForm = ({
   host,
   servicesSchedulingFormProps
 }: ServicesSchedulingFormProps) => {
-  const {businessName, businessColor, businessDescription, socialLinks} =
-    useBusiness();
+  const businessContext = useBusiness();
+
+  const businessName = businessContext.businessName || host?.name || '';
+  const businessColor = businessContext.businessColor || 'faded';
+  const businessDescription = businessContext.businessDescription || host?.biography || '';
+  
+  const socialLinks = Object.keys(businessContext.socialLinks || {}).length > 0 
+    ? businessContext.socialLinks 
+    : {
+        instagram: host?.instagram || undefined,
+        linkedin: host?.linkedin || undefined,
+        twitter: host?.twitter || undefined,
+        facebook: host?.facebook || undefined,
+        website: host?.website || undefined
+      };
 
   const services = servicesSchedulingFormProps?.eventTypes ?? initialServices;
 
@@ -168,59 +177,7 @@ const ServicesSchedulingForm = ({
         <p className="text-label-sm text-text-sub-600">
           {businessDescription || host?.biography}
         </p>
-        {/** Social icons */}
-        <div className="flex flex-row items-center gap-3">
-          {socialLinks?.instagram && (
-            <a
-              href={socialLinks.instagram}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-text-sub-600 hover:text-text-strong-950 transition-colors"
-            >
-              <RiInstagramLine size={20} />
-            </a>
-          )}
-          {socialLinks?.linkedin && (
-            <a
-              href={socialLinks.linkedin}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-text-sub-600 hover:text-text-strong-950 transition-colors"
-            >
-              <RiLinkedinFill size={20} />
-            </a>
-          )}
-          {socialLinks?.twitter && (
-            <a
-              href={socialLinks.twitter}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-text-sub-600 hover:text-text-strong-950 transition-colors"
-            >
-              <RiTwitterXLine size={20} />
-            </a>
-          )}
-          {socialLinks?.facebook && (
-            <a
-              href={socialLinks.facebook}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-text-sub-600 hover:text-text-strong-950 transition-colors"
-            >
-              <RiFacebookFill size={20} />
-            </a>
-          )}
-          {socialLinks?.website && (
-            <a
-              href={socialLinks.website}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-text-sub-600 hover:text-text-strong-950 transition-colors"
-            >
-              <RiGlobalLine size={20} />
-            </a>
-          )}
-        </div>
+        <SocialIcons socialLinks={socialLinks} />
       </div>
       <div className="bg-bg-white-0 w-full md:min-w-[332px] md:flex-1 overflow-hidden flex flex-col rounded-3xl border border-stroke-soft-200">
         {services.map((service, index) => (
