@@ -1,4 +1,4 @@
-import { TimeFormat } from "@/lib/timeFormat";
+import { TimeFormat } from "@/packages/features/bookings/lib/timeFormat";
 
 interface EventFromToTime {
   date: string;

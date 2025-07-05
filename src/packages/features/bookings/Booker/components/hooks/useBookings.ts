@@ -2,10 +2,11 @@ import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useRef, useState, useEffect } from "react";
 
-import { createPaymentLink } from "@/app-store/stripepayment/lib/client";
-import { useHandleBookEvent } from "@/atoms/monorepo";
+//TODO: implement strype on iteration 13-14
+// import { createPaymentLink } from "@/app-store/stripepayment/lib/client";
+import { useHandleBookEvent } from "@/packages/core/atoms/hooks/bookings/useHandleBookEvent";
 import dayjs from "@/lib/dayjs";
-import { sdkActionManager } from "@/embed-core/embed-iframe";
+// import { sdkActionManager } from "@/embed-core/embed-iframe";
 import { useBookerStore } from "@/packages/features/bookings/Booker/store";
 import { updateQueryParam, getQueryParam } from "@/packages/features/bookings/Booker/utils/query-param";
 import { createBooking, createRecurringBooking, createInstantBooking } from "@/packages/features/bookings/lib";
@@ -13,7 +14,7 @@ import type { BookerEvent } from "@/packages/features/bookings/types";
 import { getFullName } from "@/packages/features/form-builder/utils";
 import { useBookingSuccessRedirect } from "@/packages/lib/bookingSuccessRedirect";
 import { useLocale } from "@/hooks/use-locale";
-import { localStorage } from "@/lib/webstorage";
+import { localStorage } from "@/packages/lib/webstorage";
 import { BookingStatus } from "~/prisma/enums";
 import { bookingMetadataSchema } from "~/prisma/zod-utils";
 import { trpc } from "@/trpc";
@@ -40,7 +41,7 @@ export interface IUseBookings {
         > & {
           users: Pick<
             BookerEvent["users"][number],
-            "name" | "username" | "avatarUrl" | "weekStart" | "profile" | "bookerUrl"
+            "name" | "username" | "image" | "weekStart" | "profile" | "bookerUrl"
           >[];
         })
       | null;
@@ -194,60 +195,60 @@ export const useBookings = ({ event, hashedLink, bookingForm, metadata, teamMemb
         : event.data?.length;
 
       if (isRescheduling) {
-        sdkActionManager?.fire("rescheduleBookingSuccessful", {
-          booking: booking,
-          eventType: event.data,
-          date: booking?.startTime?.toString() || "",
-          duration: validDuration,
-          organizer: {
-            name: users?.[0]?.name || "Nameless",
-            email: booking?.userPrimaryEmail || booking.user?.email || "Email-less",
-            timeZone: booking.user?.timeZone || "Europe/London",
-          },
-          confirmed: !(booking.status === BookingStatus.PENDING && event.data?.requiresConfirmation),
-        });
-        sdkActionManager?.fire(
-          "rescheduleBookingSuccessfulV2",
-          getRescheduleBookingSuccessfulEventPayload({
-            ...booking,
-            isRecurring: false,
-          })
-        );
+        // sdkActionManager?.fire("rescheduleBookingSuccessful", {
+        //   booking: booking,
+        //   eventType: event.data,
+        //   date: booking?.startTime?.toString() || "",
+        //   duration: validDuration,
+        //   organizer: {
+        //     name: users?.[0]?.name || "Nameless",
+        //     email: booking?.userPrimaryEmail || booking.user?.email || "Email-less",
+        //     timeZone: booking.user?.timeZone || "Europe/London",
+        //   },
+        //   confirmed: !(booking.status === BookingStatus.PENDING && event.data?.requiresConfirmation),
+        // });
+        // sdkActionManager?.fire(
+        //   "rescheduleBookingSuccessfulV2",
+        //   getRescheduleBookingSuccessfulEventPayload({
+        //     ...booking,
+        //     isRecurring: false,
+        //   })
+        // );
       } else {
-        sdkActionManager?.fire("bookingSuccessful", {
-          booking: booking,
-          eventType: event.data,
-          date: booking?.startTime?.toString() || "",
-          duration: validDuration,
-          organizer: {
-            name: users?.[0]?.name || "Nameless",
-            email: booking?.userPrimaryEmail || booking.user?.email || "Email-less",
-            timeZone: booking.user?.timeZone || "Europe/London",
-          },
-          confirmed: !(booking.status === BookingStatus.PENDING && event.data?.requiresConfirmation),
-        });
+        // sdkActionManager?.fire("bookingSuccessful", {
+        //   booking: booking,
+        //   eventType: event.data,
+        //   date: booking?.startTime?.toString() || "",
+        //   duration: validDuration,
+        //   organizer: {
+        //     name: users?.[0]?.name || "Nameless",
+        //     email: booking?.userPrimaryEmail || booking.user?.email || "Email-less",
+        //     timeZone: booking.user?.timeZone || "Europe/London",
+        //   },
+        //   confirmed: !(booking.status === BookingStatus.PENDING && event.data?.requiresConfirmation),
+        // });
 
-        sdkActionManager?.fire(
-          "bookingSuccessfulV2",
-          getBookingSuccessfulEventPayload({
-            ...booking,
-            isRecurring: false,
-          })
-        );
+        // sdkActionManager?.fire(
+        //   "bookingSuccessfulV2",
+        //   getBookingSuccessfulEventPayload({
+        //     ...booking,
+        //     isRecurring: false,
+        //   })
+        // );
       }
 
-      if (paymentUid) {
-        router.push(
-          createPaymentLink({
-            paymentUid,
-            date: timeslot,
-            name: fullName,
-            email: bookingForm.getValues("responses.email"),
-            absolute: false,
-          })
-        );
-        return;
-      }
+      // if (paymentUid) {
+      //   router.push(
+      //     createPaymentLink({
+      //       paymentUid,
+      //       date: timeslot,
+      //       name: fullName,
+      //       email: bookingForm.getValues("responses.email"),
+      //       absolute: false,
+      //     })
+      //   );
+      //   return;
+      // }
 
       if (!uid) {
         console.error("No uid returned from createBookingMutation");
@@ -323,27 +324,27 @@ export const useBookings = ({ event, hashedLink, bookingForm, metadata, teamMemb
 
       if (isRescheduling) {
         // NOTE: It is recommended to define the event payload in the argument itself to provide a better type safety.
-        sdkActionManager?.fire("rescheduleBookingSuccessfulV2", {
-          ...getRescheduleBookingSuccessfulEventPayload({
-            ...booking,
-            isRecurring: true,
-          }),
-          allBookings: bookings.map((booking) => ({
-            startTime: booking.startTime,
-            endTime: booking.endTime,
-          })),
-        });
+        // sdkActionManager?.fire("rescheduleBookingSuccessfulV2", {
+        //   ...getRescheduleBookingSuccessfulEventPayload({
+        //     ...booking,
+        //     isRecurring: true,
+        //   }),
+        //   allBookings: bookings.map((booking) => ({
+        //     startTime: booking.startTime,
+        //     endTime: booking.endTime,
+        //   })),
+        // });
       } else {
-        sdkActionManager?.fire("bookingSuccessfulV2", {
-          ...getBookingSuccessfulEventPayload({
-            ...booking,
-            isRecurring: true,
-          }),
-          allBookings: bookings.map((booking) => ({
-            startTime: booking.startTime,
-            endTime: booking.endTime,
-          })),
-        });
+        // sdkActionManager?.fire("bookingSuccessfulV2", {
+        //   ...getBookingSuccessfulEventPayload({
+        //     ...booking,
+        //     isRecurring: true,
+        //   }),
+        //   allBookings: bookings.map((booking) => ({
+        //     startTime: booking.startTime,
+        //     endTime: booking.endTime,
+        //   })),
+        // });
       }
 
       bookingSuccessRedirect({

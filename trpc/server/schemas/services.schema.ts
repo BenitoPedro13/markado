@@ -1,7 +1,6 @@
 import {z} from 'zod';
 import {SchedulingType, ServiceBadgeColor} from '~/prisma/enums';
 import * as imports from '~/prisma/zod-utils';
-// import {templateTypeEnum} from '@/features/core/cal-ai-phone/zod-utils';
 import {_DestinationCalendarModel, _EventTypeModel} from '~/prisma/zod';
 import {
   customInputSchema,
