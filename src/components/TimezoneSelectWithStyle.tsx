@@ -91,6 +91,7 @@ export function TimezoneSelectWithStyle({
   // Handle value changes from the Select component
   const handleValueChange = useCallback(
     (newValue: string) => {
+      if (newValue === selectedTimezone) return;
       setSelectedTimezone(newValue);
       if (onChange) {
         onChange(newValue);
@@ -111,21 +112,19 @@ export function TimezoneSelectWithStyle({
     });
   }, [options]);
 
-  // Initialize with the provided value
-  useEffect(() => {
-    if (value) {
-      setSelectedTimezone(value);
-      // If we have a value, don't attempt auto-detection
-      detectionAttemptedRef.current = true;
-    }
-  }, [value]);
+    // Function to detect timezone - defined outside to avoid closure issues
+    const detectTimezone = useCallback(() => {
+        const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        setSelectedTimezone(userTimezone);
+        if (onChange) {
+          onChange(userTimezone);
+        }
 
-  // Handle component unmount
-  useEffect(() => {
-    return () => {
-      mountedRef.current = false;
-    };
-  }, []);
+        if (mountedRef.current) {
+          isDetectingRef.current = false;
+          setIsDetecting(false);
+        }
+    }, [onChange, mountedRef, isDetecting]);
 
   // One-time timezone detection
   useEffect(() => {
@@ -156,42 +155,20 @@ export function TimezoneSelectWithStyle({
       }
     }, 1500);
 
-    // Function to detect timezone - defined outside to avoid closure issues
-    const detectTimezone = () => {
-      try {
-        const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-        if (mountedRef.current) {
-          setSelectedTimezone(userTimezone);
-
-          if (onChange) {
-            onChange(userTimezone);
-          }
-        }
-      } catch (error) {
-        console.error('Error detecting timezone:', error);
-      } finally {
-        // Ensure we always clean up regardless of success/failure
-        if (mountedRef.current) {
-          isDetectingRef.current = false;
-          setIsDetecting(false);
-        }
-      }
-    };
-
     // Execute detection
     detectTimezone();
 
     // Clean up function
     return () => {
       clearTimeout(timeoutId);
+      // Handle component unmount
+      mountedRef.current = false;
     };
-  }, []); // Empty dependency array - this effect runs exactly once on mount
+  }, [detectTimezone]); // Empty dependency array - this effect runs exactly once on mount
 
   // Update the current time every second
   useEffect(() => {
     if (!selectedTimezone) return;
-
     const updateTime = () => {
       try {
         const now = new Date();
@@ -211,7 +188,7 @@ export function TimezoneSelectWithStyle({
     // Update immediately
     updateTime();
 
-    // Then update every second
+    // Then update every minute
     const intervalId = setInterval(updateTime, 1000);
 
     // Clean up interval on unmount
