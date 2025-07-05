@@ -1,7 +1,6 @@
 import ServiceFinalizationForm from '@/modules/scheduling/services/ServiceFinalizationForm';
-import {getServiceBySlugAndUsername} from '~/trpc/server/handlers/service.handler';
 import {getHostUserByUsername} from '~/trpc/server/handlers/user.handler';
-import {getUserPageProps} from '../page';
+import {getUserPageProps} from '@/lib/getUserPageProps';
 import { redirect } from 'next/navigation';
 
 const ServiceSchedulingFinalizationPage = async (props: {
