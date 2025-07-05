@@ -145,7 +145,6 @@ export async function getUserByUsernameHandler(ctx: Context, username: string) {
       }
     }
   });
-
   if (!user) {
     throw new TRPCError({
       code: 'NOT_FOUND',
@@ -171,6 +170,11 @@ export async function getHostUserByUsername(username: string) {
         image: true,
         biography: true,
         timeZone: true,
+        instagram: true,
+        linkedin: true,
+        twitter: true,
+        facebook: true,
+        website: true,
         schedules: {
           include: {
             availability: true

@@ -31,6 +31,7 @@ import {
 } from '~/trpc/server/utils/services/util';
 import {TUpdateInputSchema} from '~/trpc/server/schemas/services.schema';
 import { baseServices } from '@/data/services';
+import { log } from 'console';
 
 // Create
 type CreateOptions = {
