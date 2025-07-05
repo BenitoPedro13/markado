@@ -910,9 +910,9 @@ const CopyTimes = ({
           className="bg-button-primary shadow-button-primary border-linear-12 font-jakarta text-white-fixed text-sm font-medium tracking-tighter"
           style={{
             background:
-              'linear-gradient(180deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.00) 100%), var(--cal-brand-primary-base, #717784)',
+              'linear-gradient(180deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.00) 100%), var(--markado-brand-primary-base, #717784)',
             boxShadow:
-              '0px 1px 2px 0px rgba(14, 18, 27, 0.24), 0px 0px 0px 1px var(--cal-brand-primary-base, #717784)'
+              '0px 1px 2px 0px rgba(14, 18, 27, 0.24), 0px 0px 0px 1px var(--markado-brand-primary-base, #717784)'
           }}
         >
           {t('apply')}
