@@ -60,13 +60,14 @@ const EventTypeAppSettingsInterface: EventTypeAppSettingsComponent = ({
 
   return (
     <>
-      {recurringEventDefined && (
+      {/* {recurringEventDefined && (
         <Alert className="mt-2" severity="warning" title={t("warning_recurring_event_payment")} />
-      )}
+      )} */}
       {!recurringEventDefined && requirePayment && (
         <>
-          <div className="mt-4 block items-center justify-start sm:flex sm:space-x-2">
-            {/* <TextField
+            {/*
+              <div className="mt-4 block items-center justify-start sm:flex sm:space-x-2">
+              <TextField
               data-testid="stripe-price-input"
               label={t("price")}
               className="h-[38px]"
@@ -86,7 +87,7 @@ const EventTypeAppSettingsInterface: EventTypeAppSettingsComponent = ({
               }}
               value={price > 0 ? convertFromSmallestToPresentableCurrencyUnit(price, currency) : undefined}
             /> */}
-          </div>
+          {/* </div>
           <div className="mt-5 w-60">
             <label className="text-default mb-1 block text-sm font-medium" htmlFor="currency">
               {t("currency")}
@@ -129,11 +130,11 @@ const EventTypeAppSettingsInterface: EventTypeAppSettingsComponent = ({
               className="mb-1 h-[38px] w-full"
               isDisabled={seatsEnabled || disabled}
             />
-          </div>
+          </div> */}
 
-          {seatsEnabled && paymentOption === "HOLD" && (
+          {/* {seatsEnabled && paymentOption === "HOLD" && (
             <Alert className="mt-2" severity="warning" title={t("seats_and_no_show_fee_error")} />
-          )}
+          )} */}
         </>
       )}
     </>
