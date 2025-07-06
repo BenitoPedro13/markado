@@ -2,7 +2,9 @@ import { useState, useEffect } from "react";
 
 import type { EventTypeAppSettingsComponent } from "@/packages/app-store/types";
 import { useLocaleI18 } from "@/hooks/use-locale";
-import { Alert, Select, TextField } from "@/ui";
+import * as Alert from "@/components/align-ui/ui/alert";
+import * as Select from "@/components/align-ui/ui/select";
+//import * as TextField from "@/components/align-ui/ui/text-field";
 
 import {
   convertToSmallestCurrencyUnit,
@@ -64,7 +66,7 @@ const EventTypeAppSettingsInterface: EventTypeAppSettingsComponent = ({
       {!recurringEventDefined && requirePayment && (
         <>
           <div className="mt-4 block items-center justify-start sm:flex sm:space-x-2">
-            <TextField
+            {/* <TextField
               data-testid="stripe-price-input"
               label={t("price")}
               className="h-[38px]"
@@ -83,7 +85,7 @@ const EventTypeAppSettingsInterface: EventTypeAppSettingsComponent = ({
                 setAppData("price", convertToSmallestCurrencyUnit(Number(e.target.value), currency));
               }}
               value={price > 0 ? convertFromSmallestToPresentableCurrencyUnit(price, currency) : undefined}
-            />
+            /> */}
           </div>
           <div className="mt-5 w-60">
             <label className="text-default mb-1 block text-sm font-medium" htmlFor="currency">
