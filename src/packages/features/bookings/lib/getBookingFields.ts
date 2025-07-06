@@ -75,9 +75,9 @@ export const getBookingFieldsWithSystemFields = ({
   disableGuests: boolean;
   isOrgTeamEvent?: boolean;
   disableBookingTitle?: boolean;
-  customInputs: EventTypeCustomInput[] | z.infer<typeof customInputSchema>[];
+  customInputs?: EventTypeCustomInput[] | z.infer<typeof customInputSchema>[];
   metadata: EventType['metadata'] | z.infer<typeof EventTypeMetaDataSchema>;
-  workflows: {
+  workflows?: {
     workflow: Workflow;
   }[];
 }) => {

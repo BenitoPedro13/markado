@@ -109,7 +109,7 @@ export function getWorkingHours(
     utcOffset?: number;
   },
   availability: {
-    userId?: number | null;
+    userId?: string | null;
     days: number[];
     startTime: ConfigType;
     endTime: ConfigType;

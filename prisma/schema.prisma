@@ -137,6 +137,8 @@ model User {
   destinationCalendar DestinationCalendar?
   allowDynamicBooking Boolean?                @default(true)
   allowSEOIndexing    Boolean?                @default(true)
+  /// @zod.custom(imports.userMetadata)
+  metadata            Json?
   verified            Boolean?                @default(false)
   role                UserPermissionRole      @default(USER)
   apiKeys             ApiKey[]
@@ -241,6 +243,20 @@ enum FeatureType {
   KILL_SWITCH
   PERMISSION
 }
+
+model SelectedSlots {
+  id               Int      @id @default(autoincrement())
+  eventTypeId      Int
+  userId           String
+  slotUtcStartDate DateTime
+  slotUtcEndDate   DateTime
+  uid              String
+  releaseAt        DateTime
+  isSeat           Boolean  @default(false)
+
+  @@unique(fields: [userId, slotUtcStartDate, slotUtcEndDate, uid], name: "selectedSlotUnique")
+}
+
 
 model TeamFeatures {
   team       Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
@@ -1115,6 +1131,8 @@ model Booking {
   /// @zod.custom(imports.bookingMetadataSchema)
   metadata                     Json?
   isRecorded                   Boolean                        @default(false)
+  iCalUID                      String?                        @default("")
+  iCalSequence                 Int                            @default(0)
   instantMeetingToken          InstantMeetingToken?
   rating                       Int?
   ratingFeedback               String?

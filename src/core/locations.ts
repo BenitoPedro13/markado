@@ -2,14 +2,15 @@
 // import { z } from "zod";
 
 import { DefaultEventLocationType, DefaultEventLocationTypeEnum } from "@/packages/core/location";
-import { Optional } from "@/types/utils";
+import { Ensure, Optional } from "@/types/utils";
 
-// import { appStoreMetadata } from "@/app-store/bookerAppsMetaData";
+import { appStoreMetadata } from "@/packages/app-store/bookerAppsMetaData";
 // import logger from "@/lib/logger";
 // import { BookingStatus } from "@/prisma/enums";
 // import type { Ensure, Optional } from "@/types/utils";
 
-// import type { EventLocationTypeFromAppMeta } from "../types/App";
+import type { EventLocationTypeFromAppMeta } from "@/packages/types/App";
+import { TFunction } from "next-i18next";
 
 // export type DefaultEventLocationType = {
 //   default: true;
@@ -53,16 +54,16 @@ import { Optional } from "@/types/utils";
 //     }
 // );
 
-// export type EventLocationTypeFromApp = Ensure<
-//   EventLocationTypeFromAppMeta,
-//   "defaultValueVariable" | "variable"
-// >;
+export type EventLocationTypeFromApp = Ensure<
+  EventLocationTypeFromAppMeta,
+  "defaultValueVariable" | "variable"
+>;
 
-// export type EventLocationType = DefaultEventLocationType | EventLocationTypeFromApp;
+export type EventLocationType = DefaultEventLocationType | EventLocationTypeFromApp;
 
-// export const DailyLocationType = "integrations:daily";
+export const DailyLocationType = "integrations:daily";
 
-// export const MeetLocationType = "integrations:google:meet";
+export const MeetLocationType = "integrations:google:meet";
 
 // /**
 //  * This isn't an actual location app type. It is a special value that informs to use the Organizer's default conferencing app during booking
@@ -212,77 +213,77 @@ export type LocationObject = {
 >;
 
 // integrations:jitsi | 919999999999 | Delhi | https://manual.meeting.link | Around Video
-// export type BookingLocationValue = string;
+export type BookingLocationValue = string;
 
-// export const AppStoreLocationType: Record<string, string> = {};
+export const AppStoreLocationType: Record<string, string> = {};
 
-// const locationsFromApps: EventLocationTypeFromApp[] = [];
+const locationsFromApps: EventLocationTypeFromApp[] = [];
 
-// for (const [appName, meta] of Object.entries(appStoreMetadata)) {
-//   const location = meta.appData?.location;
-//   if (location) {
-//     // TODO: This template variable replacement should happen once during app-store:build.
-//     for (const [key, value] of Object.entries(location)) {
-//       if (typeof value === "string") {
-//         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-//         // @ts-ignore
-//         location[key] = value.replace(/{SLUG}/g, meta.slug).replace(/{TITLE}/g, meta.name);
-//       }
-//     }
-//     const newLocation = {
-//       ...location,
-//       messageForOrganizer: location.messageForOrganizer || `Set ${location.label} link`,
-//       iconUrl: meta.logo,
-//       // For All event location apps, locationLink is where we store the input
-//       // TODO: locationLink and link seems redundant. We can modify the code to keep just one of them.
-//       variable: location.variable || "locationLink",
-//       defaultValueVariable: location.defaultValueVariable || "link",
-//     };
+for (const [appName, meta] of Object.entries(appStoreMetadata)) {
+  const location = meta.appData?.location;
+  if (location) {
+    // TODO: This template variable replacement should happen once during app-store:build.
+    for (const [key, value] of Object.entries(location)) {
+      if (typeof value === "string") {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        location[key] = value.replace(/{SLUG}/g, meta.slug).replace(/{TITLE}/g, meta.name);
+      }
+    }
+    const newLocation = {
+      ...location,
+      messageForOrganizer: location.messageForOrganizer || `Set ${location.label} link`,
+      iconUrl: meta.logo,
+      // For All event location apps, locationLink is where we store the input
+      // TODO: locationLink and link seems redundant. We can modify the code to keep just one of them.
+      variable: location.variable || "locationLink",
+      defaultValueVariable: location.defaultValueVariable || "link",
+    };
 
-//     // Static links always require organizer to input
-//     if (newLocation.linkType === "static") {
-//       newLocation.organizerInputType = location.organizerInputType || "text";
-//       if (newLocation.organizerInputPlaceholder?.match(/https?:\/\//)) {
-//         // HACK: Translation ends up removing https? if it's in the beginning :(
-//         newLocation.organizerInputPlaceholder = ` ${newLocation.organizerInputPlaceholder}`;
-//       }
-//     } else {
-//       newLocation.organizerInputType = null;
-//     }
+    // Static links always require organizer to input
+    if (newLocation.linkType === "static") {
+      newLocation.organizerInputType = location.organizerInputType || "text";
+      if (newLocation.organizerInputPlaceholder?.match(/https?:\/\//)) {
+        // HACK: Translation ends up removing https? if it's in the beginning :(
+        newLocation.organizerInputPlaceholder = ` ${newLocation.organizerInputPlaceholder}`;
+      }
+    } else {
+      newLocation.organizerInputType = null;
+    }
 
-//     AppStoreLocationType[appName] = newLocation.type;
+    AppStoreLocationType[appName] = newLocation.type;
 
-//     locationsFromApps.push({
-//       ...newLocation,
-//     });
-//   }
-// }
+    locationsFromApps.push({
+      ...newLocation,
+    });
+  }
+}
 
-// const locations = [...defaultLocations, ...locationsFromApps];
-const locations = [...defaultLocations];
+const locations = [...defaultLocations, ...locationsFromApps];
+// const locations = [...defaultLocations];
 
 
-// export const getLocationFromApp = (locationType: string) =>
-//   locationsFromApps.find((l) => l.type === locationType);
+export const getLocationFromApp = (locationType: string) =>
+  locationsFromApps.find((l) => l.type === locationType);
 
 // // TODO: Rename this to getLocationByType()
 export const getEventLocationType = (locationType: string | undefined | null) =>
   locations.find((l) => l.type === locationType);
 
-// const getStaticLinkLocationByValue = (value: string | undefined | null) => {
-//   if (!value) {
-//     return null;
-//   }
-//   return locations.find((l) => {
-//     if (l.default || l.linkType == "dynamic" || !l.urlRegExp) {
-//       return;
-//     }
-//     return new RegExp(l.urlRegExp).test(value);
-//   });
-// };
+const getStaticLinkLocationByValue = (value: string | undefined | null) => {
+  if (!value) {
+    return null;
+  }
+  return locations.find((l) => {
+    if (l.default || l.linkType == "dynamic" || !l.urlRegExp) {
+      return;
+    }
+    return new RegExp(l.urlRegExp).test(value);
+  });
+};
 
-// export const guessEventLocationType = (locationTypeOrValue: string | undefined | null) =>
-//   getEventLocationType(locationTypeOrValue) || getStaticLinkLocationByValue(locationTypeOrValue);
+export const guessEventLocationType = (locationTypeOrValue: string | undefined | null) =>
+  getEventLocationType(locationTypeOrValue) || getStaticLinkLocationByValue(locationTypeOrValue);
 
 // export const LocationType = { ...DefaultEventLocationTypeEnum, ...AppStoreLocationType };
 
@@ -332,25 +333,25 @@ export const privacyFilteredLocations = (locations: LocationObject[]): PrivacyFi
 //  * @param translationFunction
 //  * @returns
 //  */
-// export const getHumanReadableLocationValue = (
-//   linkValue: string | undefined | null,
-//   translationFunction: TFunction
-// ): string => {
-//   if (!linkValue) {
-//     return translationFunction("no_location");
-//   }
+export const getHumanReadableLocationValue = (
+  linkValue: string | undefined | null,
+  translationFunction: TFunction
+): string => {
+  if (!linkValue) {
+    return translationFunction("no_location");
+  }
 
-//   // Just in case linkValue is a `locationType.type`(for old bookings)
-//   const eventLocationType = getEventLocationType(linkValue);
-//   const isDefault = eventLocationType?.default;
-//   if (eventLocationType) {
-//     // If we can find a video location based on linkValue then it means that the linkValue is something like integrations:google-meet and in that case we don't have the meeting URL to show.
-//     // Show a generic message in that case.
-//     return isDefault ? translationFunction(eventLocationType.label) : `${eventLocationType.label}`;
-//   }
-//   // Otherwise just show the available link value.
-//   return linkValue || "";
-// };
+  // Just in case linkValue is a `locationType.type`(for old bookings)
+  const eventLocationType = getEventLocationType(linkValue);
+  const isDefault = eventLocationType?.default;
+  if (eventLocationType) {
+    // If we can find a video location based on linkValue then it means that the linkValue is something like integrations:google-meet and in that case we don't have the meeting URL to show.
+    // Show a generic message in that case.
+    return isDefault ? translationFunction(eventLocationType.label) : `${eventLocationType.label}`;
+  }
+  // Otherwise just show the available link value.
+  return linkValue || "";
+};
 
 // export const locationKeyToString = (location: LocationObject) => {
 //   const eventLocationType = getEventLocationType(location.type);

@@ -1,12 +1,12 @@
 import type {Prisma} from '~/prisma/app/generated/prisma/client';
 
-// import { DailyLocationType } from "@/core/locations";
+import { DailyLocationType } from "@/core/locations";
 import slugify from '@/lib/slugify';
 import {PeriodType, SchedulingType, ServiceBadgeColor} from '~/prisma/enums';
 import type {userSelect} from '~/prisma/selects';
 import type {CustomInputSchema} from '~/prisma/zod-utils';
 import {EventTypeMetaDataSchema} from '~/prisma/zod-utils';
-// import type {CredentialPayload} from '@/types/Credential';
+import type {CredentialPayload} from '@/packages/types/Credential';
 
 type User = Prisma.UserGetPayload<typeof userSelect>;
 
@@ -26,34 +26,33 @@ type UsernameSlugLinkProps = {
   slug: string;
 };
 
-const user: User =
-  // & { credentials: CredentialPayload[] }
-  {
-    // metadata: null,
-    theme: null,
-    // credentials: [],
-    username: 'user.name',
-    timeZone: '',
-    bufferTime: 0,
-    availability: [],
-    id: '',
-    // startTime: 0,
-    // endTime: 0,
-    selectedCalendars: [],
-    schedules: [],
-    defaultScheduleId: null,
-    locale: 'PT',
-    email: 'user@example.com',
-    name: 'User name',
-    destinationCalendar: null,
-    hideBranding: true,
-    brandColor: '#797979',
-    darkBrandColor: '#efefef',
-    // badgeColor
-    allowDynamicBooking: true,
-    timeFormat: 12,
-    // travelSchedules: []
-  };
+  
+const user: User & {credentials: CredentialPayload[]} = {
+  // metadata: null,
+  theme: null,
+  credentials: [],
+  username: 'user.name',
+  timeZone: '',
+  bufferTime: 0,
+  availability: [],
+  id: '',
+  // startTime: 0,
+  // endTime: 0,
+  selectedCalendars: [],
+  schedules: [],
+  defaultScheduleId: null,
+  locale: 'PT',
+  email: 'user@example.com',
+  name: 'User name',
+  destinationCalendar: null,
+  hideBranding: true,
+  brandColor: '#797979',
+  darkBrandColor: '#efefef',
+  // badgeColor
+  allowDynamicBooking: true,
+  timeFormat: 12
+  // travelSchedules: []
+};
 
 const customInputs: CustomInputSchema[] = [];
 
@@ -68,7 +67,7 @@ const commons = {
   periodDays: null,
   slotInterval: null,
   offsetStart: 0,
-  // locations: [{ type: DailyLocationType }],
+  locations: [{ type: DailyLocationType }],
   customInputs,
   disableGuests: true,
   minimumBookingNotice: 120,
@@ -98,7 +97,7 @@ const commons = {
   bookingLimits: null,
   durationLimits: null,
   hidden: false,
-  userId: 0,
+  userId: "",
   parentId: null,
   parent: null,
   owner: null,
@@ -113,7 +112,8 @@ const commons = {
   rescheduleWithSameRoundRobinHost: false,
   useEventTypeDestinationCalendarEmail: false,
   secondaryEmailId: null,
-  secondaryEmail: null
+  secondaryEmail: null,
+  profile: null
 };
 
 export const dynamicEvent = {

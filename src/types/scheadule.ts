@@ -1,5 +1,5 @@
 export type TimeRange = {
-  userId?: number | null;
+  userId?: string | null;
   start: Date;
   end: Date;
 };
@@ -16,13 +16,13 @@ export type WorkingHours = {
   days: number[];
   startTime: number;
   endTime: number;
-  userId?: number | null;
+  userId?: string | null;
 };
 
 export type TravelSchedule = {
   id: number;
   timeZone: string;
-  userId: number;
+  userId: string;
   startDate: Date;
   endDate: Date | null;
   prevTimeZone: string | null;
