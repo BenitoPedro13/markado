@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { Locale } from '~/prisma/app/generated/prisma/client';
+import {z} from 'zod';
+import {Locale} from '~/prisma/app/generated/prisma/client';
 
 export const ZUpdateProfileInputSchema = z.object({
   name: z.string().optional(),
@@ -9,7 +9,9 @@ export const ZUpdateProfileInputSchema = z.object({
   image: z.string().optional(),
   timeZone: z.string().optional(),
   locale: z.nativeEnum(Locale).optional(),
-  completedOnboarding: z.boolean().optional(),
+  completedOnboarding: z.boolean().optional()
 });
 
-export type TUpdateProfileInputSchema = z.infer<typeof ZUpdateProfileInputSchema>; 
+export type TUpdateProfileInputSchema = z.infer<
+  typeof ZUpdateProfileInputSchema
+>;

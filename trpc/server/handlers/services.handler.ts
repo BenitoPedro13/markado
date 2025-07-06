@@ -1,14 +1,11 @@
 'use server';
 
 import {Prisma} from '~/prisma/app/generated/prisma/client';
-// import type {Prisma as PrismaType}  from '~/prisma/app/generated/prisma/client';
 import {PrismaClientKnownRequestError} from '@prisma/client/runtime/library';
 import {prisma} from '@/lib/prisma';
 import {EventTypeRepository} from '@/repositories/eventType';
 import {generateHashedLink} from '@/lib/generateHashedLink';
-// import {setDestinationCalendarHandler} from './destinationCalendar.handler';
-import type {PrismaClient} from '~/prisma/app/generated/prisma/client';
-import {SchedulingType, ServiceBadgeColor, UserPermissionRole} from '~/prisma/enums';
+import {SchedulingType} from '~/prisma/enums';
 import type {
   EventTypeLocation,
   TDeleteInputSchema,
@@ -16,9 +13,7 @@ import type {
   TGetEventTypesFromGroupSchema,
   TGetInputSchema
 } from '~/trpc/server/schemas/services.schema';
-
 import {TRPCError} from '@trpc/server';
-import {userMetadataType} from '~/prisma/zod-utils';
 import type {TCreateInputSchema} from '~/trpc/server/schemas/services.schema';
 import {auth} from '@/auth';
 import {UserRepository} from '@/repositories/user';
@@ -26,22 +21,8 @@ import {safeStringify} from '@/lib/safeStringify';
 import {hasFilter, mapEventType} from '~/trpc/server/utils/services/util';
 import {revalidatePath} from 'next/cache';
 import getEventTypeBySlug from '@/packages/event-types/getEventTypeBySlug';
-
-// import type {NextApiResponse, GetServerSidePropsContext} from 'next';
-
-// import type {appDataSchemas} from '@/app-store/apps.schemas.generated';
-// import updateChildrenEventTypes from '@/features/core/managed-event-types/lib/handleChildrenEventTypes';
-// import {
-//   allowDisablingAttendeeConfirmationEmails,
-//   allowDisablingHostConfirmationEmails
-// } from '@/features/core/workflows/lib/allowDisablingStandardEmails';
 import {validateIntervalLimitOrder} from '@/packages/lib';
-// import {getTranslation} from '@/lib/server';
 import {validateBookerLayouts} from '@/packages/lib/validateBookerLayouts';
-// import {WorkflowTriggerEvents} from '~/prisma/app/generated/prisma/client';
-
-// import type {TrpcSessionUser} from '../../../trpc';
-// import {setDestinationCalendarHandler} from '../../loggedInViewer/setDestinationCalendar.handler';
 import {
   ensureUniqueBookingFields,
   ensureEmailOrPhoneNumberIsPresent,
@@ -53,7 +34,6 @@ import { baseServices } from '@/data/services';
 import { log } from 'console';
 
 // Create
-
 type CreateOptions = {
   input: TCreateInputSchema;
 };
@@ -260,22 +240,25 @@ export const createServicesBatch = async () => {
 
   const user = await UserRepository.findByIdOrThrow({ id: session.user.id });
   const enrichedUser = await UserRepository.enrichUserWithItsProfile({ user });
-  const profile = enrichedUser.profile;
-  const userId = session.user.id;
-
-  const servicesToCreate = baseServices.map(service => ({
-  ...service,
-  userId,
-  profileId: profile.id,
-  hidden: false,
-  locations: service.locations ? JSON.parse(JSON.stringify(service.locations)) : null,
-}));
 
   try {
-    await prisma.eventType.createMany({
-      data: servicesToCreate,
-      skipDuplicates: true,
-    });
+    for (const service of baseServices) {
+      const input = {
+        title: service.title,
+        slug: service.slug,
+        description: service.description,
+        length: service.length,
+        price: service.price,
+        badgeColor: service.badgeColor,
+        hidden: false,
+        locations: service.locations ? service.locations.map(location => ({
+          type: 'integrations:google:meet',
+          address: location
+        })) : undefined,
+      };
+
+      await createServiceHandler({ input });
+    }
 
   } catch (e) {
     console.warn("Erro ao criar batch de serviços:", e);
