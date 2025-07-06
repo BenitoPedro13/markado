@@ -186,4 +186,16 @@ export interface App {
   isOAuth?: boolean;
 }
 
+export type AppFrontendPayload = Omit<App, 'key'> & {
+  /** We should type error if keys are leaked to the frontend */
+  isDefault?: boolean;
+  key?: never;
+  dependencyData?: {
+    name?: string;
+    installed?: boolean;
+  }[];
+  /** Number of users who currently have this App installed */
+  installCount?: number;
+};
+
 export type AppMeta = App;

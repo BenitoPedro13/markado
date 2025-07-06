@@ -1,40 +1,40 @@
-import { AnimatePresence, LazyMotion, m } from "framer-motion";
+// import { AnimatePresence, LazyMotion, m } from "framer-motion";
 import dynamic from "next/dynamic";
 import { useEffect, useMemo, useRef } from "react";
-import { Toaster } from "react-hot-toast";
-import StickyBox from "react-sticky-box";
-import { shallow } from "zustand/shallow";
+// import { Toaster } from "react-hot-toast";
+// import StickyBox from "react-sticky-box";
+// import { shallow } from "zustand/shallow";
 
-import BookingPageTagManager from "@/app-store/BookingPageTagManager";
-import dayjs from "@/dayjs";
-import { getQueryParam } from "@/features/bookings/Booker/utils/query-param";
-import { useNonEmptyScheduleDays } from "@/features/schedules";
-import classNames from "@/lib/classNames";
-import { useLocale } from "@/lib/hooks/useLocale";
-import { BookerLayouts } from "@/prisma/zod-utils";
+// import BookingPageTagManager from "@/packages/app-store/BookingPageTagManager";
+import dayjs from "@/lib/dayjs";
+import { getQueryParam } from "@/packages/features/bookings/Booker/utils/query-param";
+import { useNonEmptyScheduleDays } from "@/packages/features/schedules";
+import {cn as classNames} from "@/utils/cn";
+import { useLocale } from "@/hooks/use-locale";
+import { BookerLayouts } from "~/prisma/zod-utils";
 
-import { VerifyCodeDialog } from "../components/VerifyCodeDialog";
+// import { VerifyCodeDialog } from "../components/VerifyCodeDialog";
 import { AvailableTimeSlots } from "./components/AvailableTimeSlots";
 import { BookEventForm } from "./components/BookEventForm";
-import { BookFormAsModal } from "./components/BookEventForm/BookFormAsModal";
+// import { BookFormAsModal } from "./components/BookEventForm/BookFormAsModal";
 import { EventMeta } from "./components/EventMeta";
-import { HavingTroubleFindingTime } from "./components/HavingTroubleFindingTime";
-import { Header } from "./components/Header";
-import { InstantBooking } from "./components/InstantBooking";
-import { LargeCalendar } from "./components/LargeCalendar";
-import { OverlayCalendar } from "./components/OverlayCalendar/OverlayCalendar";
-import { RedirectToInstantMeetingModal } from "./components/RedirectToInstantMeetingModal";
+// import { HavingTroubleFindingTime } from "./components/HavingTroubleFindingTime";
+// import { Header } from "./components/Header";
+// import { InstantBooking } from "./components/InstantBooking";
+// import { LargeCalendar } from "./components/LargeCalendar";
+// import { OverlayCalendar } from "./components/OverlayCalendar/OverlayCalendar";
+// import { RedirectToInstantMeetingModal } from "./components/RedirectToInstantMeetingModal";
 import { BookerSection } from "./components/Section";
-import { NotFound } from "./components/Unavailable";
-import { fadeInLeft, getBookerSizeClassNames, useBookerResizeAnimation } from "./config";
+// import { NotFound } from "./components/Unavailable";
+// import { fadeInLeft, getBookerSizeClassNames, useBookerResizeAnimation } from "./config";
 import { useBookerStore } from "./store";
 import type { BookerProps, WrappedBookerProps } from "./types";
 
-const loadFramerFeatures = () => import("./framer-features").then((res) => res.default);
-const PoweredBy = dynamic(() => import("@/ee/components/PoweredBy"));
-const UnpublishedEntity = dynamic(() =>
-  import("@/ui/components/unpublished-entity/UnpublishedEntity").then((mod) => mod.UnpublishedEntity)
-);
+// const loadFramerFeatures = () => import("./framer-features").then((res) => res.default);
+// const PoweredBy = dynamic(() => import("@/ee/components/PoweredBy"));
+// const UnpublishedEntity = dynamic(() =>
+//   import("@/ui/components/unpublished-entity/UnpublishedEntity").then((mod) => mod.UnpublishedEntity)
+// );
 const DatePicker = dynamic(() => import("./components/DatePicker").then((mod) => mod.DatePicker), {
   ssr: false,
 });
@@ -68,7 +68,9 @@ const BookerComponent = ({
   customClassNames,
 }: BookerProps & WrappedBookerProps) => {
   const { t } = useLocale();
-  const [bookerState, setBookerState] = useBookerStore((state) => [state.state, state.setState], shallow);
+  const [bookerState, setBookerState] = useBookerStore((state) => [state.state, state.setState]
+  // , shallow
+);
   const selectedDate = useBookerStore((state) => state.selectedDate);
   const {
     shouldShowFormInDialog,
@@ -83,12 +85,12 @@ const BookerComponent = ({
   } = bookerLayout;
 
   const [seatedEventData, setSeatedEventData] = useBookerStore(
-    (state) => [state.seatedEventData, state.setSeatedEventData],
-    shallow
+    (state) => [state.seatedEventData, state.setSeatedEventData]
+    // ,shallow
   );
   const { selectedTimeslot, setSelectedTimeslot } = slots;
 
-  const [dayCount, setDayCount] = useBookerStore((state) => [state.dayCount, state.setDayCount], shallow);
+  // const [dayCount, setDayCount] = useBookerStore((state) => [state.dayCount, state.setDayCount], shallow);
 
   const nonEmptyScheduleDays = useNonEmptyScheduleDays(schedule?.data?.slots).filter(
     (slot) => dayjs(selectedDate).diff(slot, "day") <= 0
@@ -110,12 +112,14 @@ const BookerComponent = ({
   const nextSlots =
     Math.abs(dayjs(selectedDate).diff(availableSlots[availableSlots.length - 1], "day")) + addonDays;
 
-  const animationScope = useBookerResizeAnimation(layout, bookerState);
+  // const animationScope = useBookerResizeAnimation(layout, bookerState);
 
   const timeslotsRef = useRef<HTMLDivElement>(null);
-  const StickyOnDesktop = isMobile ? "div" : StickyBox;
+  // const StickyOnDesktop = isMobile ? "div" : StickyBox;
 
-  const { bookerFormErrorRef, key, formEmail, bookingForm, errors: formErrors } = bookerForm;
+  const { bookerFormErrorRef, key, formEmail, bookingForm
+    // , errors: formErrors 
+  } = bookerForm;
 
   const { handleBookEvent, errors, loadingStates, expiryTime, instantVideoMeetingUrl } = bookings;
 
@@ -167,7 +171,9 @@ const BookerComponent = ({
         }}
         onSubmit={renderConfirmNotVerifyEmailButtonCond ? handleBookEvent : handleVerifyEmail}
         errorRef={bookerFormErrorRef}
-        errors={{ ...formErrors, ...errors }}
+        errors={{
+          //  ...formErrors,
+            ...errors }}
         loadingStates={loadingStates}
         renderConfirmNotVerifyEmailButtonCond={renderConfirmNotVerifyEmailButtonCond}
         bookingForm={bookingForm}
@@ -177,7 +183,7 @@ const BookerComponent = ({
         isVerificationCodeSending={isVerificationCodeSending}
         isPlatform={isPlatform}>
         <>
-          {verifyCode && formEmail ? (
+          {/* {verifyCode && formEmail ? (
             <VerifyCodeDialog
               isOpenDialog={isEmailVerificationModalVisible}
               setIsOpenDialog={setEmailVerificationModalVisible}
@@ -192,8 +198,8 @@ const BookerComponent = ({
             />
           ) : (
             <></>
-          )}
-          {!isPlatform && (
+          )} */}
+          {/* {!isPlatform && (
             <RedirectToInstantMeetingModal
               expiryTime={expiryTime}
               bookingId={parseInt(getQueryParam("bookingId") || "0")}
@@ -203,7 +209,7 @@ const BookerComponent = ({
               }}
               orgName={event.data?.entity?.name}
             />
-          )}
+          )} */}
         </>
       </BookEventForm>
     ) : (
@@ -219,7 +225,7 @@ const BookerComponent = ({
     expiryTime,
     extraOptions,
     formEmail,
-    formErrors,
+    // formErrors,
     handleBookEvent,
     handleVerifyEmail,
     isEmailVerificationModalVisible,
@@ -246,15 +252,15 @@ const BookerComponent = ({
    * - Reschedule links in email are of the organization event for an unpublished org, so we need to allow rescheduling unpublished event
    * - Ideally, we should allow rescheduling only for the event that has an old link(non-org link) but that's a bit complex and we are fine showing all reschedule links on unpublished organization
    */
-  const considerUnpublished = entity.considerUnpublished && !rescheduleUid;
+  // const considerUnpublished = entity.considerUnpublished && !rescheduleUid;
 
-  if (considerUnpublished) {
-    return <UnpublishedEntity {...entity} />;
-  }
+  // if (considerUnpublished) {
+  //   return <UnpublishedEntity {...entity} />;
+  // }
 
-  if (event.isSuccess && !event.data) {
-    return <NotFound />;
-  }
+  // if (event.isSuccess && !event.data) {
+  //   return <NotFound />;
+  // }
 
   if (bookerState === "loading") {
     return null;
@@ -262,7 +268,7 @@ const BookerComponent = ({
 
   return (
     <>
-      {event.data && !isPlatform ? <BookingPageTagManager eventType={event.data} /> : <></>}
+      {/* {event.data && !isPlatform ? <BookingPageTagManager eventType={event.data} /> : <></>} */}
 
       <div
         className={classNames(
@@ -272,10 +278,10 @@ const BookerComponent = ({
           layout === BookerLayouts.MONTH_VIEW ? "overflow-visible" : "overflow-clip"
         )}>
         <div
-          ref={animationScope}
+          // ref={animationScope}
           data-testid="booker-container"
           className={classNames(
-            ...getBookerSizeClassNames(layout, bookerState, hideEventTypeDetails),
+            // ...getBookerSizeClassNames(layout, bookerState, hideEventTypeDetails),
             `bg-default grid max-w-full items-start py-6 dark:[color-scheme:dark] sm:transition-[width] sm:duration-300 sm:motion-reduce:transition-none md:flex-row`,
             // We remove border only when the content covers entire viewport. Because in embed, it can almost never be the case that it covers entire viewport, we show the border there
             (layout === BookerLayouts.MONTH_VIEW || isEmbed) && "border-soft-200 rounded-md",
@@ -284,7 +290,7 @@ const BookerComponent = ({
             !isEmbed && layout === BookerLayouts.MONTH_VIEW && `border-soft-200 border`,
             `${customClassNames?.bookerContainer} rounded-3xl`
           )}>
-          <AnimatePresence>
+          {/* <AnimatePresence> */}
             {!isInstantMeeting && (
               <BookerSection
                 area="header"
@@ -296,39 +302,40 @@ const BookerComponent = ({
                 {isPlatform && layout === BookerLayouts.MONTH_VIEW ? (
                   <></>
                 ) : (
-                  <Header
-                    isMyLink={Boolean(username === sessionUsername)}
-                    eventSlug={eventSlug}
-                    enabledLayouts={bookerLayouts.enabledLayouts}
-                    extraDays={layout === BookerLayouts.COLUMN_VIEW ? columnViewExtraDays.current : extraDays}
-                    isMobile={isMobile}
-                    nextSlots={nextSlots}
-                    renderOverlay={() =>
-                      isEmbed ? (
-                        <></>
-                      ) : (
-                        <>
-                          <OverlayCalendar
-                            isOverlayCalendarEnabled={isOverlayCalendarEnabled}
-                            connectedCalendars={connectedCalendars}
-                            loadingConnectedCalendar={loadingConnectedCalendar}
-                            overlayBusyDates={overlayBusyDates}
-                            onToggleCalendar={onToggleCalendar}
-                            hasSession={hasSession}
-                            handleClickContinue={onClickOverlayContinue}
-                            handleSwitchStateChange={onOverlaySwitchStateChange}
-                            handleClickNoCalendar={() => {
-                              onOverlayClickNoCalendar();
-                            }}
-                          />
-                        </>
-                      )
-                    }
-                  />
+                  // <Header
+                  //   isMyLink={Boolean(username === sessionUsername)}
+                  //   eventSlug={eventSlug}
+                  //   enabledLayouts={bookerLayouts.enabledLayouts}
+                  //   extraDays={layout === BookerLayouts.COLUMN_VIEW ? columnViewExtraDays.current : extraDays}
+                  //   isMobile={isMobile}
+                  //   nextSlots={nextSlots}
+                  //   renderOverlay={() =>
+                  //     isEmbed ? (
+                  //       <></>
+                  //     ) : (
+                  //       <>
+                  //         <OverlayCalendar
+                  //           isOverlayCalendarEnabled={isOverlayCalendarEnabled}
+                  //           connectedCalendars={connectedCalendars}
+                  //           loadingConnectedCalendar={loadingConnectedCalendar}
+                  //           overlayBusyDates={overlayBusyDates}
+                  //           onToggleCalendar={onToggleCalendar}
+                  //           hasSession={hasSession}
+                  //           handleClickContinue={onClickOverlayContinue}
+                  //           handleSwitchStateChange={onOverlaySwitchStateChange}
+                  //           handleClickNoCalendar={() => {
+                  //             onOverlayClickNoCalendar();
+                  //           }}
+                  //         />
+                  //       </>
+                  //     )
+                  //   }
+                  // />
+                  <></>
                 )}
               </BookerSection>
             )}
-            <StickyOnDesktop key="meta" className={classNames("relative z-10 flex [grid-area:meta]")}>
+            {/* <StickyOnDesktop key="meta" className={classNames("relative z-10 flex [grid-area:meta]")}> */}
               <BookerSection
                 area="meta"
                 className="max-w-screen flex w-full flex-col md:w-[var(--booker-meta-width)]">
@@ -360,13 +367,13 @@ const BookerComponent = ({
                     </div>
                   )}
               </BookerSection>
-            </StickyOnDesktop>
+            {/* </StickyOnDesktop> */}
 
             <BookerSection
               key="book-event-form"
               area="main"
               className="sticky top-0 ml-[-1px] h-full md:w-[var(--booker-main-width)] md:border-l md:!px-5"
-              {...fadeInLeft}
+              // {...fadeInLeft}
               visible={bookerState === "booking" && !shouldShowFormInDialog}>
               {EventBooker}
             </BookerSection>
@@ -375,7 +382,7 @@ const BookerComponent = ({
               key="datepicker"
               area="main"
               visible={bookerState !== "booking" && layout === BookerLayouts.MONTH_VIEW}
-              {...fadeInLeft}
+              // {...fadeInLeft}
               initial="visible"
               className="md:border-subtle ml-[-1px] h-full flex-shrink md:border-l md:!px-5 lg:w-[var(--booker-main-width)]">
               <DatePicker
@@ -393,7 +400,7 @@ const BookerComponent = ({
               />
             </BookerSection>
 
-            <BookerSection
+            {/* <BookerSection
               key="large-calendar"
               area="main"
               visible={layout === BookerLayouts.WEEK_VIEW}
@@ -405,7 +412,7 @@ const BookerComponent = ({
                 isLoading={schedule.isPending}
                 event={event}
               />
-            </BookerSection>
+            </BookerSection> */}
             <BookerSection
               key="timeslots"
               area={{ default: "main", month_view: "timeslots" }}
@@ -420,7 +427,8 @@ const BookerComponent = ({
                 layout !== BookerLayouts.MONTH_VIEW && "sticky top-0"
               )}
               ref={timeslotsRef}
-              {...fadeInLeft}>
+              // {...fadeInLeft}
+              >
               <AvailableTimeSlots
                 customClassNames={customClassNames?.availableTimeSlotsCustomClassNames}
                 extraDays={extraDays}
@@ -432,18 +440,18 @@ const BookerComponent = ({
                 event={event}
               />
             </BookerSection>
-          </AnimatePresence>
+          {/* </AnimatePresence> */}
         </div>
-        <HavingTroubleFindingTime
+        {/* <HavingTroubleFindingTime
           visible={bookerState !== "booking" && layout === BookerLayouts.MONTH_VIEW && !isMobile}
           dayCount={dayCount}
           isScheduleLoading={schedule.isLoading}
           onButtonClick={() => {
             setDayCount(null);
           }}
-        />
+        /> */}
 
-        {bookerState !== "booking" && event.data?.showInstantEventConnectNowModal && (
+        {/* {bookerState !== "booking" && event.data?.showInstantEventConnectNowModal && (
           <div
             className={classNames(
               "animate-fade-in-up  z-40 my-2 opacity-0",
@@ -457,8 +465,8 @@ const BookerComponent = ({
               }}
             />
           </div>
-        )}
-        {!hideBranding && !isPlatform && (
+        )} */}
+        {/* {!hideBranding && !isPlatform && (
           <m.span
             key="logo"
             className={classNames(
@@ -468,22 +476,22 @@ const BookerComponent = ({
             )}>
             <PoweredBy logoOnly />
           </m.span>
-        )}
+        )} */}
       </div>
 
-      <BookFormAsModal
+      {/* <BookFormAsModal
         onCancel={() => setSelectedTimeslot(null)}
         visible={bookerState === "booking" && shouldShowFormInDialog}>
         {EventBooker}
-      </BookFormAsModal>
-      <Toaster position="bottom-right" />
+      </BookFormAsModal> */}
+      {/* <Toaster position="bottom-right" /> */}
     </>
   );
 };
 
 export const Booker = (props: BookerProps & WrappedBookerProps) => {
   return (
-    <LazyMotion strict features={loadFramerFeatures}>
+    // <LazyMotion strict features={loadFramerFeatures}>
       <BookerComponent
         {...props}
         customClassNames={{
@@ -498,6 +506,6 @@ export const Booker = (props: BookerProps & WrappedBookerProps) => {
           },
         }}
       />
-    </LazyMotion>
+    // </LazyMotion>
   );
 };
