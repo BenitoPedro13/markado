@@ -1,0 +1,34 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - name: Install SSH key
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          eval "$(ssh-agent -s)"
+          ssh-add ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ secrets.SSH_HOST_STAGING }} >> ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+
+      - name: Deploy to VPS
+        env:
+          SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
+          SSH_HOST: ${{ secrets.SSH_HOST_STAGING }}
+        run: |
+          ssh -o StrictHostKeyChecking=no -v $SSH_USERNAME@$SSH_HOST '
+            cd /opt/bitnami/apache/htdocs/markado && \
+            git pull origin develop && \
+            pnpm install && \
+            pnpm build && \
+            pm2 restart all
+          ' 
