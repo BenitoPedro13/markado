@@ -1,9 +1,10 @@
-import ServiceFinalizationForm from '@/modules/scheduling/services/ServiceFinalizationForm';
+import ServiceFinalizationView from '@/modules/scheduling/services/ServiceFinalizationView';
 import {getServiceBySlugAndUsername} from '~/trpc/server/handlers/service.handler';
 import {getHostUserByUsername} from '~/trpc/server/handlers/user.handler';
-import {getUserPageProps} from '../page';
+import {getUserPageProps} from '@/lib/getUserPageProps';
 import {redirect} from 'next/navigation';
-import ServiceCancelForm from '@/modules/scheduling/services/ServiceCancelForm';
+import ServiceCancelledView from '@/modules/scheduling/services/ServiceCancelledView';
+import ServiceRescheduledView from '@/modules/scheduling/services/ServiceRescheduledView';
 
 const ServiceSchedulingFinalizationPage = async (props: {
   params: Promise<{username: string; service: string}>;
@@ -27,11 +28,19 @@ const ServiceSchedulingFinalizationPage = async (props: {
   }
 
   if (searchParams.status === 'cancelled') {
-    return <ServiceCancelForm host={host} service={userPageProps.eventData} />;
+    return (
+      <ServiceCancelledView host={host} service={userPageProps.eventData} />
+    );
+  }
+
+  if (searchParams.status === 'rescheduled') {
+    return (
+      <ServiceRescheduledView host={host} service={userPageProps.eventData} />
+    );
   }
 
   return (
-    <ServiceFinalizationForm host={host} service={userPageProps.eventData} />
+    <ServiceFinalizationView host={host} service={userPageProps.eventData} />
   );
 };
 

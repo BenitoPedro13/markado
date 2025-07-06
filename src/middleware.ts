@@ -129,12 +129,28 @@ export async function middleware(request: NextRequest) {
       return response;
     }
     
+
+    if (session?.user?.id) {
+      // Server-side middleware checks onboarding status via direct DB query
+      const user = await prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: { completedOnboarding: true },
+      });
+
+      if (!user?.completedOnboarding) {
+        const personalUrl = new URL('/sign-up/personal', request.url);
+        if (!pathname.includes('redirect=')) {
+          personalUrl.searchParams.set('redirect', pathname);
+        }
+        return NextResponse.redirect(personalUrl);
+      }
+    }
+    
     // Only check onboarding status for routes that require it and not in onboarding flow
     if (requiresOnboarding) {
       // Get the onboarding status from the cookie
       const onboardingComplete =
         request.cookies.get('onboarding_complete')?.value === 'true';
-
       console.log(`[Middleware] User: ${session.user.email}, Path: ${pathname}, Onboarding complete: ${onboardingComplete}`);
 
       if (!onboardingComplete) {
