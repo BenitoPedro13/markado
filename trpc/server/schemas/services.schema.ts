@@ -29,7 +29,8 @@ export const createEventTypeInput = z
     beforeEventBuffer: z.number().int().min(0).optional(),
     afterEventBuffer: z.number().int().min(0).optional(),
     scheduleId: z.number().int().optional(),
-    badgeColor: z.nativeEnum(ServiceBadgeColor).optional()
+    badgeColor: z.nativeEnum(ServiceBadgeColor).optional(),
+    price: z.number().optional()
   })
   .partial({hidden: true, locations: true})
   .refine((data) => (data.teamId ? data.teamId && data.schedulingType : true), {
