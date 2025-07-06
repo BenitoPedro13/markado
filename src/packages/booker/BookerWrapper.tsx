@@ -33,7 +33,7 @@ import {
   DEFAULT_DARK_BRAND_COLOR,
   WEBAPP_URL
 } from '@/constants';
-import {useRouterQuery} from '@/packages/lib/hooks/useRouterQuery';
+import {useRouterQuery} from '@/lib/hooks/userRouterQuery';
 import {BookerLayouts} from '~/prisma/zod-utils';
 
 type BookerWrapperProps = BookerProps;
