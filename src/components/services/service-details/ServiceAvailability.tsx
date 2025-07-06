@@ -56,6 +56,7 @@ import {
   TSchedulesList
 } from '~/trpc/server/handlers/availability.handler';
 import { Me } from '~/trpc/server/handlers/user.handler';
+import {getTimezoneWithFallback} from '@/utils/timezone-utils';
 // import {
 //   // Avatar,
 //   // Badge,
@@ -256,10 +257,12 @@ const EventTypeSchedule = ({
   const handleScheduleAction = useCallback(() => {
     if (scheduleId) {
       startTransition(() => {
+        const timeZone = initialMe?.timeZone || Intl.DateTimeFormat().resolvedOptions().timeZone;
+        
         action({
           scheduleId,
           userId: initialMe?.id as string,
-          timeZone: initialMe?.timeZone
+          timeZone: getTimezoneWithFallback(initialMe?.timeZone)
         });
       });
     }

@@ -12,6 +12,7 @@ import { refreshCredentials } from "@/packages/features/bookings/lib/getAllCrede
 import { ErrorCode } from "@/packages/lib/errorCodes";
 import { HttpError } from "@/packages/lib/http-error";
 import { handlePayment } from "@/packages/lib/payment/handlePayment";
+import {getTimezoneWithFallback} from '@/utils/timezone-utils';
 import {prisma} from "@/lib/prisma";
 import { BookingStatus } from "~/prisma/enums";
 
@@ -36,7 +37,7 @@ const createNewSeat = async (
     fullName,
     bookerEmail,
     responses,
-    workflows,
+    //workflows,
     bookerPhoneNumber,
   } = rescheduleSeatedBookingObject;
   let { evt } = rescheduleSeatedBookingObject;
@@ -187,7 +188,13 @@ const createNewSeat = async (
       evt,
       eventType,
       eventTypePaymentAppCredential as IEventTypePaymentCredentialType,
-      seatedBooking,
+      {
+        ...seatedBooking,
+        user: seatedBooking.user ? {
+          ...seatedBooking.user,
+          timeZone: getTimezoneWithFallback(seatedBooking.user.timeZone)
+        } : null
+      },
       fullName,
       bookerEmail,
       bookerPhoneNumber

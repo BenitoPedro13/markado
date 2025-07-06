@@ -33,6 +33,7 @@ import {UserRepository} from '@/repositories/user';
 import getSlots from '@/packages/lib/slots';
 import {prisma} from '@/lib/prisma';
 import {availabilityUserSelect} from '~/prisma/selects';
+import {getTimezoneWithFallback} from '@/utils/timezone-utils';
 import {PeriodType, Prisma} from '~/prisma/app/generated/prisma/client';
 import {SchedulingType} from '~/prisma/enums';
 import {BookingStatus} from '~/prisma/enums';
@@ -651,7 +652,7 @@ async function _getAvailableSlots({
     dateRanges: aggregatedAvailability,
     minimumBookingNotice: eventType.minimumBookingNotice,
     frequency: eventType.slotInterval || input.duration || eventType.length,
-    organizerTimeZone: eventTimeZone,
+    organizerTimeZone: getTimezoneWithFallback(eventTimeZone),
     datesOutOfOffice: !isTeamEvent
       ? allUsersAvailability[0]?.datesOutOfOffice
       : undefined
@@ -871,7 +872,7 @@ async function _getAvailableSlots({
     getAllDatesWithBookabilityStatus(availableDates);
   loggerWithEventDetails.debug(safeStringify({availableDates}));
 
-  const eventUtcOffset = getUTCOffsetByTimezone(eventTimeZone) ?? 0;
+  const eventUtcOffset = getUTCOffsetByTimezone(getTimezoneWithFallback(eventTimeZone)) ?? 0;
   const bookerUtcOffset = input.timeZone
     ? (getUTCOffsetByTimezone(input.timeZone) ?? 0)
     : 0;

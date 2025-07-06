@@ -1,5 +1,6 @@
 import {addMinutes, format, parseISO} from 'date-fns';
 import { type IGetAvailableSlots, type Slot, type IToUser } from '@/components/schedules/lib/use-schedule/types';
+import {getTimezoneWithFallback} from '@/utils/timezone-utils';
 
 // Types
 export type GetScheduleOptions = {
@@ -8,7 +9,7 @@ export type GetScheduleOptions = {
       user: {
         id: string;
         name: string | null;
-        timeZone: string;
+        timeZone: string | null;
         email: string;
         emailVerified: Date | null;
         biography: string | null;
@@ -59,8 +60,10 @@ export async function getAvailableSlots({ctx, input}: GetScheduleOptions): Promi
     startTime,
     endTime,
     scheduleId,
-    timeZone = 'America/Sao_Paulo'
+    timeZone
   } = input;
+
+  const actualTimeZone = getTimezoneWithFallback(timeZone);
 
   if (!ctx.session?.user) {
     throw new Error('Not authenticated');
@@ -122,7 +125,7 @@ export async function getAvailableSlots({ctx, input}: GetScheduleOptions): Promi
         id: userId,
         name: userName,
         email: userEmail,
-        timeZone: timeZone
+        timeZone: actualTimeZone
       };
 
       const slotData: Slot = {
@@ -140,6 +143,6 @@ export async function getAvailableSlots({ctx, input}: GetScheduleOptions): Promi
 
   return {
     slots: slotsByDate,
-    timeZone
+    timeZone: actualTimeZone
   };
 }

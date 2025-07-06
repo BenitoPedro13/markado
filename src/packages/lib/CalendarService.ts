@@ -333,7 +333,7 @@ export default abstract class BaseCalendarService implements Calendar {
         timeZone: true,
       },
     });
-    return user?.timeZone;
+    return user?.timeZone ?? undefined;
   };
 
   /**

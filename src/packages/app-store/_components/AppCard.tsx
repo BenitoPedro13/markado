@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useAppContextWithSchema } from "@/packages/app-store/EventTypeAppContext";
 // import { useIsPlatform } from "@/atoms/monorepo";
 import {cn as classNames } from "@/utils/cn";
-import type { RouterOutputs } from "@/trpc/react";
+import type { RouterOutputs } from "@/trpc/server";
 import { Switch, Badge, Avatar, Button, Icon } from "@/ui";
 
 import type { CredentialOwner } from "../types";

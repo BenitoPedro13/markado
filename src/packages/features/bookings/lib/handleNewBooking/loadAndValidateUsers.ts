@@ -7,6 +7,7 @@ import {getPiiFreeUser} from '@/packages/lib/piiFreeData';
 import { safeStringify } from "@/lib/safeStringify";
 import { userSelect } from "~/prisma/selects";
 import {prisma} from "@/lib/prisma";
+import {getTimezoneWithFallback} from '@/utils/timezone-utils';
 import { SchedulingType } from "~/prisma/enums";
 import { credentialForCalendarServiceSelect } from "~/prisma/selects/credential";
 
@@ -91,7 +92,7 @@ export async function loadAndValidateUsers({
   logger.debug(
     "Concerned users",
     safeStringify({
-      users: users.map(getPiiFreeUser),
+      users: users.map(user => getPiiFreeUser({...user, timeZone: getTimezoneWithFallback(user.timeZone)})),
     })
   );
 
