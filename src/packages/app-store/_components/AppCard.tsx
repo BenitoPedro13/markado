@@ -5,11 +5,28 @@ import { useTranslation } from "react-i18next";
 import { useAppContextWithSchema } from "@/packages/app-store/EventTypeAppContext";
 // import { useIsPlatform } from "@/atoms/monorepo";
 import {cn as classNames } from "@/utils/cn";
-import type { RouterOutputs } from "@/trpc/server";
-import { Switch, Badge, Avatar, Button, Icon } from "@/ui";
-
-import type { CredentialOwner } from "../types";
+import * as Avatar from "@/components/align-ui/ui/avatar";
+import * as Switch from "@/components/align-ui/ui/switch";
+import * as Badge from "@/components/align-ui/ui/badge";
+import * as Button from "@/components/align-ui/ui/button";
+import { RiSettingsLine } from "@remixicon/react";
 import OmniInstallAppButton from "./OmniInstallAppButton";
+
+type AppCardApp = {
+  slug: string;
+  name: string;
+  description?: string;
+  logo: string;
+  isInstalled: boolean;
+  enabled: boolean;
+  categories: string[];
+  isGlobal?: boolean;
+  isSetupAlready?: boolean;
+  credentialOwner?: {
+    name: string | null;
+    avatar?: string | null;
+  };
+};
 
 export default function AppCard({
   app,
@@ -24,7 +41,7 @@ export default function AppCard({
   hideSettingsIcon = false,
   hideAppCardOptions = false,
 }: {
-  app: RouterOutputs["viewer"]["integrations"]["items"][number] & { credentialOwner?: CredentialOwner };
+  app: AppCardApp;
   description?: React.ReactNode;
   switchChecked?: boolean;
   switchOnClick?: (e: boolean) => void;
@@ -85,33 +102,31 @@ export default function AppCard({
           <div className="ml-auto flex items-center space-x-2">
             {app.credentialOwner && !isPlatform && (
               <div className="ml-auto">
-                <Badge variant="gray">
+                <Badge.Root variant="light" color="gray">
                   <div className="flex items-center">
-                    <Avatar
-                      className="mr-2"
-                      alt={app.credentialOwner.name || "Credential Owner Name"}
-                      size="sm"
-                      imageSrc={app.credentialOwner.avatar}
-                    />
+                    <Avatar.Root className="mr-2" size="24">
+                      <Avatar.Image 
+                        src={app.credentialOwner.avatar || ""}
+                        alt={app.credentialOwner.name || "Credential Owner Name"}
+                      />
+                    </Avatar.Root>
                     {app.credentialOwner.name}
                   </div>
-                </Badge>
+                </Badge.Root>
               </div>
             )}
             {app?.isInstalled || app.credentialOwner ? (
               <div className="ml-auto flex items-center">
-                <Switch
+                <Switch.Root
                   disabled={!app.enabled || managedDisabled || disableSwitch}
-                  onCheckedChange={(enabled) => {
+                  onCheckedChange={(enabled: boolean) => {
                     if (switchOnClick) {
                       switchOnClick(enabled);
                     }
                     setAppData("enabled", enabled);
                   }}
                   checked={switchChecked}
-                  LockedIcon={LockedIcon}
                   data-testid={`${app.slug}-app-switch`}
-                  tooltip={switchTooltip}
                 />
               </div>
             ) : (
@@ -134,7 +149,7 @@ export default function AppCard({
               <div className="relative p-4 pt-5 text-sm [&_input]:mb-0 [&_input]:leading-4">
                 {!hideSettingsIcon && !isPlatform && (
                   <Link href={`/apps/${app.slug}/setup`} className="absolute right-4 top-4">
-                    <Icon name="settings" className="text-default h-4 w-4" aria-hidden="true" />
+                    <RiSettingsLine className="text-default h-4 w-4" aria-hidden="true" />
                   </Link>
                 )}
                 {children}
@@ -143,7 +158,10 @@ export default function AppCard({
               <div className="flex h-64 w-full flex-col items-center justify-center gap-4 ">
                 <p>{t("this_app_is_not_setup_already")}</p>
                 <Link href={`/apps/${app.slug}/setup`}>
-                  <Button StartIcon="settings">{t("setup")}</Button>
+                  <Button.Root className="flex items-center gap-2">
+                    <RiSettingsLine className="h-4 w-4" />
+                    {t("setup")}
+                  </Button.Root>
                 </Link>
               </div>
             )
