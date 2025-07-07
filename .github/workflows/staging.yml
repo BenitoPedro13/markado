@@ -31,10 +31,4 @@ jobs:
             pnpm install && \
             pnpm build && \
             pm2 restart all
-          '
-          
-          echo "===== Últimos 100 linhas de log de erro ====="
-          tail -n 100 ~/.pm2/logs/markado-error-*.log || true
-
-          echo "===== Últimos 100 linhas de log de saída ====="
-          tail -n 100 ~/.pm2/logs/markado-out-*.log || true
+          '          
