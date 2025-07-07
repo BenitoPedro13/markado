@@ -123,13 +123,13 @@ const BookerComponent = ({
 
   const { handleBookEvent, errors, loadingStates, expiryTime, instantVideoMeetingUrl } = bookings;
 
-  const {
-    isEmailVerificationModalVisible,
-    setEmailVerificationModalVisible,
-    handleVerifyEmail,
-    renderConfirmNotVerifyEmailButtonCond,
-    isVerificationCodeSending,
-  } = verifyEmail;
+  // const {
+  //   isEmailVerificationModalVisible,
+  //   setEmailVerificationModalVisible,
+  //   handleVerifyEmail,
+  //   renderConfirmNotVerifyEmailButtonCond,
+  //   isVerificationCodeSending,
+  // } = verifyEmail;
 
   const {
     overlayBusyDates,

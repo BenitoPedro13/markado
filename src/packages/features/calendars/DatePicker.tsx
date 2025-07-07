@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { JSX, useEffect } from "react";
 import { shallow } from "zustand/shallow";
 
 import type { IFromUser, IToUser } from "@/packages/core/getUserAvailability";
@@ -129,12 +129,13 @@ const NoAvailabilityOverlay = ({
   const { t } = useLocale();
 
   return (
-    <div className="bg-muted border-subtle absolute left-1/2 top-40 -mt-10 w-max -translate-x-1/2 -translate-y-1/2 transform rounded-md border p-8 shadow-sm">
-      <h4 className="text-emphasis mb-4 font-medium">{t("no_availability_in_month", { month: month })}</h4>
-      <Button.Root onClick={nextMonthButton} color="primary" EndIcon="arrow-right" data-testid="view_next_month">
-        {t("view_next_month")}
-      </Button.Root>
-    </div>
+    <></>
+    // <div className="bg-muted border-subtle absolute left-1/2 top-40 -mt-10 w-max -translate-x-1/2 -translate-y-1/2 transform rounded-md border p-8 shadow-sm">
+    //   <h4 className="text-emphasis mb-4 font-medium">{t("no_availability_in_month", { month: month })}</h4>
+    //   <Button.Root onClick={nextMonthButton} color="primary" EndIcon="arrow-right" data-testid="view_next_month">
+    //     {t("view_next_month")}
+    //   </Button.Root>
+    // </div>
   );
 };
 
@@ -180,7 +181,7 @@ const Days = ({
     days.push(date);
   }
 
-  const [selectedDatesAndTimes] = useBookerStore((state) => [state.selectedDatesAndTimes], shallow);
+  //const [selectedDatesAndTimes] = useBookerStore((state) => [state.selectedDatesAndTimes], shallow);
 
   const isActive = (day: dayjs.Dayjs) => {
     // for selecting a range of dates
@@ -193,16 +194,16 @@ const Days = ({
     }
 
     // for selecting multiple dates for an event
-    if (
-      eventSlug &&
-      selectedDatesAndTimes &&
-      selectedDatesAndTimes[eventSlug as string] &&
-      Object.keys(selectedDatesAndTimes[eventSlug as string]).length > 0
-    ) {
-      return Object.keys(selectedDatesAndTimes[eventSlug as string]).some((date) => {
-        return yyyymmdd(dayjs(date)) === yyyymmdd(day);
-      });
-    }
+    // if (
+    //   eventSlug &&
+    //   selectedDatesAndTimes &&
+    //   selectedDatesAndTimes[eventSlug as string] &&
+    //   Object.keys(selectedDatesAndTimes[eventSlug as string]).length > 0
+    // ) {
+    //   return Object.keys(selectedDatesAndTimes[eventSlug as string]).some((date) => {
+    //     return yyyymmdd(dayjs(date)) === yyyymmdd(day);
+    //   });
+    // }
 
     return false;
   };
@@ -268,7 +269,7 @@ const Days = ({
               className="bg-muted text-muted absolute bottom-0 left-0 right-0 top-0 mx-auto flex w-full items-center justify-center rounded-sm border-transparent text-center font-medium opacity-90 transition"
               key={`e-${idx}`}
               disabled>
-              <SkeletonText className="h-8 w-9" />
+              {/* <SkeletonText className="h-8 w-9" /> */}
             </button>
           ) : (
             <DayComponent
@@ -319,7 +320,7 @@ const DatePicker = ({
     scrollToTimeSlots?: () => void;
   }) => {
   const browsingDate = passThroughProps.browsingDate || dayjs().startOf("month");
-  const { i18n, t } = useLocale();
+  //const { i18n, t } = useLocale();
   const bookingData = useBookerStore((state) => state.bookingData);
   const isBookingInPast = bookingData ? new Date(bookingData.endTime) < new Date() : false;
 
@@ -328,11 +329,11 @@ const DatePicker = ({
       onMonthChange(browsingDate.add(newMonth, "month"));
     }
   };
-  const month = browsingDate
-    ? new Intl.DateTimeFormat(i18n.language, { month: "long" }).format(
-        new Date(browsingDate.year(), browsingDate.month())
-      )
-    : null;
+  // const month = browsingDate
+  //   ? new Intl.DateTimeFormat(i18n.language, { month: "long" }).format(
+  //       new Date(browsingDate.year(), browsingDate.month())
+  //     )
+  //   : null;
 
   return (
     <div className={classNames("flex flex-col gap-5", className)}>
@@ -345,7 +346,7 @@ const DatePicker = ({
                   "text-sm font-medium capitalize text-black",
                   customClassNames?.datePickerTitle
                 )}>
-                {month}
+                {/* {month} */}
               </strong>
               {", "}
               <span
@@ -357,12 +358,13 @@ const DatePicker = ({
               </span>
             </>
           ) : (
-            <SkeletonText className="h-8 w-24" />
+            <></>
+            // <SkeletonText className="h-8 w-24" />
           )}
         </span>
         <div className="text-emphasis">
           <div className="flex items-center gap-[5px]">
-            <Button
+            {/* <Button
               className={classNames(
                 `border-soft-200 bg-white-0 text-strong-950 group rounded-md border p-1 opacity-70 transition hover:opacity-100 rtl:rotate-180`,
                 !browsingDate.isAfter(dayjs()) &&
@@ -388,7 +390,7 @@ const DatePicker = ({
               variant="icon"
               StartIcon="chevron-right"
               aria-label={t("view_next_month")}
-            />
+            /> */}
           </div>
         </div>
       </div>
@@ -415,7 +417,7 @@ const DatePicker = ({
             selected={selected}
             {...passThroughProps}
             browsingDate={browsingDate}
-            month={month}
+            month={'april'}
             nextMonthButton={() => changeMonth(+1)}
             slots={slots}
             includedDates={includedDates}

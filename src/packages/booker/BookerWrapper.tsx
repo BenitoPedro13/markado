@@ -44,8 +44,8 @@ export const BookerWrapper = (props: BookerWrapperProps) => {
   const searchParams = useSearchParams();
   const event = useEvent({
     fromRedirectOfNonOrgLink: props.entity.fromRedirectOfNonOrgLink
-  });
-  const bookerLayout = useBookerLayout(event.data);
+  }) as any;
+  const bookerLayout = useBookerLayout(event.data || null);
 
   const selectedDate = searchParams?.get('date');
   const isRedirect = searchParams?.get('redirected') === 'true' || false;
@@ -80,12 +80,10 @@ export const BookerWrapper = (props: BookerWrapperProps) => {
   });
 
   const [bookerState, _] = useBookerStore(
-    (state) => [state.state, state.setState],
-    // shallow
+    (state) => [state.state, state.setState]
   );
   const [dayCount] = useBookerStore(
-    (state) => [state.dayCount, state.setDayCount],
-    // shallow
+    (state) => [state.dayCount, state.setDayCount]
   );
 
   const {data: session} = useSession();
@@ -116,7 +114,7 @@ export const BookerWrapper = (props: BookerWrapperProps) => {
   }, [searchParams, firstNameQueryParam, lastNameQueryParam]);
 
   const bookerForm = useBookingForm({
-    event: event.data,
+    event: event.data || null,
     sessionEmail: session?.user.email,
     sessionUsername: session?.user.username,
     sessionName: session?.user.name,
@@ -181,11 +179,11 @@ export const BookerWrapper = (props: BookerWrapperProps) => {
 
   const verifyCode = useVerifyCode({
     onSuccess: () => {
-      if (!bookerForm.formEmail) return;
+      // if (!bookerForm.formEmail) return;
 
-      verifyEmail.setVerifiedEmail(bookerForm.formEmail);
-      verifyEmail.setEmailVerificationModalVisible(false);
-      bookings.handleBookEvent();
+      // verifyEmail.setVerifiedEmail(bookerForm.formEmail);
+      // verifyEmail.setEmailVerificationModalVisible(false);
+      // bookings.handleBookEvent();
     }
   });
 
@@ -210,10 +208,10 @@ export const BookerWrapper = (props: BookerWrapperProps) => {
     [searchParams, pathname, router]
   );
   useBrandColors({
-    brandColor: event.data?.profile.brandColor ?? DEFAULT_LIGHT_BRAND_COLOR,
+    brandColor: event.data?.profile?.brandColor ?? DEFAULT_LIGHT_BRAND_COLOR,
     darkBrandColor:
-      event.data?.profile.darkBrandColor ?? DEFAULT_DARK_BRAND_COLOR,
-    theme: event.data?.profile.theme
+      event.data?.profile?.darkBrandColor ?? DEFAULT_DARK_BRAND_COLOR,
+    theme: event.data?.profile?.theme
   });
 
   return (

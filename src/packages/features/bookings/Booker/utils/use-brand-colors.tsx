@@ -1,6 +1,6 @@
-import useGetBrandingColours from "@/lib/getBrandColours";
-import useTheme from "@/lib/hooks/useTheme";
-import { useMarkadoTheme } from "@/ui";
+// import useGetBrandingColours from "@/lib/getBrandColours";
+// import useTheme from "@/lib/hooks/useTheme";
+// import { useMarkadoTheme } from "@/components/align-ui/ui/use-markado-theme";
 
 export const useBrandColors = ({
   brandColor,
@@ -11,11 +11,11 @@ export const useBrandColors = ({
   darkBrandColor?: string;
   theme?: string | null;
 }) => {
-  const brandTheme = useGetBrandingColours({
-    lightVal: brandColor,
-    darkVal: darkBrandColor,
-  });
+  // const brandTheme = useGetBrandingColours({
+  //   lightVal: brandColor,
+  //   darkVal: darkBrandColor,
+  // });
 
-  useMarkadoTheme(brandTheme);
-  useTheme(theme);
+  // useMarkadoTheme(brandTheme);
+  // useTheme(theme);
 };
