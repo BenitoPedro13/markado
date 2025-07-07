@@ -1,16 +1,29 @@
 import { useEffect } from "react";
 import { shallow } from "zustand/shallow";
 
-import type { IFromUser, IToUser } from "@core/getUserAvailability";
-import type { Dayjs } from "@dayjs";
-import dayjs from "@dayjs";
-import { useEmbedStyles } from "@embed-core/embed-iframe";
-import { useBookerStore } from "@features/bookings/Booker/store";
-import { getAvailableDatesInMonth } from "@features/calendars/lib/getAvailableDatesInMonth";
-import classNames from "@lib/classNames";
-import { daysInMonth, yyyymmdd } from "@lib/date-fns";
-import { useLocale } from "@lib/hooks/useLocale";
-import { weekdayNames } from "@lib/weekday";
+import type { IFromUser, IToUser } from "@/packages/core/getUserAvailability";
+import type { Dayjs } from "dayjs";
+import dayjs from "dayjs";
+// import { useEmbedStyles } from "embed-core/embed-iframe";
+import { useBookerStore } from "@/packages/features/bookings/Booker/store";
+// import { getAvailableDatesInMonth } from "@features/calendars/lib/getAvailableDatesInMonth";
+
+// Simple implementation for getAvailableDatesInMonth
+const getAvailableDatesInMonth = ({ 
+  browsingDate, 
+  minDate, 
+  includedDates 
+}: { 
+  browsingDate: Date; 
+  minDate?: Date; 
+  includedDates?: string[] 
+}) => {
+  return includedDates || [];
+};
+import { cn as classNames } from "@/utils/cn";
+import { daysInMonth, yyyymmdd } from "@/lib/date-fns";
+import { useLocale } from "@/hooks/use-locale";
+import { weekdayNames } from "@/lib/weekday";
 import * as SkeletonText from "@/components/align-ui/ui/skeleton";
 import * as Button from "@/components/align-ui/ui/button";
 
@@ -72,13 +85,13 @@ export const Day = ({
   };
 }) => {
   const { t } = useLocale();
-  const enabledDateButtonEmbedStyles = useEmbedStyles("enabledDateButton");
-  const disabledDateButtonEmbedStyles = useEmbedStyles("disabledDateButton");
+  //const enabledDateButtonEmbedStyles = useEmbedStyles("enabledDateButton");
+  //const disabledDateButtonEmbedStyles = useEmbedStyles("disabledDateButton");
 
   return (
     <button
       type="button"
-      style={disabled ? { ...disabledDateButtonEmbedStyles } : { ...enabledDateButtonEmbedStyles }}
+      //style={disabled ? { ...disabledDateButtonEmbedStyles } : { ...enabledDateButtonEmbedStyles }}
       className={classNames(
         "disabled:text-bookinglighter text-sub-600 absolute bottom-0 left-0 right-0 top-0 mx-auto max-h-[40px] w-full max-w-[40px] rounded-xl border-2 border-transparent text-center text-sm font-medium transition disabled:cursor-default disabled:border-transparent",
         active
@@ -118,9 +131,9 @@ const NoAvailabilityOverlay = ({
   return (
     <div className="bg-muted border-subtle absolute left-1/2 top-40 -mt-10 w-max -translate-x-1/2 -translate-y-1/2 transform rounded-md border p-8 shadow-sm">
       <h4 className="text-emphasis mb-4 font-medium">{t("no_availability_in_month", { month: month })}</h4>
-      <Button onClick={nextMonthButton} color="primary" EndIcon="arrow-right" data-testid="view_next_month">
+      <Button.Root onClick={nextMonthButton} color="primary" EndIcon="arrow-right" data-testid="view_next_month">
         {t("view_next_month")}
-      </Button>
+      </Button.Root>
     </div>
   );
 };
