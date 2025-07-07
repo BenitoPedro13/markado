@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { create } from "zustand";
+import {create} from 'zustand';
 
 import dayjs from "@/lib/dayjs";
 import { BOOKER_NUMBER_OF_DAYS_TO_LOAD } from "@/constants";

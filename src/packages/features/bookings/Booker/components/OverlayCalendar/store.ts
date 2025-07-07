@@ -1,6 +1,6 @@
-import { create } from "zustand";
+import {create} from 'zustand';
 
-import type { EventBusyDate } from "@/types/Calendar";
+import type {EventBusyDate} from '@/types/Calendar';
 
 interface IOverlayCalendarStore {
   overlayBusyDates: EventBusyDate[] | undefined;
@@ -14,14 +14,14 @@ interface IOverlayCalendarStore {
 export const useOverlayCalendarStore = create<IOverlayCalendarStore>((set) => ({
   overlayBusyDates: undefined,
   setOverlayBusyDates: (busyDates: EventBusyDate[]) => {
-    set({ overlayBusyDates: busyDates });
+    set({overlayBusyDates: busyDates});
   },
   calendarSettingsOverlayModal: false,
   setCalendarSettingsOverlayModal: (value: boolean) => {
-    set({ calendarSettingsOverlayModal: value });
+    set({calendarSettingsOverlayModal: value});
   },
   continueWithProviderModal: false,
   setContinueWithProviderModal: (value: boolean) => {
-    set({ continueWithProviderModal: value });
-  },
+    set({continueWithProviderModal: value});
+  }
 }));

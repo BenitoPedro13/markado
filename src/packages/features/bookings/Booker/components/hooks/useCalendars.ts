@@ -1,6 +1,6 @@
 import { useSearchParams } from "next/navigation";
 import { useEffect } from "react";
-// import { shallow } from "zustand/shallow";
+import { useShallow } from "zustand/shallow";
 
 import { useTimePreferences } from "@/packages/features/bookings/lib";
 import { localStorage } from "@/packages/lib/webstorage";
@@ -33,8 +33,7 @@ export const useCalendars = ({ hasSession }: UseCalendarsProps) => {
   // const utils = trpc.useUtils();
 
   const [calendarSettingsOverlay] = useOverlayCalendarStore(
-    (state) => [state.calendarSettingsOverlayModal, state.setCalendarSettingsOverlayModal],
-    // shallow
+    useShallow((state) => [state.calendarSettingsOverlayModal, state.setCalendarSettingsOverlayModal])
   );
 
   // const {data: overlayBusyDates, isError} =

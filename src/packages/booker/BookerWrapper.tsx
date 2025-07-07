@@ -6,7 +6,7 @@ import {usePathname, useRouter} from 'next/navigation';
 import {useMemo, useCallback, 
   // useEffect
 } from 'react';
-import {shallow} from 'zustand/shallow';
+import {useShallow} from 'zustand/shallow';
 
 import dayjs from '@/lib/dayjs';
 // import {sdkActionManager} from '@/embed-core/embed-iframe';
@@ -80,10 +80,10 @@ export const BookerWrapper = (props: BookerWrapperProps) => {
   });
 
   const [bookerState, _] = useBookerStore(
-    (state) => [state.state, state.setState]
+    useShallow((state) => [state.state, state.setState])
   );
   const [dayCount] = useBookerStore(
-    (state) => [state.dayCount, state.setDayCount]
+    useShallow((state) => [state.dayCount, state.setDayCount])
   );
 
   const {data: session} = useSession();

@@ -1,7 +1,7 @@
 // import { m } from "framer-motion";
 import dynamic from "next/dynamic";
 import { useEffect, useMemo } from "react";
-// import { shallow } from "zustand/shallow";
+import { useShallow } from "zustand/shallow";
 
 // import { Timezone as PlatformTimezoneSelect } from "@/atoms/monorepo";
 // import { useEmbedUiConfig, useIsEmbed } from "@/embed-core/embed-iframe";
@@ -64,8 +64,7 @@ export const EventMeta = ({
   const bookingData = useBookerStore((state) => state.bookingData);
   const rescheduleUid = useBookerStore((state) => state.rescheduleUid);
   const [seatedEventData, setSeatedEventData] = useBookerStore(
-    (state) => [state.seatedEventData, state.setSeatedEventData]
-    // ,shallow
+    useShallow((state) => [state.seatedEventData, state.setSeatedEventData])
   );
   const {locale, t} = useLocale();
   // const embedUiConfig = useEmbedUiConfig();

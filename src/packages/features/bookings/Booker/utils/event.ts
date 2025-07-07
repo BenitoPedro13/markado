@@ -1,5 +1,5 @@
 import { usePathname } from "next/navigation";
-import { shallow } from "zustand/shallow";
+import { useShallow } from "zustand/shallow";
 
 import { useSchedule } from "@/packages/features/schedules";
 //import { useCompatSearchParams } from "@/packages/lib/hooks/useCompatSearchParams";
@@ -143,8 +143,7 @@ const mockScheduleData = {
  */
 export const useEvent = (props?: { fromRedirectOfNonOrgLink?: boolean }) => {
   const [username, eventSlug, isTeamEvent, org] = useBookerStore(
-    (state) => [state.username, state.eventSlug, state.isTeamEvent, state.org],
-    // shallow
+    useShallow((state) => [state.username, state.eventSlug, state.isTeamEvent, state.org])
   );
 
   // const event = trpc.viewer.public.event.useQuery(
@@ -213,8 +212,7 @@ export const useScheduleForEvent = ({
 } = {}) => {
   const { timezone } = useTimePreferences();
   const [usernameFromStore, eventSlugFromStore, monthFromStore, durationFromStore] = useBookerStore(
-    (state) => [state.username, state.eventSlug, state.month, state.selectedDuration],
-    // shallow
+    useShallow((state) => [state.username, state.eventSlug, state.month, state.selectedDuration])
   );
 
   //const searchParams = useCompatSearchParams();

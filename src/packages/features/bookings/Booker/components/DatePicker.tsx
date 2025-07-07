@@ -1,24 +1,24 @@
-import { shallow } from "zustand/shallow";
+import {useShallow} from 'zustand/shallow';
 
-import type { Dayjs } from "@/lib/dayjs";
-import dayjs from "@/lib/dayjs";
-import { default as DatePickerComponent } from "@/packages/features/calendars/DatePicker";
-import { useNonEmptyScheduleDays } from "@/packages/features/schedules";
-import { weekdayToWeekIndex } from "@/lib/date-fns";
-import { useLocale } from "@/hooks/use-locale";
-import type { User } from "~/prisma/app/generated/prisma/client";
+import type {Dayjs} from '@/lib/dayjs';
+import dayjs from '@/lib/dayjs';
+import {default as DatePickerComponent} from '@/packages/features/calendars/DatePicker';
+import {useNonEmptyScheduleDays} from '@/packages/features/schedules';
+import {weekdayToWeekIndex} from '@/lib/date-fns';
+import {useLocale} from '@/hooks/use-locale';
+import type {User} from '~/prisma/app/generated/prisma/client';
 
-import { useBookerStore } from "../store";
-import type { useScheduleForEventReturnType } from "../utils/event";
+import {useBookerStore} from '../store';
+import type {useScheduleForEventReturnType} from '../utils/event';
 
 export const DatePicker = ({
   event,
   schedule,
   classNames,
-  scrollToTimeSlots,
+  scrollToTimeSlots
 }: {
   event: {
-    data?: { users: Pick<User, "weekStart">[] } | null;
+    data?: {users: Pick<User, 'weekStart'>[]} | null;
   };
   schedule: useScheduleForEventReturnType;
   classNames?: {
@@ -31,26 +31,25 @@ export const DatePicker = ({
   };
   scrollToTimeSlots?: () => void;
 }) => {
-  const { locale, t: i18n } = useLocale();
-  const [month, selectedDate] = useBookerStore((state) => [state.month, state.selectedDate]
-  // , shallow
-);
+  const {locale, t: i18n} = useLocale();
+  const [month, selectedDate] = useBookerStore(
+    useShallow((state) => [state.month, state.selectedDate])
+  );
   const [setSelectedDate, setMonth, setDayCount] = useBookerStore(
-    (state) => [state.setSelectedDate, state.setMonth, state.setDayCount]
-    // ,shallow
+    useShallow((state) => [state.setSelectedDate, state.setMonth, state.setDayCount])
   );
   const nonEmptyScheduleDays = useNonEmptyScheduleDays(schedule?.data?.slots);
-  const browsingDate = month ? dayjs(month) : dayjs().startOf("month");
+  const browsingDate = month ? dayjs(month) : dayjs().startOf('month');
 
   const onMonthChange = (date: Dayjs) => {
-    setMonth(date.format("YYYY-MM"));
-    setSelectedDate(date.format("YYYY-MM-DD"));
+    setMonth(date.format('YYYY-MM'));
+    setSelectedDate(date.format('YYYY-MM-DD'));
     setDayCount(null); // Whenever the month is changed, we nullify getting X days
   };
 
   const moveToNextMonthOnNoAvailability = () => {
-    const currentMonth = dayjs().startOf("month").format("YYYY-MM");
-    const browsingMonth = browsingDate.format("YYYY-MM");
+    const currentMonth = dayjs().startOf('month').format('YYYY-MM');
+    const browsingMonth = browsingDate.format('YYYY-MM');
 
     // Insufficient data case
     if (!schedule?.data?.slots) {
@@ -63,7 +62,7 @@ export const DatePicker = ({
       return;
     }
 
-    onMonthChange(browsingDate.add(1, "month"));
+    onMonthChange(browsingDate.add(1, 'month'));
   };
 
   moveToNextMonthOnNoAvailability();
@@ -75,12 +74,12 @@ export const DatePicker = ({
         datePickerDays: classNames?.datePickerDays,
         datePickersDates: classNames?.datePickerDate,
         datePickerDatesActive: classNames?.datePickerDatesActive,
-        datePickerToggle: classNames?.datePickerToggle,
+        datePickerToggle: classNames?.datePickerToggle
       }}
       className={classNames?.datePickerContainer}
       isPending={schedule.isPending}
       onChange={(date: Dayjs | null) => {
-        setSelectedDate(date === null ? date : date.format("YYYY-MM-DD"));
+        setSelectedDate(date === null ? date : date.format('YYYY-MM-DD'));
       }}
       onMonthChange={onMonthChange}
       includedDates={nonEmptyScheduleDays}

@@ -15,6 +15,7 @@ type Props = {
     | 'price'
     | 'hidden'
     | 'badgeColor'
+    | 'entity'
   >;
   booking?: GetBookingType;
   rescheduleUid: string | null;
@@ -27,6 +28,8 @@ type Props = {
   orgBannerUrl: null;
 };
 
+// Booker page fetches a tiny bit of data server side, to determine early
+// whether the page should show an away state or dynamic booking not allowed.
 export async function getUserPageProps({
   username,
   slug
@@ -67,7 +70,8 @@ export async function getUserPageProps({
       slug: eventData.slug,
       hidden: eventData.hidden,
       badgeColor: eventData.badgeColor,
-      price: eventData.price
+      price: eventData.price,
+      entity: eventData.entity,
     },
     user: username,
     slug,

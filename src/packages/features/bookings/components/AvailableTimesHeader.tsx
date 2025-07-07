@@ -1,4 +1,4 @@
-import {shallow} from 'zustand/shallow';
+import {useShallow} from 'zustand/shallow';
 
 import type {Dayjs} from '@/lib/dayjs';
 import dayjs from '@/lib/dayjs';
@@ -28,9 +28,7 @@ export const AvailableTimesHeader = ({
   customClassNames
 }: AvailableTimesHeaderProps) => {
   const {locale, t} = useLocale();
-  const [layout] = useBookerStore((state) => [state.layout]
-//   , shallow
-);
+  const [layout] = useBookerStore(useShallow((state) => [state.layout]));
   const isColumnView = layout === BookerLayouts.COLUMN_VIEW;
   const isMonthView = layout === BookerLayouts.MONTH_VIEW;
   const isToday = dayjs().isSame(date, 'day');

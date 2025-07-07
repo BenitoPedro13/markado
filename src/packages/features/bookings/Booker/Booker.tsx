@@ -3,7 +3,7 @@ import dynamic from "next/dynamic";
 import { useEffect, useMemo, useRef } from "react";
 // import { Toaster } from "react-hot-toast";
 // import StickyBox from "react-sticky-box";
-// import { shallow } from "zustand/shallow";
+import { useShallow } from "zustand/shallow";
 
 // import BookingPageTagManager from "@/packages/app-store/BookingPageTagManager";
 import dayjs from "@/lib/dayjs";
@@ -15,7 +15,7 @@ import { BookerLayouts } from "~/prisma/zod-utils";
 
 // import { VerifyCodeDialog } from "../components/VerifyCodeDialog";
 import { AvailableTimeSlots } from "./components/AvailableTimeSlots";
-// import { BookEventForm } from "./components/BookEventForm";
+import { BookEventForm } from "./components/BookEventForm";
 // import { BookFormAsModal } from "./components/BookEventForm/BookFormAsModal";
 import { EventMeta } from "./components/EventMeta";
 // import { HavingTroubleFindingTime } from "./components/HavingTroubleFindingTime";
@@ -68,9 +68,9 @@ const BookerComponent = ({
   customClassNames,
 }: BookerProps & WrappedBookerProps) => {
   const { t } = useLocale();
-  const [bookerState, setBookerState] = useBookerStore((state) => [state.state, state.setState]
-  // , shallow
-);
+  const [bookerState, setBookerState] = useBookerStore(
+    useShallow((state) => [state.state, state.setState])
+  );
   const selectedDate = useBookerStore((state) => state.selectedDate);
   const {
     shouldShowFormInDialog,
@@ -85,8 +85,7 @@ const BookerComponent = ({
   } = bookerLayout;
 
   const [seatedEventData, setSeatedEventData] = useBookerStore(
-    (state) => [state.seatedEventData, state.setSeatedEventData]
-    // ,shallow
+    useShallow((state) => [state.seatedEventData, state.setSeatedEventData])
   );
   const { selectedTimeslot, setSelectedTimeslot } = slots;
 
@@ -153,99 +152,103 @@ const BookerComponent = ({
     if (!selectedDate) return setBookerState("selecting_date");
     if (!selectedTimeslot) return setBookerState("selecting_time");
     return setBookerState("booking");
-  }, [event, selectedDate, selectedTimeslot, setBookerState]);
+  }, [event, selectedDate, selectedTimeslot
+    // , setBookerState
+  ]);
 
   const slot = getQueryParam("slot");
   useEffect(() => {
     setSelectedTimeslot(slot || null);
-  }, [slot, setSelectedTimeslot]);
-  // const EventBooker = useMemo(() => {
-  //   return bookerState === "booking" ? (
-  //     <BookEventForm
-  //       key={key}
-  //       onCancel={() => {
-  //         setSelectedTimeslot(null);
-  //         if (seatedEventData.bookingUid) {
-  //           setSeatedEventData({ ...seatedEventData, bookingUid: undefined, attendees: undefined });
-  //         }
-  //       }}
-  //       onSubmit={renderConfirmNotVerifyEmailButtonCond ? handleBookEvent : handleVerifyEmail}
-  //       errorRef={bookerFormErrorRef}
-  //       errors={{
-  //         //  ...formErrors,
-  //           ...errors }}
-  //       loadingStates={loadingStates}
-  //       renderConfirmNotVerifyEmailButtonCond={renderConfirmNotVerifyEmailButtonCond}
-  //       bookingForm={bookingForm}
-  //       eventQuery={event}
-  //       extraOptions={extraOptions}
-  //       rescheduleUid={rescheduleUid}
-  //       isVerificationCodeSending={isVerificationCodeSending}
-  //       isPlatform={isPlatform}>
-  //       <>
-  //         {/* {verifyCode && formEmail ? (
-  //           <VerifyCodeDialog
-  //             isOpenDialog={isEmailVerificationModalVisible}
-  //             setIsOpenDialog={setEmailVerificationModalVisible}
-  //             email={formEmail}
-  //             isUserSessionRequiredToVerify={false}
-  //             verifyCodeWithSessionNotRequired={verifyCode.verifyCodeWithSessionNotRequired}
-  //             verifyCodeWithSessionRequired={verifyCode.verifyCodeWithSessionRequired}
-  //             error={verifyCode.error}
-  //             resetErrors={verifyCode.resetErrors}
-  //             isPending={verifyCode.isPending}
-  //             setIsPending={verifyCode.setIsPending}
-  //           />
-  //         ) : (
-  //           <></>
-  //         )} */}
-  //         {/* {!isPlatform && (
-  //           <RedirectToInstantMeetingModal
-  //             expiryTime={expiryTime}
-  //             bookingId={parseInt(getQueryParam("bookingId") || "0")}
-  //             instantVideoMeetingUrl={instantVideoMeetingUrl}
-  //             onGoBack={() => {
-  //               onGoBackInstantMeeting();
-  //             }}
-  //             orgName={event.data?.entity?.name}
-  //           />
-  //         )} */}
-  //       </>
-  //     </BookEventForm>
-  //   ) : (
-  //     <></>
-  //   );
-  // }, [
-  //   bookerFormErrorRef,
-  //   instantVideoMeetingUrl,
-  //   bookerState,
-  //   bookingForm,
-  //   errors,
-  //   event,
-  //   expiryTime,
-  //   extraOptions,
-  //   formEmail,
-  //   // formErrors,
-  //   handleBookEvent,
-  //   handleVerifyEmail,
-  //   isEmailVerificationModalVisible,
-  //   key,
-  //   loadingStates,
-  //   onGoBackInstantMeeting,
-  //   renderConfirmNotVerifyEmailButtonCond,
-  //   rescheduleUid,
-  //   seatedEventData,
-  //   setEmailVerificationModalVisible,
-  //   setSeatedEventData,
-  //   setSelectedTimeslot,
-  //   verifyCode?.error,
-  //   verifyCode?.isPending,
-  //   verifyCode?.resetErrors,
-  //   verifyCode?.setIsPending,
-  //   verifyCode?.verifyCodeWithSessionNotRequired,
-  //   verifyCode?.verifyCodeWithSessionRequired,
-  //   isPlatform,
-  // ]);
+  }, [slot
+    // , setSelectedTimeslot
+  ]);
+  const EventBooker = useMemo(() => {
+    return bookerState === "booking" ? (
+      <BookEventForm
+        key={key}
+        onCancel={() => {
+          setSelectedTimeslot(null);
+          if (seatedEventData.bookingUid) {
+            setSeatedEventData({ ...seatedEventData, bookingUid: undefined, attendees: undefined });
+          }
+        }}
+        onSubmit={renderConfirmNotVerifyEmailButtonCond ? handleBookEvent : handleVerifyEmail}
+        errorRef={bookerFormErrorRef}
+        errors={{
+          //  ...formErrors,
+            ...errors }}
+        loadingStates={loadingStates}
+        renderConfirmNotVerifyEmailButtonCond={renderConfirmNotVerifyEmailButtonCond}
+        bookingForm={bookingForm}
+        eventQuery={event}
+        extraOptions={extraOptions}
+        rescheduleUid={rescheduleUid}
+        isVerificationCodeSending={isVerificationCodeSending}
+        isPlatform={isPlatform}>
+        <>
+          {/* {verifyCode && formEmail ? (
+            <VerifyCodeDialog
+              isOpenDialog={isEmailVerificationModalVisible}
+              setIsOpenDialog={setEmailVerificationModalVisible}
+              email={formEmail}
+              isUserSessionRequiredToVerify={false}
+              verifyCodeWithSessionNotRequired={verifyCode.verifyCodeWithSessionNotRequired}
+              verifyCodeWithSessionRequired={verifyCode.verifyCodeWithSessionRequired}
+              error={verifyCode.error}
+              resetErrors={verifyCode.resetErrors}
+              isPending={verifyCode.isPending}
+              setIsPending={verifyCode.setIsPending}
+            />
+          ) : (
+            <></>
+          )} */}
+          {/* {!isPlatform && (
+            <RedirectToInstantMeetingModal
+              expiryTime={expiryTime}
+              bookingId={parseInt(getQueryParam("bookingId") || "0")}
+              instantVideoMeetingUrl={instantVideoMeetingUrl}
+              onGoBack={() => {
+                onGoBackInstantMeeting();
+              }}
+              orgName={event.data?.entity?.name}
+            />
+          )} */}
+        </>
+      </BookEventForm>
+    ) : (
+      <></>
+    );
+  }, [
+    bookerFormErrorRef,
+    instantVideoMeetingUrl,
+    bookerState,
+    bookingForm,
+    errors,
+    event,
+    expiryTime,
+    extraOptions,
+    formEmail,
+    // formErrors,
+    handleBookEvent,
+    handleVerifyEmail,
+    isEmailVerificationModalVisible,
+    key,
+    loadingStates,
+    onGoBackInstantMeeting,
+    renderConfirmNotVerifyEmailButtonCond,
+    rescheduleUid,
+    seatedEventData,
+    setEmailVerificationModalVisible,
+    setSeatedEventData,
+    setSelectedTimeslot,
+    verifyCode?.error,
+    verifyCode?.isPending,
+    verifyCode?.resetErrors,
+    verifyCode?.setIsPending,
+    verifyCode?.verifyCodeWithSessionNotRequired,
+    verifyCode?.verifyCodeWithSessionRequired,
+    isPlatform,
+  ]);
 
   /**
    * Unpublished organization handling - Below
@@ -291,7 +294,7 @@ const BookerComponent = ({
             `${customClassNames?.bookerContainer} rounded-3xl`
           )}>
           {/* <AnimatePresence> */}
-            {!isInstantMeeting && (
+            {/* {!isInstantMeeting && (
               <BookerSection
                 area="header"
                 className={classNames(
@@ -334,7 +337,7 @@ const BookerComponent = ({
                   <></>
                 )}
               </BookerSection>
-            )}
+            )} */}
             {/* <StickyOnDesktop key="meta" className={classNames("relative z-10 flex [grid-area:meta]")}> */}
               <BookerSection
                 area="meta"
@@ -369,14 +372,14 @@ const BookerComponent = ({
               </BookerSection>
             {/* </StickyOnDesktop> */}
 
-            {/* <BookerSection
+            <BookerSection
               key="book-event-form"
               area="main"
               className="sticky top-0 ml-[-1px] h-full md:w-[var(--booker-main-width)] md:border-l md:!px-5"
               // {...fadeInLeft}
               visible={bookerState === "booking" && !shouldShowFormInDialog}>
-              {/* {EventBooker} */}
-            {/* </BookerSection>
+              {EventBooker}
+            </BookerSection>
 
             <BookerSection
               key="datepicker"
@@ -398,7 +401,7 @@ const BookerComponent = ({
                 schedule={schedule}
                 scrollToTimeSlots={scrollToTimeSlots}
               />
-            </BookerSection>  */}
+            </BookerSection>
 
             {/* <BookerSection
               key="large-calendar"

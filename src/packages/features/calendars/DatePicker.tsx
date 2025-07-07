@@ -1,5 +1,5 @@
 import { JSX, useEffect } from "react";
-import { shallow } from "zustand/shallow";
+import { useShallow } from "zustand/shallow";
 
 import type { IFromUser, IToUser } from "@/packages/core/getUserAvailability";
 import type { Dayjs } from "dayjs";

@@ -10,6 +10,7 @@ import type {GetBookingType} from '@/packages/features/bookings/lib/get-booking'
 import type {getPublicEvent} from '@/packages/features/eventtypes/lib/getPublicEvent';
 import {getUserPageProps} from '@/lib/getUserPageProps';
 import {SUPORT_WHATSAPP_NUMBER} from '@/constants';
+import { BookerWrapper } from '@/packages/booker/BookerWrapper';
 
 type Props = {
   eventData: Pick<
@@ -36,12 +37,24 @@ type Props = {
   orgBannerUrl: null;
 };
 
+export const getMultipleDurationValue = (
+  multipleDurationConfig: number[] | undefined,
+  queryDuration: string | string[] | null | undefined,
+  defaultValue: number
+) => {
+  if (!multipleDurationConfig) return null;
+  if (multipleDurationConfig.includes(Number(queryDuration)))
+    return Number(queryDuration);
+  return defaultValue;
+};
+
 const ServiceSchedulingPage = async (props: {
   params: Promise<{username: string; service: string}>;
   searchParams: Promise<{
     tz: string | undefined;
     d: string | undefined;
     t: string | undefined;
+    duration: string | undefined;
   }>;
 }) => {
   const searchParams = await props.searchParams;
@@ -133,7 +146,27 @@ const ServiceSchedulingPage = async (props: {
         </Link>
       </div>
       <div className="grow w-full flex flex-col justify-center items-center">
-        <ServiceCalendarForm service={userPageProps.eventData} host={host} />
+        <BookerWrapper
+          username={params.username}
+          eventSlug={params.service}
+          bookingData={userPageProps.booking}
+          hideBranding={userPageProps.isBrandingHidden}
+          entity={{
+            ...userPageProps.eventData.entity,
+            eventTypeId: userPageProps.eventData?.id
+          }}
+          durationConfig={userPageProps.eventData.metadata?.multipleDuration}
+          orgBannerUrl={userPageProps.orgBannerUrl}
+          /* TODO: Currently unused, evaluate it is needed-
+           *       Possible alternative approach is to have onDurationChange.
+           */
+          duration={getMultipleDurationValue(
+            userPageProps.eventData.metadata?.multipleDuration,
+            searchParams?.duration,
+            userPageProps.eventData.length
+          )}
+        />
+        {/* <ServiceCalendarForm service={userPageProps.eventData} host={host} /> */}
       </div>
     </>
   );
