@@ -32,14 +32,14 @@ export const OverlayCalendar = ({
   hasSession,
 }: OverlayCalendarProps) => {
   // const isPlatform = useIsPlatform();
-  const {
-    handleCloseContinueModal,
-    handleCloseSettingsModal,
-    isOpenOverlayContinueModal,
-    isOpenOverlaySettingsModal,
-    handleToggleConnectedCalendar,
-    checkIsCalendarToggled,
-  } = useOverlayCalendar({ connectedCalendars, overlayBusyDates, onToggleCalendar });
+  // const {
+  //   handleCloseContinueModal,
+  //   handleCloseSettingsModal,
+  //   isOpenOverlayContinueModal,
+  //   isOpenOverlaySettingsModal,
+  //   handleToggleConnectedCalendar,
+  //   checkIsCalendarToggled,
+  // } = useOverlayCalendar({ connectedCalendars, overlayBusyDates, onToggleCalendar });
 
   // // on platform we don't handle connecting to third party calendar via booker yet
   // if (isPlatform && connectedCalendars?.length === 0) {
@@ -48,11 +48,11 @@ export const OverlayCalendar = ({
 
   return (
     <>
-      <OverlayCalendarSwitch
+      {/* <OverlayCalendarSwitch
         enabled={isOverlayCalendarEnabled}
         hasSession={hasSession}
         onStateChange={handleSwitchStateChange}
-      />
+      /> */}
       {/* {!isPlatform && (
         <OverlayCalendarContinueModal
           open={isOpenOverlayContinueModal}
@@ -60,14 +60,14 @@ export const OverlayCalendar = ({
           onContinue={handleClickContinue}
         />
       )} */}
-      {false && (
+      {/* {false && (
         <OverlayCalendarContinueModal
           open={isOpenOverlayContinueModal}
           onClose={handleCloseContinueModal}
           onContinue={handleClickContinue}
         />
-      )}
-      <OverlayCalendarSettingsModal
+      )} */}
+      {/* <OverlayCalendarSettingsModal
         connectedCalendars={connectedCalendars}
         open={isOpenOverlaySettingsModal}
         onClose={handleCloseSettingsModal}
@@ -77,7 +77,7 @@ export const OverlayCalendar = ({
           handleClickNoCalendar();
         }}
         checkIsCalendarToggled={checkIsCalendarToggled}
-      />
+      /> */}
     </>
   );
 };

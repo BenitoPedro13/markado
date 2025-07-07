@@ -18,6 +18,7 @@ import {buildDateRanges, subtract} from '@/packages/lib/date-ranges';
 // import {HttpError} from '@/lib/http-error';
 // import logger from '@/lib/logger';
 import {safeStringify} from '@/lib/safeStringify';
+import {getTimezoneWithFallback} from '@/utils/timezone-utils';
 import {prisma} from '@/lib/prisma';
 import {availabilityUserSelect} from '~/prisma/selects';
 import {SchedulingType} from '~/prisma/enums';
@@ -370,12 +371,12 @@ const _getUserAvailability =
         ? await getBusyTimesFromLimits(
             bookingLimits,
             durationLimits,
-            dateFrom.tz(timeZone),
-            dateTo.tz(timeZone),
+            dateFrom.tz(getTimezoneWithFallback(timeZone)),
+            dateTo.tz(getTimezoneWithFallback(timeZone)),
             duration,
             eventType,
             initialData?.busyTimesFromLimitsBookings ?? [],
-            timeZone,
+            getTimezoneWithFallback(timeZone),
             initialData?.rescheduleUid ?? undefined
           )
         : [];
@@ -395,11 +396,11 @@ const _getUserAvailability =
         ? await getBusyTimesFromTeamLimits(
             user,
             teamBookingLimits,
-            dateFrom.tz(timeZone),
-            dateTo.tz(timeZone),
+            dateFrom.tz(getTimezoneWithFallback(timeZone)),
+            dateTo.tz(getTimezoneWithFallback(timeZone)),
             teamForBookingLimits.id,
             teamForBookingLimits.includeManagedEventsInLimits,
-            timeZone,
+            getTimezoneWithFallback(timeZone),
             initialData?.rescheduleUid ?? undefined
           )
         : [];
@@ -489,7 +490,7 @@ const _getUserAvailability =
       userId: user.id
     }));
 
-    const workingHours = getWorkingHours({timeZone}, availability);
+    const workingHours = getWorkingHours({timeZone: getTimezoneWithFallback(timeZone)}, availability);
 
     const dateOverrides: TimeRange[] = [];
     // NOTE: getSchedule is currently calling this function for every user in a team event
@@ -605,7 +606,7 @@ const _getUserAvailability =
       dateFrom,
       dateTo,
       availability,
-      timeZone,
+      timeZone: getTimezoneWithFallback(timeZone),
       travelSchedules: isDefaultSchedule
         ? 
         // user.travelSchedules.map((schedule) => {

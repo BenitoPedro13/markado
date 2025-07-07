@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 import { useLocale } from "@/hooks/use-locale";
-import { trpc } from "@/trpc/react";
+//import { trpc } from "@/trpc/react";
 
 export type UseVerifyCodeReturnType = ReturnType<typeof useVerifyCode>;
 
@@ -17,58 +17,58 @@ export const useVerifyCode = ({ onSuccess }: UseVerifyCodeProps) => {
   const [value, setValue] = useState("");
   const [hasVerified, setHasVerified] = useState(false);
 
-  const verifyCodeMutationUserSessionRequired = trpc.viewer.organizations.verifyCode.useMutation({
-    onSuccess: (data) => {
-      setIsPending(false);
-      onSuccess(data);
-    },
-    onError: (err) => {
-      setIsPending(false);
-      setHasVerified(false);
-      if (err.message === "invalid_code") {
-        setError(t("code_provided_invalid"));
-      }
-    },
-  });
+  // const verifyCodeMutationUserSessionRequired = trpc.viewer.organizations.verifyCode.useMutation({
+  //   onSuccess: (data) => {
+  //     setIsPending(false);
+  //     onSuccess(data);
+  //   },
+  //   onError: (err) => {
+  //     setIsPending(false);
+  //     setHasVerified(false);
+  //     if (err.message === "invalid_code") {
+  //       setError(t("code_provided_invalid"));
+  //     }
+  //   },
+  // });
 
-  const verifyCodeMutationUserSessionNotRequired = trpc.viewer.auth.verifyCodeUnAuthenticated.useMutation({
-    onSuccess: (data) => {
-      setIsPending(false);
-      onSuccess(data);
-    },
-    onError: (err) => {
-      setIsPending(false);
-      setHasVerified(false);
-      if (err.message === "invalid_code") {
-        setError(t("code_provided_invalid"));
-      }
-    },
-  });
+  // const verifyCodeMutationUserSessionNotRequired = trpc.viewer.auth.verifyCodeUnAuthenticated.useMutation({
+  //   onSuccess: (data) => {
+  //     setIsPending(false);
+  //     onSuccess(data);
+  //   },
+  //   onError: (err) => {
+  //     setIsPending(false);
+  //     setHasVerified(false);
+  //     if (err.message === "invalid_code") {
+  //       setError(t("code_provided_invalid"));
+  //     }
+  //   },
+  // });
 
-  const verifyCodeWithSessionRequired = (code: string, email: string) => {
-    verifyCodeMutationUserSessionRequired.mutate({
-      code,
-      email,
-    });
-  };
+  // const verifyCodeWithSessionRequired = (code: string, email: string) => {
+  //   verifyCodeMutationUserSessionRequired.mutate({
+  //     code,
+  //     email,
+  //   });
+  // };
 
-  const verifyCodeWithSessionNotRequired = (code: string, email: string) => {
-    verifyCodeMutationUserSessionNotRequired.mutate({
-      code,
-      email,
-    });
-  };
+  // const verifyCodeWithSessionNotRequired = (code: string, email: string) => {
+  //   verifyCodeMutationUserSessionNotRequired.mutate({
+  //     code,
+  //     email,
+  //   });
+  // };
 
   return {
-    verifyCodeWithSessionRequired,
-    verifyCodeWithSessionNotRequired,
-    isPending,
-    setIsPending,
-    error,
-    value,
-    hasVerified,
-    setValue,
-    setHasVerified,
-    resetErrors: () => setError(""),
+    // verifyCodeWithSessionRequired,
+    // verifyCodeWithSessionNotRequired,
+    // isPending,
+    // setIsPending,
+    // error,
+    // value,
+    // hasVerified,
+    // setValue,
+    // setHasVerified,
+    // resetErrors: () => setError(""),
   };
 };

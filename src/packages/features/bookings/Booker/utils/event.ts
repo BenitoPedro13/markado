@@ -2,7 +2,7 @@ import { usePathname } from "next/navigation";
 import { shallow } from "zustand/shallow";
 
 import { useSchedule } from "@/packages/features/schedules";
-import { useCompatSearchParams } from "@/packages/lib/hooks/useCompatSearchParams";
+//import { useCompatSearchParams } from "@/packages/lib/hooks/useCompatSearchParams";
 // import { trpc } from "@/trpc/react";
 
 import { useTimePreferences } from "@/packages/features/bookings/lib/timePreferences";
@@ -10,6 +10,128 @@ import { useBookerStore } from "../store";
 
 export type useEventReturnType = ReturnType<typeof useEvent>;
 export type useScheduleForEventReturnType = ReturnType<typeof useScheduleForEvent>;
+
+// Mock data para desenvolvimento
+const mockEventData = {
+  id: 1,
+  title: "Consulta de 30 minutos",
+  slug: "consulta-30min",
+  description: "Uma consulta de 30 minutos para discutir suas necessidades",
+  length: 30,
+  locations: [
+    {
+      type: "integrations:google:meet",
+      displayLocationPublicly: true,
+    }
+  ],
+  metadata: {},
+  requiresConfirmation: false,
+  price: 0,
+  currency: "BRL",
+  recurringEvent: null,
+  owner: {
+    id: 1,
+    name: "João Silva",
+    email: "joao@exemplo.com",
+    username: "joao",
+    bio: "Consultor especializado",
+    avatar: "/avatar.svg",
+    brandColor: "#292929",
+    darkBrandColor: "#fafafa",
+  },
+  users: [
+    {
+      id: 1,
+      name: "João Silva",
+      username: "joao",
+      avatar: "/avatar.svg",
+    }
+  ],
+  team: null,
+  timeFormat: 24,
+  periodType: "UNLIMITED",
+  minimumBookingNotice: 120,
+  beforeEventBuffer: 0,
+  afterEventBuffer: 0,
+  bookingLimits: {},
+  durationLimits: {},
+  hidden: false,
+  assignAllTeamMembers: false,
+  entitlement: null,
+  isInstantEvent: false,
+};
+
+const mockScheduleData = {
+  workingHours: [
+    {
+      days: [1, 2, 3, 4, 5], // Segunda a sexta
+      startTime: 540, // 9:00 AM
+      endTime: 1080, // 6:00 PM
+      userId: 1,
+    }
+  ],
+  dateOverrides: [],
+  currentSeats: null,
+  busy: [],
+  slots: {
+    "2024-12-20": [
+      {
+        time: "2024-12-20T09:00:00.000Z",
+        attendees: 0,
+      },
+      {
+        time: "2024-12-20T09:30:00.000Z",
+        attendees: 0,
+      },
+      {
+        time: "2024-12-20T10:00:00.000Z",
+        attendees: 0,
+      },
+      {
+        time: "2024-12-20T10:30:00.000Z",
+        attendees: 0,
+      },
+      {
+        time: "2024-12-20T11:00:00.000Z",
+        attendees: 0,
+      },
+      {
+        time: "2024-12-20T14:00:00.000Z",
+        attendees: 0,
+      },
+      {
+        time: "2024-12-20T14:30:00.000Z",
+        attendees: 0,
+      },
+      {
+        time: "2024-12-20T15:00:00.000Z",
+        attendees: 0,
+      },
+    ],
+    "2024-12-21": [
+      {
+        time: "2024-12-21T09:00:00.000Z",
+        attendees: 0,
+      },
+      {
+        time: "2024-12-21T10:00:00.000Z",
+        attendees: 0,
+      },
+      {
+        time: "2024-12-21T11:00:00.000Z",
+        attendees: 0,
+      },
+      {
+        time: "2024-12-21T15:00:00.000Z",
+        attendees: 0,
+      },
+      {
+        time: "2024-12-21T16:00:00.000Z",
+        attendees: 0,
+      },
+    ]
+  }
+};
 
 /**
  * Wrapper hook around the trpc query that fetches
@@ -25,25 +147,26 @@ export const useEvent = (props?: { fromRedirectOfNonOrgLink?: boolean }) => {
     // shallow
   );
 
-  const event = trpc.viewer.public.event.useQuery(
-    {
-      username: username ?? "",
-      eventSlug: eventSlug ?? "",
-      isTeamEvent,
-      org: org ?? null,
-      fromRedirectOfNonOrgLink: props?.fromRedirectOfNonOrgLink,
-    },
-    {
-      refetchOnWindowFocus: false,
-      enabled: Boolean(username) && Boolean(eventSlug),
-    }
-  );
+  // const event = trpc.viewer.public.event.useQuery(
+  //   {
+  //     username: username ?? "",
+  //     eventSlug: eventSlug ?? "",
+  //     isTeamEvent,
+  //     org: org ?? null,
+  //     fromRedirectOfNonOrgLink: props?.fromRedirectOfNonOrgLink,
+  //   },
+  //   {
+  //     refetchOnWindowFocus: false,
+  //     enabled: Boolean(username) && Boolean(eventSlug),
+  //   }
+  // );
 
+  // Retornando dados mock para desenvolvimento
   return {
-    data: event?.data,
-    isSuccess: event?.isSuccess,
-    isError: event?.isError,
-    isPending: event?.isPending,
+    data: mockEventData,
+    isSuccess: true,
+    isError: false,
+    isPending: false,
   };
 };
 
@@ -94,8 +217,8 @@ export const useScheduleForEvent = ({
     // shallow
   );
 
-  const searchParams = useCompatSearchParams();
-  const rescheduleUid = searchParams?.get("rescheduleUid");
+  //const searchParams = useCompatSearchParams();
+  //const rescheduleUid = searchParams?.get("rescheduleUid");
 
   const pathname = usePathname();
 
@@ -108,7 +231,7 @@ export const useScheduleForEvent = ({
     prefetchNextMonth,
     monthCount,
     dayCount,
-    rescheduleUid,
+    //rescheduleUid,
     month: monthFromStore ?? month,
     duration: durationFromStore ?? duration,
     isTeamEvent,
@@ -116,11 +239,12 @@ export const useScheduleForEvent = ({
     teamMemberEmail,
   });
 
+  // Retornando dados mock para desenvolvimento
   return {
-    data: schedule?.data,
-    isPending: schedule?.isPending,
-    isError: schedule?.isError,
-    isSuccess: schedule?.isSuccess,
-    isLoading: schedule?.isLoading,
+    data: mockScheduleData,
+    isPending: false,
+    isError: false,
+    isSuccess: true,
+    isLoading: false,
   };
 };

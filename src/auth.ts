@@ -157,7 +157,7 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
     session({ session, token }) {
       // Only set session.user.id if it doesn't exist
       if (token && session.user && !session.user.id) {
-        session.user.id = token.id;
+        session.user.id = token.id as string;
       }
       return session;
     },

@@ -9,6 +9,7 @@ import {bookingMinimalSelect} from '~/prisma/selects';
 import {credentialForCalendarServiceSelect} from '~/prisma/selects/credential';
 import {EventTypeMetaDataSchema} from '~/prisma/zod-utils';
 import type {CalendarEvent} from '@/types/Calendar';
+import {getTimezoneWithFallback} from '@/utils/timezone-utils';
 
 import {getBookerBaseUrl} from '../getBookerUrl/server';
 
@@ -155,7 +156,7 @@ export async function getBooking(bookingId: number) {
       email: booking?.userPrimaryEmail ?? user.email,
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       name: user.name!,
-      timeZone: user.timeZone,
+      timeZone: getTimezoneWithFallback(user.timeZone),
       timeFormat: getTimeFormatStringFromUserTimeFormat(user.timeFormat),
       language: {translate: t, locale: user.locale ?? 'en'},
       id: user.id

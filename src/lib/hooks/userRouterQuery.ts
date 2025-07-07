@@ -1,8 +1,8 @@
-import { useCompatSearchParams } from "@/packages/lib/hooks/useCompatSearchParams";
+import { useCompatSearchParams } from "@/lib/hooks/useCompatSearchParam";
 
 /**
  * An alternative to Object.fromEntries that allows duplicate keys.
- * There is a duplicate of the function in @/embeds/embed-core/src/utils.ts. Keep them in sync.
+ * There is a duplicate of the function in @calcom/embeds/embed-core/src/utils.ts. Keep them in sync.
  */
 function fromEntriesWithDuplicateKeys(entries: IterableIterator<[string, string]> | null) {
   const result: Record<string, string | string[]> = {};

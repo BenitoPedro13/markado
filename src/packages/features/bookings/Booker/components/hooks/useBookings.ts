@@ -17,8 +17,8 @@ import { useLocale } from "@/hooks/use-locale";
 import { localStorage } from "@/packages/lib/webstorage";
 import { BookingStatus } from "~/prisma/enums";
 import { bookingMetadataSchema } from "~/prisma/zod-utils";
-import { trpc } from "@/trpc";
-import { showToast } from "@/ui";
+//import { trpc } from "@/trpc";
+//import { showToast } from "@/ui";
 
 import type { UseBookingFormReturnType } from "./useBookingForm";
 
@@ -146,37 +146,37 @@ export const useBookings = ({ event, hashedLink, bookingForm, metadata, teamMemb
     }
   }, [eventTypeId, isInstantMeeting]);
 
-  const _instantBooking = trpc.viewer.bookings.getInstantBookingLocation.useQuery(
-    {
-      bookingId: bookingId,
-    },
-    {
-      enabled: !!bookingId,
-      refetchInterval: 2000,
-      refetchIntervalInBackground: true,
-    }
-  );
-  useEffect(
-    function refactorMeWithoutEffect() {
-      const data = _instantBooking.data;
+  // const _instantBooking = trpc.viewer.bookings.getInstantBookingLocation.useQuery(
+  //   {
+  //     bookingId: bookingId,
+  //   },
+  //   {
+  //     enabled: !!bookingId,
+  //     refetchInterval: 2000,
+  //     refetchIntervalInBackground: true,
+  //   }
+  // );
+  // useEffect(
+  //   function refactorMeWithoutEffect() {
+  //     const data = _instantBooking.data;
 
-      if (!data || !data.booking) return;
-      try {
-        const locationVideoCallUrl: string | undefined = bookingMetadataSchema.parse(
-          data.booking?.metadata || {}
-        )?.videoCallUrl;
+  //     if (!data || !data.booking) return;
+  //     try {
+  //       const locationVideoCallUrl: string | undefined = bookingMetadataSchema.parse(
+  //         data.booking?.metadata || {}
+  //       )?.videoCallUrl;
 
-        if (locationVideoCallUrl) {
-          setInstantVideoMeetingUrl(locationVideoCallUrl);
-        } else {
-          showToast(t("something_went_wrong_on_our_end"), "error");
-        }
-      } catch (err) {
-        showToast(t("something_went_wrong_on_our_end"), "error");
-      }
-    },
-    [_instantBooking.data]
-  );
+  //       if (locationVideoCallUrl) {
+  //         setInstantVideoMeetingUrl(locationVideoCallUrl);
+  //       } else {
+  //         showToast(t("something_went_wrong_on_our_end"), "error");
+  //       }
+  //     } catch (err) {
+  //       showToast(t("something_went_wrong_on_our_end"), "error");
+  //     }
+  //   },
+  //   [_instantBooking.data]
+  // );
 
   const createBookingMutation = useMutation({
     mutationFn: createBooking,
@@ -265,15 +265,15 @@ export const useBookings = ({ event, hashedLink, bookingForm, metadata, teamMemb
         rescheduledBy, // ensure further reschedules performed on the success page are recorded correctly
       };
 
-      bookingSuccessRedirect({
-        successRedirectUrl: event?.data?.successRedirectUrl || "",
-        query,
-        booking: booking,
-        forwardParamsSuccessRedirect:
-          event?.data?.forwardParamsSuccessRedirect === undefined
-            ? true
-            : event?.data?.forwardParamsSuccessRedirect,
-      });
+      // bookingSuccessRedirect({
+      //   successRedirectUrl: event?.data?.successRedirectUrl || "",
+      //   query,
+      //   booking: booking,
+      //   forwardParamsSuccessRedirect:
+      //     event?.data?.forwardParamsSuccessRedirect === undefined
+      //       ? true
+      //       : event?.data?.forwardParamsSuccessRedirect,
+      // });
     },
     onError: (err, _, ctx) => {
       // eslint-disable-next-line @/eslint/no-scroll-into-view-embed -- It is only called when user takes an action in embed
@@ -347,15 +347,15 @@ export const useBookings = ({ event, hashedLink, bookingForm, metadata, teamMemb
         // });
       }
 
-      bookingSuccessRedirect({
-        successRedirectUrl: event?.data?.successRedirectUrl || "",
-        query,
-        booking,
-        forwardParamsSuccessRedirect:
-          event?.data?.forwardParamsSuccessRedirect === undefined
-            ? true
-            : event?.data?.forwardParamsSuccessRedirect,
-      });
+      // bookingSuccessRedirect({
+      //   successRedirectUrl: event?.data?.successRedirectUrl || "",
+      //   query,
+      //   booking,
+      //   forwardParamsSuccessRedirect:
+      //     event?.data?.forwardParamsSuccessRedirect === undefined
+      //       ? true
+      //       : event?.data?.forwardParamsSuccessRedirect,
+      // });
     },
   });
 

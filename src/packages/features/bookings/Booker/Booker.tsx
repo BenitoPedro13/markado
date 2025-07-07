@@ -15,7 +15,7 @@ import { BookerLayouts } from "~/prisma/zod-utils";
 
 // import { VerifyCodeDialog } from "../components/VerifyCodeDialog";
 import { AvailableTimeSlots } from "./components/AvailableTimeSlots";
-import { BookEventForm } from "./components/BookEventForm";
+// import { BookEventForm } from "./components/BookEventForm";
 // import { BookFormAsModal } from "./components/BookEventForm/BookFormAsModal";
 import { EventMeta } from "./components/EventMeta";
 // import { HavingTroubleFindingTime } from "./components/HavingTroubleFindingTime";
@@ -123,13 +123,13 @@ const BookerComponent = ({
 
   const { handleBookEvent, errors, loadingStates, expiryTime, instantVideoMeetingUrl } = bookings;
 
-  const {
-    isEmailVerificationModalVisible,
-    setEmailVerificationModalVisible,
-    handleVerifyEmail,
-    renderConfirmNotVerifyEmailButtonCond,
-    isVerificationCodeSending,
-  } = verifyEmail;
+  // const {
+  //   isEmailVerificationModalVisible,
+  //   setEmailVerificationModalVisible,
+  //   handleVerifyEmail,
+  //   renderConfirmNotVerifyEmailButtonCond,
+  //   isVerificationCodeSending,
+  // } = verifyEmail;
 
   const {
     overlayBusyDates,
@@ -159,93 +159,93 @@ const BookerComponent = ({
   useEffect(() => {
     setSelectedTimeslot(slot || null);
   }, [slot, setSelectedTimeslot]);
-  const EventBooker = useMemo(() => {
-    return bookerState === "booking" ? (
-      <BookEventForm
-        key={key}
-        onCancel={() => {
-          setSelectedTimeslot(null);
-          if (seatedEventData.bookingUid) {
-            setSeatedEventData({ ...seatedEventData, bookingUid: undefined, attendees: undefined });
-          }
-        }}
-        onSubmit={renderConfirmNotVerifyEmailButtonCond ? handleBookEvent : handleVerifyEmail}
-        errorRef={bookerFormErrorRef}
-        errors={{
-          //  ...formErrors,
-            ...errors }}
-        loadingStates={loadingStates}
-        renderConfirmNotVerifyEmailButtonCond={renderConfirmNotVerifyEmailButtonCond}
-        bookingForm={bookingForm}
-        eventQuery={event}
-        extraOptions={extraOptions}
-        rescheduleUid={rescheduleUid}
-        isVerificationCodeSending={isVerificationCodeSending}
-        isPlatform={isPlatform}>
-        <>
-          {/* {verifyCode && formEmail ? (
-            <VerifyCodeDialog
-              isOpenDialog={isEmailVerificationModalVisible}
-              setIsOpenDialog={setEmailVerificationModalVisible}
-              email={formEmail}
-              isUserSessionRequiredToVerify={false}
-              verifyCodeWithSessionNotRequired={verifyCode.verifyCodeWithSessionNotRequired}
-              verifyCodeWithSessionRequired={verifyCode.verifyCodeWithSessionRequired}
-              error={verifyCode.error}
-              resetErrors={verifyCode.resetErrors}
-              isPending={verifyCode.isPending}
-              setIsPending={verifyCode.setIsPending}
-            />
-          ) : (
-            <></>
-          )} */}
-          {/* {!isPlatform && (
-            <RedirectToInstantMeetingModal
-              expiryTime={expiryTime}
-              bookingId={parseInt(getQueryParam("bookingId") || "0")}
-              instantVideoMeetingUrl={instantVideoMeetingUrl}
-              onGoBack={() => {
-                onGoBackInstantMeeting();
-              }}
-              orgName={event.data?.entity?.name}
-            />
-          )} */}
-        </>
-      </BookEventForm>
-    ) : (
-      <></>
-    );
-  }, [
-    bookerFormErrorRef,
-    instantVideoMeetingUrl,
-    bookerState,
-    bookingForm,
-    errors,
-    event,
-    expiryTime,
-    extraOptions,
-    formEmail,
-    // formErrors,
-    handleBookEvent,
-    handleVerifyEmail,
-    isEmailVerificationModalVisible,
-    key,
-    loadingStates,
-    onGoBackInstantMeeting,
-    renderConfirmNotVerifyEmailButtonCond,
-    rescheduleUid,
-    seatedEventData,
-    setEmailVerificationModalVisible,
-    setSeatedEventData,
-    setSelectedTimeslot,
-    verifyCode?.error,
-    verifyCode?.isPending,
-    verifyCode?.resetErrors,
-    verifyCode?.setIsPending,
-    verifyCode?.verifyCodeWithSessionNotRequired,
-    verifyCode?.verifyCodeWithSessionRequired,
-    isPlatform,
-  ]);
+  // const EventBooker = useMemo(() => {
+  //   return bookerState === "booking" ? (
+  //     <BookEventForm
+  //       key={key}
+  //       onCancel={() => {
+  //         setSelectedTimeslot(null);
+  //         if (seatedEventData.bookingUid) {
+  //           setSeatedEventData({ ...seatedEventData, bookingUid: undefined, attendees: undefined });
+  //         }
+  //       }}
+  //       onSubmit={renderConfirmNotVerifyEmailButtonCond ? handleBookEvent : handleVerifyEmail}
+  //       errorRef={bookerFormErrorRef}
+  //       errors={{
+  //         //  ...formErrors,
+  //           ...errors }}
+  //       loadingStates={loadingStates}
+  //       renderConfirmNotVerifyEmailButtonCond={renderConfirmNotVerifyEmailButtonCond}
+  //       bookingForm={bookingForm}
+  //       eventQuery={event}
+  //       extraOptions={extraOptions}
+  //       rescheduleUid={rescheduleUid}
+  //       isVerificationCodeSending={isVerificationCodeSending}
+  //       isPlatform={isPlatform}>
+  //       <>
+  //         {/* {verifyCode && formEmail ? (
+  //           <VerifyCodeDialog
+  //             isOpenDialog={isEmailVerificationModalVisible}
+  //             setIsOpenDialog={setEmailVerificationModalVisible}
+  //             email={formEmail}
+  //             isUserSessionRequiredToVerify={false}
+  //             verifyCodeWithSessionNotRequired={verifyCode.verifyCodeWithSessionNotRequired}
+  //             verifyCodeWithSessionRequired={verifyCode.verifyCodeWithSessionRequired}
+  //             error={verifyCode.error}
+  //             resetErrors={verifyCode.resetErrors}
+  //             isPending={verifyCode.isPending}
+  //             setIsPending={verifyCode.setIsPending}
+  //           />
+  //         ) : (
+  //           <></>
+  //         )} */}
+  //         {/* {!isPlatform && (
+  //           <RedirectToInstantMeetingModal
+  //             expiryTime={expiryTime}
+  //             bookingId={parseInt(getQueryParam("bookingId") || "0")}
+  //             instantVideoMeetingUrl={instantVideoMeetingUrl}
+  //             onGoBack={() => {
+  //               onGoBackInstantMeeting();
+  //             }}
+  //             orgName={event.data?.entity?.name}
+  //           />
+  //         )} */}
+  //       </>
+  //     </BookEventForm>
+  //   ) : (
+  //     <></>
+  //   );
+  // }, [
+  //   bookerFormErrorRef,
+  //   instantVideoMeetingUrl,
+  //   bookerState,
+  //   bookingForm,
+  //   errors,
+  //   event,
+  //   expiryTime,
+  //   extraOptions,
+  //   formEmail,
+  //   // formErrors,
+  //   handleBookEvent,
+  //   handleVerifyEmail,
+  //   isEmailVerificationModalVisible,
+  //   key,
+  //   loadingStates,
+  //   onGoBackInstantMeeting,
+  //   renderConfirmNotVerifyEmailButtonCond,
+  //   rescheduleUid,
+  //   seatedEventData,
+  //   setEmailVerificationModalVisible,
+  //   setSeatedEventData,
+  //   setSelectedTimeslot,
+  //   verifyCode?.error,
+  //   verifyCode?.isPending,
+  //   verifyCode?.resetErrors,
+  //   verifyCode?.setIsPending,
+  //   verifyCode?.verifyCodeWithSessionNotRequired,
+  //   verifyCode?.verifyCodeWithSessionRequired,
+  //   isPlatform,
+  // ]);
 
   /**
    * Unpublished organization handling - Below
@@ -369,14 +369,14 @@ const BookerComponent = ({
               </BookerSection>
             {/* </StickyOnDesktop> */}
 
-            <BookerSection
+            {/* <BookerSection
               key="book-event-form"
               area="main"
               className="sticky top-0 ml-[-1px] h-full md:w-[var(--booker-main-width)] md:border-l md:!px-5"
               // {...fadeInLeft}
               visible={bookerState === "booking" && !shouldShowFormInDialog}>
-              {EventBooker}
-            </BookerSection>
+              {/* {EventBooker} */}
+            {/* </BookerSection>
 
             <BookerSection
               key="datepicker"
@@ -398,7 +398,7 @@ const BookerComponent = ({
                 schedule={schedule}
                 scrollToTimeSlots={scrollToTimeSlots}
               />
-            </BookerSection>
+            </BookerSection>  */}
 
             {/* <BookerSection
               key="large-calendar"

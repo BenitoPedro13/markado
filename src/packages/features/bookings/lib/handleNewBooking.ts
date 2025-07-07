@@ -68,6 +68,7 @@ import {getTranslation} from '@/packages/lib/server/i18n';
 // import { WorkflowRepository } from "@/lib/server/repository/workflow";
 import {updateWebUser as syncServicesUpdateWebUser} from '@/packages/lib/sync/SyncServiceManager';
 import {getTimeFormatStringFromUserTimeFormat} from '@/packages/features/bookings/lib/timeFormat';
+import {getTimezoneWithFallback} from '@/utils/timezone-utils';
 import {prisma} from '@/lib/prisma';
 import {
   BookingStatus,
@@ -765,7 +766,7 @@ async function handler(
         name: user.name ?? '',
         firstName: '',
         lastName: '',
-        timeZone: user.timeZone,
+        timeZone: getTimezoneWithFallback(user.timeZone),
         language: {
           translate: await getTranslation(user.locale ?? 'en', 'common'),
           locale: user.locale ?? 'en'
@@ -855,7 +856,7 @@ async function handler(
       name: organizerUser.name || 'Nameless',
       email: organizerEmail,
       username: organizerUser.username || undefined,
-      timeZone: organizerUser.timeZone,
+      timeZone: getTimezoneWithFallback(organizerUser.timeZone),
       language: {translate: tOrganizer, locale: organizerUser.locale ?? 'en'},
       timeFormat: getTimeFormatStringFromUserTimeFormat(
         organizerUser.timeFormat
@@ -1371,6 +1372,7 @@ async function handler(
           originalBookingMemberEmails.push({
             ...originalRescheduledBooking.user,
             name: originalRescheduledBooking.user.name || '',
+            timeZone: getTimezoneWithFallback(originalRescheduledBooking.user.timeZone),
             language: {
               translate,
               locale: originalRescheduledBooking.user.locale ?? 'en'
@@ -1704,7 +1706,13 @@ async function handler(
       evt,
       eventType,
       eventTypePaymentAppCredential as IEventTypePaymentCredentialType,
-      booking,
+      {
+        ...booking,
+        user: booking.user ? {
+          ...booking.user,
+          timeZone: getTimezoneWithFallback(booking.user.timeZone)
+        } : null
+      },
       fullName,
       bookerEmail,
       bookerPhoneNumber
@@ -1733,7 +1741,8 @@ async function handler(
       ...booking,
       user: {
         ...booking.user,
-        email: null
+        email: null,
+        timeZone: getTimezoneWithFallback(booking.user?.timeZone)
       }
     };
 

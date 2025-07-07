@@ -1,13 +1,17 @@
 // is production
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 
+const IS_STAGING = process.env.NODE_ENV === 'test';
+
 // is development
 const IS_DEV = process.env.NODE_ENV === 'development';
 const MARKADO_URL =
   process.env.MARKADO_URL ||
-  (process.env.NODE_ENV === 'development'
+  (IS_DEV
     ? 'http://localhost:3000'
-    : 'https://app.markado.co');
+    : IS_STAGING
+      ? 'https://dev.markado.co'
+      : 'https://app.markado.co');
 
 /** https://app.markado.co */
 export const WEBAPP_URL =

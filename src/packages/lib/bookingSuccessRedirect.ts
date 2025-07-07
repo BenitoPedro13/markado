@@ -7,6 +7,7 @@ import dayjs from '@/lib/dayjs';
 import type {BookingResponse} from '@/packages/features/bookings/types';
 import {useCompatSearchParams} from '@/packages/lib/hooks/useCompatSearchParams';
 import {navigateInTopWindow} from '@/packages/lib/navigateInTopWindow';
+import {getTimezoneWithFallback} from '@/utils/timezone-utils';
 
 function getNewSearchParams(args: {
   query: Record<string, string | null | undefined | boolean>;
@@ -100,7 +101,7 @@ export const getBookingRedirectExtraParams = (
   ): ResultType {
     if (booking.user?.name) {
       const hostStartTime = dayjs(booking.startTime)
-        .tz(booking.user.timeZone)
+        .tz(getTimezoneWithFallback(booking.user.timeZone))
         .format();
       return {
         ...obj,

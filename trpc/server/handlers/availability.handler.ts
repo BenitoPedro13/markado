@@ -20,6 +20,7 @@ import {
 import {timeStringToDate} from '@/utils/time-utils';
 import {revalidatePath} from 'next/cache';
 import {auth} from '@/auth';
+import {getTimezoneWithFallback} from '@/utils/timezone-utils';
 import { getAvailabilityFromSchedule } from '@/lib/availability';
 import { getDefaultScheduleId } from '~/trpc/server/utils/availability/defaultSchedule';
 import { UserRepository } from '@/repositories/user';
@@ -223,7 +224,7 @@ export async function findDetailedScheduleByIdAction(
   }
 ): Promise<AvailabilityById | undefined> {
   try {
-    const {scheduleId, timeZone = 'America/Sao_Paulo', userId} = input;
+    const {scheduleId, timeZone, userId} = input;
 
     const schedule = await prisma.schedule.findUnique({
       where: {
@@ -243,7 +244,7 @@ export async function findDetailedScheduleByIdAction(
       throw new Error('Schedule not found');
     }
 
-    const timezone = schedule.timeZone || timeZone;
+    const timezone = getTimezoneWithFallback(schedule.timeZone || timeZone);
 
     const schedulesCount = await prisma.schedule.count({
       where: {
@@ -261,7 +262,7 @@ export async function findDetailedScheduleByIdAction(
       schedule: schedule.availability,
       availability: transformAvailability(schedule),
       timeZone: timezone,
-      dateOverrides: transformDateOverrides(schedule, timeZone),
+      dateOverrides: transformDateOverrides(schedule, getTimezoneWithFallback(timeZone)),
       isLastSchedule: schedulesCount <= 1
     };
 

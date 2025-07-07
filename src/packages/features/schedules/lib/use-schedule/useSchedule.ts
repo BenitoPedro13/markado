@@ -91,5 +91,5 @@ export const useSchedule = ({
   //   return trpc.viewer.highPerf.getTeamSchedule.useQuery(input, options);
   // }
 
-  return trpc.viewer.public.slots.getSchedule.useQuery(input, options);
+  return //trpc.viewer.public.slots.getSchedule.useQuery(input, options);
 };
