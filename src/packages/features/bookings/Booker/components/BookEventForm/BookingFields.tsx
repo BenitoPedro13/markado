@@ -1,7 +1,7 @@
 import { useFormContext } from "react-hook-form";
 
-import type { LocationObject } from "@/packages/app-store/locations";
-import { getOrganizerInputLocationTypes } from "@/packages/app-store/locations";
+import type { LocationObject } from "@/core/locations";
+import { getOrganizerInputLocationTypes } from "@/core/locations";
 import { useBookerStore } from "@/packages/features/bookings/Booker/store";
 import type { GetBookingType } from "@/packages/features/bookings/lib/get-booking";
 import getLocationOptionsForSelect from "@/packages/features/bookings/lib/getLocationOptionsForSelect";
