@@ -1,4 +1,4 @@
-// import type {TFunction} from 'next-i18next';
+import type {TFunction} from 'next-i18next';
 import {z} from 'zod';
 
 // import logger from '@/lib/logger';
@@ -248,7 +248,7 @@ type PrivacyFilteredLocationObject = Optional<
 export const getTranslatedLocation = (
   location: PrivacyFilteredLocationObject,
   eventLocationType: ReturnType<typeof getEventLocationType>,
-  // t: TFunction
+  t: TFunction
 ) => {
   if (!eventLocationType) return null;
   const locationKey = z
