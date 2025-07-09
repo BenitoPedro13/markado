@@ -474,14 +474,14 @@ export const getHumanReadableLocationValue = (
 //   return translatedLocation;
 // };
 
-// export const getOrganizerInputLocationTypes = () => {
-//   const result: DefaultEventLocationType["type"] | EventLocationTypeFromApp["type"][] = [];
+export const getOrganizerInputLocationTypes = () => {
+  const result: DefaultEventLocationType["type"] | EventLocationTypeFromApp["type"][] = [];
 
-//   const organizerInputTypeLocations = locations.filter((location) => !!location.organizerInputType);
-//   organizerInputTypeLocations?.forEach((l) => result.push(l.type));
+  const organizerInputTypeLocations = locations.filter((location) => !!location.organizerInputType);
+  organizerInputTypeLocations?.forEach((l) => result.push(l.type));
 
-//   return result;
-// };
+  return result;
+};
 
 // export const isAttendeeInputRequired = (locationType: string) => {
 //   const location = locations.find((l) => l.type === locationType);
