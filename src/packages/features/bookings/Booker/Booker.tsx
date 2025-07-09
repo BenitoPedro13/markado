@@ -163,28 +163,41 @@ const BookerComponent = ({
     // , setSelectedTimeslot
   ]);
   const EventBooker = useMemo(() => {
-    return bookerState === "booking" ? (
+    return bookerState === 'booking' ? (
       <BookEventForm
         key={key}
         onCancel={() => {
           setSelectedTimeslot(null);
           if (seatedEventData.bookingUid) {
-            setSeatedEventData({ ...seatedEventData, bookingUid: undefined, attendees: undefined });
+            setSeatedEventData({
+              ...seatedEventData,
+              bookingUid: undefined,
+              attendees: undefined
+            });
           }
         }}
-        onSubmit={renderConfirmNotVerifyEmailButtonCond ? handleBookEvent : handleVerifyEmail}
+        // onSubmit={renderConfirmNotVerifyEmailButtonCond ? handleBookEvent : handleVerifyEmail}
+        onSubmit={handleBookEvent}
         errorRef={bookerFormErrorRef}
         errors={{
           //  ...formErrors,
-            ...errors }}
+          ...errors
+        }}
         loadingStates={loadingStates}
-        renderConfirmNotVerifyEmailButtonCond={renderConfirmNotVerifyEmailButtonCond}
+        renderConfirmNotVerifyEmailButtonCond={
+          // renderConfirmNotVerifyEmailButtonCond 
+          true
+        }
         bookingForm={bookingForm}
         eventQuery={event}
         extraOptions={extraOptions}
         rescheduleUid={rescheduleUid}
-        isVerificationCodeSending={isVerificationCodeSending}
-        isPlatform={isPlatform}>
+        isVerificationCodeSending={
+          // isVerificationCodeSending
+        false
+        }
+        isPlatform={isPlatform}
+      >
         <>
           {/* {verifyCode && formEmail ? (
             <VerifyCodeDialog
@@ -230,23 +243,23 @@ const BookerComponent = ({
     formEmail,
     // formErrors,
     handleBookEvent,
-    handleVerifyEmail,
-    isEmailVerificationModalVisible,
+    // handleVerifyEmail,
+    // isEmailVerificationModalVisible,
     key,
     loadingStates,
     onGoBackInstantMeeting,
-    renderConfirmNotVerifyEmailButtonCond,
+    // renderConfirmNotVerifyEmailButtonCond,
     rescheduleUid,
     seatedEventData,
-    setEmailVerificationModalVisible,
+    // setEmailVerificationModalVisible,
     setSeatedEventData,
     setSelectedTimeslot,
-    verifyCode?.error,
-    verifyCode?.isPending,
-    verifyCode?.resetErrors,
-    verifyCode?.setIsPending,
-    verifyCode?.verifyCodeWithSessionNotRequired,
-    verifyCode?.verifyCodeWithSessionRequired,
+    // verifyCode?.error,
+    // verifyCode?.isPending,
+    // verifyCode?.resetErrors,
+    // verifyCode?.setIsPending,
+    // verifyCode?.verifyCodeWithSessionNotRequired,
+    // verifyCode?.verifyCodeWithSessionRequired,
     isPlatform,
   ]);
 
@@ -386,7 +399,7 @@ const BookerComponent = ({
               area="main"
               visible={bookerState !== "booking" && layout === BookerLayouts.MONTH_VIEW}
               // {...fadeInLeft}
-              initial="visible"
+              // initial="visible"
               className="md:border-subtle ml-[-1px] h-full flex-shrink md:border-l md:!px-5 lg:w-[var(--booker-main-width)]">
               <DatePicker
                 classNames={{
