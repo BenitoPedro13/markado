@@ -5,12 +5,12 @@ import { useShallow } from "zustand/shallow";
 
 // import { Timezone as PlatformTimezoneSelect } from "@/atoms/monorepo";
 // import { useEmbedUiConfig, useIsEmbed } from "@/embed-core/embed-iframe";
-//import { EventDetails, EventMembers, EventMetaSkeleton, EventTitle } from "@/packages/features/bookings";
+import { EventDetails, EventMembers, EventMetaSkeleton, EventTitle } from "@/packages/features/bookings";
 import { SeatsAvailabilityText } from "@/packages/features/bookings/components/SeatsAvailabilityText";
-//import { EventMetaBlock } from "@/packages/features/bookings/components/event-meta/Details";
+import { EventMetaBlock } from "@/packages/features/bookings/components/event-meta/Details";
 import { useTimePreferences } from "@/packages/features/bookings/lib";
 import type { BookerEvent } from "@/packages/features/bookings/types";
-import { useLocale } from "@/hooks/use-locale";
+import { useLocaleI18 } from "@/hooks/use-locale";
 
 // import { fadeInUp } from "../config";
 import { useBookerStore } from "../store";
@@ -66,13 +66,13 @@ export const EventMeta = ({
   const [seatedEventData, setSeatedEventData] = useBookerStore(
     useShallow((state) => [state.seatedEventData, state.setSeatedEventData])
   );
-  const {locale, t} = useLocale();
+  const {i18n, t} = useLocaleI18();
   // const embedUiConfig = useEmbedUiConfig();
   // const isEmbed = useIsEmbed();
   // const hideEventTypeDetails = isEmbed ? embedUiConfig.hideEventTypeDetails : false;
   const hideEventTypeDetails = false;
 
-  //const TimezoneSelect = WebTimezoneSelect;
+  // const TimezoneSelect = WebTimezoneSelect;
 
   useEffect(() => {
     //In case the event has lockTimeZone enabled ,set the timezone to event's attached availability timezone
@@ -121,7 +121,7 @@ export const EventMeta = ({
           // initial="visible"
           // layout
         >
-          {/* <EventMetaSkeleton /> */}
+          <EventMetaSkeleton />
         </div>
       )}
       {!isPending && !!event && (
@@ -131,25 +131,25 @@ export const EventMeta = ({
           // transition={{ ...fadeInUp.transition, delay: 0.3 }}
           className="flex flex-col gap-5"
         >
-          {/* {!isPlatform && (
+          {!isPlatform && (
             <EventMembers
               schedulingType={event.schedulingType}
               users={event.users}
               profile={event.profile}
               entity={event.entity}
             />
-          )} */}
+          )}
           <div className="flex flex-col gap-2.5">
-            {/* <EventTitle className={`${classNames?.eventMetaTitle}`}>
+            <EventTitle className={`${classNames?.eventMetaTitle}`}>
               {event?.title}
-            </EventTitle> */}
-            {/* {event.description && (
+            </EventTitle>
+            {event.description && (
               <EventMetaBlock contentClassName="mb-8 break-words max-w-full max-h-[180px] scroll-bar pr-4">
                 <div dangerouslySetInnerHTML={{__html: event.description}} />
               </EventMetaBlock>
-            )} */}
+            )}
             <div className="flex flex-col gap-2.5 font-medium rtl:-mr-2">
-              {/* {rescheduleUid && bookingData && (
+              {rescheduleUid && bookingData && (
                 <EventMetaBlock icon="calendar">
                   {t('former_time')}
                   <br />
@@ -163,8 +163,8 @@ export const EventMeta = ({
                     />
                   </span>
                 </EventMetaBlock>
-              )} */}
-              {/* {selectedTimeslot && (
+              )}
+              {selectedTimeslot && (
                 <EventMetaBlock icon="calendar">
                   <FromToTime
                     date={selectedTimeslot}
@@ -174,8 +174,8 @@ export const EventMeta = ({
                     language={i18n.language}
                   />
                 </EventMetaBlock>
-              )} */}
-              {/* <EventDetails event={event} />
+              )}
+              <EventDetails event={event} />
               <EventMetaBlock
                 className="text-strong-950 cursor-pointer [&_.current-timezone:before]:focus-within:opacity-100 [&_.current-timezone:before]:hover:opacity-100"
                 contentClassName="relative max-w-[90%]"
@@ -191,7 +191,7 @@ export const EventMeta = ({
                         : ''
                     }`}
                   >
-                    <TimezoneSelect
+                    {/* <TimezoneSelect
                       menuPosition="absolute"
                       timezoneSelectCustomClassname={
                         classNames?.eventMetaTimezoneSelect
@@ -207,11 +207,11 @@ export const EventMeta = ({
                       value={timezone}
                       onChange={(tz) => setTimezone(tz.value)}
                       isDisabled={event.lockTimeZoneToggleOnBookingPage}
-                    />
+                    /> */}
                   </span>
                 )}
-              </EventMetaBlock> */}
-              {/* {bookerState === 'booking' &&
+              </EventMetaBlock>
+              {bookerState === 'booking' &&
               eventTotalSeats &&
               bookingSeatAttendeesQty ? (
                 <EventMetaBlock icon="user" className={`${colorClass}`}>
@@ -226,7 +226,7 @@ export const EventMeta = ({
                     </p>
                   </div>
                 </EventMetaBlock>
-              ) : null} */}
+              ) : null}
             </div>
           </div>
         </div>
