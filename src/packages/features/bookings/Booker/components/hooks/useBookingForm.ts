@@ -107,10 +107,10 @@ export const useBookingForm = ({
     }
   };
 
-  // const errors = {
-  //   hasFormErrors: Boolean(bookingForm.formState.errors["globalError"]),
-  //   formErrors: bookingForm.formState.errors["globalError"],
-  // };
+  const errors = {
+    hasFormErrors: Object.keys(bookingForm.formState.errors).length > 0,
+    formErrors: bookingForm.formState.errors,
+  };
 
   return {
     bookingForm,
@@ -119,7 +119,6 @@ export const useBookingForm = ({
     formEmail: email,
     formName: name,
     beforeVerifyEmail,
-    // formErrors: errors,
-    // errors,
+    errors,
   };
 };

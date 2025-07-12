@@ -50,9 +50,9 @@ export const EventDuration = ({
   const {t} = useLocaleI18();
   const itemRefs = useRef<(HTMLLIElement | null)[]>([]);
   // const isPlatform = useIsPlatform();
-  const [selectedDuration, setSelectedDuration, state] = useBookerStore(
-    (state) => [state.selectedDuration, state.setSelectedDuration, state.state]
-  );
+  const selectedDuration = useBookerStore((state) => state.selectedDuration);
+  const setSelectedDuration = useBookerStore((state) => state.setSelectedDuration);
+  const state = useBookerStore((state) => state.state);
 
   const {ref, calculateScroll, leftVisible, rightVisible} =
     useShouldShowArrows();
@@ -80,8 +80,6 @@ export const EventDuration = ({
     )
       setSelectedDuration(event.length);
   }, [
-    selectedDuration,
-    setSelectedDuration,
     event.metadata?.multipleDuration,
     event.length,
     isDynamicEvent

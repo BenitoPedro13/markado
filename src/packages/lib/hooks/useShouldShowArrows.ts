@@ -1,4 +1,4 @@
-import {useRef, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 
 export function useShouldShowArrows() {
   const ref = useRef<HTMLUListElement>(null);
@@ -19,7 +19,7 @@ export function useShouldShowArrows() {
     }
   }, []);
 
-  const calculateScroll = (e: UIEvent<HTMLUListElement>) => {
+  const calculateScroll = (e: any) => {
     setShowArrowScroll({
       left: e.currentTarget.scrollLeft > 0,
       right:

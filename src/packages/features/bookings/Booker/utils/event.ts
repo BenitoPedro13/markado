@@ -59,6 +59,28 @@ const mockEventData = {
   assignAllTeamMembers: false,
   entitlement: null,
   isInstantEvent: false,
+  profile: {
+    name: "João Silva",
+    image: "/avatar.svg",
+    username: "joao",
+    weekStart: "Monday",
+    brandColor: "#292929",
+    darkBrandColor: "#fafafa",
+    theme: null,
+    bookerLayouts: {
+      defaultLayout: "month_view",
+      enabledLayouts: ["month_view", "week_view", "column_view"]
+    }
+  },
+  entity: {
+    fromRedirectOfNonOrgLink: false,
+    considerUnpublished: false,
+    orgSlug: null,
+    teamSlug: null,
+    name: "João Silva",
+    logoUrl: null
+  },
+  schedulingType: "COLLECTIVE"
 };
 
 const mockScheduleData = {

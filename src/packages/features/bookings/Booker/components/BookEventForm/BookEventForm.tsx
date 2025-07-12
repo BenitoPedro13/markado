@@ -5,8 +5,11 @@ import type { FieldError } from "react-hook-form";
 import type { BookerEvent } from "@/packages/features/bookings/types";
 import getPaymentAppData from "@/packages/lib/getPaymentAppData";
 import { useLocale } from "@/hooks/use-locale";
-import { Alert, Button, EmptyScreen, Form } from "@/components/align-ui/ui/alert";
-
+import * as Alert from "@/components/align-ui/ui/alert";
+import * as Button from "@/components/align-ui/ui/button";
+import { EmptyScreen } from "@/components/align-ui/ui/empty-screen";
+import { Form } from "@/packages/ui";
+// EmptyScreen, Form
 import { useBookerStore } from "../../store";
 import type { UseBookingFormReturnType } from "../hooks/useBookingForm";
 import type { IUseBookingErrors, IUseBookingLoadingStates } from "../hooks/useBookings";
@@ -65,7 +68,7 @@ export const BookEventForm = ({
     return eventType?.price > 0 && !Number.isNaN(paymentAppData.price) && paymentAppData.price > 0;
   }, [eventType]);
 
-  if (eventQuery.isError) return <Alert severity="warning" message={t("error_booking_event")} />;
+  if (eventQuery.isError) return <Alert.Root status="warning">{t("error_booking_event")}</Alert.Root>;
   if (eventQuery.isPending || !eventQuery.data) return <FormSkeleton />;
   if (!timeslot)
     return (
@@ -80,7 +83,7 @@ export const BookEventForm = ({
 
   if (!eventType) {
     console.warn("No event type found for event", extraOptions);
-    return <Alert severity="warning" message={t("error_booking_event")} />;
+    return <Alert.Root status="warning">{t("error_booking_event")}</Alert.Root>;
   }
 
   return (
@@ -97,41 +100,52 @@ export const BookEventForm = ({
         form={bookingForm}
         handleSubmit={onSubmit}
         noValidate>
-        <BookingFields
+        {/* <BookingFields
+        // TODO: uncomment booking form
           isDynamicGroupBooking={!!(username && username.indexOf("+") > -1)}
           fields={eventType.bookingFields}
           locations={eventType.locations}
           rescheduleUid={rescheduleUid || undefined}
           bookingData={bookingData}
-        />
+        /> */}
         {(errors.hasFormErrors || errors.hasDataErrors) && (
           <div data-testid="booking-fail">
-            <Alert
+            <Alert.Root
               ref={errorRef}
               className="my-2"
-              severity="info"
+              status="information"
               title={rescheduleUid ? t("reschedule_fail") : t("booking_fail")}
-              message={getError(errors.formErrors, errors.dataErrors, t, responseVercelIdHeader)}
-            />
+            >
+              {getError(
+                Object.values(errors.formErrors)[0] as FieldError | undefined,
+                errors.dataErrors,
+                t,
+                responseVercelIdHeader
+              )}
+            </Alert.Root>
           </div>
         )}
 
         <div className="modalsticky mt-auto flex justify-end space-x-2 rtl:space-x-reverse">
           {isInstantMeeting ? (
-            <Button type="submit" color="primary" loading={loadingStates.creatingInstantBooking}>
-              {isPaidEvent ? t("pay_and_book") : t("confirm")}
-            </Button>
+            <Button.Root type="submit" color="primary" disabled={loadingStates.creatingInstantBooking}>
+              {loadingStates.creatingInstantBooking
+                ? t("loading")
+                : isPaidEvent
+                ? t("pay_and_book")
+                : t("confirm")}
+            </Button.Root>
           ) : (
             <>
               {!!onCancel && (
-                <Button color="minimal" type="button" onClick={onCancel} data-testid="back">
+                <Button.Root color="minimal" type="button" onClick={onCancel} data-testid="back">
                   {t("back")}
-                </Button>
+                </Button.Root>
               )}
-              <Button
+              <Button.Root
                 type="submit"
                 color="primary"
-                loading={
+                disabled={
                   loadingStates.creatingBooking ||
                   loadingStates.creatingRecurringBooking ||
                   isVerificationCodeSending
@@ -139,14 +153,18 @@ export const BookEventForm = ({
                 data-testid={
                   rescheduleUid && bookingData ? "confirm-reschedule-button" : "confirm-book-button"
                 }>
-                {rescheduleUid && bookingData
+                {(loadingStates.creatingBooking ||
+                  loadingStates.creatingRecurringBooking ||
+                  isVerificationCodeSending)
+                  ? t("loading")
+                  : rescheduleUid && bookingData
                   ? t("reschedule")
                   : renderConfirmNotVerifyEmailButtonCond
                   ? isPaidEvent
                     ? t("pay_and_book")
                     : t("confirm")
                   : t("verify_email_email_button")}
-              </Button>
+              </Button.Root>
             </>
           )}
         </div>
@@ -163,7 +181,7 @@ const getError = (
   // the cognitive overload of thinking to update them here when anything changes.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   dataError: any,
-  t: TFunction,
+  t: ReturnType<typeof useLocale>["t"],
   responseVercelIdHeader: string | null
 ) => {
   if (globalError) return globalError?.message;

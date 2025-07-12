@@ -1,4 +1,4 @@
-// import { Icon } from "@calcom/ui";
+// import { Icon } from "@/ui";
 import {RiTicketLine} from '@remixicon/react';
 
 export function PayIcon(props: { currency: string; className?: string }) {
