@@ -100,14 +100,13 @@ export const BookEventForm = ({
         form={bookingForm}
         handleSubmit={onSubmit}
         noValidate>
-        {/* <BookingFields
-        // TODO: uncomment booking form
+        <BookingFields
           isDynamicGroupBooking={!!(username && username.indexOf("+") > -1)}
           fields={eventType.bookingFields}
           locations={eventType.locations}
           rescheduleUid={rescheduleUid || undefined}
           bookingData={bookingData}
-        /> */}
+        />
         {(errors.hasFormErrors || errors.hasDataErrors) && (
           <div data-testid="booking-fail">
             <Alert.Root

@@ -20,16 +20,24 @@ export const getDurationFormatted = (
   if (!mins) return null;
 
   const hours = Math.floor(mins / 60);
-  mins %= 60;
-  // format minutes string
-  let minStr = '';
-  if (mins > 0) {
-    minStr =
-      mins === 1
-        ? t('minute_one_short', {count: 1})
-        : t('multiple_duration_timeUnit_short', {count: mins, unit: 'minute'});
+  const minutes = mins % 60;
+
+  // Formato atual: simples e universal (funciona em português e inglês)
+  if (hours > 0) {
+    return minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`;
   }
-  // format hours string
+  return `${minutes}m`;
+
+  // TODO: Implementar tradução para outros idiomas
+  /*
+  let minStr = '';
+  if (minutes > 0) {
+    minStr =
+      minutes === 1
+        ? t('minute_one_short', {count: 1})
+        : t('multiple_duration_timeUnit_short', {count: minutes, unit: 'minute'});
+  }
+  
   let hourStr = '';
   if (hours > 0) {
     hourStr =
@@ -38,8 +46,8 @@ export const getDurationFormatted = (
         : t('multiple_duration_timeUnit_short', {count: hours, unit: 'hour'});
   }
 
-  if (hourStr && minStr) return `${hourStr} ${minStr}`;
-  return hourStr || minStr;
+  return hourStr && minStr ? `${hourStr} ${minStr}` : hourStr || minStr;
+  */
 };
 
 export const EventDuration = ({

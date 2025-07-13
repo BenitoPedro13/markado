@@ -18,7 +18,16 @@ const getAvailableDatesInMonth = ({
   minDate?: Date; 
   includedDates?: string[] 
 }) => {
-  return includedDates || [];
+  // Se includedDates for undefined ou vazio, retorna todos os dias do mês
+  if (!includedDates || includedDates.length === 0) {
+    const days: string[] = [];
+    const d = dayjs(browsingDate);
+    for (let i = 1; i <= daysInMonth(d); i++) {
+      days.push(d.date(i).format('YYYY-MM-DD'));
+    }
+    return days;
+  }
+  return includedDates;
 };
 import { cn as classNames } from "@/utils/cn";
 import { daysInMonth, yyyymmdd } from "@/lib/date-fns";
@@ -85,20 +94,16 @@ export const Day = ({
   };
 }) => {
   const { t } = useLocale();
-  //const enabledDateButtonEmbedStyles = useEmbedStyles("enabledDateButton");
-  //const disabledDateButtonEmbedStyles = useEmbedStyles("disabledDateButton");
-
   return (
     <button
       type="button"
-      //style={disabled ? { ...disabledDateButtonEmbedStyles } : { ...enabledDateButtonEmbedStyles }}
       className={classNames(
         "disabled:text-bookinglighter text-sub-600 absolute bottom-0 left-0 right-0 top-0 mx-auto max-h-[40px] w-full max-w-[40px] rounded-xl border-2 border-transparent text-center text-sm font-medium transition disabled:cursor-default disabled:border-transparent",
         active
           ? "bg-sub-600 text-white-0"
           : !disabled
-          ? `hover:border-brand-default bg-weak-50 ${customClassName?.dayActive || ""}`
-          : `${customClassName ? "" : " text-mute"}`
+          ? "bg-green-50 text-green-900 font-semibold hover:border-brand-default"
+          : "text-mute"
       )}
       data-testid="day"
       data-disabled={disabled}

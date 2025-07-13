@@ -5,7 +5,7 @@ import type { z } from "zod";
 //   SelectLikeComponentProps,
 //   TextLikeComponentProps,
 // } from "@/app-store/routing-forms/components/react-awesome-query-builder/widgets";
-// import Widgets from "@/app-store/routing-forms/components/react-awesome-query-builder/widgets";
+import Widgets from "@/packages/app-store/routing-forms/components/react-awesome-query-builder/widgets";
 import { useLocaleI18 } from "@/hooks/use-locale";
 // import {
 //   AddressInput,
@@ -21,6 +21,45 @@ import * as InfoBadge from "@/components/align-ui/ui/info-badge";
 import * as Tooltip from "@/components/align-ui/ui/tooltip";
 import * as Button from "@/components/align-ui/ui/button";
 import * as InputField from "@/components/align-ui/ui/input";
+import PhoneInput from "@/components/align-ui/ui/phone-input";
+
+// Import missing components - using available components as stubs
+import { Group } from "@/components/align-ui/ui/radio";
+
+// Temporary stubs for missing components
+const AddressInput = ({ onChange, ...props }: any) => (
+  <InputField.Root
+    {...props}
+    onChange={(e: any) => onChange(e.target.value)}
+    type="text"
+  />
+);
+
+const EmailField = ({ onChange, onClickAddon, addOnSuffix, ...props }: any) => (
+  <div className="flex items-center space-x-2">
+    <InputField.Root
+      {...props}
+      onChange={(e: any) => onChange(e)}
+      type="email"
+    />
+    {addOnSuffix && (
+      <button 
+        type="button" 
+        onClick={onClickAddon}
+        className="p-1"
+      >
+        {addOnSuffix}
+      </button>
+    )}
+  </div>
+);
+
+const RadioField = ({ label, ...props }: any) => (
+  <div className="flex items-center space-x-2">
+    <input type="radio" {...props} />
+    <Label.Root>{label}</Label.Root>
+  </div>
+);
 
 import {
   RiInformationLine,
@@ -273,11 +312,11 @@ export const Components: Record<FieldType, Component> = {
                       }}
                       addOnSuffix={
                         !readOnly ? (
-                          <Tooltip content="Remove email">
+                          <Tooltip.Root content="Remove email">
                             <button className="m-1" type="button">
-                              <RiInformationLine name="x" width={12} className="text-default" />
+                              <RiInformationLine className="text-default w-3 h-3" />
                             </button>
-                          </Tooltip>
+                          </Tooltip.Root>
                         ) : null
                       }
                     />
@@ -285,7 +324,7 @@ export const Components: Record<FieldType, Component> = {
                 ))}
               </ul>
               {!readOnly && (
-                <Button
+                <Button.Root
                   data-testid="add-another-guest"
                   type="button"
                   color="minimal"
@@ -296,7 +335,7 @@ export const Components: Record<FieldType, Component> = {
                     setValue(value);
                   }}>
                   {t("add_another")}
-                </Button>
+                </Button.Root>
               )}
             </div>
           ) : (
@@ -304,7 +343,7 @@ export const Components: Record<FieldType, Component> = {
           )}
 
           {!value.length && !readOnly && (
-            <Button
+            <Button.Root
               data-testid="add-guests"
               color="minimal"
               variant="button"
@@ -315,7 +354,7 @@ export const Components: Record<FieldType, Component> = {
               }}
               className="mr-auto h-fit whitespace-normal text-left">
               <span className="flex-1">{label}</span>
-            </Button>
+            </Button.Root>
           )}
         </>
       );

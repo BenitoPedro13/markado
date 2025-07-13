@@ -149,7 +149,7 @@ export function AvailableEventLocations({
     <div className="flex flex-row items-center text-sm font-medium">
       {/* {isPlatform ? (
         <Icon name="map-pin" className={classNames("me-[10px] h-4 w-4 opacity-70 dark:invert")} />
-      ) : ( */}
+      ) : ( 
       <img
         src="/map-pin-dark.svg"
         className={classNames('me-[10px] h-4 w-4 opacity-70 dark:invert')}

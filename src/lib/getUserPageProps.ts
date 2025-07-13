@@ -1,35 +1,9 @@
-import {notFound} from 'next/navigation';
-import {UserRepository} from '@/repositories/user';
+import { auth } from '@/auth';
+import { getMeByUserId } from '~/trpc/server/handlers/user.handler';
+import { getHostUserByUsername } from '~/trpc/server/handlers/user.handler';
 import eventHandler from '~/trpc/server/handlers/events.handler';
-import type {GetBookingType} from '@/packages/features/bookings/lib/get-booking';
-import type {getPublicEvent} from '@/packages/features/eventtypes/lib/getPublicEvent';
+import { notFound } from 'next/navigation';
 
-type Props = {
-  eventData: Pick<
-    NonNullable<Awaited<ReturnType<typeof getPublicEvent>>>,
-    | 'id'
-    | 'length'
-    | 'metadata'
-    | 'title'
-    | 'slug'
-    | 'price'
-    | 'hidden'
-    | 'badgeColor'
-    | 'entity'
-  >;
-  booking?: GetBookingType;
-  rescheduleUid: string | null;
-  bookingUid: string | null;
-  user: string;
-  slug: string;
-  isBrandingHidden: boolean;
-  isSEOIndexable: boolean | null;
-  themeBasis: null | string;
-  orgBannerUrl: null;
-};
-
-// Booker page fetches a tiny bit of data server side, to determine early
-// whether the page should show an away state or dynamic booking not allowed.
 export async function getUserPageProps({
   username,
   slug
@@ -37,13 +11,13 @@ export async function getUserPageProps({
   username: string;
   slug: string;
 }) {
-  const [user] = await UserRepository.findUsersByUsername({
-    usernameList: [username],
-    orgSlug: null
-  });
+  const session = await auth();
+  const userId = session?.user.id || null;
+  const user = userId ? await getMeByUserId(userId) : null;
 
-  if (!user) {
-    return notFound();
+  const host = await getHostUserByUsername(username);
+  if (!host) {
+    throw new Error('Host not found');
   }
 
   const org = null;
@@ -61,29 +35,24 @@ export async function getUserPageProps({
     return notFound();
   }
 
-  const props: Props = {
-    eventData: {
-      id: eventData.id,
-      length: eventData.length,
-      metadata: eventData.metadata,
-      title: eventData.title,
-      slug: eventData.slug,
-      hidden: eventData.hidden,
-      badgeColor: eventData.badgeColor,
-      price: eventData.price,
-      entity: eventData.entity,
-    },
-    user: username,
-    slug,
-    isBrandingHidden: user?.hideBranding,
-    isSEOIndexable: user?.allowSEOIndexing,
-    themeBasis: username,
-    bookingUid: null,
-    rescheduleUid: null,
-    orgBannerUrl: eventData?.owner?.profile?.organization?.bannerUrl ?? null
-  };
-
   return {
-    props
+    props: {
+      eventData: {
+        id: eventData.id,
+        length: eventData.length,
+        metadata: eventData.metadata,
+        title: eventData.title,
+        slug: eventData.slug,
+        hidden: eventData.hidden,
+        badgeColor: eventData.badgeColor,
+        price: eventData.price,
+        entity: eventData.entity,
+      },
+      booking: null,
+      isBrandingHidden: user?.hideBranding || false,
+      orgBannerUrl: eventData?.owner?.profile?.organization?.bannerUrl ?? null,
+      isSEOIndexable: user?.allowSEOIndexing || false,
+      themeBasis: username
+    }
   };
 } 

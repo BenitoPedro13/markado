@@ -10,6 +10,7 @@ import { BookerLayouts } from "~/prisma/zod-utils";
 import type { GetBookingType } from "../lib/get-booking";
 import type { BookerState, BookerLayout } from "./types";
 import { updateQueryParam, getQueryParam, removeQueryParam } from "./utils/query-param";
+import { getUserTimezone } from '@/utils/timezone-utils';
 
 /**
  * Arguments passed into store initializer, containing
@@ -151,6 +152,8 @@ export type BookerStore = {
   setOrg: (org: string | null | undefined) => void;
 
   teamMemberEmail?: string | null;
+  timezone: string;
+  setTimezone: (timezone: string) => void;
 };
 
 /**
@@ -368,6 +371,10 @@ export const useBookerStore = create<BookerStore>((set, get) => ({
   org: null,
   setOrg: (org: string | null | undefined) => {
     set({org});
+  },
+  timezone: getUserTimezone(),
+  setTimezone: (timezone: string) => {
+    set({ timezone });
   }
 }));
 

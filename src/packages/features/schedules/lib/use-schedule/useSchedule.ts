@@ -1,9 +1,10 @@
 import { useSearchParams } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 
 import { useTimesForSchedule } from "@/packages/features/schedules/lib/use-schedule/useTimesForSchedule";
 // import { getRoutedTeamMemberIdsFromSearchParams } from "@/lib/bookings/getRoutedTeamMemberIdsFromSearchParams";
 import { getUsernameList } from "@/packages/lib/defaultEvents";
-// import { trpc } from "@/trpc/react";
+import { useTRPC } from "@/utils/trpc";
 
 export type UseScheduleWithCacheArgs = {
   username?: string | null;
@@ -84,12 +85,16 @@ export const useSchedule = ({
       Boolean(month) &&
       Boolean(timezone) &&
       // Should only wait for one or the other, not both.
-      (Boolean(eventSlug) || Boolean(eventId) || eventId === 0),
+      (Boolean(eventSlug) || Boolean(eventId) || eventId === 0) &&
+      Boolean(startTime) &&
+      Boolean(endTime),
   };
 
+  const trpc = useTRPC();
+
   // if (isTeamEvent) {
-  //   return trpc.viewer.highPerf.getTeamSchedule.useQuery(input, options);
+  //   return useQuery(trpc.viewer.highPerf.getTeamSchedule.queryOptions(input, options));
   // }
 
-  return //trpc.viewer.public.slots.getSchedule.useQuery(input, options);
+  return useQuery(trpc.public.slots.getSchedule.queryOptions(input, options));
 };
