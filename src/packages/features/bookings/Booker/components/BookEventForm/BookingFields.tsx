@@ -6,7 +6,7 @@ import { useBookerStore } from "@/packages/features/bookings/Booker/store";
 import type { GetBookingType } from "@/packages/features/bookings/lib/get-booking";
 import getLocationOptionsForSelect from "@/packages/features/bookings/lib/getLocationOptionsForSelect";
 import { FormBuilderField } from "@/packages/features/form-builder/FormBuilderField";
-import { useLocale } from "@/lib/hooks/use-locale";
+import { useLocale } from "@/hooks/use-locale";
 import type { RouterOutputs } from "~/trpc/react";
 
 import { SystemField } from "../../../lib/SystemField";

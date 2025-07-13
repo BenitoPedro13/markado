@@ -1,7 +1,8 @@
 // We do not need to worry about importing framer-motion here as it is lazy imported in Booker.
 import * as HoverCard from '@radix-ui/react-hover-card';
 // import {AnimatePresence, m} from 'framer-motion';
-import {useCallback, useState} from 'react';
+import {useCallback, useState, useMemo} from 'react';
+import {useShallow} from 'zustand/shallow';
 
 // import {useIsPlatform} from '@/atoms/monorepo';
 // import type {IOutOfOfficeData} from '@/core/getUserAvailability';
@@ -66,42 +67,55 @@ const SlotItem = ({
 }) => {
   const {t} = useLocale();
 
-  const overlayCalendarToggled =
-    getQueryParam('overlayCalendar') === 'true' ||
-    localStorage.getItem('overlayCalendarSwitchDefault');
-  const [timeFormat, timezone] = useTimePreferences((state) => [
-    state.timeFormat,
-    state.timezone
-  ]);
-  const bookingData = useBookerStore((state) => state.bookingData);
-  const layout = useBookerStore((state) => state.layout);
+  const overlayCalendarToggled = useMemo(() => {
+    return (
+      getQueryParam('overlayCalendar') === 'true' ||
+      (typeof window !== 'undefined' ? localStorage.getItem('overlayCalendarSwitchDefault') : null)
+    );
+  }, []);
+  const [timeFormat, timezone] = useTimePreferences(
+    useShallow((state) => [state.timeFormat, state.timezone])
+  );
+  const [bookingData, layout] = useBookerStore(
+    useShallow((state) => [state.bookingData, state.layout])
+  );
   const {data: eventData} = event;
   const hasTimeSlots = !!seatsPerTimeSlot;
-  const computedDateWithUsersTimezone = dayjs.utc(slot.time).tz(timezone);
+  
+  const computedDateWithUsersTimezone = useMemo(() => 
+    dayjs.utc(slot.time).tz(timezone), [slot.time, timezone]
+  );
 
-  const bookingFull = !!(
+  const bookingFull = useMemo(() => !!(
     hasTimeSlots &&
     slot.attendees &&
     slot.attendees >= seatsPerTimeSlot
+  ), [hasTimeSlots, slot.attendees, seatsPerTimeSlot]);
+  
+  const isHalfFull = useMemo(() =>
+    slot.attendees &&
+    seatsPerTimeSlot &&
+    slot.attendees / seatsPerTimeSlot >= 0.5, [slot.attendees, seatsPerTimeSlot]
   );
-  const isHalfFull =
+  
+  const isNearlyFull = useMemo(() =>
     slot.attendees &&
     seatsPerTimeSlot &&
-    slot.attendees / seatsPerTimeSlot >= 0.5;
-  const isNearlyFull =
-    slot.attendees &&
-    seatsPerTimeSlot &&
-    slot.attendees / seatsPerTimeSlot >= 0.83;
-  const colorClass = isNearlyFull
+    slot.attendees / seatsPerTimeSlot >= 0.83, [slot.attendees, seatsPerTimeSlot]
+  );
+  
+  const colorClass = useMemo(() => isNearlyFull
     ? 'bg-rose-600'
     : isHalfFull
       ? 'bg-yellow-500'
-      : 'bg-emerald-400';
+      : 'bg-emerald-400', [isNearlyFull, isHalfFull]
+  );
 
-  const nowDate = dayjs();
-  const usersTimezoneDate = nowDate.tz(timezone);
-
-  const offset = (usersTimezoneDate.utcOffset() - nowDate.utcOffset()) / 60;
+  const offset = useMemo(() => {
+    const nowDate = dayjs();
+    const usersTimezoneDate = nowDate.tz(timezone);
+    return (usersTimezoneDate.utcOffset() - nowDate.utcOffset()) / 60;
+  }, [timezone]);
 
   const {isOverlapping, overlappingTimeEnd, overlappingTimeStart} =
     useCheckOverlapWithOverlay({
@@ -163,11 +177,11 @@ const SlotItem = ({
         //   data-disabled={bookingFull}
         //   data-time={slot.time}
           onClick={onButtonClick}
-          className={classNames(
-            `hover:border-brand-default min-h-9 mb-2 flex h-auto w-full flex-grow flex-col justify-center py-2`,
-            selectedSlots?.includes(slot.time) && 'border-brand-default',
-            `${customClassNames}`
-          )}
+                      className={classNames(
+              `hover:border-brand-default min-h-9 mb-2 flex h-auto w-full flex-grow flex-col justify-center py-2`,
+              selectedSlots && selectedSlots.length > 0 && selectedSlots.includes(slot.time) && 'border-brand-default',
+              `${customClassNames}`
+            )}
           // color="secondary"
         >
           <div className="flex items-center gap-2">
@@ -271,7 +285,7 @@ export const AvailableTimes = ({
       <div className="h-full pb-4">
         {!slots.length && (
           <div
-            data-testId="no-slots-available"
+            data-testid="no-slots-available"
             className="bg-subtle border-subtle flex h-full flex-col items-center rounded-md border p-6 dark:bg-transparent"
           >
             <RiCalendar2Line className="text-muted mb-2 h-4 w-4" />

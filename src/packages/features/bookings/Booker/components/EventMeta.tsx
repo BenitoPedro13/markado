@@ -11,6 +11,9 @@ import { EventMetaBlock } from "@/packages/features/bookings/components/event-me
 import { useTimePreferences } from "@/packages/features/bookings/lib";
 import type { BookerEvent } from "@/packages/features/bookings/types";
 import { useLocaleI18 } from "@/hooks/use-locale";
+import { formatToLocalizedTimezone } from '@/lib/date-fns';
+import dayjs from '@/lib/dayjs';
+import TimezoneSelectWithStyle from '@/components/TimezoneSelectWithStyle';
 
 // import { fadeInUp } from "../config";
 import { useBookerStore } from "../store";
@@ -110,6 +113,9 @@ export const EventMeta = ({
       ? 'text-yellow-500'
       : 'text-bookinghighlight';
 
+  const bookerTimezone = useBookerStore((state) => state.timezone);
+  const setBookerTimezone = useBookerStore((state) => state.setTimezone);
+
   return (
     <div
       className={`${classNames?.eventMetaContainer || ''} relative z-10 md:px-6`}
@@ -143,9 +149,13 @@ export const EventMeta = ({
             <EventTitle className={`${classNames?.eventMetaTitle}`}>
               {event?.title}
             </EventTitle>
-            {event.description && (
+            {event.description ? (
               <EventMetaBlock contentClassName="mb-8 break-words max-w-full max-h-[180px] scroll-bar pr-4">
                 <div dangerouslySetInnerHTML={{__html: event.description}} />
+              </EventMetaBlock>
+            ) : (
+              <EventMetaBlock contentClassName="mb-8 break-words max-w-full max-h-[180px] scroll-bar pr-4">
+                <div>Sem descrição informada.</div>
               </EventMetaBlock>
             )}
             <div className="flex flex-col gap-2.5 font-medium rtl:-mr-2">
@@ -158,7 +168,7 @@ export const EventMeta = ({
                       date={bookingData.startTime.toString()}
                       duration={null}
                       timeFormat={timeFormat}
-                      timeZone={timezone}
+                      timeZone={bookerTimezone}
                       language={i18n.language}
                     />
                   </span>
@@ -170,47 +180,22 @@ export const EventMeta = ({
                     date={selectedTimeslot}
                     duration={selectedDuration || event.length}
                     timeFormat={timeFormat}
-                    timeZone={timezone}
+                    timeZone={bookerTimezone}
                     language={i18n.language}
                   />
                 </EventMetaBlock>
               )}
               <EventDetails event={event} />
-              <EventMetaBlock
-                className="text-strong-950 cursor-pointer [&_.current-timezone:before]:focus-within:opacity-100 [&_.current-timezone:before]:hover:opacity-100"
-                contentClassName="relative max-w-[90%]"
-                icon="globe"
-              >
-                {bookerState === 'booking' ? (
-                  <>{timezone}</>
-                ) : (
-                  <span
-                    className={`current-timezone before:bg-subtle min-w-32 -mt-[2px] flex h-6 max-w-full items-center justify-start before:absolute before:inset-0 before:bottom-[-3px] before:left-[-30px] before:top-[-3px] before:w-[calc(100%_+_35px)] before:rounded-md before:py-3 before:opacity-0 before:transition-opacity ${
-                      event.lockTimeZoneToggleOnBookingPage
-                        ? 'cursor-not-allowed'
-                        : ''
-                    }`}
-                  >
-                    {/* <TimezoneSelect
-                      menuPosition="absolute"
-                      timezoneSelectCustomClassname={
-                        classNames?.eventMetaTimezoneSelect
-                      }
-                      classNames={{
-                        control: () =>
-                          '!min-h-0 p-0 w-full border-0 bg-transparent focus-within:ring-0',
-                        menu: () => 'text-sub-600 !w-64 max-w-[90vw] mb-1 ',
-                        singleValue: () => 'text-sub-600 py-1',
-                        indicatorsContainer: () => 'text-sub-600 ml-auto',
-                        container: () => 'max-w-full'
-                      }}
-                      value={timezone}
-                      onChange={(tz) => setTimezone(tz.value)}
-                      isDisabled={event.lockTimeZoneToggleOnBookingPage}
-                    /> */}
-                  </span>
-                )}
-              </EventMetaBlock>
+              <div className="mb-4">
+                  <TimezoneSelectWithStyle
+                    value={bookerTimezone}
+                    onChange={setBookerTimezone}
+                    autoDetect={false}
+                    hint={false}
+                    className="max-w-64 border-none"
+                    variant="inline"
+                  />
+              </div>
               {bookerState === 'booking' &&
               eventTotalSeats &&
               bookingSeatAttendeesQty ? (

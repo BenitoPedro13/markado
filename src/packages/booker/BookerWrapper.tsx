@@ -39,12 +39,17 @@ import {BookerLayouts} from '~/prisma/zod-utils';
 type BookerWrapperProps = BookerProps;
 
 export const BookerWrapper = (props: BookerWrapperProps) => {
+  if (!props.username || !props.eventSlug || !props.entity || !props.entity.eventTypeId) {
+    return <div className="text-center text-red-500 p-8">Dados do serviço ou usuário não encontrados.</div>;
+  }
+
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const event = useEvent({
     fromRedirectOfNonOrgLink: props.entity.fromRedirectOfNonOrgLink
   }) as any;
+
   const bookerLayout = useBookerLayout(event.data || null);
 
   const selectedDate = searchParams?.get('date');

@@ -178,21 +178,23 @@ export const EventDetails = ({
             return (
               <EventMetaBlock
                 key={block}
-                // icon="clock"
                 customIcon={
                   <RiTimeLine size={20} color="var(--text-sub-600)" />
                 }
                 className="items-center"
               >
-                <EventDuration event={event} />
+                {typeof event.length === 'number' ? (
+                  <EventDuration event={event} />
+                ) : (
+                  <span>Tempo não informado</span>
+                )}
               </EventMetaBlock>
             );
 
           case EventDetailBlocks.LOCATION:
-            if (!event?.locations?.length || isInstantMeeting) return null;
             return (
               <EventMetaBlock key={block}>
-                <AvailableEventLocations locations={event.locations} />
+                <AvailableEventLocations locations={event.locations ?? ["Google Meet"]} />
               </EventMetaBlock>
             );
 
@@ -227,24 +229,13 @@ export const EventDetails = ({
             );
 
           case EventDetailBlocks.PRICE:
-            const paymentAppData = getPaymentAppData(event);
-            if (event.price <= 0 || paymentAppData.price <= 0) return null;
-
             return (
-              <EventMetaBlock
-                key={block}
-                customIcon={
-                  <PriceIcon
-                    className="relative z-20 mr-2 mt-[2px] h-4 w-4 flex-shrink-0 rtl:ml-2"
-                    currency={event.currency}
-                  />
-                }
-              >
-                <Price
-                  price={paymentAppData.price}
-                  currency={event.currency}
-                  displayAlternateSymbol={false}
-                />
+              <EventMetaBlock key={block} customIcon={<PriceIcon currency={event.currency} />}>
+                {typeof event.price === 'number' ? (
+                  event.price > 0 ? <Price price={event.price} currency={event.currency} /> : <span>Grátis</span>
+                ) : (
+                  <span>Valor não informado</span>
+                )}
               </EventMetaBlock>
             );
         }
