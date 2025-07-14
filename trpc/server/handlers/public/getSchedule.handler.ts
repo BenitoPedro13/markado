@@ -10,7 +10,7 @@ export type GetScheduleOptions = {
   input: TGetScheduleInputSchema;
 };
 
-interface ContextForGetSchedule extends Record<string, unknown> {
+export interface ContextForGetSchedule extends Record<string, unknown> {
   req?: (IncomingMessage & { cookies: Partial<{ [key: string]: string }> }) | undefined;
 }
 
