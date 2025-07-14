@@ -6,7 +6,7 @@ import { useBookerStore } from "@/packages/features/bookings/Booker/store";
 import type { GetBookingType } from "@/packages/features/bookings/lib/get-booking";
 import getLocationOptionsForSelect from "@/packages/features/bookings/lib/getLocationOptionsForSelect";
 import { FormBuilderField } from "@/packages/features/form-builder/FormBuilderField";
-import { useLocale } from "@/hooks/use-locale";
+import { useLocaleI18 } from "@/hooks/use-locale";
 
 import { SystemField } from "../../../lib/SystemField";
 import { BookerEvent } from "../../../types";
@@ -25,7 +25,7 @@ export const BookingFields = ({
   bookingData?: GetBookingType | null;
   isDynamicGroupBooking: boolean;
 }) => {
-  const {t} = useLocale();
+  const {t} = useLocaleI18();
   const {watch, setValue} = useFormContext();
   const locationResponse = watch('responses.location');
   const currentView = rescheduleUid ? 'reschedule' : '';
