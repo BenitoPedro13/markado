@@ -155,6 +155,9 @@ dependencies:
   handlebars:
     specifier: ^4.7.8
     version: 4.7.8
+  i18next-resources-to-backend:
+    specifier: ^1.2.1
+    version: 1.2.1
   ical.js:
     specifier: ^2.1.0
     version: 2.1.0
@@ -8721,6 +8724,12 @@ packages:
 
   /i18next-fs-backend@2.6.0:
     resolution: {integrity: sha512-3ZlhNoF9yxnM8pa8bWp5120/Ob6t4lVl1l/tbLmkml/ei3ud8IWySCHt2lrY5xWRlSU5D9IV2sm5bEbGuTqwTw==}
+    dev: false
+
+  /i18next-resources-to-backend@1.2.1:
+    resolution: {integrity: sha512-okHbVA+HZ7n1/76MsfhPqDou0fptl2dAlhRDu2ideXloRRduzHsqDOznJBef+R3DFZnbvWoBW+KxJ7fnFjd6Yw==}
+    dependencies:
+      '@babel/runtime': 7.27.6
     dev: false
 
   /i18next@25.2.1(typescript@5.8.3):
