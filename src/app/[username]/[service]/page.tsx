@@ -11,6 +11,7 @@ import type {getPublicEvent} from '@/packages/features/eventtypes/lib/getPublicE
 import {getUserPageProps} from '@/lib/getUserPageProps';
 import {SUPORT_WHATSAPP_NUMBER} from '@/constants';
 import { BookerWrapper } from '@/packages/booker/BookerWrapper';
+import { getMultipleDurationValue } from '@/utils/getMultipleDurationValue';
 
 type Props = {
   eventData: Pick<
@@ -35,17 +36,6 @@ type Props = {
   isSEOIndexable: boolean | null;
   themeBasis: null | string;
   orgBannerUrl: null;
-};
-
-export const getMultipleDurationValue = (
-  multipleDurationConfig: number[] | undefined,
-  queryDuration: string | string[] | null | undefined,
-  defaultValue: number
-) => {
-  if (!multipleDurationConfig) return null;
-  if (multipleDurationConfig.includes(Number(queryDuration)))
-    return Number(queryDuration);
-  return defaultValue;
 };
 
 const ServiceSchedulingPage = async (props: {
