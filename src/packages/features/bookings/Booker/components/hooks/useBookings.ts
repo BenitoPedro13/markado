@@ -265,15 +265,19 @@ export const useBookings = ({ event, hashedLink, bookingForm, metadata, teamMemb
         rescheduledBy, // ensure further reschedules performed on the success page are recorded correctly
       };
 
-      // bookingSuccessRedirect({
-      //   successRedirectUrl: event?.data?.successRedirectUrl || "",
-      //   query,
-      //   booking: booking,
-      //   forwardParamsSuccessRedirect:
-      //     event?.data?.forwardParamsSuccessRedirect === undefined
-      //       ? true
-      //       : event?.data?.forwardParamsSuccessRedirect,
-      // });
+      bookingSuccessRedirect({
+        successRedirectUrl: event?.data?.successRedirectUrl || '',
+        query,
+        booking: {
+          ...booking,
+          startTime: new Date(booking.startTime),
+          endTime: new Date(booking.endTime)
+        },
+        forwardParamsSuccessRedirect:
+          event?.data?.forwardParamsSuccessRedirect === undefined
+            ? true
+            : event?.data?.forwardParamsSuccessRedirect
+      });
     },
     onError: (err, _, ctx) => {
       // eslint-disable-next-line @/eslint/no-scroll-into-view-embed -- It is only called when user takes an action in embed
