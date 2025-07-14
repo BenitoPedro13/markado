@@ -42,6 +42,7 @@ yarn-error.log*
 .env.production
 .env.staging
 .env.webhook
+.env.staging
 
 # vercel
 .vercel

@@ -240,37 +240,37 @@ export const ensureBookingInputsHaveSystemFields = ({
 
   // These fields should be added after other user fields
   const systemAfterFields: typeof bookingFields = [
-    // {
-    //   defaultLabel: 'what_is_this_meeting_about',
-    //   type: 'text',
-    //   name: 'title',
-    //   editable: 'system-but-optional',
-    //   required: true,
-    //   hidden: hideBookingTitle,
-    //   defaultPlaceholder: '',
-    //   sources: [
-    //     {
-    //       label: 'Default',
-    //       id: 'default',
-    //       type: 'default'
-    //     }
-    //   ]
-    // },
-    // {
-    //   defaultLabel: 'additional_notes',
-    //   type: 'textarea',
-    //   name: 'notes',
-    //   editable: 'system-but-optional',
-    //   required: additionalNotesRequired,
-    //   defaultPlaceholder: 'share_additional_notes',
-    //   sources: [
-    //     {
-    //       label: 'Default',
-    //       id: 'default',
-    //       type: 'default'
-    //     }
-    //   ]
-    // },
+    {
+      defaultLabel: 'what_is_this_meeting_about',
+      type: 'text',
+      name: 'title',
+      editable: 'system-but-optional',
+      required: true,
+      hidden: hideBookingTitle,
+      defaultPlaceholder: '',
+      sources: [
+        {
+          label: 'Default',
+          id: 'default',
+          type: 'default'
+        }
+      ]
+    },
+    {
+      defaultLabel: 'additional_notes',
+      type: 'textarea',
+      name: 'notes',
+      editable: 'system-but-optional',
+      required: additionalNotesRequired,
+      defaultPlaceholder: 'share_additional_notes',
+      sources: [
+        {
+          label: 'Default',
+          id: 'default',
+          type: 'default'
+        }
+      ]
+    },
     {
       defaultLabel: 'additional_guests',
       type: 'multiemail',

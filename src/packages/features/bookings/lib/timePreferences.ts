@@ -1,17 +1,23 @@
-import { create } from "zustand";
+import {create} from 'zustand';
 
-import dayjs from "@/lib/dayjs";
-import { TimeFormat, detectBrowserTimeFormat, setIs24hClockInLocalStorage } from "@/packages/features/bookings/lib/timeFormat";
-import { localStorage } from "@/packages/lib/webstorage";
+import dayjs from '@/lib/dayjs';
+import {
+  TimeFormat,
+  detectBrowserTimeFormat,
+  setIs24hClockInLocalStorage
+} from '@/packages/features/bookings/lib/timeFormat';
+import {localStorage} from '@/packages/lib/webstorage';
 
 type TimePreferencesStore = {
   timeFormat: TimeFormat.TWELVE_HOUR | TimeFormat.TWENTY_FOUR_HOUR;
-  setTimeFormat: (format: TimeFormat.TWELVE_HOUR | TimeFormat.TWENTY_FOUR_HOUR) => void;
+  setTimeFormat: (
+    format: TimeFormat.TWELVE_HOUR | TimeFormat.TWENTY_FOUR_HOUR
+  ) => void;
   timezone: string;
   setTimezone: (timeZone: string) => void;
 };
 
-const timezoneLocalStorageKey = "timezone-value";
+const timezoneLocalStorageKey = 'timezone-value';
 
 /**
  * This hook is NOT inside the user feature, since
@@ -20,15 +26,20 @@ const timezoneLocalStorageKey = "timezone-value";
  */
 export const timePreferencesStore = create<TimePreferencesStore>((set) => ({
   timeFormat: detectBrowserTimeFormat,
-  setTimeFormat: (format: TimeFormat.TWELVE_HOUR | TimeFormat.TWENTY_FOUR_HOUR) => {
+  setTimeFormat: (
+    format: TimeFormat.TWELVE_HOUR | TimeFormat.TWENTY_FOUR_HOUR
+  ) => {
     setIs24hClockInLocalStorage(format === TimeFormat.TWENTY_FOUR_HOUR);
-    set({ timeFormat: format });
+    set({timeFormat: format});
   },
-  timezone: localStorage.getItem(timezoneLocalStorageKey) || dayjs.tz.guess() || "Europe/London",
+  timezone:
+    localStorage.getItem(timezoneLocalStorageKey) ||
+    dayjs.tz.guess() ||
+    'Europe/London',
   setTimezone: (timezone: string) => {
     localStorage.setItem(timezoneLocalStorageKey, timezone);
-    set({ timezone });
-  },
+    set({timezone});
+  }
 }));
 
 export const useTimePreferences = timePreferencesStore;

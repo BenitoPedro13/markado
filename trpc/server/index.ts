@@ -9,6 +9,8 @@ import { meetRouter } from './routers/meet.router';
 import { availabilityRouter } from './routers/availability.router';
 import { scheduleRouter } from './routers/scheadule.router';
 import { slotsRouter } from './routers/slots.router';
+import { publicSlotsRouter } from './routers/public-slots.router';
+import { eventRouter } from './routers/event.router';
 
 export const appRouter = router({
   user: userRouter,
@@ -21,6 +23,11 @@ export const appRouter = router({
   availability: availabilityRouter,
   schedule: scheduleRouter,
   slots: slotsRouter,
+  event: eventRouter,
+  public: router({
+    slots: publicSlotsRouter,
+    event: eventRouter,
+  }),
 });
 
 export type AppRouter = typeof appRouter;

@@ -1,4 +1,5 @@
 import {useRef} from 'react';
+import {useShallow} from 'zustand/shallow';
 
 import dayjs from '@/lib/dayjs';
 import {
@@ -51,15 +52,15 @@ export const AvailableTimeSlots = ({
   event,
   customClassNames
 }: AvailableTimeSlotsProps) => {
-  const selectedDate = useBookerStore((state) => state.selectedDate);
-  const setSelectedTimeslot = useBookerStore(
-    (state) => state.setSelectedTimeslot
-  );
-  const setSeatedEventData = useBookerStore(
-    (state) => state.setSeatedEventData
+  const [selectedDate, setSelectedTimeslot, setSeatedEventData, layout] = useBookerStore(
+    useShallow((state) => [
+      state.selectedDate,
+      state.setSelectedTimeslot,
+      state.setSeatedEventData,
+      state.layout
+    ])
   );
   const date = selectedDate || dayjs().format('YYYY-MM-DD');
-  const [layout] = useBookerStore((state) => [state.layout]);
   const isColumnView = layout === BookerLayouts.COLUMN_VIEW;
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -81,7 +82,9 @@ export const AvailableTimeSlots = ({
     return;
   };
 
-  const nonEmptyScheduleDays = useNonEmptyScheduleDays(schedule?.slots);
+  const slots = (schedule && typeof schedule === 'object' && schedule !== null && 'slots' in schedule) ? (schedule as any).slots : undefined;
+  
+  const nonEmptyScheduleDays = useNonEmptyScheduleDays(slots);
   const nonEmptyScheduleDaysFromSelectedDate = nonEmptyScheduleDays.filter(
     (slot) => dayjs(selectedDate).diff(slot, 'day') <= 0
   );
@@ -94,7 +97,7 @@ export const AvailableTimeSlots = ({
       ? nonEmptyScheduleDaysFromSelectedDate.slice(0, extraDays)
       : [];
 
-  const slotsPerDay = useSlotsForAvailableDates(dates, schedule?.slots);
+  const slotsPerDay = useSlotsForAvailableDates(dates, slots);
 
   return (
     <>
@@ -161,6 +164,7 @@ export const AvailableTimeSlots = ({
                 seatsPerTimeSlot={seatsPerTimeSlot}
                 showAvailableSeatsCount={showAvailableSeatsCount}
                 event={event}
+                selectedSlots={[]}
               />
             </div>
           ))}

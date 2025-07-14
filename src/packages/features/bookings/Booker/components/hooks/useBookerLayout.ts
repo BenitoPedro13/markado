@@ -1,5 +1,5 @@
 import {useEffect, useRef} from 'react';
-import {shallow} from 'zustand/shallow';
+import {useShallow} from 'zustand/shallow';
 
 // import { useEmbedType, useEmbedUiConfig, useIsEmbed } from "@/embed-core/embed-iframe";
 import type {BookerEvent} from '@/packages/features/bookings/types';
@@ -19,8 +19,7 @@ export const useBookerLayout = (
   event: Pick<BookerEvent, 'profile'> | undefined | null
 ) => {
   const [_layout, setLayout] = useBookerStore(
-    (state) => [state.layout, state.setLayout]
-    // ,shallow
+    useShallow((state) => [state.layout, state.setLayout])
   );
   // const isEmbed = useIsEmbed();
   const isMobile = useMediaQuery('(max-width: 768px)');
@@ -97,7 +96,6 @@ export const useBookerLayout = (
 
   // const hideEventTypeDetails = isEmbed ? embedUiConfig.hideEventTypeDetails : false;
   const hideEventTypeDetails = false;
-
 
   return {
     shouldShowFormInDialog,

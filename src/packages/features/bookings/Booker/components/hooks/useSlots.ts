@@ -1,5 +1,5 @@
 import { useEffect, useState, useTransition } from "react";
-// import { shallow } from "zustand/shallow";
+import { useShallow } from "zustand/shallow";
 
 import dayjs from "@/lib/dayjs";
 import { useBookerStore } from "@/packages/features/bookings/Booker/store";
@@ -14,8 +14,7 @@ export type UseSlotsReturnType = ReturnType<typeof useSlots>;
 export const useSlots = (event: { data?: Pick<BookerEvent, "id" | "length"> | null }) => {
   const selectedDuration = useBookerStore((state) => state.selectedDuration);
   const [selectedTimeslot, setSelectedTimeslot] = useBookerStore(
-    (state) => [state.selectedTimeslot, state.setSelectedTimeslot],
-    // shallow
+    useShallow((state) => [state.selectedTimeslot, state.setSelectedTimeslot])
   );
   const [slotReservationId, setSlotReservationId] = useSlotReservationId();
   const [isPending, startTransition] = useTransition();

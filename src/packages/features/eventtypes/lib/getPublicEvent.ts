@@ -376,7 +376,9 @@ export const getPublicEvent = async (
     });
   }
 
-  if (!event) return null;
+  if (!event) {
+    return null;
+  }
 
   const eventMetaData = EventTypeMetaDataSchema.parse(event.metadata || {});
   const teamMetadata = teamMetadataSchema.parse(event.team?.metadata || {});

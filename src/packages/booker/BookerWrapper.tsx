@@ -6,7 +6,7 @@ import {usePathname, useRouter} from 'next/navigation';
 import {useMemo, useCallback, 
   // useEffect
 } from 'react';
-import {shallow} from 'zustand/shallow';
+import {useShallow} from 'zustand/shallow';
 
 import dayjs from '@/lib/dayjs';
 // import {sdkActionManager} from '@/embed-core/embed-iframe';
@@ -39,12 +39,17 @@ import {BookerLayouts} from '~/prisma/zod-utils';
 type BookerWrapperProps = BookerProps;
 
 export const BookerWrapper = (props: BookerWrapperProps) => {
+  if (!props.username || !props.eventSlug || !props.entity || !props.entity.eventTypeId) {
+    return <div className="text-center text-red-500 p-8">Dados do serviço ou usuário não encontrados.</div>;
+  }
+
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const event = useEvent({
     fromRedirectOfNonOrgLink: props.entity.fromRedirectOfNonOrgLink
   }) as any;
+
   const bookerLayout = useBookerLayout(event.data || null);
 
   const selectedDate = searchParams?.get('date');
@@ -80,10 +85,10 @@ export const BookerWrapper = (props: BookerWrapperProps) => {
   });
 
   const [bookerState, _] = useBookerStore(
-    (state) => [state.state, state.setState]
+    useShallow((state) => [state.state, state.setState])
   );
   const [dayCount] = useBookerStore(
-    (state) => [state.dayCount, state.setDayCount]
+    useShallow((state) => [state.dayCount, state.setDayCount])
   );
 
   const {data: session} = useSession();

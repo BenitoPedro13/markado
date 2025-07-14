@@ -1,5 +1,6 @@
 import type {Dayjs} from '@/lib/dayjs';
 import dayjs from '@/lib/dayjs';
+import {useShallow} from 'zustand/shallow';
 
 import {useOverlayCalendarStore} from '../Booker/components/OverlayCalendar/store';
 
@@ -19,7 +20,7 @@ export function useCheckOverlapWithOverlay({
   offset: number;
 }) {
   const overlayBusyDates = useOverlayCalendarStore(
-    (state) => state.overlayBusyDates
+    useShallow((state) => state.overlayBusyDates)
   );
 
   let overlappingTimeStart: string | null = null;
