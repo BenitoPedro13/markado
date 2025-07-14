@@ -258,7 +258,7 @@ export const getTranslatedLocation = (
   const translatedLocation = location.type.startsWith('integrations:')
     ? eventLocationType.label
     : translateAbleKeys.includes(locationKey)
-      ? locationKey
+      ? t(locationKey)
       : locationKey;
 
   return translatedLocation;
