@@ -8,6 +8,7 @@ import { trpc } from '~/trpc/client';
 
 import { useTimePreferences } from "@/packages/features/bookings/lib/timePreferences";
 import { useBookerStore } from "../store";
+import { TEventRouterReturnType } from "~/trpc/server/routers/event.router";
 
 export type useEventReturnType = ReturnType<typeof useEvent>;
 export type useScheduleForEventReturnType = ReturnType<typeof useScheduleForEvent>;
@@ -25,7 +26,7 @@ export const useEvent = (props?: { fromRedirectOfNonOrgLink?: boolean }) => {
     useShallow((state) => [state.username, state.eventSlug, state.isTeamEvent, state.org])
   );
 
-  const [data, setData] = useState(null);
+  const [data, setData] = useState<TEventRouterReturnType>(null);
   const [isPending, setPending] = useState(true);
   const [error, setError] = useState(null);
 
