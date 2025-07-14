@@ -1725,14 +1725,14 @@ async function handler(
       orgId,
       oAuthClientId: platformClientId
     };
-    await handleWebhookTrigger({
-      subscriberOptions: subscriberOptionsPaymentInitiated,
-      eventTrigger: WebhookTriggerEvents.BOOKING_PAYMENT_INITIATED,
-      webhookData: {
-        ...webhookData,
-        paymentId: payment?.id
-      }
-    });
+    // await handleWebhookTrigger({
+    //   subscriberOptions: subscriberOptionsPaymentInitiated,
+    //   eventTrigger: WebhookTriggerEvents.BOOKING_PAYMENT_INITIATED,
+    //   webhookData: {
+    //     ...webhookData,
+    //     paymentId: payment?.id
+    //   }
+    // });
 
     req.statusCode = 201;
     // TODO: Refactor better so this booking object is not passed
@@ -1813,14 +1813,14 @@ async function handler(
     });
 
     // Send Webhook call if hooked to BOOKING_CREATED & BOOKING_RESCHEDULED
-    await handleWebhookTrigger({subscriberOptions, eventTrigger, webhookData});
+    // await handleWebhookTrigger({subscriberOptions, eventTrigger, webhookData});
   } else {
     // if eventType requires confirmation we will trigger the BOOKING REQUESTED Webhook
     const eventTrigger: WebhookTriggerEvents =
       WebhookTriggerEvents.BOOKING_REQUESTED;
     subscriberOptions.triggerEvent = eventTrigger;
     webhookData.status = 'PENDING';
-    await handleWebhookTrigger({subscriberOptions, eventTrigger, webhookData});
+    // await handleWebhookTrigger({subscriberOptions, eventTrigger, webhookData});
   }
 
   try {

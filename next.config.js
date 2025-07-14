@@ -11,6 +11,7 @@ const nextConfig = {
   webpack: (config) => {
     config.resolve.alias = {
       ...config.resolve.alias,
+      handlebars: path.join(__dirname, 'node_modules/express-handlebars/dist/index.js'),
       '@': path.join(__dirname, 'src'),
       '~': path.join(__dirname),
     };
