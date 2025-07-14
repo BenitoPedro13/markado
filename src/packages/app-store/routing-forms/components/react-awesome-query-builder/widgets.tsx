@@ -13,12 +13,12 @@ import * as MarkadoButton from "@/components/align-ui/ui/button";
 import * as TextArea from "@/components/align-ui/ui/textarea";
 import * as TextField from "@/components/align-ui/ui/text-field";
 import { useLocale } from '@/hooks/use-locale';
-
-// import { Icon } from "@calcom/ui";
+import {RiDeleteBinLine, RiAddLine} from '@remixicon/react';
+// import { Icon } from "@/ui";
 
 const Select = dynamic(
-  async () => (await import("@/components/align-ui/ui/select")).SelectWithValidation
-) as unknown as typeof import("@/components/align-ui/ui/select").SelectWithValidation;
+  async () => (await import("@/packages/ui/components/form/select/Select")).SelectWithValidation
+) as unknown as typeof import("@/packages/ui/components/form/select/Select").SelectWithValidation;
 
 export type CommonProps<
   TVal extends
@@ -141,7 +141,7 @@ function NumberWidget({ value, setValue, ...remainingProps }: TextLikeComponentP
       containerClassName="w-full"
       className="bg-default border-default disabled:bg-emphasis focus:ring-brand-default dark:focus:border-emphasis focus:border-subtle block w-full rounded-md text-sm disabled:hover:cursor-not-allowed"
       value={value}
-      onChange={(e) => {
+      onChange={(e: ChangeEvent<HTMLInputElement>) => {
         setValue(e.target.value);
       }}
       {...remainingProps}
@@ -179,8 +179,8 @@ const MultiSelectWidget = ({
     <Select
       aria-label="multi-select-dropdown"
       className="mb-2"
-      onChange={(items) => {
-        setValue(items?.map((item) => item.value));
+      onChange={(items:any) => {
+        setValue(items?.map((item:any) => item.value));
       }}
       value={optionsFromList}
       isMulti={true}
@@ -214,11 +214,11 @@ function SelectWidget({ listValues, setValue, value, ...remainingProps }: Select
     <Select
       aria-label="select-dropdown"
       className="data-testid-select mb-2"
-      onChange={(item) => {
+      onChange={(item: any) => {
         if (!item) {
           return;
         }
-        setValue(item.value);
+        setValue(item.value as string);
       }}
       isDisabled={remainingProps.readOnly}
       value={optionFromList}
@@ -233,7 +233,11 @@ function Button({ config, type, label, onClick, readonly }: ButtonProps) {
   if (type === "delRule" || type == "delGroup") {
     return (
       <button className="ml-5">
-        <Icon name="trash" className="text-subtle m-0 h-4 w-4" onClick={onClick} />
+        <RiDeleteBinLine
+          // name="trash"
+          className="text-subtle m-0 h-4 w-4"
+          onClick={onClick}
+        />
       </button>
     );
   }
@@ -247,12 +251,13 @@ function Button({ config, type, label, onClick, readonly }: ButtonProps) {
   }
   return (
     <MarkadoButton.Root
-      StartIcon="plus"
+      // StartIcon="plus"
       data-testid={dataTestId}
       type="button"
       color="secondary"
       disabled={readonly}
       onClick={onClick}>
+        <RiAddLine />
       {label}
     </MarkadoButton.Root>
   );
@@ -313,7 +318,7 @@ function Conjs({ not, setNot, config, conjunctionOptions, setConjunction, disabl
           className="flex px-2"
           defaultValue={selectValue}
           options={options}
-          onChange={(option) => {
+          onChange={(option: any) => {
             if (!option) return;
             if (option.value === "all") {
               setConjunction("AND");
@@ -352,11 +357,11 @@ const FieldSelect = function FieldSelect(props: FieldProps) {
     <Select
       className="data-testid-field-select  mb-2"
       menuPosition="fixed"
-      onChange={(item) => {
+      onChange={(item: any) => {
         if (!item) {
           return;
         }
-        setField(item.value);
+        setField(item.value as string);
       }}
       defaultValue={defaultValue}
       options={selectItems}
