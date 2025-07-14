@@ -4,6 +4,7 @@ import {NextRequest} from 'next/server';
 import {routing} from '@/i18n/routing';
 import {match} from '@formatjs/intl-localematcher';
 import Negotiator from 'negotiator';
+import { prisma } from '@/lib/prisma';
 
 // Define public routes that don't require authentication
 const publicRoutes = [
