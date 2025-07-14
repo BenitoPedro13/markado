@@ -1,53 +1,58 @@
 // import { AnimatePresence, LazyMotion, m } from "framer-motion";
-import dynamic from "next/dynamic";
-import { useEffect, useMemo, useRef } from "react";
+import dynamic from 'next/dynamic';
+import {useEffect, useMemo, useRef} from 'react';
 // import { Toaster } from "react-hot-toast";
 // import StickyBox from "react-sticky-box";
-import { useShallow } from "zustand/shallow";
+import {useShallow} from 'zustand/shallow';
 
 // import BookingPageTagManager from "@/packages/app-store/BookingPageTagManager";
-import dayjs from "@/lib/dayjs";
-import { getQueryParam } from "@/packages/features/bookings/Booker/utils/query-param";
-import { useNonEmptyScheduleDays } from "@/packages/features/schedules";
-import { cn as classNames } from "@/utils/cn";
-import { useLocale } from "@/hooks/use-locale";
-import { BookerLayouts } from "~/prisma/zod-utils";
+import dayjs from '@/lib/dayjs';
+import {getQueryParam} from '@/packages/features/bookings/Booker/utils/query-param';
+import {useNonEmptyScheduleDays} from '@/packages/features/schedules';
+import {cn as classNames} from '@/utils/cn';
+import {useLocale} from '@/hooks/use-locale';
+import {BookerLayouts} from '~/prisma/zod-utils';
 
 // import { VerifyCodeDialog } from "../components/VerifyCodeDialog";
-import { AvailableTimeSlots } from "./components/AvailableTimeSlots";
+import {AvailableTimeSlots} from './components/AvailableTimeSlots';
 // import { BookEventForm } from "./components/BookEventForm/BookEventForm";
 // import { BookFormAsModal } from "./components/BookEventForm/BookFormAsModal";
-import { EventMeta } from "./components/EventMeta";
+import {EventMeta} from './components/EventMeta';
 // import { HavingTroubleFindingTime } from "./components/HavingTroubleFindingTime";
 // import { Header } from "./components/Header";
 // import { InstantBooking } from "./components/InstantBooking";
 // import { LargeCalendar } from "./components/LargeCalendar";
 // import { OverlayCalendar } from "./components/OverlayCalendar/OverlayCalendar";
 // import { RedirectToInstantMeetingModal } from "./components/RedirectToInstantMeetingModal";
-import { BookerSection } from "./components/Section";
+import {BookerSection} from './components/Section';
 // import { NotFound } from "./components/Unavailable";
 // import { fadeInLeft, getBookerSizeClassNames, useBookerResizeAnimation } from "./config";
-import { useBookerStore } from "./store";
-import type { BookerProps, WrappedBookerProps } from "./types";
+import {useBookerStore} from './store';
+import type {BookerProps, WrappedBookerProps} from './types';
 
 // const loadFramerFeatures = () => import("./framer-features").then((res) => res.default);
 // const PoweredBy = dynamic(() => import("@/ee/components/PoweredBy"));
 // const UnpublishedEntity = dynamic(() =>
 //   import("@/ui/components/unpublished-entity/UnpublishedEntity").then((mod) => mod.UnpublishedEntity)
 // );
-const DatePicker = dynamic(() => import("./components/DatePicker").then((mod) => mod.DatePicker), {
-  ssr: false,
-});
+const DatePicker = dynamic(
+  () => import('./components/DatePicker').then((mod) => mod.DatePicker),
+  {
+    ssr: false
+  }
+);
 
 // Create a wrapper component to ensure BookEventForm is properly loaded
-const BookEventFormWrapper = dynamic(() =>
-  import("./components/BookEventForm/BookEventForm").then((mod) => {
-    const Component = mod.BookEventForm;
-    return Component;
-  }), {
-  ssr: false,
-  loading: () => <div>Carregando formulário...</div>
-}
+const BookEventFormWrapper = dynamic(
+  () =>
+    import('./components/BookEventForm/BookEventForm').then((mod) => {
+      const Component = mod.BookEventForm;
+      return Component;
+    }),
+  {
+    ssr: false,
+    loading: () => <div>Carregando formulário...</div>
+  }
 );
 
 const BookerComponent = ({
@@ -74,11 +79,11 @@ const BookerComponent = ({
   bookerLayout,
   schedule,
   verifyCode,
-  isPlatform,
+  isPlatform = false,
   orgBannerUrl,
-  customClassNames,
+  customClassNames
 }: BookerProps & WrappedBookerProps) => {
-  const { t } = useLocale();
+  const {t} = useLocale();
   const [bookerState, setBookerState] = useBookerStore(
     useShallow((state) => [state.state, state.setState])
   );
@@ -92,19 +97,19 @@ const BookerComponent = ({
     layout,
     hideEventTypeDetails,
     isEmbed,
-    bookerLayouts,
+    bookerLayouts
   } = bookerLayout;
 
   const [seatedEventData, setSeatedEventData] = useBookerStore(
     useShallow((state) => [state.seatedEventData, state.setSeatedEventData])
   );
-  const { selectedTimeslot, setSelectedTimeslot } = slots;
+  const {selectedTimeslot, setSelectedTimeslot} = slots;
 
   // const [dayCount, setDayCount] = useBookerStore((state) => [state.dayCount, state.setDayCount], shallow);
 
   const slotsData = schedule?.data?.slots as any;
   const nonEmptyScheduleDays = useNonEmptyScheduleDays(slotsData).filter(
-    (slot) => dayjs(selectedDate).diff(slot, "day") <= 0
+    (slot) => dayjs(selectedDate).diff(slot, 'day') <= 0
   );
 
   const totalWeekDays = 7;
@@ -118,21 +123,38 @@ const BookerComponent = ({
   const availableSlots = nonEmptyScheduleDays.slice(0, extraDays + 1);
   if (nonEmptyScheduleDays.length !== 0)
     columnViewExtraDays.current =
-      Math.abs(dayjs(selectedDate).diff(availableSlots[availableSlots.length - 2], "day")) + addonDays;
+      Math.abs(
+        dayjs(selectedDate).diff(
+          availableSlots[availableSlots.length - 2],
+          'day'
+        )
+      ) + addonDays;
 
   const nextSlots =
-    Math.abs(dayjs(selectedDate).diff(availableSlots[availableSlots.length - 1], "day")) + addonDays;
+    Math.abs(
+      dayjs(selectedDate).diff(availableSlots[availableSlots.length - 1], 'day')
+    ) + addonDays;
 
   // const animationScope = useBookerResizeAnimation(layout, bookerState);
 
   const timeslotsRef = useRef<HTMLDivElement>(null);
   // const StickyOnDesktop = isMobile ? "div" : StickyBox;
 
-  const { bookerFormErrorRef, key, formEmail, bookingForm
-    // , errors: formErrors 
+  const {
+    bookerFormErrorRef,
+    key,
+    formEmail,
+    bookingForm
+    // , errors: formErrors
   } = bookerForm;
 
-  const { handleBookEvent, errors, loadingStates, expiryTime, instantVideoMeetingUrl } = bookings;
+  const {
+    handleBookEvent,
+    errors,
+    loadingStates,
+    expiryTime,
+    instantVideoMeetingUrl
+  } = bookings;
 
   // const {
   //   isEmailVerificationModalVisible,
@@ -147,35 +169,34 @@ const BookerComponent = ({
     isOverlayCalendarEnabled,
     connectedCalendars,
     loadingConnectedCalendar,
-    onToggleCalendar,
+    onToggleCalendar
   } = calendars;
 
   const scrolledToTimeslotsOnce = useRef(false);
   const scrollToTimeSlots = () => {
     if (isMobile && !isEmbed && !scrolledToTimeslotsOnce.current) {
       // eslint-disable-next-line @/eslint/no-scroll-into-view-embed -- Conditional within !isEmbed condition
-      timeslotsRef.current?.scrollIntoView({ behavior: "smooth" });
+      timeslotsRef.current?.scrollIntoView({behavior: 'smooth'});
       scrolledToTimeslotsOnce.current = true;
     }
   };
 
   useEffect(() => {
-    if (event.isPending) return setBookerState("loading");
-    if (!selectedDate) return setBookerState("selecting_date");
-    if (!selectedTimeslot) return setBookerState("selecting_time");
-    return setBookerState("booking");
-  }, [event, selectedDate, selectedTimeslot
-    // , setBookerState
-  ]);
+    if (event.isPending) return setBookerState('loading');
+    console.log('event.isPending', event.isPending);
+    if (!selectedDate) return setBookerState('selecting_date');
+    console.log('selectedDate', selectedDate);
+    if (!selectedTimeslot) return setBookerState('selecting_time');
+    console.log('selectedTimeslot', selectedTimeslot);
+    return setBookerState('booking');
+  }, [event, selectedDate, selectedTimeslot, setBookerState]);
 
-  const slot = getQueryParam("slot");
+  const slot = getQueryParam('slot');
   useEffect(() => {
     setSelectedTimeslot(slot || null);
-  }, [slot
-    // , setSelectedTimeslot
-  ]);
-  const EventBooker = useMemo(() => {
+  }, [slot, setSelectedTimeslot]);
 
+  const EventBooker = useMemo(() => {
     return bookerState === 'booking' ? (
       <div>
         {BookEventFormWrapper && (
@@ -201,7 +222,7 @@ const BookerComponent = ({
             }}
             loadingStates={loadingStates}
             renderConfirmNotVerifyEmailButtonCond={
-              // renderConfirmNotVerifyEmailButtonCond 
+              // renderConfirmNotVerifyEmailButtonCond
               true
             }
             bookingForm={bookingForm}
@@ -278,7 +299,7 @@ const BookerComponent = ({
     // verifyCode?.setIsPending,
     // verifyCode?.verifyCodeWithSessionNotRequired,
     // verifyCode?.verifyCodeWithSessionRequired,
-    isPlatform,
+    isPlatform
   ]);
 
   /**
@@ -296,7 +317,7 @@ const BookerComponent = ({
   //   return <NotFound />;
   // }
 
-  if (bookerState === "loading") {
+  if (bookerState === 'loading') {
     return null;
   }
 
@@ -306,19 +327,26 @@ const BookerComponent = ({
 
       <div
         className={classNames(
-          "main",
-          "bg-white dark:bg-neutral-900 shadow-lg rounded-2xl max-w-5xl mx-auto p-6 flex flex-col items-center",
-          layout === BookerLayouts.MONTH_VIEW ? "overflow-visible" : "overflow-clip"
+          'main',
+          'bg-white dark:bg-neutral-900 shadow-lg rounded-2xl max-w-5xl mx-auto p-6 flex flex-col items-center',
+          layout === BookerLayouts.MONTH_VIEW
+            ? 'overflow-visible'
+            : 'overflow-clip'
         )}
       >
         <div
           data-testid="booker-container"
           className={classNames(
-            "grid w-full items-start py-4 gap-6 grid-cols-1 md:grid-cols-3",
-            (layout === BookerLayouts.MONTH_VIEW || isEmbed) && "border-soft-200 rounded-md",
-            !isEmbed && "sm:transition-[width] sm:duration-300",
-            isEmbed && layout === BookerLayouts.MONTH_VIEW && "border-soft-200 sm:border-booker-width",
-            !isEmbed && layout === BookerLayouts.MONTH_VIEW && `border-soft-200 border`,
+            'grid w-full items-start py-4 gap-6 grid-cols-1 md:grid-cols-3',
+            (layout === BookerLayouts.MONTH_VIEW || isEmbed) &&
+              'border-soft-200 rounded-md',
+            !isEmbed && 'sm:transition-[width] sm:duration-300',
+            isEmbed &&
+              layout === BookerLayouts.MONTH_VIEW &&
+              'border-soft-200 sm:border-booker-width',
+            !isEmbed &&
+              layout === BookerLayouts.MONTH_VIEW &&
+              `border-soft-200 border`,
             `${customClassNames?.bookerContainer} rounded-3xl`
           )}
         >
@@ -326,12 +354,15 @@ const BookerComponent = ({
             <EventMeta
               classNames={{
                 eventMetaContainer: classNames(
-                  customClassNames?.eventMetaCustomClassNames?.eventMetaContainer,
-                  "flex flex-col gap-3 mb-4 max-w-full"
+                  customClassNames?.eventMetaCustomClassNames
+                    ?.eventMetaContainer,
+                  'flex flex-col gap-3 mb-4 max-w-full'
                 ),
-                eventMetaTitle: customClassNames?.eventMetaCustomClassNames?.eventMetaTitle,
+                eventMetaTitle:
+                  customClassNames?.eventMetaCustomClassNames?.eventMetaTitle,
                 eventMetaTimezoneSelect:
-                  customClassNames?.eventMetaCustomClassNames?.eventMetaTimezoneSelect,
+                  customClassNames?.eventMetaCustomClassNames
+                    ?.eventMetaTimezoneSelect
               }}
               event={event.data}
               isPending={event.isPending}
@@ -347,12 +378,24 @@ const BookerComponent = ({
             <div className="flex flex-col gap-4 w-full items-center">
               <DatePicker
                 classNames={{
-                  datePickerContainer: customClassNames?.datePickerCustomClassNames?.datePickerContainer,
-                  datePickerTitle: customClassNames?.datePickerCustomClassNames?.datePickerTitle,
-                  datePickerDays: customClassNames?.datePickerCustomClassNames?.datePickerDays,
-                  datePickerDate: customClassNames?.datePickerCustomClassNames?.datePickerDate,
-                  datePickerDatesActive: customClassNames?.datePickerCustomClassNames?.datePickerDatesActive,
-                  datePickerToggle: customClassNames?.datePickerCustomClassNames?.datePickerToggle,
+                  datePickerContainer:
+                    customClassNames?.datePickerCustomClassNames
+                      ?.datePickerContainer,
+                  datePickerTitle:
+                    customClassNames?.datePickerCustomClassNames
+                      ?.datePickerTitle,
+                  datePickerDays:
+                    customClassNames?.datePickerCustomClassNames
+                      ?.datePickerDays,
+                  datePickerDate:
+                    customClassNames?.datePickerCustomClassNames
+                      ?.datePickerDate,
+                  datePickerDatesActive:
+                    customClassNames?.datePickerCustomClassNames
+                      ?.datePickerDatesActive,
+                  datePickerToggle:
+                    customClassNames?.datePickerCustomClassNames
+                      ?.datePickerToggle
                 }}
                 event={event}
                 schedule={schedule}
@@ -363,7 +406,9 @@ const BookerComponent = ({
           {bookerState !== 'booking' && (
             <div className="flex flex-col gap-4 w-full">
               <AvailableTimeSlots
-                customClassNames={customClassNames?.availableTimeSlotsCustomClassNames}
+                customClassNames={
+                  customClassNames?.availableTimeSlotsCustomClassNames
+                }
                 extraDays={extraDays}
                 limitHeight={layout === BookerLayouts.MONTH_VIEW}
                 schedule={schedule?.data}
@@ -428,15 +473,15 @@ export const Booker = (props: BookerProps & WrappedBookerProps) => {
     <BookerComponent
       {...props}
       customClassNames={{
-        atomsWrapper: "",
+        atomsWrapper: '',
         datePickerCustomClassNames: {
-          datePickerContainer: "date-picker-container",
-          datePickerTitle: "",
-          datePickerDays: "date-picker-days",
-          datePickerDate: "date-picker-date",
-          datePickerDatesActive: "",
-          datePickerToggle: "date-picker-toggle",
-        },
+          datePickerContainer: 'date-picker-container',
+          datePickerTitle: '',
+          datePickerDays: 'date-picker-days',
+          datePickerDate: 'date-picker-date',
+          datePickerDatesActive: '',
+          datePickerToggle: 'date-picker-toggle'
+        }
       }}
     />
     // </LazyMotion>
