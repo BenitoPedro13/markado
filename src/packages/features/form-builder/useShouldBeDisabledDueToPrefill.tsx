@@ -1,7 +1,7 @@
 import { useFormContext } from "react-hook-form";
 import type { z } from "zod";
 
-import useRouterQuery from "@/lib/hooks/useRouterQuery";
+import {useRouterQuery} from "@/lib/hooks/userRouterQuery";
 
 import type { fieldsSchema } from "./schema";
 
