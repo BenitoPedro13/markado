@@ -5,6 +5,7 @@ import {ZUpdateSettingsGeneralSchema} from '~/trpc/server/schemas/settings.schem
 import {TRPCError} from '@trpc/server';
 import {FormActionState} from '@/types/formTypes';
 import {revalidatePath} from 'next/cache';
+import {prisma} from '@/lib/prisma';
 
 export async function updateGeneralSettingsHandler(
   input: typeof ZUpdateSettingsGeneralSchema._type
