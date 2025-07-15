@@ -6,7 +6,7 @@ const IS_STAGING = process.env.NODE_ENV === 'test';
 // is development
 const IS_DEV = process.env.NODE_ENV === 'development';
 const MARKADO_URL =
-  process.env.MARKADO_URL ||
+  process.env.NEXT_PUBLIC_APP_URL ||
   (IS_DEV
     ? 'http://localhost:3000'
     : IS_STAGING
