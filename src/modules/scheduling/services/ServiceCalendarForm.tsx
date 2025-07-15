@@ -164,15 +164,15 @@ const ServiceCalendarForm = ({
   service
 }: Readonly<ServiceCalendarFormProps>) => {
   const searchParams = useSearchParams();
-  const day = searchParams.get('d');
-  const time = searchParams.get('t');
-  const encodedTimezone = searchParams.get('tz');
+  const day = searchParams?.get('d') || '';
+  const time = searchParams?.get('t') || '';
+  const encodedTimezone = searchParams?.get('tz') || '';
   const timezone = decodeURIComponent(encodedTimezone || '');
 
   const router = useRouter();
 
   const handleDaySelect = (selected: Date | undefined) => {
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(searchParams?.toString() || '');
 
     if (!selected) {
       params.delete('d');
@@ -190,7 +190,7 @@ const ServiceCalendarForm = ({
 
   const handleTimeSelect = (selected: string) => {
     console.log('selected', selected);
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(searchParams?.toString() || '');
 
     if (!day || !encodedTimezone || !selected) {
       params.delete('d');
@@ -214,7 +214,7 @@ const ServiceCalendarForm = ({
   };
 
   const handleTimezoneSelect = (selected: string) => {
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(searchParams?.toString() || '');
 
     params.set('tz', encodeURIComponent(selected));
     window.history.replaceState(null, '', `?${params.toString()}`);

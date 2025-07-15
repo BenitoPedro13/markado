@@ -19,7 +19,7 @@ import { FormEvent } from 'react';
 const EmailForm = () => {
   const {forms, nextStep} = useSignUp();
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get('redirect') || '/';
+  const redirectTo = searchParams?.get('redirect') || '/';
 
   const t = useTranslations('SignUpPage.EmailForm');
 
@@ -59,10 +59,10 @@ const EmailForm = () => {
 
   const handleGoogleSignIn = async () => {
     // Check if we have a redirect parameter
-    const redirectParam = searchParams.get('redirect');
+    const redirectParam = searchParams?.get('redirect') || '/';
     
     // If we have a redirect parameter, use it, otherwise use '/'
-    const redirectTo = redirectParam || '/';
+    const redirectTo = redirectParam;
     
     console.log('[Email Sign-up] Signing in with Google, redirecting to:', redirectTo);
     try {

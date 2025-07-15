@@ -16,7 +16,7 @@ export default function BookingViewControl({
   const router = useRouter();
 
   const handleChangeView = (value: string) => {
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(searchParams?.toString() || '');
     params.set('view', value);
     const newUrl = `${pathname}?${params.toString()}`;
     router.push(newUrl);

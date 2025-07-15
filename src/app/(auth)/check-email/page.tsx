@@ -11,7 +11,7 @@ import { Suspense } from 'react';
 const CheckEmailContent = () => {
   const t = useTranslations('CheckEmailPage');
   const searchParams = useSearchParams();
-  const email = searchParams.get('email') || '';
+  const email = searchParams?.get('email') || '';
 
   return (
     <div className="flex flex-col items-center gap-8 max-w-[392px] w-full">

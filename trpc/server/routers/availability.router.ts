@@ -284,7 +284,7 @@ export const availabilityRouter = router({
         const setupDefault = await setupDefaultSchedule(
           user.id,
           input.data.scheduleId,
-          prisma
+          ctx.prisma
         );
         updatedUser = setupDefault;
       }

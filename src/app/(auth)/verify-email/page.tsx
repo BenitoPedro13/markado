@@ -19,9 +19,9 @@ const VerifyEmailContent = () => {
   const [verificationStatus, setVerificationStatus] = useState<'verifying' | 'success' | 'error'>('verifying');
   const verificationAttempted = useRef(false);
 
-  const token = searchParams.get('token');
-  const email = searchParams.get('email');
-  const redirectTo = searchParams.get('redirect') || '/';
+  const token = searchParams?.get('token') || '';
+  const email = searchParams?.get('email') || '';
+  const redirectTo = searchParams?.get('redirect') || '/';
 
   const verifyEmail = useMutation(trpc.auth.verifyEmail.mutationOptions({
     onSuccess: async (data) => {

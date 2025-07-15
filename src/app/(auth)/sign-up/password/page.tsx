@@ -95,7 +95,7 @@ const StrengthBarIndicator = ({
 const PasswordForm = () => {
   const {forms, setStep, nextStep} = useSignUp();
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get('redirect') || '/';
+  const redirectTo = searchParams?.get('redirect') || '/';
   const t = useTranslations('SignUpPage.PasswordForm');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');

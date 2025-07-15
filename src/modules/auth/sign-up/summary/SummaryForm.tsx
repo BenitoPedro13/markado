@@ -94,7 +94,7 @@ const SummaryForm = ({user, calendars}: SummaryFormProps) => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const trpc = useTRPC();
-  const redirectTo = searchParams.get('redirect') || '/services';
+  const redirectTo = searchParams?.get('redirect') || '/services';
 
   const completeOnboardingMutation = useMutation(
     trpc.profile.completeOnboarding.mutationOptions({

@@ -17,7 +17,7 @@ export default function GoogleAuthRedirectHandler() {
   const trpc = useTRPC();
   
   // Check if we're coming from a Google auth callback
-  const isGoogleCallback = searchParams.has('callbackUrl') || searchParams.has('_vercel_jwt') || searchParams.has('next');
+  const isGoogleCallback = searchParams?.has('callbackUrl') || searchParams?.has('_vercel_jwt') || searchParams?.has('next');
   
   // Query onboarding status directly
   const { data: onboardingData, isLoading } = useQuery(

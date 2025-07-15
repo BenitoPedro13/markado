@@ -16,14 +16,14 @@ import {createContext, PropsWithChildren, useContext, useEffect} from 'react';
 import VerticalStripesPattern from '~/public/patterns/vertical_stripes.svg';
 
 type ContextType = {
-  pathname: string;
+  pathname: string | null;
   isInSignUpFlow: boolean;
   steps: {path: string; label: string}[];
   getStepState: (stepPath: string) => 'default' | 'active' | 'completed';
 };
 
 const Context = createContext<ContextType>({
-  pathname: '',
+  pathname: null,
   isInSignUpFlow: false,
   steps: [],
   getStepState: () => 'default'
@@ -34,9 +34,10 @@ const Provider = ({children}: PropsWithChildren) => {
   const t = useTranslations('SignUpStepper');
 
   const isInSignUpFlow =
-    pathname.startsWith('/sign-up') &&
+    (pathname?.startsWith('/sign-up') &&
     pathname !== '/sign-up' &&
-    pathname !== '/sign-up/email';
+    pathname !== '/sign-up/email') ||
+    false;
 
   const steps: {path: string; label: string}[] = [
     {path: '/sign-up/password', label: t('password')},
@@ -57,7 +58,7 @@ const Provider = ({children}: PropsWithChildren) => {
       '/sign-up/summary'
     ];
 
-    const currentIndex = stepOrder.indexOf(pathname);
+    const currentIndex = stepOrder.indexOf(pathname || '');
     const stepIndex = stepOrder.indexOf(stepPath);
 
     // Special case for profile and summary steps
@@ -74,7 +75,9 @@ const Provider = ({children}: PropsWithChildren) => {
   };
 
   return (
-    <Context.Provider value={{pathname, isInSignUpFlow, steps, getStepState}}>
+    <Context.Provider
+      value={{pathname: pathname || '', isInSignUpFlow, steps, getStepState}}
+    >
       {children}
     </Context.Provider>
   );
@@ -183,7 +186,7 @@ export default function AuthLayout({children}: PropsWithChildren) {
             {pathname !== '/sign-up/email' && pathname !== '/sign-up' && (
               <Link
                 className="absolute left-0 top-0"
-                href={pathname.split('/').slice(0, -1).join('/')}
+                href={pathname?.split('/').slice(0, -1).join('/') || '/'}
               >
                 <Button variant="neutral" mode="stroke">
                   <RiArrowLeftSLine size={20} color="var(--text-sub-600)" />

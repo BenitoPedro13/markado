@@ -17,7 +17,7 @@ const EndingPage = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const trpc = useTRPC();
-  const redirectTo = searchParams.get('redirect') || '/';
+  const redirectTo = searchParams?.get('redirect') || '/';
 
   const completeOnboardingMutation = useMutation(trpc.profile.completeOnboarding.mutationOptions({
     onSuccess: () => {

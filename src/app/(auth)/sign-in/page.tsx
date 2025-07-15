@@ -30,8 +30,8 @@ type SignInFormData = z.infer<typeof signInSchema>;
 const SignInForm = () => {
   const t = useTranslations('SignInForm');
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get('redirect') || '/';
-  const errorParam = searchParams.get('error');
+  const redirectTo = searchParams?.get('redirect') || '/';
+  const errorParam = searchParams?.get('error') || '';
   const {
     signInWithEmail,
     signInWithGoogle,
