@@ -18,15 +18,15 @@ import EventManager from '@/packages/core/EventManager';
 import {getEventName} from '@/packages/core/event';
 import dayjs from '@/lib/dayjs';
 // import { scheduleMandatoryReminder } from "@/ee/workflows/lib/reminders/scheduleMandatoryReminder";
-// import {
-//   sendAttendeeRequestEmailAndSMS,
-//   sendOrganizerRequestEmail,
-//   sendRescheduledEmailsAndSMS,
-//   sendRoundRobinCancelledEmailsAndSMS,
-//   sendRoundRobinRescheduledEmailsAndSMS,
-//   sendRoundRobinScheduledEmailsAndSMS,
-//   sendScheduledEmailsAndSMS,
-// } from "@/emails";
+import {
+  sendAttendeeRequestEmailAndSMS,
+  sendOrganizerRequestEmail,
+  sendRescheduledEmailsAndSMS,
+  // sendRoundRobinCancelledEmailsAndSMS,
+  // sendRoundRobinRescheduledEmailsAndSMS,
+  // sendRoundRobinScheduledEmailsAndSMS,
+  sendScheduledEmailsAndSMS,
+} from "@/packages/emails";
 import getICalUID from '@/packages/emails/lib/getICalUID';
 import {getBookingFieldsWithSystemFields} from '@/packages/features/bookings/lib/getBookingFields';
 import { handleWebhookTrigger } from "@/packages/features/bookings/lib/handleWebhookTrigger";
@@ -1431,15 +1431,15 @@ async function handler(
         // );
       } else {
         // send normal rescheduled emails (non round robin event, where organizers stay the same)
-        // await sendRescheduledEmailsAndSMS(
-        //   {
-        //     ...copyEvent,
-        //     additionalInformation: metadata,
-        //     additionalNotes, // Resets back to the additionalNote input and not the override value
-        //     cancellationReason: `$RCH$${rescheduleReason ? rescheduleReason : ''}` // Removable code prefix to differentiate cancellation from rescheduling for email
-        //   },
-        //   eventType?.metadata
-        // );
+        await sendRescheduledEmailsAndSMS(
+          {
+            ...copyEvent,
+            additionalInformation: metadata,
+            additionalNotes, // Resets back to the additionalNote input and not the override value
+            cancellationReason: `$RCH$${rescheduleReason ? rescheduleReason : ''}` // Removable code prefix to differentiate cancellation from rescheduling for email
+          },
+          eventType?.metadata
+        );
       }
     }
     // If it's not a reschedule, doesn't require confirmation and there's no price,
@@ -1581,18 +1581,18 @@ async function handler(
           })
         );
 
-        // await sendScheduledEmailsAndSMS(
-        //   {
-        //     ...evt,
-        //     additionalInformation,
-        //     additionalNotes,
-        //     customInputs,
-        //   },
-        //   eventNameObject,
-        //   isHostConfirmationEmailsDisabled,
-        //   isAttendeeConfirmationEmailDisabled,
-        //   eventType.metadata
-        // );
+        await sendScheduledEmailsAndSMS(
+          {
+            ...evt,
+            additionalInformation,
+            additionalNotes,
+            customInputs,
+          },
+          eventNameObject,
+          isHostConfirmationEmailsDisabled,
+          isAttendeeConfirmationEmailDisabled,
+          eventType.metadata
+        );
       }
     }
   } else {
@@ -1620,15 +1620,15 @@ async function handler(
         calEvent: getPiiFreeCalendarEvent(evt)
       })
     );
-    // await sendOrganizerRequestEmail(
-    //   {...evt, additionalNotes},
-    //   eventType.metadata
-    // );
-    // await sendAttendeeRequestEmailAndSMS(
-    //   {...evt, additionalNotes},
-    //   attendeesList[0],
-    //   eventType.metadata
-    // );
+    await sendOrganizerRequestEmail(
+      {...evt, additionalNotes},
+      eventType.metadata
+    );
+    await sendAttendeeRequestEmailAndSMS(
+      {...evt, additionalNotes},
+      attendeesList[0],
+      eventType.metadata
+    );
   }
 
   if (booking.location?.startsWith('http')) {
