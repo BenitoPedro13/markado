@@ -1,7 +1,6 @@
 "use client";
 
 import { type DehydratedState } from "@tanstack/react-query";
-import type { SSRConfig } from "next-i18next";
 // import I18nLanguageHandler from "@components/I18nLanguageHandler";
 import { usePathname } from "next/navigation";
 import Script from "next/script";
@@ -9,7 +8,7 @@ import Script from "next/script";
 // import "@calcom/embed-core/src/embed-iframe";
 // import LicenseRequired from "@calcom/features/ee/common/components/LicenseRequired";
 
-// import AppProviders from "@lib/app-providers-app-dir";
+import AppProviders from "@/app/providers";
 
 export type PageWrapperProps = Readonly<{
   getLayout?: ((page: React.ReactElement) => React.ReactNode) | null;
@@ -20,7 +19,10 @@ export type PageWrapperProps = Readonly<{
   dehydratedState?: DehydratedState;
   isThemeSupported?: boolean;
   isBookingPage?: boolean;
-  i18n?: SSRConfig;
+  initialSession?: any;
+  user?: any;
+  messages?: Record<string, any>;
+  locale?: string;
 }>;
 
 function PageWrapper(props: PageWrapperProps) {
@@ -48,7 +50,12 @@ function PageWrapper(props: PageWrapperProps) {
   const getLayout: (page: React.ReactElement) => React.ReactNode = props.getLayout ?? ((page) => page);
 
   return (
-    <AppProviders {...providerProps}>
+    <AppProviders 
+      initialSession={props.initialSession || null}
+      user={props.user || null}
+      messages={props.messages || {}}
+      locale={props.locale || 'pt'}
+    >
       {/* <I18nLanguageHandler locales={props.router.locales || []} /> */}
       <>
         <Script
@@ -56,9 +63,7 @@ function PageWrapper(props: PageWrapperProps) {
           id="page-status"
           dangerouslySetInnerHTML={{ __html: `window.CalComPageStatus = '${pageStatus}'` }}
         />
-        {getLayout(
-          props.requiresLicense ? <LicenseRequired>{props.children}</LicenseRequired> : <>{props.children}</>
-        )}
+        {getLayout(<>{props.children}</>)}
       </>
     </AppProviders>
   );

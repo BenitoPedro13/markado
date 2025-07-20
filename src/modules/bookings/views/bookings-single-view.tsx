@@ -10,64 +10,65 @@ import { useEffect, useState } from "react";
 import { Toaster } from "react-hot-toast";
 import { RRule } from "rrule";
 import { z } from "zod";
+import { useLocale } from "@/hooks/use-locale";
+import { useTranslations } from "next-intl";
+import { useRouterQuery } from "@/lib/hooks/userRouterQuery";
+import { useCompatSearchParams } from "@/lib/hooks/useCompatSearchParam";
+import dayjs from "@/lib/dayjs";
+import { getEventName } from "@/packages/core/event";
+import { useBrandColors as useBrandColorsHook } from "@/packages/features/bookings/Booker/utils/use-brand-colors";
+import { useTRPC } from "@/utils/trpc";
+import { useNotification } from "@/hooks/use-notification";
+import { BookingStatus, SchedulingType } from "~/prisma/enums";
+import * as Button from "@/components/align-ui/ui/button";
+import { RiCheckLine, RiCalendarLine, RiCloseLine, RiExternalLinkLine } from "@remixicon/react";
+import * as Alert from "@/components/align-ui/ui/alert";
+import * as Badge from "@/components/align-ui/ui/badge";
+import * as Avatar from "@/components/align-ui/ui/avatar";
+import * as TextArea from "@/components/align-ui/ui/textarea";
+import { EmptyScreen } from "@/components/align-ui/ui/empty-screen";
 
-import BookingPageTagManager from "@calcom/app-store/BookingPageTagManager";
-import type { getEventLocationValue } from "@calcom/app-store/locations";
-import { getSuccessPageLocationMessage, guessEventLocationType } from "@calcom/app-store/locations";
-import { getEventTypeAppData } from "@calcom/app-store/utils";
-import type { nameObjectSchema } from "@calcom/core/event";
-import { getEventName } from "@calcom/core/event";
-import type { ConfigType } from "@calcom/dayjs";
-import dayjs from "@calcom/dayjs";
-import { getOrgFullOrigin } from "@calcom/ee/organizations/lib/orgDomains";
-import {
-  useEmbedNonStylesConfig,
-  useIsBackgroundTransparent,
-  useIsEmbed,
-} from "@calcom/embed-core/embed-iframe";
-import { Price } from "@calcom/features/bookings/components/event-meta/Price";
-import {
-  SMS_REMINDER_NUMBER_FIELD,
-  SystemField,
-  TITLE_FIELD,
-} from "@calcom/features/bookings/lib/SystemField";
-import { APP_NAME } from "@calcom/lib/constants";
-import {
-  formatToLocalizedDate,
-  formatToLocalizedTime,
-  formatToLocalizedTimezone,
-} from "@calcom/lib/date-fns";
-import useGetBrandingColours from "@calcom/lib/getBrandColours";
-import { useCompatSearchParams } from "@calcom/lib/hooks/useCompatSearchParams";
-import { useLocale } from "@calcom/lib/hooks/useLocale";
-import { useRouterQuery } from "@calcom/lib/hooks/useRouterQuery";
-import useTheme from "@calcom/lib/hooks/useTheme";
-import isSmsCalEmail from "@calcom/lib/isSmsCalEmail";
-import { getEveryFreqFor } from "@calcom/lib/recurringStrings";
-import { getIs24hClockFromLocalStorage, isBrowserLocale24h } from "@calcom/lib/timeFormat";
-import { localStorage } from "@calcom/lib/webstorage";
-import { BookingStatus, SchedulingType } from "@calcom/prisma/enums";
-import { bookingMetadataSchema } from "@calcom/prisma/zod-utils";
-import { trpc } from "@calcom/trpc/react";
-import {
-  Alert,
-  Avatar,
-  Badge,
-  Button,
-  EmailInput,
-  HeadSeo,
-  useCalcomTheme,
-  TextArea,
-  showToast,
-  EmptyScreen,
-  Icon,
-} from "@calcom/ui";
-import PageWrapper from "@calcom/web/components/PageWrapper";
-import CancelBooking from "@calcom/web/components/booking/CancelBooking";
-import EventReservationSchema from "@calcom/web/components/schemas/EventReservationSchema";
-import { timeZone } from "@calcom/web/lib/clock";
+// Importações comentadas que precisam ser implementadas ou substituídas
+// import BookingPageTagManager from "@calcom/app-store/BookingPageTagManager";
+// import type { getEventLocationValue } from "@calcom/app-store/locations";
+// import { getSuccessPageLocationMessage, guessEventLocationType } from "@calcom/app-store/locations";
+// import { getEventTypeAppData } from "@calcom/app-store/utils";
+// import type { nameObjectSchema } from "@calcom/core/event";
+// import type { ConfigType } from "@calcom/dayjs";
+// import { getOrgFullOrigin } from "@calcom/ee/organizations/lib/orgDomains";
+// import {
+//   useEmbedNonStylesConfig,
+//   useIsBackgroundTransparent,
+//   useIsEmbed,
+// } from "@calcom/embed-core/embed-iframe";
+// import { Price } from "@calcom/features/bookings/components/event-meta/Price";
+// import {
+//   formatToLocalizedDate,
+//   formatToLocalizedTime,
+//   formatToLocalizedTimezone,
+// } from "@calcom/lib/date-fns";
+// import useGetBrandingColours from "@calcom/lib/getBrandColours";
+// import useTheme from "@calcom/lib/hooks/useTheme";
+// import isSmsCalEmail from "@calcom/lib/isSmsCalEmail";
+// import { getEveryFreqFor } from "@calcom/lib/recurringStrings";
+// import { getIs24hClockFromLocalStorage, isBrowserLocale24h } from "@calcom/lib/timeFormat";
+// import { localStorage } from "@calcom/lib/webstorage";
+// import { bookingMetadataSchema } from "@calcom/prisma/zod-utils";
+// import {
+//   EmailInput,
+//   HeadSeo,
+//   useCalcomTheme,
+// } from "@calcom/ui";
+// import PageWrapper from "@calcom/web/components/PageWrapper";
+// import CancelBooking from "@calcom/web/components/booking/CancelBooking";
+// import EventReservationSchema from "@calcom/web/components/schemas/EventReservationSchema";
+// import { timeZone } from "@calcom/web/lib/clock";
 
 import type { PageProps } from "./bookings-single-view.getServerSideProps";
+import { formatToLocalizedDate, formatToLocalizedTime, formatToLocalizedTimezone } from "@/lib/date-fns";
+import { SMS_REMINDER_NUMBER_FIELD, SystemField, TITLE_FIELD } from "@/packages/features/bookings/lib/SystemField";
+import { APP_NAME } from "@/constants";
+import CancelBooking from "@/components/booking/CancelBooking";
 
 const stringToBoolean = z
   .string()
@@ -96,15 +97,16 @@ const useBrandColors = ({
   brandColor?: string | null;
   darkBrandColor?: string | null;
 }) => {
-  const brandTheme = useGetBrandingColours({
-    lightVal: brandColor,
-    darkVal: darkBrandColor,
+  useBrandColorsHook({
+    brandColor: brandColor || undefined,
+    darkBrandColor: darkBrandColor || undefined,
   });
-  useCalcomTheme(brandTheme);
 };
 
 export default function Success(props: PageProps) {
   const { t } = useLocale();
+  const tCommon = useTranslations('common');
+  
   const router = useRouter();
   const routerQuery = useRouterQuery();
   const pathname = usePathname();
@@ -124,9 +126,9 @@ export default function Success(props: PageProps) {
   const attendeeTimeZone = bookingInfo?.attendees.find((attendee) => attendee.email === email)?.timeZone;
 
   const isFeedbackMode = !!(noShow || rating);
-  const tz = props.tz ? props.tz : isSuccessBookingPage && attendeeTimeZone ? attendeeTimeZone : timeZone();
+  const tz = props.tz ? props.tz : isSuccessBookingPage && attendeeTimeZone ? attendeeTimeZone : "Europe/London"; // Changed from timeZone() to "Europe/London"
 
-  const location = bookingInfo.location as ReturnType<typeof getEventLocationValue>;
+  const location = bookingInfo.location as string;
   let rescheduleLocation: string | undefined;
   if (
     typeof bookingInfo.responses?.location === "object" &&
@@ -135,9 +137,7 @@ export default function Success(props: PageProps) {
     rescheduleLocation = bookingInfo.responses.location.optionValue;
   }
 
-  const locationVideoCallUrl: string | undefined = bookingMetadataSchema.parse(
-    bookingInfo?.metadata || {}
-  )?.videoCallUrl;
+  const locationVideoCallUrl: string | undefined = (bookingInfo?.metadata as any)?.videoCallUrl;
 
   const status = bookingInfo?.status;
   const reschedule = bookingInfo.status === BookingStatus.ACCEPTED;
@@ -148,16 +148,16 @@ export default function Success(props: PageProps) {
   const isGmail = !!attendees.find((attendee) => attendee?.email?.includes("gmail.com"));
 
   const [is24h, setIs24h] = useState(
-    props?.userTimeFormat ? props.userTimeFormat === 24 : isBrowserLocale24h()
+    props?.userTimeFormat ? props.userTimeFormat === 24 : false
   );
   const { data: session } = useSession();
 
   const [date, setDate] = useState(dayjs.utc(bookingInfo.startTime));
 
-  const isBackgroundTransparent = useIsBackgroundTransparent();
-  const isEmbed = useIsEmbed();
-  const shouldAlignCentrallyInEmbed = useEmbedNonStylesConfig("align") !== "left";
-  const shouldAlignCentrally = !isEmbed || shouldAlignCentrallyInEmbed;
+  const isBackgroundTransparent = false;
+  const isEmbed = false;
+  const shouldAlignCentrallyInEmbed = true;
+  const shouldAlignCentrally = true;
   const [calculatedDuration, setCalculatedDuration] = useState<number | undefined>(undefined);
   const [comment, setComment] = useState("");
   const parsedRating = rating ? parseInt(rating, 10) : 3;
@@ -171,24 +171,45 @@ export default function Success(props: PageProps) {
   const [rateValue, setRateValue] = useState<number>(defaultRating);
   const [isFeedbackSubmitted, setIsFeedbackSubmitted] = useState(false);
 
-  const mutation = trpc.viewer.public.submitRating.useMutation({
-    onSuccess: async () => {
-      setIsFeedbackSubmitted(true);
-      showToast("Thank you, feedback submitted", "success");
+  const { notification } = useNotification();
+  
+  // TODO: Implement these mutations when the tRPC procedures are available
+  const mutation = {
+    mutate: async (data: any) => {
+      try {
+        setIsFeedbackSubmitted(true);
+        notification({
+          title: "Thank you, feedback submitted",
+          status: "success",
+        });
+      } catch (err: any) {
+        notification({
+          title: err.message,
+          status: "error",
+        });
+      }
     },
-    onError: (err) => {
-      showToast(err.message, "error");
-    },
-  });
+    isPending: false
+  };
 
-  const hostNoShowMutation = trpc.viewer.public.markHostAsNoShow.useMutation({
-    onSuccess: async () => {
-      showToast("Thank you, feedback submitted", "success");
+  const hostNoShowMutation = {
+    mutate: async (data: any) => {
+      try {
+        // Placeholder for markHostAsNoShow mutation
+        console.log('Mark host as no show:', data);
+        notification({
+          title: "Thank you, feedback submitted",
+          status: "success",
+        });
+      } catch (err: any) {
+        notification({
+          title: err.message,
+          status: "error",
+        });
+      }
     },
-    onError: (err) => {
-      showToast(err.message, "error");
-    },
-  });
+    isPending: false
+  };
 
   useEffect(() => {
     if (noShow) {
@@ -220,18 +241,18 @@ export default function Success(props: PageProps) {
     evtName = bookingInfo.responses.title as string;
   }
   const eventNameObject = {
-    attendeeName: bookingInfo.responses.name as z.infer<typeof nameObjectSchema> | string,
+    attendeeName: bookingInfo.responses.name as string,
     eventType: eventType.title,
     eventName: evtName,
     host: props.profile.name || "Nameless",
     location: location,
     bookingFields: bookingInfo.responses,
     eventDuration: eventType.length,
-    t,
+    t: t as any,
   };
 
-  const giphyAppData = getEventTypeAppData(eventType, "giphy");
-  const giphyImage = giphyAppData?.thankYouPage;
+  const giphyAppData = null; // getEventTypeAppData not implemented yet
+  const giphyImage = null;
   const isRoundRobin = eventType.schedulingType === SchedulingType.ROUND_ROBIN;
 
   const eventName = getEventName(eventNameObject, true);
@@ -260,7 +281,7 @@ export default function Success(props: PageProps) {
     setDate(
       date.tz(localStorage.getItem("timeOption.preferredTimeZone") || dayjs.tz.guess() || "Europe/London")
     );
-    setIs24h(props?.userTimeFormat ? props.userTimeFormat === 24 : !!getIs24hClockFromLocalStorage());
+    setIs24h(props?.userTimeFormat ? props.userTimeFormat === 24 : false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [eventType, needsConfirmation]);
 
@@ -339,7 +360,7 @@ export default function Success(props: PageProps) {
 
   // This is a weird case where the same route can be opened in booking flow as a success page or as a booking detail page from the app
   // As Booking Page it has to support configured theme, but as booking detail page it should not do any change. Let Shell.tsx handle it.
-  useTheme(isSuccessBookingPage ? props.profile.theme : "system");
+  // useTheme(isSuccessBookingPage ? props.profile.theme : "system"); // useTheme not implemented yet
   useBrandColors({
     brandColor: props.profile.brandColor,
     darkBrandColor: props.profile.darkBrandColor,
@@ -348,20 +369,10 @@ export default function Success(props: PageProps) {
     `booking_${needsConfirmation ? "submitted" : "confirmed"}${props.recurringBookings ? "_recurring" : ""}`
   );
 
-  const locationToDisplay = getSuccessPageLocationMessage(
-    locationVideoCallUrl ? locationVideoCallUrl : location,
-    t,
-    bookingInfo.status
-  );
-
-  const rescheduleLocationToDisplay = getSuccessPageLocationMessage(
-    rescheduleLocation ?? "",
-    t,
-    bookingInfo.status
-  );
-
-  const providerName = guessEventLocationType(location)?.label;
-  const rescheduleProviderName = guessEventLocationType(rescheduleLocation)?.label;
+  const locationToDisplay = locationVideoCallUrl ? locationVideoCallUrl : location;
+  const rescheduleLocationToDisplay = rescheduleLocation ?? "";
+  const providerName = "Link"; // guessEventLocationType not implemented yet
+  const rescheduleProviderName = "Link"; // guessEventLocationType not implemented yet
   const isBookingInPast = new Date(bookingInfo.endTime) < new Date();
   const isReschedulable = !isCancelled;
 
@@ -370,7 +381,7 @@ export default function Success(props: PageProps) {
     organizer: {
       name: bookingInfo?.user?.name || "Nameless",
       email: bookingInfo?.userPrimaryEmail || bookingInfo?.user?.email || "Email-less",
-      timeZone: bookingInfo?.user?.timeZone,
+      timeZone: bookingInfo?.user?.timeZone || undefined,
     },
     eventType,
   };
@@ -385,59 +396,46 @@ export default function Success(props: PageProps) {
 
   const successPageHeadline = (() => {
     if (needsConfirmationAndReschedulable) {
-      return isRecurringBooking ? t("booking_submitted_recurring") : t("booking_submitted");
+      return isRecurringBooking ? tCommon("booking_submitted_recurring") : tCommon("booking_submitted");
     }
 
     if (isRerouting) {
-      return t("This meeting has been rerouted");
+      return tCommon("This meeting has been rerouted");
     }
 
     if (isNotAttendingSeatedEvent) {
-      return t("no_longer_attending");
+      return tCommon("no_longer_attending");
     }
 
     if (isRescheduled) {
-      return t("your_event_has_been_rescheduled");
+      return tCommon("your_event_has_been_rescheduled");
     }
 
     if (isEventCancelled) {
-      return t("event_cancelled");
+      return tCommon("event_cancelled");
     }
 
     if (isPastBooking) {
-      return t("event_is_in_the_past");
+      return tCommon("event_is_in_the_past");
     }
 
-    return isRecurringBooking ? t("meeting_is_scheduled_recurring") : t("meeting_is_scheduled");
+    return isRecurringBooking ? tCommon("meeting_is_scheduled_recurring") : tCommon("meeting_is_scheduled");
   })();
 
   return (
     <div className={isEmbed ? "" : "h-screen"} data-testid="success-page">
-      {!isEmbed && !isFeedbackMode && (
-        <EventReservationSchema
-          reservationId={bookingInfo.uid}
-          eventName={eventName}
-          startTime={bookingInfo.startTime}
-          endTime={bookingInfo.endTime}
-          organizer={bookingInfo.user}
-          attendees={bookingInfo.attendees}
-          location={locationToDisplay}
-          description={bookingInfo.description}
-          status={status}
-        />
-      )}
+      {/* EventReservationSchema not implemented yet */}
       {isLoggedIn && !isEmbed && !isFeedbackMode && (
         <div className="-mb-4 ml-4 mt-2">
           <Link
             href={allRemainingBookings ? "/bookings/recurring" : "/bookings/upcoming"}
             data-testid="back-to-bookings"
             className="hover:bg-subtle text-subtle hover:text-default mt-2 inline-flex px-1 py-2 text-sm transition dark:hover:bg-transparent">
-            <Icon name="chevron-left" className="h-5 w-5 rtl:rotate-180" /> {t("back_to_bookings")}
+            <RiCloseLine className="h-5 w-5 rtl:rotate-180" /> {t("back_to_bookings")}
           </Link>
         </div>
       )}
-      <HeadSeo origin={getOrgFullOrigin(orgSlug)} title={title} description={title} />
-      <BookingPageTagManager eventType={eventType} />
+      {/* HeadSeo and BookingPageTagManager removed - not implemented yet */}
       <main className={classNames(shouldAlignCentrally ? "mx-auto" : "", isEmbed ? "" : "max-w-3xl")}>
         <div className={classNames("overflow-y-auto", isEmbed ? "" : "z-50 ")}>
           <div
@@ -465,12 +463,16 @@ export default function Success(props: PageProps) {
                     <div
                       className={classNames(isRoundRobin && "min-w-32 min-h-24 relative mx-auto h-24 w-32")}>
                       {isRoundRobin && bookingInfo.user && (
-                        <Avatar
+                        <Avatar.Root
                           className="mx-auto flex items-center justify-center"
-                          alt={bookingInfo.user.name || bookingInfo.user.email}
-                          size="xl"
-                          imageSrc={`${bookingInfo.user.avatarUrl}`}
-                        />
+                          size="80"
+                        >
+                          <Avatar.Image
+                            // src={bookingInfo.user.avatarUrl ?? ""}
+                            src={""}
+                            alt={bookingInfo.user.name || bookingInfo.user.email}
+                          />
+                        </Avatar.Root>
                       )}
                       {giphyImage && !needsConfirmation && isReschedulable && (
                         // eslint-disable-next-line @next/next/no-img-element
@@ -486,12 +488,12 @@ export default function Success(props: PageProps) {
                           isCancelled ? "bg-error" : ""
                         )}>
                         {!giphyImage && !needsConfirmation && isReschedulable && (
-                          <Icon name="check" className="h-5 w-5 text-green-600 dark:text-green-400" />
+                          <RiCheckLine className="h-5 w-5 text-green-600 dark:text-green-400" />
                         )}
                         {needsConfirmation && isReschedulable && (
-                          <Icon name="calendar" className="text-emphasis h-5 w-5" />
+                          <RiCalendarLine className="text-emphasis h-5 w-5" />
                         )}
-                        {isCancelled && <Icon name="x" className="h-5 w-5 text-red-600 dark:text-red-200" />}
+                        {isCancelled && <RiCloseLine className="h-5 w-5 text-red-600 dark:text-red-200" />}
                       </div>
                     </div>
                     <div className="mb-8 mt-6 text-center last:mb-0">
@@ -528,11 +530,11 @@ export default function Success(props: PageProps) {
                             <div className="col-span-2 mb-6 last:mb-0">{cancellationReason}</div>
                           </>
                         )}
-                        <div className="font-medium">{t("what")}</div>
+                        <div className="font-medium">{tCommon("what")}</div>
                         <div className="col-span-2 mb-6 last:mb-0" data-testid="booking-title">
                           {isRoundRobin ? bookingInfo.title : eventName}
                         </div>
-                        <div className="font-medium">{t("when")}</div>
+                        <div className="font-medium">{tCommon("when")}</div>
                         <div className="col-span-2 mb-6 last:mb-0">
                           {reschedule && !!formerTime && (
                             <p className="line-through">
@@ -561,7 +563,7 @@ export default function Success(props: PageProps) {
                         </div>
                         {(bookingInfo?.user || bookingInfo?.attendees) && (
                           <>
-                            <div className="font-medium">{t("who")}</div>
+                            <div className="font-medium">{tCommon("who")}</div>
                             <div className="col-span-2 last:mb-0">
                               {bookingInfo?.user && (
                                 <div className="mb-3">
@@ -569,7 +571,7 @@ export default function Success(props: PageProps) {
                                     <span data-testid="booking-host-name" className="mr-2">
                                       {bookingInfo.user.name}
                                     </span>
-                                    <Badge variant="blue">{t("Host")}</Badge>
+                                    <Badge.Root variant="filled" color="blue">{tCommon("Host")}</Badge.Root>
                                   </div>
                                   <p className="text-default">
                                     {bookingInfo?.userPrimaryEmail ?? bookingInfo.user.email}
@@ -586,7 +588,7 @@ export default function Success(props: PageProps) {
                                       {attendee.phoneNumber}
                                     </p>
                                   )}
-                                  {!isSmsCalEmail(attendee.email) && (
+                                  {!attendee.email.includes("sms.cal.com") && (
                                     <p data-testid={`attendee-email-${attendee.email}`}>{attendee.email}</p>
                                   )}
                                 </div>
@@ -596,7 +598,7 @@ export default function Success(props: PageProps) {
                         )}
                         {locationToDisplay && !isCancelled && (
                           <>
-                            <div className="mt-3 font-medium">{t("where")}</div>
+                            <div className="mt-3 font-medium">{tCommon("where")}</div>
                             <div className="col-span-2 mt-3" data-testid="where">
                               {!rescheduleLocation || locationToDisplay === rescheduleLocationToDisplay ? (
                                 <DisplayLocation
@@ -630,10 +632,9 @@ export default function Success(props: PageProps) {
                                 : t("payment")}
                             </div>
                             <div className="col-span-2 mb-2 mt-3">
-                              <Price
-                                currency={props.paymentStatus.currency}
-                                price={props.paymentStatus.amount}
-                              />
+                              <span>
+                                {props.paymentStatus.currency} {props.paymentStatus.amount}
+                              </span>
                             </div>
                           </>
                         )}
@@ -723,7 +724,7 @@ export default function Success(props: PageProps) {
                           <hr className="border-subtle mb-8" />
                           <div className="text-center last:pb-0">
                             <span className="text-emphasis ltr:mr-2 rtl:ml-2">
-                              {t("need_to_make_a_change")}
+                              {tCommon("need_to_make_a_change")}
                             </span>
 
                             <>
@@ -737,10 +738,10 @@ export default function Success(props: PageProps) {
                                           : ""
                                       }`}
                                       legacyBehavior>
-                                      {t("reschedule")}
+                                      {tCommon("reschedule")}
                                     </Link>
                                   </span>
-                                  <span className="mx-2">{t("or_lowercase")}</span>
+                                  <span className="mx-2">{tCommon("or_lowercase")}</span>
                                 </span>
                               )}
 
@@ -779,14 +780,14 @@ export default function Success(props: PageProps) {
                       ))}
                     {isRerouting && typeof window !== "undefined" && window.opener && (
                       <div className="flex justify-center">
-                        <Button
+                        <Button.Root
                           type="button"
                           onClick={() => {
                             window.opener.focus();
                             window.close();
                           }}>
                           Go Back
-                        </Button>
+                        </Button.Root>
                       </div>
                     )}
                     {userIsOwner &&
@@ -903,41 +904,7 @@ export default function Success(props: PageProps) {
                         </>
                       )}
 
-                    {session === null && !(userIsOwner || props.hideBranding) && (
-                      <>
-                        <hr className="border-subtle mt-8" />
-                        <div className="text-default pt-8 text-center text-xs">
-                          <a href="https://cal.com/signup">
-                            {t("create_booking_link_with_calcom", { appName: APP_NAME })}
-                          </a>
 
-                          <form
-                            onSubmit={(e) => {
-                              e.preventDefault();
-                              const target = e.target as typeof e.target & {
-                                email: { value: string };
-                              };
-                              router.push(`https://cal.com/signup?email=${target.email.value}`);
-                            }}
-                            className="mt-4 flex">
-                            <EmailInput
-                              name="email"
-                              id="email"
-                              defaultValue={email}
-                              className="mr- focus:border-brand-default border-default text-default mt-0 block w-full rounded-none rounded-l-md shadow-sm focus:ring-black sm:text-sm"
-                              placeholder="rick.astley@cal.com"
-                            />
-                            <Button
-                              size="lg"
-                              type="submit"
-                              className="min-w-max rounded-none rounded-r-md"
-                              color="primary">
-                              {t("try_for_free")}
-                            </Button>
-                          </form>
-                        </div>
-                      </>
-                    )}
                   </>
                 )}
                 {isFeedbackMode &&
@@ -950,12 +917,14 @@ export default function Success(props: PageProps) {
                         headline={t("host_no_show")}
                         description={t("no_show_description")}
                         buttonRaw={
-                          !props.recurringBookings ? (
-                            <Button href={`/reschedule/${seatReferenceUid || bookingInfo?.uid}`}>
-                              {t("reschedule")}
-                            </Button>
-                          ) : undefined
-                        }
+                            !props.recurringBookings ? (
+                              <Link href={`/reschedule/${seatReferenceUid || bookingInfo?.uid}`}>
+                                <Button.Root>
+                                  {t("reschedule")}
+                                </Button.Root>
+                              </Link>
+                            ) : undefined
+                          }
                       />
                     </>
                   ) : (
@@ -1021,7 +990,7 @@ export default function Success(props: PageProps) {
                         <h2 className="font-cal text-lg">{t("submitted_feedback")}</h2>
                         <p className="text-sm">{rateValue < 4 ? t("how_can_we_improve") : t("most_liked")}</p>
                       </div>
-                      <TextArea
+                      <TextArea.Root
                         id="comment"
                         name="comment"
                         placeholder="Next time I would like to ..."
@@ -1030,39 +999,35 @@ export default function Success(props: PageProps) {
                         onChange={(event) => setComment(event.target.value)}
                       />
                       <div className="my-4 flex justify-start">
-                        <Button
-                          loading={mutation.isPending}
-                          disabled={isFeedbackSubmitted}
+                        <Button.Root
+                          disabled={isFeedbackSubmitted || mutation.isPending}
                           onClick={async () => {
                             if (rating) {
                               await sendFeedback(rating, comment);
                             }
                           }}>
-                          {t("submit_feedback")}
-                        </Button>
+                          {mutation.isPending ? "Enviando..." : t("submit_feedback")}
+                        </Button.Root>
                       </div>
                     </>
                   ))}
               </div>
               {isGmail && !isFeedbackMode && (
-                <Alert
+                <Alert.Root
                   className="main -mb-20 mt-4 inline-block ltr:text-left rtl:text-right sm:-mt-4 sm:mb-4 sm:w-full sm:max-w-xl sm:align-middle"
-                  severity="warning"
-                  message={
-                    <div>
-                      <p className="font-semibold">{t("google_new_spam_policy")}</p>
-                      <span className="underline">
-                        <a
-                          target="_blank"
-                          href="https://cal.com/blog/google-s-new-spam-policy-may-be-affecting-your-invitations">
-                          {t("resolve")}
-                        </a>
-                      </span>
-                    </div>
-                  }
-                  CustomIcon="circle-alert"
-                  customIconColor="text-attention dark:text-orange-200"
-                />
+                  status="warning"
+                >
+                  <div>
+                    <p className="font-semibold">{t("google_new_spam_policy")}</p>
+                    <span className="underline">
+                      <a
+                        target="_blank"
+                        href="https://cal.com/blog/google-s-new-spam-policy-may-be-affecting-your-invitations">
+                        {t("resolve")}
+                      </a>
+                    </span>
+                  </div>
+                </Alert.Root>
               )}
             </div>
           </div>
@@ -1083,7 +1048,7 @@ const RescheduledToLink = ({ rescheduledToUid }: { rescheduledToUid: string }) =
           <Link href={`/booking/${rescheduledToUid}`}>
             <div className="flex items-center gap-1">
               {t("view_booking")}
-              <Icon name="external-link" className="h-4 w-4" />
+              <RiExternalLinkLine className="h-4 w-4" />
             </div>
           </Link>
         </span>
@@ -1100,8 +1065,17 @@ const DisplayLocation = ({
   locationToDisplay: string;
   providerName?: string;
   className?: string;
-}) =>
-  locationToDisplay.startsWith("http") ? (
+}) => {
+  const { t } = useLocale();
+  
+  // Handle integrations:daily format
+  if (locationToDisplay === "integrations:daily") {
+    return (
+      <p className={className}>{t("integrations_daily")}</p>
+    );
+  }
+  
+  return locationToDisplay.startsWith("http") ? (
     <a
       href={locationToDisplay}
       target="_blank"
@@ -1109,14 +1083,15 @@ const DisplayLocation = ({
       className={classNames("text-default flex items-center gap-2", className)}
       rel="noreferrer">
       {providerName || "Link"}
-      <Icon name="external-link" className="text-default inline h-4 w-4" />
+      <RiExternalLinkLine className="text-default inline h-4 w-4" />
     </a>
   ) : (
     <p className={className}>{locationToDisplay}</p>
   );
+};
 
-Success.isBookingPage = true;
-Success.PageWrapper = PageWrapper;
+// Success.isBookingPage = true;
+// Success.PageWrapper = PageWrapper; // PageWrapper not implemented yet
 
 type RecurringBookingsProps = {
   eventType: PageProps["eventType"];
@@ -1140,12 +1115,9 @@ function RecurringBookings({
   tz,
 }: RecurringBookingsProps) {
   const [moreEventsVisible, setMoreEventsVisible] = useState(false);
-  const {
-    t,
-    i18n: { language },
-  } = useLocale();
+  const { t } = useLocale();
   const recurringBookingsSorted = recurringBookings
-    ? recurringBookings.sort((a: ConfigType, b: ConfigType) => (dayjs(a).isAfter(dayjs(b)) ? 1 : -1))
+    ? recurringBookings.sort((a: string, b: string) => (dayjs(a).isAfter(dayjs(b)) ? 1 : -1))
     : null;
 
   if (!duration) return null;
@@ -1155,22 +1127,19 @@ function RecurringBookings({
       <>
         {eventType.recurringEvent?.count && (
           <span className="font-medium">
-            {getEveryFreqFor({
-              t,
-              recurringEvent: eventType.recurringEvent,
-              recurringCount: recurringBookings?.length ?? undefined,
-            })}
+            {/* getEveryFreqFor not implemented yet */}
+            Recurring Event
           </span>
         )}
         {eventType.recurringEvent?.count &&
           recurringBookingsSorted.slice(0, 4).map((dateStr: string, idx: number) => (
             <div key={idx} className={classNames("mb-2", isCancelled ? "line-through" : "")}>
-              {formatToLocalizedDate(dayjs.tz(dateStr, tz), language, "full", tz)}
+              {dayjs.tz(dateStr, tz).format("dddd, MMMM D, YYYY")}
               <br />
-              {formatToLocalizedTime(dayjs(dateStr), language, undefined, !is24h, tz)} -{" "}
-              {formatToLocalizedTime(dayjs(dateStr).add(duration, "m"), language, undefined, !is24h, tz)}{" "}
+              {dayjs(dateStr).format(is24h ? "HH:mm" : "h:mm A")} -{" "}
+              {dayjs(dateStr).add(duration, "m").format(is24h ? "HH:mm" : "h:mm A")}{" "}
               <span className="text-bookinglight">
-                ({formatToLocalizedTimezone(dayjs(dateStr), language, tz)})
+                ({dayjs(dateStr).tz(tz).format("z")})
               </span>
             </div>
           ))}
@@ -1185,23 +1154,17 @@ function RecurringBookings({
               {eventType.recurringEvent?.count &&
                 recurringBookingsSorted.slice(4).map((dateStr: string, idx: number) => (
                   <div key={idx} className={classNames("mb-2", isCancelled ? "line-through" : "")}>
-                    {formatToLocalizedDate(dayjs.tz(dateStr, tz), language, "full", tz)}
+                    {dayjs.tz(dateStr, tz).format("dddd, MMMM D, YYYY")}
                     <br />
-                    {formatToLocalizedTime(dayjs(dateStr), language, undefined, !is24h, tz)} -{" "}
-                    {formatToLocalizedTime(
-                      dayjs(dateStr).add(duration, "m"),
-                      language,
-                      undefined,
-                      !is24h,
-                      tz
-                    )}{" "}
+                    {dayjs(dateStr).format(is24h ? "HH:mm" : "h:mm A")} -{" "}
+                    {dayjs(dateStr).add(duration, "m").format(is24h ? "HH:mm" : "h:mm A")}{" "}
                     <span className="text-bookinglight">
-                      ({formatToLocalizedTimezone(dayjs(dateStr), language, tz)})
+                      ({dayjs(dateStr).tz(tz).format("z")})
                     </span>
                   </div>
-                ))}
-            </CollapsibleContent>
-          </Collapsible>
+                                ))}
+              </CollapsibleContent>
+            </Collapsible>
         )}
       </>
     );
@@ -1209,11 +1172,11 @@ function RecurringBookings({
 
   return (
     <div className={classNames(isCancelled ? "line-through" : "")}>
-      {formatToLocalizedDate(date, language, "full", tz)}
+      {formatToLocalizedDate(date, 'pt-br', "full", tz)}
       <br />
-      {formatToLocalizedTime(date, language, undefined, !is24h, tz)} -{" "}
-      {formatToLocalizedTime(dayjs(date).add(duration, "m"), language, undefined, !is24h, tz)}{" "}
-      <span className="text-bookinglight">({formatToLocalizedTimezone(date, language, tz)})</span>
+      {formatToLocalizedTime(date, 'pt-br', undefined, !is24h, tz)} -{" "}
+      {formatToLocalizedTime(dayjs(date).add(duration, "m"), 'pt-br', undefined, !is24h, tz)}{" "}
+      <span className="text-bookinglight">({formatToLocalizedTimezone(date, 'pt-br', tz)})</span>
     </div>
   );
 }

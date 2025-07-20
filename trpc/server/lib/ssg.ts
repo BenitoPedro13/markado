@@ -1,14 +1,9 @@
 import type { GetStaticPropsContext } from "next";
-import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import superjson from "superjson";
-
-import { CALCOM_VERSION } from "@calcom/lib/constants";
-import prisma, { readonlyPrisma } from "@calcom/prisma";
-import { createServerSideHelpers } from "@calcom/trpc/react/server";
-import { appRouter } from "@calcom/trpc/server/routers/_app";
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { i18n } = require("@calcom/config/next-i18next.config");
+import { QueryClient } from "@tanstack/react-query";
+import { dehydrate } from "@tanstack/react-query";
+import { appRouter } from "../index";
+import { getTranslation } from "@/packages/lib/server/i18n";
 
 /**
  * Initialize static site rendering tRPC helpers.
@@ -17,35 +12,27 @@ const { i18n } = require("@calcom/config/next-i18next.config");
  * Make sure to `return { props: { trpcState: ssr.dehydrate() } }` at the end.
  */
 export async function ssgInit<TParams extends { locale?: string }>(opts: GetStaticPropsContext<TParams>) {
-  const requestedLocale = opts.params?.locale || opts.locale || i18n.defaultLocale;
-  const isSupportedLocale = i18n.locales.includes(requestedLocale);
+  const requestedLocale = opts.params?.locale || opts.locale || 'pt';
+  const isSupportedLocale = ['pt', 'en'].includes(requestedLocale);
   if (!isSupportedLocale) {
     console.warn(`Requested unsupported locale "${requestedLocale}"`);
   }
-  const locale = isSupportedLocale ? requestedLocale : i18n.defaultLocale;
+  const locale = isSupportedLocale ? requestedLocale : 'pt';
 
-  const _i18n = await serverSideTranslations(locale, ["common"]);
+  const t = await getTranslation(locale, "common");
 
-  const ssg = createServerSideHelpers({
-    router: appRouter,
-    transformer: superjson,
-    ctx: {
-      prisma,
-      insightsDb: readonlyPrisma,
-      session: null,
-      locale,
-      i18n: _i18n,
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        staleTime: 60 * 1000,
+      },
     },
   });
 
-  // i18n translations are already retrieved from serverSideTranslations call, there is no need to run a i18n.fetch
-  // we can set query data directly to the queryClient
-  const queryKey = [
-    ["viewer", "public", "i18n"],
-    { input: { locale, CalComVersion: CALCOM_VERSION }, type: "query" },
-  ];
-
-  ssg.queryClient.setQueryData(queryKey, { i18n: _i18n });
+  const ssg = {
+    queryClient,
+    dehydrate: () => dehydrate(queryClient),
+  };
 
   return ssg;
 }

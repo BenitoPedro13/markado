@@ -9,13 +9,9 @@ import { getDefaultEvent } from "@/packages/lib/defaultEvents";
 import { customInputSchema, EventTypeMetaDataSchema } from "~/prisma/zod-utils";
 import { parseRecurringEvent } from "@/packages/lib";
 import getBookingInfo from "@/packages/features/bookings/lib/getBookingInfo";
-
-
-// import { orgDomainConfig } from "@calcom/ee/organizations/lib/orgDomains";
-// import { getServerSession } from "@calcom/features/auth/lib/getServerSession";
-// import getBookingInfo from "@calcom/features/bookings/lib/getBookingInfo";
-
-// import { markdownToSafeHTML } from "@calcom/lib/markdownToSafeHTML";
+import { auth } from "@/auth";
+import { markdownToSafeHTML } from "@/packages/lib/markdownToSafeHTML";
+import { orgDomainConfig } from "@/lib/orgDomains";
 
 
 
@@ -49,12 +45,12 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   );
 
   const ssr = await ssrInit(context);
-  const session = await getServerSession(context);
+  const session = await auth();
   let tz: string | null = null;
   let userTimeFormat: number | null = null;
   let requiresLoginToUpdate = false;
   if (session) {
-    const user = await ssr.viewer.me.fetch();
+    const user = await ssr.user.me.fetch();
     tz = user.timeZone;
     userTimeFormat = user.timeFormat;
   }

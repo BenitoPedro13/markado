@@ -3,6 +3,9 @@ import { buildLegacyCtx } from "@/lib/buildLegacyCtx";
 import { type GetServerSidePropsContext } from "next";
 import { cookies, headers } from "next/headers";
 import { LayoutProps, PageProps } from "./_types";
+import PageWrapper from "@/components/PageWrapperAppDir";
+import { getMessages } from "next-intl/server";
+import { routing } from "@/i18n/routing";
 
 // import { buildLegacyCtx } from "@lib/buildLegacyCtx";
 
@@ -29,12 +32,17 @@ export function WithLayout<T extends Record<string, any>>({
 }: WithLayoutParams<T>) {
   // eslint-disable-next-line react/display-name
   return async <P extends "P" | "L">(p: P extends "P" ? PageProps : LayoutProps) => {
-    const h = headers();
+    const h = await headers();
+    const c = await cookies();
     const nonce = h.get("x-nonce") ?? undefined;
     let props = {} as T;
 
+    // Get locale and messages for translations
+    const locale = c.get('NEXT_LOCALE')?.value || routing.defaultLocale;
+    const messages = await getMessages({ locale });
+
     if ("searchParams" in p && getData) {
-      props = (await getData(buildLegacyCtx(h, cookies(), p.params, p.searchParams))) ?? ({} as T);
+      props = (await getData(buildLegacyCtx(h, c, p.params, p.searchParams))) ?? ({} as T);
     }
 
     // `p.children` exists only for layout.tsx files
@@ -56,6 +64,8 @@ export function WithLayout<T extends Record<string, any>>({
         themeBasis={null}
         isThemeSupported={Page && "isThemeSupported" in Page ? (Page.isThemeSupported as boolean) : undefined}
         isBookingPage={isBookingPage || !!(Page && "isBookingPage" in Page && Page.isBookingPage)}
+        messages={messages}
+        locale={locale}
         {...props}>
         {pageWithServerLayout}
       </PageWrapper>

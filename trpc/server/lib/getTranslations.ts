@@ -1,22 +1,21 @@
 import type { GetStaticPropsContext } from "next";
-import { serverSideTranslations } from "next-i18next/serverSideTranslations";
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { i18n } = require("@calcom/config/next-i18next.config");
+import { getMessages } from "next-intl/server";
+import { routing } from "@/i18n/routing";
 
 export async function getTranslations<TParams extends { locale?: string }>(
   opts: GetStaticPropsContext<TParams>
 ) {
-  const requestedLocale = opts.params?.locale || opts.locale || i18n.defaultLocale;
-  const isSupportedLocale = i18n.locales.includes(requestedLocale);
+  const requestedLocale = opts.params?.locale || opts.locale || routing.defaultLocale;
+  const isSupportedLocale = routing.locales.includes(requestedLocale as any);
   if (!isSupportedLocale) {
     console.warn(`Requested unsupported locale "${requestedLocale}"`);
   }
-  const locale = isSupportedLocale ? requestedLocale : i18n.defaultLocale;
+  const locale = isSupportedLocale ? requestedLocale : routing.defaultLocale;
 
-  const _i18n = await serverSideTranslations(locale, ["common"]);
+  const messages = await getMessages({ locale });
 
   return {
-    i18n: _i18n,
+    messages,
+    locale,
   };
 }
