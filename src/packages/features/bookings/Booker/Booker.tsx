@@ -328,7 +328,7 @@ const BookerComponent = ({
       <div
         className={classNames(
           'main',
-          'max-w-[1024px] mx-auto p-6 flex flex-col items-center md:gap-0 md:max-h-[548px] md:border md:border-bg-soft-200 md:rounded-[24px]',
+          'max-w-[1024px] mx-auto p-6 flex flex-col items-center md:gap-0 md:border md:border-bg-soft-200 md:rounded-[24px]',
           layout === BookerLayouts.MONTH_VIEW
             ? 'overflow-visible'
             : 'overflow-clip'
