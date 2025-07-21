@@ -370,8 +370,13 @@ const BookerComponent = ({
             />
           </div>
           {bookerState === 'booking' ? (
-            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 md:col-span-4">
-              <h3 className="text-lg font-semibold mb-4">Preencher dados</h3>
+            <div
+              // bg-gray-50
+              // dark:bg-gray-800
+              // rounded-lg
+              className="p-4 md:col-span-6 md:border-l md:border-x-bg-soft-200 pl-6"
+            >
+              {/* <h3 className="text-lg font-semibold mb-4">Preencher dados</h3> */}
               {EventBooker}
             </div>
           ) : (

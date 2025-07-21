@@ -358,10 +358,10 @@ export const Components: Record<FieldType, Component> = {
                         !readOnly ? (
                           <Tooltip.Root>
                             <Tooltip.Trigger asChild>
-                              {/* <button className="m-1" type="button">
-                                <RiInformationLine className="text-default w-3 h-3" />
-                              </button> */}
-                              <Button.Root
+                              <button className="m-1" type="button">
+                                <RiInformationLine className="text-default w-5 h-5" />
+                              </button>
+                              {/* <Button.Root
                                 className="text-default m-1"
                                 variant="neutral"
                                 mode="ghost"
@@ -369,7 +369,7 @@ export const Components: Record<FieldType, Component> = {
                                 type="button"
                               >
                                 <Button.Icon as={RiInformationLine} />
-                              </Button.Root>
+                              </Button.Root> */}
                             </Tooltip.Trigger>
                             <Tooltip.Content size="small">
                               Remove email

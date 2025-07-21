@@ -142,7 +142,7 @@ const ServiceSchedulingPage = async (props: {
             />
           );
         })()}
-        <ServiceCalendarForm service={userPageProps.eventData} host={host} />
+        {/* <ServiceCalendarForm service={userPageProps.eventData} host={host} /> */}
       </div>
     </>
   );
