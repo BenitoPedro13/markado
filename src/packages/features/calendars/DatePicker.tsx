@@ -7,7 +7,7 @@ import dayjs from "dayjs";
 // import { useEmbedStyles } from "embed-core/embed-iframe";
 import { useBookerStore } from "@/packages/features/bookings/Booker/store";
 // import { getAvailableDatesInMonth } from "@features/calendars/lib/getAvailableDatesInMonth";
-
+import { RiArrowLeftSLine, RiArrowRightSLine } from '@remixicon/react';
 // Simple implementation for getAvailableDatesInMonth
 const getAvailableDatesInMonth = ({ 
   browsingDate, 
@@ -31,7 +31,7 @@ const getAvailableDatesInMonth = ({
 };
 import { cn as classNames } from "@/utils/cn";
 import { daysInMonth, yyyymmdd } from "@/lib/date-fns";
-import { useLocale } from "@/hooks/use-locale";
+import { useLocaleI18, useLocale } from "@/hooks/use-locale";
 import { weekdayNames } from "@/lib/weekday";
 import * as SkeletonText from "@/components/align-ui/ui/skeleton";
 import * as Button from "@/components/align-ui/ui/button";
@@ -93,7 +93,7 @@ export const Day = ({
     dayActive?: string;
   };
 }) => {
-  const { t } = useLocale();
+  const { t } = useLocaleI18();
   return (
     <button
       type="button"
@@ -131,7 +131,7 @@ const NoAvailabilityOverlay = ({
   month: string | null;
   nextMonthButton: () => void;
 }) => {
-  const { t } = useLocale();
+  const {t} = useLocaleI18();
 
   return (
     <></>
@@ -325,7 +325,8 @@ const DatePicker = ({
     scrollToTimeSlots?: () => void;
   }) => {
   const browsingDate = passThroughProps.browsingDate || dayjs().startOf("month");
-  //const { i18n, t } = useLocale();
+  const {i18n, t} = useLocaleI18();
+  const {i18n: {language}} = useLocale();
   const bookingData = useBookerStore((state) => state.bookingData);
   const isBookingInPast = bookingData ? new Date(bookingData.endTime) < new Date() : false;
 
@@ -334,32 +335,35 @@ const DatePicker = ({
       onMonthChange(browsingDate.add(newMonth, "month"));
     }
   };
-  // const month = browsingDate
-  //   ? new Intl.DateTimeFormat(i18n.language, { month: "long" }).format(
-  //       new Date(browsingDate.year(), browsingDate.month())
-  //     )
-  //   : null;
+
+  // console.log(i18n.language);
+  const month = browsingDate
+    ? new Intl.DateTimeFormat(language, { month: "long" }).format(
+        new Date(browsingDate.year(), browsingDate.month())
+      )
+    : null;
 
   return (
-    <div className={classNames("flex flex-col gap-5", className)}>
+    <div className={classNames('flex flex-col w-full px-5', className)}>
       <div className="flex items-center justify-between text-xl">
         <span className="flex-grow text-base">
           {browsingDate ? (
             <>
               <strong
                 className={classNames(
-                  "text-sm font-medium capitalize text-black",
+                  'text-sm font-medium capitalize',
                   customClassNames?.datePickerTitle
-                )}>
-                {/* {month} */}
-              </strong>
-              {", "}
+                )}
+              >
+                {month}
+              </strong>{' '}
               <span
                 className={classNames(
-                  `text-sm font-medium capitalize text-black`,
+                  `text-sm font-medium capitalize`,
                   customClassNames?.datePickerTitle
-                )}>
-                {browsingDate.format("YYYY")}
+                )}
+              >
+                {browsingDate.format('YYYY')}
               </span>
             </>
           ) : (
@@ -369,7 +373,7 @@ const DatePicker = ({
         </span>
         <div className="text-emphasis">
           <div className="flex items-center gap-[5px]">
-            {/* <Button
+            {/* <Button.Root
               className={classNames(
                 `border-soft-200 bg-white-0 text-strong-950 group rounded-md border p-1 opacity-70 transition hover:opacity-100 rtl:rotate-180`,
                 !browsingDate.isAfter(dayjs()) &&
@@ -382,41 +386,58 @@ const DatePicker = ({
               // color="var(--cal-strong-950)"
               variant="icon"
               StartIcon="chevron-left"
-              aria-label={t("view_previous_month")}
-            />
-            <Button
+              aria-label={t('view_previous_month')}
+            /> */}
+            <Button.Root
               className={classNames(
-                `border-soft-200 bg-white-0 text-strong-950 group rounded-md border p-1 opacity-70 transition hover:opacity-100 rtl:rotate-180`,
+                `h-6 w-6 bg-transparent p-0 hover:bg-transparent border border-bg-soft-200 rounded-md flex justify-center items-center text-gray-600 hover:text-text-strong-950 `,
+                !browsingDate.isAfter(dayjs()) && `disabled:cursor-not-allowed`,
+                customClassNames?.datePickerToggle
+              )}
+              onClick={() => changeMonth(-1)}
+              disabled={!browsingDate.isAfter(dayjs())}
+              // variant="neutral"
+              // mode="stroke"
+            >
+              <Button.Icon as={RiArrowLeftSLine} />
+              {/* <span className="text-text-sub-600">Voltar</span> */}
+            </Button.Root>
+            <Button.Root
+              className={classNames(
+                `h-6 w-6 bg-transparent p-0 hover:bg-transparent border border-bg-soft-200 rounded-md flex justify-center items-center text-gray-600 hover:text-text-strong-950`,
                 `${customClassNames?.datePickerToggle}`
               )}
               onClick={() => changeMonth(+1)}
-              data-testid="incrementMonth"
+              // data-testid="incrementMonth"
               // color="var(--cal-strong-950)"
-              variant="icon"
-              StartIcon="chevron-right"
-              aria-label={t("view_next_month")}
-            /> */}
+              // variant="icon"
+              // StartIcon="chevron-right"
+              // aria-label={t('view_next_month')}
+            >
+              <Button.Icon as={RiArrowRightSLine} />
+            </Button.Root>
           </div>
         </div>
       </div>
-      <div className="">
+      <div className="mt-4">
         <div className="border-subtle mb-2 grid grid-cols-7 gap-4 border-b border-t text-center md:mb-0 md:border-0">
-          {weekdayNames(locale, weekStart, "short").map((weekDay) => (
+          {weekdayNames(locale, weekStart, 'short').map((weekDay) => (
             <div
               key={weekDay}
               className={classNames(
-                `text-strong-950 my-4 text-sm font-medium uppercase tracking-widest`,
+                `text-gray-500 rounded-md w-full font-medium text-[0.8rem] uppercase text-center`,
                 customClassNames?.datePickerDays
-              )}>
+              )}
+            >
               {weekDay}
             </div>
           ))}
         </div>
-        <div className="relative grid grid-cols-7 grid-rows-6 gap-1 text-center">
+        <div className="relative grid grid-cols-7 mt-4 grid-rows-6 gap-1 text-center">
           <Days
             customClassName={{
               datePickerDate: customClassNames?.datePickersDates,
-              datePickerDateActive: customClassNames?.datePickerDatesActive,
+              datePickerDateActive: customClassNames?.datePickerDatesActive
             }}
             weekStart={weekStart}
             selected={selected}
