@@ -5,8 +5,8 @@ import { type DehydratedState } from "@tanstack/react-query";
 import { usePathname } from "next/navigation";
 import Script from "next/script";
 
-// import "@calcom/embed-core/src/embed-iframe";
-// import LicenseRequired from "@calcom/features/ee/common/components/LicenseRequired";
+// import "@/packages/embed-core/src/embed-iframe";
+// import LicenseRequired from "@/packages/features/ee/common/components/LicenseRequired";
 
 import AppProviders from "@/app/providers";
 
@@ -61,7 +61,7 @@ function PageWrapper(props: PageWrapperProps) {
         <Script
           nonce={nonce}
           id="page-status"
-          dangerouslySetInnerHTML={{ __html: `window.CalComPageStatus = '${pageStatus}'` }}
+          dangerouslySetInnerHTML={{ __html: `window./packagesPageStatus = '${pageStatus}'` }}
         />
         {getLayout(<>{props.children}</>)}
       </>

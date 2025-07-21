@@ -4,15 +4,15 @@ import * as SheetPrimitive from "@radix-ui/react-dialog";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 
-// import dayjs from "@calcom/dayjs";
+// import dayjs from "@/packages/dayjs";
 // // TODO: Use browser locale, implement Intl in Dayjs maybe?
-// import "@calcom/dayjs/locales";
-// import { getPlaceholderAvatar } from "@calcom/lib/defaultAvatarImage";
-// import { useCompatSearchParams } from "@calcom/lib/hooks/useCompatSearchParams";
-// import { useLocale } from "@calcom/lib/hooks/useLocale";
-// import type { RouterOutputs } from "@calcom/trpc/react";
-// import { useMeQuery } from "@calcom/trpc/react/hooks/useMeQuery";
-// import { Avatar } from "@calcom/ui";
+// import "@/packages/dayjs/locales";
+// import { getPlaceholderAvatar } from "@/packages/lib/defaultAvatarImage";
+// import { useCompatSearchParams } from "@/packages/lib/hooks/useCompatSearchParams";
+// import { useLocale } from "@/packages/lib/hooks/useLocale";
+// import type { RouterOutputs } from "@/packages/trpc/react";
+// import { useMeQuery } from "@/packages/trpc/react/hooks/useMeQuery";
+// import { Avatar } from "@/packages/ui";
 
 // import { Sheet, SheetContent } from "~/components/ui/sheet";
 

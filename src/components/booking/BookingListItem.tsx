@@ -2,26 +2,26 @@ import Link from "next/link";
 import { useState } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 
-import type { getEventLocationValue } from "@calcom/app-store/locations";
-import { getSuccessPageLocationMessage, guessEventLocationType } from "@calcom/app-store/locations";
-import dayjs from "@calcom/dayjs";
+import type { getEventLocationValue } from "@/packages/app-store/locations";
+import { getSuccessPageLocationMessage, guessEventLocationType } from "@/packages/app-store/locations";
+import dayjs from "@/packages/dayjs";
 // TODO: Use browser locale, implement Intl in Dayjs maybe?
-import "@calcom/dayjs/locales";
-import ViewRecordingsDialog from "@calcom/features/ee/video/ViewRecordingsDialog";
-import classNames from "@calcom/lib/classNames";
-import { formatTime } from "@calcom/lib/date-fns";
-import getPaymentAppData from "@calcom/lib/getPaymentAppData";
-import { useCopy } from "@calcom/lib/hooks/useCopy";
-import { useLocale } from "@calcom/lib/hooks/useLocale";
-import { useGetTheme } from "@calcom/lib/hooks/useTheme";
-import isSmsCalEmail from "@calcom/lib/isSmsCalEmail";
-import { getEveryFreqFor } from "@calcom/lib/recurringStrings";
-import { BookingStatus, SchedulingType } from "@calcom/prisma/enums";
-import { bookingMetadataSchema } from "@calcom/prisma/zod-utils";
-import type { RouterInputs, RouterOutputs } from "@calcom/trpc/react";
-import { trpc } from "@calcom/trpc/react";
-import type { Ensure } from "@calcom/types/utils";
-import type { ActionType } from "@calcom/ui";
+import "@/packages/dayjs/locales";
+import ViewRecordingsDialog from "@/packages/features/ee/video/ViewRecordingsDialog";
+import classNames from "@/packages/lib/classNames";
+import { formatTime } from "@/packages/lib/date-fns";
+import getPaymentAppData from "@/packages/lib/getPaymentAppData";
+import { useCopy } from "@/packages/lib/hooks/useCopy";
+import { useLocale } from "@/packages/lib/hooks/useLocale";
+import { useGetTheme } from "@/packages/lib/hooks/useTheme";
+import isSmsCalEmail from "@/packages/lib/isSmsCalEmail";
+import { getEveryFreqFor } from "@/packages/lib/recurringStrings";
+import { BookingStatus, SchedulingType } from "@/packages/prisma/enums";
+import { bookingMetadataSchema } from "@/packages/prisma/zod-utils";
+import type { RouterInputs, RouterOutputs } from "@/packages/trpc/react";
+import { trpc } from "@/packages/trpc/react";
+import type { Ensure } from "@/packages/types/utils";
+import type { ActionType } from "@/packages/ui";
 import {
   Badge,
   Button,
@@ -43,7 +43,7 @@ import {
   TableActions,
   TextAreaField,
   Tooltip,
-} from "@calcom/ui";
+} from "@/packages/ui";
 
 import { AddGuestsDialog } from "@components/dialog/AddGuestsDialog";
 import { ChargeCardDialog } from "@components/dialog/ChargeCardDialog";

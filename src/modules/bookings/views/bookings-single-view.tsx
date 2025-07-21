@@ -29,40 +29,40 @@ import * as TextArea from "@/components/align-ui/ui/textarea";
 import { EmptyScreen } from "@/components/align-ui/ui/empty-screen";
 
 // Importações comentadas que precisam ser implementadas ou substituídas
-// import BookingPageTagManager from "@calcom/app-store/BookingPageTagManager";
-// import type { getEventLocationValue } from "@calcom/app-store/locations";
-// import { getSuccessPageLocationMessage, guessEventLocationType } from "@calcom/app-store/locations";
-// import { getEventTypeAppData } from "@calcom/app-store/utils";
-// import type { nameObjectSchema } from "@calcom/core/event";
-// import type { ConfigType } from "@calcom/dayjs";
-// import { getOrgFullOrigin } from "@calcom/ee/organizations/lib/orgDomains";
+// import BookingPageTagManager from "@/packages/app-store/BookingPageTagManager";
+// import type { getEventLocationValue } from "@/packages/app-store/locations";
+// import { getSuccessPageLocationMessage, guessEventLocationType } from "@/packages/app-store/locations";
+// import { getEventTypeAppData } from "@/packages/app-store/utils";
+// import type { nameObjectSchema } from "@/packages/core/event";
+// import type { ConfigType } from "@/packages/dayjs";
+// import { getOrgFullOrigin } from "@/packages/ee/organizations/lib/orgDomains";
 // import {
 //   useEmbedNonStylesConfig,
 //   useIsBackgroundTransparent,
 //   useIsEmbed,
-// } from "@calcom/embed-core/embed-iframe";
-// import { Price } from "@calcom/features/bookings/components/event-meta/Price";
+// } from "@/packages/embed-core/embed-iframe";
+// import { Price } from "@/packages/features/bookings/components/event-meta/Price";
 // import {
 //   formatToLocalizedDate,
 //   formatToLocalizedTime,
 //   formatToLocalizedTimezone,
-// } from "@calcom/lib/date-fns";
-// import useGetBrandingColours from "@calcom/lib/getBrandColours";
-// import useTheme from "@calcom/lib/hooks/useTheme";
-// import isSmsCalEmail from "@calcom/lib/isSmsCalEmail";
-// import { getEveryFreqFor } from "@calcom/lib/recurringStrings";
-// import { getIs24hClockFromLocalStorage, isBrowserLocale24h } from "@calcom/lib/timeFormat";
-// import { localStorage } from "@calcom/lib/webstorage";
-// import { bookingMetadataSchema } from "@calcom/prisma/zod-utils";
+// } from "@/packages/lib/date-fns";
+// import useGetBrandingColours from "@/packages/lib/getBrandColours";
+// import useTheme from "@/packages/lib/hooks/useTheme";
+// import isSmsCalEmail from "@/packages/lib/isSmsCalEmail";
+// import { getEveryFreqFor } from "@/packages/lib/recurringStrings";
+// import { getIs24hClockFromLocalStorage, isBrowserLocale24h } from "@/packages/lib/timeFormat";
+// import { localStorage } from "@/packages/lib/webstorage";
+// import { bookingMetadataSchema } from "@/packages/prisma/zod-utils";
 // import {
 //   EmailInput,
 //   HeadSeo,
-//   useCalcomTheme,
-// } from "@calcom/ui";
-// import PageWrapper from "@calcom/web/components/PageWrapper";
-// import CancelBooking from "@calcom/web/components/booking/CancelBooking";
-// import EventReservationSchema from "@calcom/web/components/schemas/EventReservationSchema";
-// import { timeZone } from "@calcom/web/lib/clock";
+//   use/packagesTheme,
+// } from "@/packages/ui";
+// import PageWrapper from "@/packages/web/components/PageWrapper";
+// import CancelBooking from "@/packages/web/components/booking/CancelBooking";
+// import EventReservationSchema from "@/packages/web/components/schemas/EventReservationSchema";
+// import { timeZone } from "@/packages/web/lib/clock";
 
 import type { PageProps } from "./bookings-single-view.getServerSideProps";
 import { formatToLocalizedDate, formatToLocalizedTime, formatToLocalizedTimezone } from "@/lib/date-fns";

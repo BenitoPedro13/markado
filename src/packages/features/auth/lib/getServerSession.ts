@@ -4,11 +4,11 @@ import AuthOptions from "next-auth";
 import type { Session } from "next-auth";
 import { getToken } from "next-auth/jwt";
 
-// import { LicenseKeySingleton } from "@calcom/ee/common/server/LicenseKeyService";
-// import { getUserAvatarUrl } from "@calcom/lib/getAvatarUrl";
-// import logger from "@calcom/lib/logger";
-// import { safeStringify } from "@calcom/lib/safeStringify";
-// import { UserRepository } from "@calcom/lib/server/repository/user";
+// import { LicenseKeySingleton } from "@/packages/ee/common/server/LicenseKeyService";
+// import { getUserAvatarUrl } from "@/packages/lib/getAvatarUrl";
+// import logger from "@/packages/lib/logger";
+// import { safeStringify } from "@/packages/lib/safeStringify";
+// import { UserRepository } from "@/packages/lib/server/repository/user";
 import { prisma } from '@/lib/prisma';
 
 const log = logger.getSubLogger({ prefix: ["getServerSession"] });

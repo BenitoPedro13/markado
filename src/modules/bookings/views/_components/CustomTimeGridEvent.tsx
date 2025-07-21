@@ -1,7 +1,7 @@
 "use client";
 
-// import dayjs from "@calcom/dayjs";
-// import type { RouterOutputs } from "@calcom/trpc/react";
+// import dayjs from "@/packages/dayjs";
+// import type { RouterOutputs } from "@/packages/trpc/react";
 
 import "~/../styles/globals.css";
 

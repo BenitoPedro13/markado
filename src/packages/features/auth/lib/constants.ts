@@ -4,10 +4,10 @@ const VERCEL_URL = process.env.NEXT_PUBLIC_VERCEL_URL ? `https://${process.env.N
 const RAILWAY_STATIC_URL = process.env.RAILWAY_STATIC_URL ? `https://${process.env.RAILWAY_STATIC_URL}` : "";
 const HEROKU_URL = process.env.HEROKU_APP_NAME ? `https://${process.env.HEROKU_APP_NAME}.herokuapp.com` : "";
 const RENDER_URL = process.env.RENDER_EXTERNAL_URL ? `https://${process.env.RENDER_EXTERNAL_URL}` : "";
-export const CALCOM_ENV = process.env.CALCOM_ENV || process.env.NODE_ENV;
-export const IS_PRODUCTION = CALCOM_ENV === "production";
+export const MARKADO_ENV = process.env.MARKADO_ENV || process.env.NODE_ENV;
+export const IS_PRODUCTION = MARKADO_ENV === "production";
 export const IS_PRODUCTION_BUILD = process.env.NODE_ENV === "production";
-const IS_DEV = CALCOM_ENV === "development";
+const IS_DEV = MARKADO_ENV === "development";
 
 /** https://app.markado.co */
 export const WEBAPP_URL =
@@ -42,7 +42,7 @@ export const CAL_URL = new URL(WEBAPP_URL).hostname.endsWith(".vercel.app")
   ? WEBAPP_URL
   : process.env.NEXT_PUBLIC_WEBSITE_URL || WEBAPP_URL;
 
-export const IS_CALCOM =
+export const IS_MARKADO =
   (WEBAPP_URL && new URL(WEBAPP_URL).hostname.endsWith("dev1.gopark.app.br")) ||
   new URL(WEBAPP_URL).hostname.endsWith("markado.co") ||
   new URL(WEBAPP_URL).hostname.endsWith("markado.dev") ||
@@ -120,15 +120,15 @@ export const ORGANIZATION_MIN_SEATS = 30;
 
 // Needed for emails in E2E
 export const IS_MAILHOG_ENABLED = process.env.E2E_TEST_MAILHOG_ENABLED === "1";
-export const CALCOM_VERSION = process.env.NEXT_PUBLIC_CALCOM_VERSION as string;
+export const MARKADO_VERSION = process.env.NEXT_PUBLIC_MARKADO_VERSION as string;
 
 export const APP_CREDENTIAL_SHARING_ENABLED =
-  !!process.env.CALCOM_CREDENTIAL_SYNC_SECRET && !!process.env.CALCOM_APP_CREDENTIAL_ENCRYPTION_KEY;
-export const CREDENTIAL_SYNC_SECRET = process.env.CALCOM_CREDENTIAL_SYNC_SECRET;
+  !!process.env.MARKADO_CREDENTIAL_SYNC_SECRET && !!process.env.MARKADO_APP_CREDENTIAL_ENCRYPTION_KEY;
+export const CREDENTIAL_SYNC_SECRET = process.env.MARKADO_CREDENTIAL_SYNC_SECRET;
 export const CREDENTIAL_SYNC_SECRET_HEADER_NAME =
-  process.env.CALCOM_CREDENTIAL_SYNC_HEADER_NAME || "calcom-credential-sync-secret";
+  process.env.MARKADO_CREDENTIAL_SYNC_HEADER_NAME || "markado-credential-sync-secret";
 
-export const CREDENTIAL_SYNC_ENDPOINT = process.env.CALCOM_CREDENTIAL_SYNC_ENDPOINT;
+export const CREDENTIAL_SYNC_ENDPOINT = process.env.MARKADO_CREDENTIAL_SYNC_ENDPOINT;
 
 export const DEFAULT_LIGHT_BRAND_COLOR = "#292929";
 export const DEFAULT_DARK_BRAND_COLOR = "#fafafa";
@@ -144,15 +144,15 @@ export const AB_TEST_BUCKET_PROBABILITY = defaultOnNaN(
 );
 
 export const IS_PREMIUM_USERNAME_ENABLED =
-  (IS_CALCOM || (process.env.NEXT_PUBLIC_IS_E2E && IS_STRIPE_ENABLED)) &&
+  (IS_MARKADO || (process.env.NEXT_PUBLIC_IS_E2E && IS_STRIPE_ENABLED)) &&
   process.env.NEXT_PUBLIC_STRIPE_PREMIUM_PLAN_PRICE_MONTHLY;
 
 // Max number of invites to join a team/org that can be sent at once
 export const MAX_NB_INVITES = 100;
 
 export const URL_PROTOCOL_REGEX = /(^\w+:|^)\/\//;
-export const FUTURE_ROUTES_OVERRIDE_COOKIE_NAME = "x-calcom-future-routes-override";
-export const FUTURE_ROUTES_ENABLED_COOKIE_NAME = "x-calcom-future-routes-enabled";
+export const FUTURE_ROUTES_OVERRIDE_COOKIE_NAME = "x-markado-future-routes-override";
+export const FUTURE_ROUTES_ENABLED_COOKIE_NAME = "x-markado-future-routes-enabled";
 
 export const IS_VISUAL_REGRESSION_TESTING = Boolean((globalThis.window as any)?.Meticulous?.isRunningAsTest);
 
@@ -167,7 +167,7 @@ export const ORG_SELF_SERVE_ENABLED = process.env.NEXT_PUBLIC_ORG_SELF_SERVE_ENA
 export const ORG_MINIMUM_PUBLISHED_TEAMS_SELF_SERVE = 0;
 export const ORG_MINIMUM_PUBLISHED_TEAMS_SELF_SERVE_HELPER_DIALOGUE = 2;
 
-export const CALCOM_PRIVATE_API_ROUTE = process.env.CALCOM_PRIVATE_API_ROUTE || "https://goblin.markado.co";
+export const MARKADO_PRIVATE_API_ROUTE = process.env.MARKADO_PRIVATE_API_ROUTE || "https://goblin.markado.co";
 export const WEBSITE_PRIVACY_POLICY_URL =
   process.env.NEXT_PUBLIC_WEBSITE_PRIVACY_POLICY_URL || `${WEBAPP_URL}/privacy.pdf`;
 export const WEBSITE_TERMS_URL = process.env.NEXT_PUBLIC_WEBSITE_TERMS_URL || `${WEBAPP_URL}/terms.pdf`;
