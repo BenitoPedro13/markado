@@ -98,26 +98,28 @@ export const Day = ({
     <button
       type="button"
       className={classNames(
-        "disabled:text-bookinglighter text-sub-600 absolute bottom-0 left-0 right-0 top-0 mx-auto max-h-[40px] w-full max-w-[40px] rounded-xl border-2 border-transparent text-center text-sm font-medium transition disabled:cursor-default disabled:border-transparent",
+        'h-10 w-10 p-0 font-normal rounded-[10px] transition-colors flex items-center justify-center text-sub-600 absolute bottom-0 left-0 right-0 top-0 mx-auto border-2 border-transparent text-center disabled:cursor-default disabled:border-transparent hover:bg-gray-100 focus:bg-gray-100',
         active
-          ? "bg-sub-600 text-white-0"
+          ? 'bg-gray-700 text-white hover:bg-gray-600 hover:text-white focus:bg-gray-700 focus:text-white'
           : !disabled
-          ? "bg-green-50 text-green-900 font-semibold hover:border-brand-default"
-          : "text-mute"
+            ? 'bg-gray-100 text-gray-900 font-semibold hover:border-brand-default'
+            : 'text-gray-400 opacity-50'
       )}
-      data-testid="day"
-      data-disabled={disabled}
+      // data-testid="day"
+      // data-disabled={disabled}
       disabled={disabled}
-      {...props}>
-      {away && <span data-testid="away-emoji">{emoji}</span>}
+      {...props}
+    >
+      {/* {away && <span data-testid="away-emoji">{emoji}</span>} */}
       {!away && date.date()}
       {date.isToday() && (
         <span
           className={classNames(
-            "absolute left-1/2 top-1/2 flex h-[5px] w-[5px] -translate-x-1/2 translate-y-[8px] items-center justify-center rounded-full align-middle sm:translate-y-[12px]",
-            active ? "bg-white-0" : "bg-sub-600"
-          )}>
-          <span className="sr-only">{t("today")}</span>
+            'absolute left-1/2 top-1/2 flex h-[5px] w-[5px] -translate-x-1/2 translate-y-[8px] items-center justify-center rounded-full align-middle sm:translate-y-[12px]',
+            active ? 'bg-white-0' : 'bg-sub-600'
+          )}
+        >
+          <span className="sr-only">{t('today')}</span>
         </span>
       )}
     </button>

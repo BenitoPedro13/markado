@@ -4,9 +4,9 @@ import type {Dayjs} from '@/lib/dayjs';
 import dayjs from '@/lib/dayjs';
 import {cn as classNames} from '@/utils/cn';
 import {useLocale} from '@/hooks/use-locale';
-import {nameOfDay} from '@/lib/weekday';
+import {nameOfDay, formatLongDateIntl} from '@/lib/weekday';
 import {BookerLayouts} from '~/prisma/zod-utils';
-
+import {format} from 'date-fns';
 import {useBookerStore} from '../Booker/store';
 // import {TimeFormatToggle} from './TimeFormatToggle';
 
@@ -57,9 +57,10 @@ export const AvailableTimesHeader = ({
             'capitalize'
           )}
         >
-          {nameOfDay(locale, Number(date.format('d')), 'short')}
+          {/* {nameOfDay(locale, Number(date.format('d')), 'short')} */}
+          {formatLongDateIntl(date.toDate(), locale)}
         </span>
-        <span
+        {/* <span
           className={classNames(
             isColumnView && isToday && 'bg-brand-default',
             'inline-flex items-center justify-center rounded-3xl px-1 pt-0.5 font-medium',
@@ -70,7 +71,7 @@ export const AvailableTimesHeader = ({
         >
           {date.format('DD')}
           {availableMonth && `, ${availableMonth}`}
-        </span>
+        </span> */}
       </span>
 
       {/* {showTimeFormatToggle && (
