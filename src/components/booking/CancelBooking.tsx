@@ -4,7 +4,7 @@ import { useLocale } from "@/hooks/use-locale";
 import type { RecurringEvent } from "@/types/Calendar";
 import * as Button from "@/components/align-ui/ui/button";
 import * as TextArea from "@/components/align-ui/ui/textarea";
-import { RiCloseLine } from "@remixicon/react";
+import { RiCloseLine, RiInformationLine } from "@remixicon/react";
 
 type Props = {
   booking: {
@@ -67,25 +67,43 @@ export default function CancelBooking(props: Props) {
       )}
       {!error && (
         <div className="mt-5 sm:mt-6">
-          <label className="text-default font-medium">{t("cancellation_reason")}</label>
-          <TextArea.Root
-            data-testid="cancel_reason"
-            ref={cancelBookingRef}
-            placeholder={t("cancellation_reason_placeholder")}
-            value={cancellationReason}
-            onChange={(e: { target: { value: SetStateAction<string>; }; }) => setCancellationReason(e.target.value)}
-            className="mb-4 mt-2 w-full "
-            rows={3}
-          />
+          <label className="text-default font-medium pb-5">{t("cancellation_reason")}</label>
+          <div className="pt-2">
+            <TextArea.Root
+              id={cancellationReason}
+              data-testid="cancel_reason"
+              ref={cancelBookingRef}
+              placeholder={t("cancellation_reason_placeholder")}
+              value={cancellationReason}
+              onChange={(e: { target: { value: SetStateAction<string>; }; }) => setCancellationReason(e.target.value)}
+              className="w-full"
+              rows={2}
+            >
+            <TextArea.CharCounter
+              current={cancellationReason.length}
+              max={2000}
+              className="text-text-sub-600 text-muted-foreground"
+            />
+            </TextArea.Root>
+          </div>
+          <div className="flex gap-2 pt-5">
+            <RiInformationLine className="h-4 w-4" />
+            <span className="text-text-sub-600 text-paragraph-xs text-muted-foreground">
+              {t("cancel_feedback_description")}
+            </span>
+          </div>
           <div className="flex flex-col-reverse rtl:space-x-reverse ">
-            <div className="ml-auto flex w-full space-x-4 ">
-              <Button.Root
-                className="ml-auto"
+            <div className="pt-5 w-full space-x-4">
+            <Button.Root
                 variant="neutral"
+                mode="stroke"
+                className="ml-auto"
                 onClick={() => props.setIsCancellationMode(false)}>
                 {t("nevermind")}
               </Button.Root>
               <Button.Root
+                variant="error"
+                mode="stroke"
                 data-testid="confirm_cancel"
                 onClick={async () => {
                   setLoading(true);

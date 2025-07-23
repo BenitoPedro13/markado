@@ -21,7 +21,7 @@ import { useTRPC } from "@/utils/trpc";
 import { useNotification } from "@/hooks/use-notification";
 import { BookingStatus, SchedulingType } from "~/prisma/enums";
 import * as Button from "@/components/align-ui/ui/button";
-import { RiCheckLine, RiCalendarLine, RiCloseLine, RiExternalLinkLine } from "@remixicon/react";
+import { RiInformationLine, RiCalendarLine, RiCloseLine, RiExternalLinkLine } from "@remixicon/react";
 import * as Alert from "@/components/align-ui/ui/alert";
 import * as Badge from "@/components/align-ui/ui/badge";
 import * as Avatar from "@/components/align-ui/ui/avatar";
@@ -67,8 +67,8 @@ import { EmptyScreen } from "@/components/align-ui/ui/empty-screen";
 import type { PageProps } from "./bookings-single-view.getServerSideProps";
 import { formatToLocalizedDate, formatToLocalizedTime, formatToLocalizedTimezone } from "@/lib/date-fns";
 import { SMS_REMINDER_NUMBER_FIELD, SystemField, TITLE_FIELD } from "@/packages/features/bookings/lib/SystemField";
-import { APP_NAME } from "@/constants";
 import CancelBooking from "@/components/booking/CancelBooking";
+import Image from "next/image";
 
 const stringToBoolean = z
   .string()
@@ -236,7 +236,7 @@ export default function Success(props: PageProps) {
     router.replace(`${pathname}?${_searchParams.toString()}`);
   }
 
-  let evtName = eventType.eventName;
+  let evtName = eventType.eventName || eventType.title;
   if (eventType.isDynamic && bookingInfo.responses?.title) {
     evtName = bookingInfo.responses.title as string;
   }
@@ -423,25 +423,25 @@ export default function Success(props: PageProps) {
   })();
 
   return (
-    <div className={isEmbed ? "" : "h-screen"} data-testid="success-page">
+    <div className={isEmbed ? "" : "h-screen flex items-center justify-center bg-[url('/patterns/vertical_stripes.svg')] bg-no-repeat bg-[auto_500px] bg-bottom"} data-testid="success-page">
       {/* EventReservationSchema not implemented yet */}
-      {isLoggedIn && !isEmbed && !isFeedbackMode && (
+      {/* {isLoggedIn && !isEmbed && !isFeedbackMode && (
         <div className="-mb-4 ml-4 mt-2">
           <Link
             href={allRemainingBookings ? "/bookings/recurring" : "/bookings/upcoming"}
             data-testid="back-to-bookings"
-            className="hover:bg-subtle text-subtle hover:text-default mt-2 inline-flex px-1 py-2 text-sm transition dark:hover:bg-transparent">
+            className="hover:bg-subtle self-start text-subtle hover:text-default mt-2 inline-flex px-1 py-2 text-sm transition dark:hover:bg-transparent">
             <RiCloseLine className="h-5 w-5 rtl:rotate-180" /> {t("back_to_bookings")}
           </Link>
         </div>
-      )}
+      )} */}
       {/* HeadSeo and BookingPageTagManager removed - not implemented yet */}
       <main className={classNames(shouldAlignCentrally ? "mx-auto" : "", isEmbed ? "" : "max-w-3xl")}>
         <div className={classNames("overflow-y-auto", isEmbed ? "" : "z-50 ")}>
           <div
             className={classNames(
               shouldAlignCentrally ? "text-center" : "",
-              "flex items-end justify-center px-4 pb-20 pt-4 sm:flex sm:p-0"
+              "flex items-end justify-center px-4 pb-20 pt-4 sm:flex sm:p-0 "
             )}>
             <div
               className={classNames(
@@ -451,7 +451,7 @@ export default function Success(props: PageProps) {
               aria-hidden="true">
               <div
                 className={classNames(
-                  "inline-block transform overflow-hidden rounded-lg border sm:my-8 sm:max-w-xl",
+                  "main bg-default inline-block transform overflow-hidden rounded-lg md:border md:border-bg-soft-200 md:rounded-[24px] sm:my-8 sm:max-w-xl",
                   !isBackgroundTransparent && " bg-default dark:bg-muted border-booker border-booker-width",
                   "px-8 pb-4 pt-5 text-left align-bottom transition-all sm:w-full sm:py-8 sm:align-middle"
                 )}
@@ -480,7 +480,7 @@ export default function Success(props: PageProps) {
                       )}
                       <div
                         className={classNames(
-                          "mx-auto flex h-12 w-12 items-center justify-center rounded-full",
+                          "mx-auto flex h-full w-18 items-center justify-center rounded-full",
                           isRoundRobin &&
                             "border-cal-bg dark:border-cal-bg-muted absolute bottom-0 right-0 z-10 h-12 w-12 border-8",
                           !giphyImage && isReschedulable && !needsConfirmation ? "bg-success" : "",
@@ -488,17 +488,31 @@ export default function Success(props: PageProps) {
                           isCancelled ? "bg-error" : ""
                         )}>
                         {!giphyImage && !needsConfirmation && isReschedulable && (
-                          <RiCheckLine className="h-5 w-5 text-green-600 dark:text-green-400" />
+
+                          <Image 
+                            src="/images/logoMarkado_.svg"
+                            alt="logo Markado"
+                            width={90}
+                            height={90}
+                          />
+
                         )}
                         {needsConfirmation && isReschedulable && (
                           <RiCalendarLine className="text-emphasis h-5 w-5" />
                         )}
-                        {isCancelled && <RiCloseLine className="h-5 w-5 text-red-600 dark:text-red-200" />}
+                        {isCancelled && 
+                          <div className="full bg-[#f8dedd] dark:bg-[#2b1718]  rounded-full flex items-center justify-center">
+                            <RiCloseLine
+                              size={100} 
+                              className='stroke-2 stroke-[#de5354] fill-[#de5354] dark:stroke-[#ea1714]  dark:fill-[#ea1714]'
+                            />
+                          </div>
+                        }
                       </div>
                     </div>
                     <div className="mb-8 mt-6 text-center last:mb-0">
                       <h3
-                        className="text-emphasis text-2xl font-semibold leading-6"
+                        className="text-label-xl text-2xl font-semibold leading-6"
                         data-testid={isCancelled ? "cancelled-headline" : ""}
                         id="modal-headline">
                         {successPageHeadline}
@@ -520,22 +534,21 @@ export default function Success(props: PageProps) {
                             {props.paymentStatus.refunded && t("booking_with_payment_cancelled_refunded")}
                           </h4>
                         )}
-
-                      <div className="border-subtle text-default mt-8 grid grid-cols-3 border-t pt-8 text-left rtl:text-right">
+                      <div className="text-default grid grid-cols-2 border-t pt-8 mt-4 text-left rtl:text-right">
                         {(isCancelled || reschedule) && cancellationReason && (
                           <>
                             <div className="font-medium">
                               {isCancelled ? t("reason") : t("reschedule_reason")}
                             </div>
-                            <div className="col-span-2 mb-6 last:mb-0">{cancellationReason}</div>
+                            <div className="mb-6 last:mb-0">{cancellationReason}</div>
                           </>
                         )}
                         <div className="font-medium">{tCommon("what")}</div>
-                        <div className="col-span-2 mb-6 last:mb-0" data-testid="booking-title">
-                          {isRoundRobin ? bookingInfo.title : eventName}
+                        <div className="mb-6 last:mb-0" data-testid="booking-title">
+                          {evtName}
                         </div>
                         <div className="font-medium">{tCommon("when")}</div>
-                        <div className="col-span-2 mb-6 last:mb-0">
+                        <div className="mb-6 last:mb-0">
                           {reschedule && !!formerTime && (
                             <p className="line-through">
                               <RecurringBookings
@@ -564,7 +577,7 @@ export default function Success(props: PageProps) {
                         {(bookingInfo?.user || bookingInfo?.attendees) && (
                           <>
                             <div className="font-medium">{tCommon("who")}</div>
-                            <div className="col-span-2 last:mb-0">
+                            <div className="last:mb-0">
                               {bookingInfo?.user && (
                                 <div className="mb-3">
                                   <div>
@@ -599,7 +612,7 @@ export default function Success(props: PageProps) {
                         {locationToDisplay && !isCancelled && (
                           <>
                             <div className="mt-3 font-medium">{tCommon("where")}</div>
-                            <div className="col-span-2 mt-3" data-testid="where">
+                            <div className="mt-3" data-testid="where">
                               {!rescheduleLocation || locationToDisplay === rescheduleLocationToDisplay ? (
                                 <DisplayLocation
                                   locationToDisplay={locationToDisplay}
@@ -631,7 +644,7 @@ export default function Success(props: PageProps) {
                                 ? t("complete_your_booking")
                                 : t("payment")}
                             </div>
-                            <div className="col-span-2 mb-2 mt-3">
+                            <div className="mb-2 mt-3">
                               <span>
                                 {props.paymentStatus.currency} {props.paymentStatus.amount}
                               </span>
@@ -644,7 +657,7 @@ export default function Success(props: PageProps) {
                         {bookingInfo?.description && (
                           <>
                             <div className="mt-9 font-medium">{t("additional_notes")}</div>
-                            <div className="col-span-2 mb-2 mt-9">
+                            <div className="mb-2 mt-9">
                               <p className="break-words">{bookingInfo.description}</p>
                             </div>
                           </>
@@ -695,7 +708,7 @@ export default function Success(props: PageProps) {
                     </div>
                     {requiresLoginToUpdate && (
                       <>
-                        <hr className="border-subtle mb-8" />
+                         <hr className="mb-8 mx-[70px]" />
                         <div className="text-center">
                           <span className="text-emphasis ltr:mr-2 rtl:ml-2">
                             {t("need_to_make_a_change")}
@@ -721,45 +734,48 @@ export default function Success(props: PageProps) {
                       !isRerouting &&
                       (!isCancellationMode ? (
                         <>
-                          <hr className="border-subtle mb-8" />
-                          <div className="text-center last:pb-0">
-                            <span className="text-emphasis ltr:mr-2 rtl:ml-2">
+                           <hr className="mb-8 mx-[70px]" />
+                          <div className="text-center last:pb-0 flex flex-col sm:justify-center sm:items-center gap-2">
+                            <span className="pb-5 text-emphasis ltr:mr-2 rtl:ml-2">
                               {tCommon("need_to_make_a_change")}
                             </span>
-
-                            <>
+                            <div className="flex flex-row gap-2 justify-center items-center">
                               {!props.recurringBookings && (
-                                <span className="text-default inline">
-                                  <span className="underline" data-testid="reschedule-link">
+                                <>
+                                  <Button.Root
+                                    variant="neutral"
+                                    asChild
+                                    mode="stroke"
+                                    className="underline min-w-full"
+                                    data-testid="reschedule-link"
+                                  >
                                     <Link
                                       href={`/reschedule/${seatReferenceUid || bookingInfo?.uid}${
                                         currentUserEmail
                                           ? `?rescheduledBy=${encodeURIComponent(currentUserEmail)}`
                                           : ""
                                       }`}
-                                      legacyBehavior>
+                                    >
                                       {tCommon("reschedule")}
                                     </Link>
-                                  </span>
-                                  <span className="mx-2">{tCommon("or_lowercase")}</span>
-                                </span>
+                                  </Button.Root>
+                                </>
                               )}
-
-                              <button
+                              <Button.Root
+                                variant="error"
+                                mode="stroke"
+                                className="underline min-w-full"
                                 data-testid="cancel"
-                                className={classNames(
-                                  "text-default underline",
-                                  props.recurringBookings && "ltr:mr-2 rtl:ml-2"
-                                )}
-                                onClick={() => setIsCancellationMode(true)}>
+                                onClick={() => setIsCancellationMode(true)}
+                              >
                                 {t("cancel")}
-                              </button>
-                            </>
+                              </Button.Root>
+                            </div>
                           </div>
                         </>
                       ) : (
                         <>
-                          <hr className="border-subtle" />
+                          <hr className="mb-8 mx-[70px]" />
                           <CancelBooking
                             booking={{
                               uid: bookingInfo?.uid,
@@ -790,13 +806,13 @@ export default function Success(props: PageProps) {
                         </Button.Root>
                       </div>
                     )}
-                    {userIsOwner &&
+                    {/* {userIsOwner &&
                       !needsConfirmation &&
                       !isCancellationMode &&
                       isReschedulable &&
                       !!calculatedDuration && (
                         <>
-                          <hr className="border-subtle mt-8" />
+                           <hr className="border-subtle mb-8 mx-[70px]" />
                           <div className="text-default align-center flex flex-row justify-center pt-8">
                             <span className="text-default flex self-center font-medium ltr:mr-2 rtl:ml-2 ">
                               {t("add_to_calendar")}
@@ -902,9 +918,7 @@ export default function Success(props: PageProps) {
                             </div>
                           </div>
                         </>
-                      )}
-
-
+                      )} */}
                   </>
                 )}
                 {isFeedbackMode &&
@@ -1012,7 +1026,7 @@ export default function Success(props: PageProps) {
                     </>
                   ))}
               </div>
-              {isGmail && !isFeedbackMode && (
+              {/* {isGmail && !isFeedbackMode && (
                 <Alert.Root
                   className="main -mb-20 mt-4 inline-block ltr:text-left rtl:text-right sm:-mt-4 sm:mb-4 sm:w-full sm:max-w-xl sm:align-middle"
                   status="warning"
@@ -1029,7 +1043,7 @@ export default function Success(props: PageProps) {
                     </span>
                   </div>
                 </Alert.Root>
-              )}
+              )} */}
             </div>
           </div>
         </div>
@@ -1172,12 +1186,12 @@ function RecurringBookings({
   }
 
   return (
-    <div className={classNames(isCancelled ? "line-through" : "")}>
-      {formatToLocalizedDate(date, 'pt-br', "full", tz)}
+    <div className={classNames(isCancelled ? "line-through" : "")}> 
+      {date.format("dddd")},
       <br />
-      {formatToLocalizedTime(date, 'pt-br', undefined, !is24h, tz)} -{" "}
-      {formatToLocalizedTime(dayjs(date).add(duration, "m"), 'pt-br', undefined, !is24h, tz)}{" "}
-      <span className="text-bookinglight">({formatToLocalizedTimezone(date, 'pt-br', tz)})</span>
+      {date.format("D [de] MMMM [de] YYYY")}
+      <br />
+      {formatToLocalizedTime(date, 'pt-br', undefined, !is24h, tz)} - {formatToLocalizedTime(dayjs(date).add(duration, "m"), 'pt-br', undefined, !is24h, tz)}
     </div>
   );
 }

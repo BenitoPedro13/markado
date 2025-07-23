@@ -69,6 +69,7 @@
     "reschedule_reason": "Reschedule reason",
     "cancellation_reason": "Cancellation reason",
     "cancellation_reason_placeholder": "Why are you canceling this booking?",
+    "cancel_feedback_description": "The reason for the cancellation will be shared with the guests.",
     "confirm_cancel": "Confirm cancel",
     "cancel_event": "Cancel event",
     "cancel_all_remaining": "Cancel all remaining",
