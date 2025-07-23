@@ -33,12 +33,12 @@ export const SENDER_ID = process.env.NEXT_PUBLIC_SENDER_ID || "Markado";
 export const SENDER_NAME = process.env.NEXT_PUBLIC_SENDGRID_SENDER_NAME || "Markado.co";
 export const EMAIL_FROM_NAME = process.env.EMAIL_FROM_NAME || APP_NAME;
 
-// This is the URL from which all Cal Links and their assets are served.
+// This is the URL from which all Markado Links and their assets are served.
 // Use website URL to make links shorter(markado.co and not app.markado.co)
 // As website isn't setup for preview environments, use the webapp url instead
 // If it's a .vercel.app domain, keep it.
 // Else use the website url if defined and finally fallback to the webapp url
-export const CAL_URL = new URL(WEBAPP_URL).hostname.endsWith(".vercel.app")
+export const MARKADO_URL = new URL(WEBAPP_URL).hostname.endsWith(".vercel.app")
   ? WEBAPP_URL
   : process.env.NEXT_PUBLIC_WEBSITE_URL || WEBAPP_URL;
 
@@ -63,7 +63,7 @@ export const IS_SELF_HOSTED = !(
 export const EMBED_LIB_URL = process.env.NEXT_PUBLIC_EMBED_LIB_URL || `${WEBAPP_URL}/embed/embed.js`;
 export const TRIAL_LIMIT_DAYS = 14;
 
-export const HOSTED_CAL_FEATURES = process.env.NEXT_PUBLIC_HOSTED_CAL_FEATURES || !IS_SELF_HOSTED;
+export const HOSTED_MARKADO_FEATURES = process.env.NEXT_PUBLIC_HOSTED_MARKADO_FEATURES || !IS_SELF_HOSTED;
 
 export const IS_EUROPE = dayjs.tz.guess()?.indexOf("Europe") !== -1;
 
@@ -85,25 +85,25 @@ export const JOIN_COMMUNITY = "https://github.com/markado/markado.co/discussions
 export const POWERED_BY_URL = "https://go.markado.co/booking";
 export const DOCS_URL = "https://markado.co/docs";
 export const DEVELOPER_DOCS = "https://developer.markado.co";
-export const SEO_IMG_DEFAULT = `${CAL_URL}/og-image.png`;
+export const SEO_IMG_DEFAULT = `${MARKADO_URL}/og-image.png`;
 // The Dynamic OG Image is passed through Next's Image API to further optimize it.
 // This results in a 80% smaller image 🤯. It is however important that for the query
 // parameters you pass to the /api/social/og/image endpoint, you wrap them in encodeURIComponent
 // as well, otherwise the URL won't be valid.
-export const SEO_IMG_OGIMG = `${CAL_URL}/_next/image?w=1200&q=100&url=${encodeURIComponent(
+export const SEO_IMG_OGIMG = `${MARKADO_URL}/_next/image?w=1200&q=100&url=${encodeURIComponent(
   `/api/social/og/image`
 )}`;
-export const SEO_IMG_OGIMG_VIDEO = `${CAL_URL}/video-og-image.png`;
+export const SEO_IMG_OGIMG_VIDEO = `${MARKADO_URL}/video-og-image.png`;
 export const IS_STRIPE_ENABLED = !!(
   process.env.STRIPE_CLIENT_ID &&
   process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY &&
   process.env.STRIPE_PRIVATE_KEY
 );
 /** This has correct value only server side. When you want to use client side, go for IS_TEAM_BILLING_ENABLED_CLIENT. I think we should use the _CLIENT one only everywhere so that it works reliably everywhere on client as well as server  */
-export const IS_TEAM_BILLING_ENABLED = IS_STRIPE_ENABLED && HOSTED_CAL_FEATURES;
+export const IS_TEAM_BILLING_ENABLED = IS_STRIPE_ENABLED && HOSTED_MARKADO_FEATURES;
 
 export const IS_TEAM_BILLING_ENABLED_CLIENT =
-  !!process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY && HOSTED_CAL_FEATURES;
+  !!process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY && HOSTED_MARKADO_FEATURES;
 
 export const FULL_NAME_LENGTH_MAX_LIMIT = 50;
 export const MINUTES_TO_BOOK = process.env.NEXT_PUBLIC_MINUTES_TO_BOOK || "5";

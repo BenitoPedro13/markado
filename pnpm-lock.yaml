@@ -319,6 +319,9 @@ devDependencies:
   '@types/lodash':
     specifier: ^4.17.17
     version: 4.17.17
+  '@types/lru-cache':
+    specifier: ^7.10.10
+    version: 7.10.10
   '@types/markdown-it':
     specifier: ^14.1.2
     version: 14.1.2
@@ -5588,6 +5591,13 @@ packages:
 
   /@types/lodash@4.17.17:
     resolution: {integrity: sha512-RRVJ+J3J+WmyOTqnz3PiBLA501eKwXl2noseKOrNo/6+XEHjTAxO4xHvxQB6QuNm+s4WRbn6rSiap8+EA+ykFQ==}
+    dev: true
+
+  /@types/lru-cache@7.10.10:
+    resolution: {integrity: sha512-nEpVRPWW9EBmx2SCfNn3ClYxPL7IktPX12HhIoSc/H5mMjdeW3+YsXIpseLQ2xF35+OcpwKQbEUw5VtqE4PDNA==}
+    deprecated: This is a stub types definition. lru-cache provides its own type definitions, so you do not need this installed.
+    dependencies:
+      lru-cache: 10.4.3
     dev: true
 
   /@types/markdown-it@14.1.2:

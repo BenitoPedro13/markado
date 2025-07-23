@@ -119,6 +119,7 @@ import type {
 import {validateBookingTimeIsNotOutOfBounds} from './handleNewBooking/validateBookingTimeIsNotOutOfBounds';
 import {validateEventLength} from './handleNewBooking/validateEventLength';
 import handleSeats from './handleSeats/handleSeats';
+import type { TFunction } from 'i18next';
 
 const translator = short();
 const log = logger.getSubLogger({prefix: ['[api] book:user']});
@@ -689,7 +690,7 @@ async function handler(
       firstName: (typeof bookerName === 'object' && bookerName.firstName) || '',
       lastName: (typeof bookerName === 'object' && bookerName.lastName) || '',
       timeZone: attendeeTimezone,
-      language: {translate: tAttendees, locale: attendeeLanguage ?? 'en'}
+      language: { translate: (tAttendees as unknown) as TFunction, locale: attendeeLanguage ?? 'en' }
     }
   ];
 
@@ -716,7 +717,7 @@ async function handler(
       firstName: '',
       lastName: '',
       timeZone: attendeeTimezone,
-      language: {translate: tGuests, locale: 'en'}
+      language: { translate: (tGuests as unknown) as TFunction, locale: 'en' }
     });
     return guestArray;
   }, [] as Invitee);
@@ -796,7 +797,7 @@ async function handler(
     location: bookingLocation,
     eventDuration: eventType.length,
     bookingFields: {...responses},
-    t: tOrganizer
+    t: (tOrganizer as unknown) as TFunction
   };
 
   const iCalUID = getICalUID({
@@ -857,7 +858,7 @@ async function handler(
       email: organizerEmail,
       username: organizerUser.username || undefined,
       timeZone: getTimezoneWithFallback(organizerUser.timeZone),
-      language: {translate: tOrganizer, locale: organizerUser.locale ?? 'en'},
+      language: {translate: (tOrganizer as unknown) as TFunction, locale: organizerUser.locale ?? 'en'},
       timeFormat: getTimeFormatStringFromUserTimeFormat(
         organizerUser.timeFormat
       )
@@ -1192,7 +1193,20 @@ async function handler(
         : [];
 
     if (changedOrganizer) {
-      evt.title = getEventName(eventNameObject);
+      evt.title = getEventName({
+        attendeeName: fullName || 'Nameless',
+        eventType: eventType.title,
+        eventName: evtName,
+        teamName:
+          eventType.schedulingType === 'COLLECTIVE' || users.length > 1
+            ? eventType.team?.name
+            : null,
+        host: organizerUser.name || 'Nameless',
+        location: bookingLocation,
+        eventDuration: eventType.length,
+        bookingFields: {...responses},
+        t: (tOrganizer as unknown) as TFunction
+      });
       // location might changed and will be new created in eventManager.create (organizer default location)
       evt.videoCallData = undefined;
       // To prevent "The requested identifier already exists" error while updating event, we need to remove iCalUID

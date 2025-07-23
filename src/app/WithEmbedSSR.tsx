@@ -3,8 +3,6 @@ import type { GetServerSidePropsContext } from "next";
 import { getURLFromRedirectError, isRedirectError } from "next/dist/client/components/redirect";
 import { notFound, redirect } from "next/navigation";
 
-// import { WebAppURL } from "@calcom/lib/WebAppURL";
-
 export type EmbedProps = {
   isEmbed?: boolean;
 };
@@ -38,7 +36,7 @@ export default function withEmbedSsrAppDir<T extends Record<string, any>>(
         }
 
         const destinationQueryStr = destinationUrlObj.searchParams.toString();
-        // Make sure that redirect happens to /embed page and pass on embed query param as is for preserving Cal JS API namespace
+        // Make sure that redirect happens to /embed page and pass on embed query param as is for preserving JS API namespace
         const newDestinationUrl = `${urlPrefix}${destinationUrlObj.pathname}/embed?${
           destinationQueryStr ? `${destinationQueryStr}&` : ""
         }layout=${layout}&embed=${embed}`;

@@ -1,8 +1,7 @@
 "use client";
 
-// import dayjs from "@/packages/dayjs";
-// import type { RouterOutputs } from "@/packages/trpc/react";
-
+import { RouterOutputs } from "@/types/trpc-router-outputs";
+import dayjs from "dayjs";
 import "~/../styles/globals.css";
 
 interface Props {

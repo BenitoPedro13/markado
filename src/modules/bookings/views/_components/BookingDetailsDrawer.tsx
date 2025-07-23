@@ -1,6 +1,13 @@
 "use client";
 
-import * as SheetPrimitive from "@radix-ui/react-dialog";
+import { useLocale } from "@/hooks/use-locale";
+import useMeQuery from "@/hooks/use-me-query";
+import { useCompatSearchParams } from "@/lib/hooks/useCompatSearchParam";
+import { getPlaceholderAvatar } from "@/packages/lib/defaultAvatarImage";
+import * as Drawer from "@/components/align-ui/ui/drawer";
+import * as Avatar from "@/components/align-ui/ui/avatar";
+import type { CalendarEvent } from "@/types/Calendar";
+import dayjs from "dayjs";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 
@@ -17,30 +24,24 @@ import { usePathname, useRouter } from "next/navigation";
 // import { Sheet, SheetContent } from "~/components/ui/sheet";
 
 interface BookingDetailsDrawerProps {
-  booking: RouterOutputs["viewer"]["bookings"]["get"]["bookings"][0] | null;
+  booking: CalendarEvent | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-const BookinsDetailsDrawer = ({ booking, open, onOpenChange }: BookingDetailsDrawerProps) => {
+const BookingDetailsDrawer = ({ booking, open, onOpenChange }: BookingDetailsDrawerProps) => {
   const { t, i18n } = useLocale();
-
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useCompatSearchParams();
   const user = useMeQuery();
 
-  const userAvatar = getPlaceholderAvatar(user?.data?.avatar, user?.data?.name ?? t("nameless_user"));
+  const userAvatar = getPlaceholderAvatar((user?.data as any)?.avatar, (user?.data as any)?.name ?? t("nameless_user"));
 
-  const attendeesAvatars = booking?.attendees?.map((attendee) => {
+  const attendeesAvatars = booking?.attendees?.map((attendee: any) => {
     const url = getPlaceholderAvatar(null, attendee?.name ?? t("nameless_user"), "681219", "FFC0C5");
-
-    console.log(attendee, url);
-
     return url;
   });
-
-  console.log(booking);
 
   if (booking === null) {
     return null;
@@ -48,7 +49,6 @@ const BookinsDetailsDrawer = ({ booking, open, onOpenChange }: BookingDetailsDra
 
   function setIsCancellationMode(value: boolean) {
     const _searchParams = new URLSearchParams(searchParams ?? undefined);
-
     if (value) {
       _searchParams.set("cancel", "true");
     } else {
@@ -56,13 +56,12 @@ const BookinsDetailsDrawer = ({ booking, open, onOpenChange }: BookingDetailsDra
         _searchParams.delete("cancel");
       }
     }
-
     router.replace(`${pathname}?${_searchParams.toString()}`);
   }
 
   return (
-    <Sheet open={open} onOpenChange={(open) => onOpenChange(open)}>
-      <SheetContent>
+    <Drawer.Root open={open} onOpenChange={onOpenChange}>
+      <Drawer.Content>
         <div className="bg-white-0 inline-flex w-full flex-col items-start justify-start overflow-hidden">
           <div className="bg-white-0 inline-flex w-full items-center justify-start gap-3 overflow-hidden p-5">
             <div className="inline-flex shrink grow basis-0 flex-col items-start justify-center gap-1">
@@ -72,7 +71,7 @@ const BookinsDetailsDrawer = ({ booking, open, onOpenChange }: BookingDetailsDra
                 </div>
               </div>
             </div>
-            <SheetPrimitive.Close className="ring-offset-background focus:ring-ring data-[state=open]:bg-strong-950 absolute right-4 top-4 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:pointer-events-none">
+            <Drawer.Close className="ring-offset-background focus:ring-ring data-[state=open]:bg-strong-950 absolute right-4 top-4 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:pointer-events-none">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
                 <path
                   d="M9.99956 8.93906L13.7121 5.22656L14.7726 6.28706L11.0601 9.99956L14.7726 13.7121L13.7121 14.7726L9.99956 11.0601L6.28706 14.7726L5.22656 13.7121L8.93906 9.99956L5.22656 6.28706L6.28706 5.22656L9.99956 8.93906Z"
@@ -80,7 +79,7 @@ const BookinsDetailsDrawer = ({ booking, open, onOpenChange }: BookingDetailsDra
                 />
               </svg>
               <span className="sr-only">{t("close")}</span>
-            </SheetPrimitive.Close>
+            </Drawer.Close>
           </div>
           <div className="bg-weak-50 inline-flex items-center justify-center gap-1.5 self-stretch px-5 py-1.5">
             <div className="text-soft-400 font-jakarta shrink grow basis-0 text-xs font-medium uppercase leading-none tracking-wide">
@@ -110,15 +109,17 @@ const BookinsDetailsDrawer = ({ booking, open, onOpenChange }: BookingDetailsDra
         </div>
         <div className="bg-white-0 inline-flex w-full items-center justify-start gap-4 self-stretch overflow-hidden p-5">
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-200">
-            <Avatar alt="Avatar" imageSrc={userAvatar} size="lg" />
+            <Avatar.Root size="48" color="blue">
+              <Avatar.Image src={userAvatar} alt="Avatar" />
+            </Avatar.Root>
           </div>
-          {booking.user && (
+          {booking.organizer && (
             <div className="inline-flex shrink grow basis-0 flex-col items-start justify-center gap-1">
               <div className="text-strong-950 font-jakarta self-stretch text-lg font-medium leading-normal">
-                {booking.user.name ?? ""}
+                {booking.organizer.name ?? ""}
               </div>
               <div className="text-sub-600 font-jakarta self-stretch text-sm font-normal leading-tight">
-                {booking.user.email ?? ""}
+                {booking.organizer.email ?? ""}
               </div>
             </div>
           )}
@@ -129,11 +130,13 @@ const BookinsDetailsDrawer = ({ booking, open, onOpenChange }: BookingDetailsDra
           </div>
         </div>
         <div className="bg-white-0 inline-flex w-full items-center justify-start gap-4 self-stretch overflow-hidden p-5">
-          {attendeesAvatars?.map((avatar, index) => (
+          {attendeesAvatars?.map((avatar: string, index: number) => (
             <div
               key={index}
               className="flex h-12 w-12 items-center justify-center rounded-full bg-red-200 py-3">
-              <Avatar alt="Avatar" imageSrc={avatar} size="lg" />
+              <Avatar.Root size="48" color="red">
+                <Avatar.Image src={avatar} alt="Avatar" />
+              </Avatar.Root>
             </div>
           ))}
 
@@ -166,7 +169,7 @@ const BookinsDetailsDrawer = ({ booking, open, onOpenChange }: BookingDetailsDra
               {t("subject")}
             </div>
             <div className="text-strong-950 font-jakarta self-stretch text-sm font-medium leading-tight">
-              {booking.eventType.title}
+              {booking.title}
             </div>
           </div>
           <div className="inline-flex items-center justify-center gap-2 self-stretch">
@@ -177,7 +180,7 @@ const BookinsDetailsDrawer = ({ booking, open, onOpenChange }: BookingDetailsDra
               {t("local")}
             </div>
             <div className="text-strong-950 font-jakarta self-stretch text-sm font-medium leading-tight">
-              Google Meet
+              {booking.location ?? "Google Meet"}
             </div>
           </div>
           <div className="inline-flex items-center justify-center gap-2 self-stretch">
@@ -200,7 +203,7 @@ const BookinsDetailsDrawer = ({ booking, open, onOpenChange }: BookingDetailsDra
           </div>
 
           <div className="border-soft-200 inline-flex w-96 items-center justify-start gap-4 overflow-hidden border-t bg-white p-5">
-            {booking.user && (
+            {booking.organizer && (
               <div className="flex shrink grow basis-0 items-center justify-center gap-4">
                 <button
                   data-testid="cancel"
@@ -239,8 +242,8 @@ const BookinsDetailsDrawer = ({ booking, open, onOpenChange }: BookingDetailsDra
                       data-testid="reschedule-link">
                       <Link
                         href={`/reschedule/${booking?.uid}${
-                          booking.user?.email
-                            ? `?rescheduledBy=${encodeURIComponent(booking.user?.email)}`
+                          booking.organizer?.email
+                            ? `?rescheduledBy=${encodeURIComponent(booking.organizer?.email)}`
                             : ""
                         }`}
                         legacyBehavior>
@@ -253,9 +256,9 @@ const BookinsDetailsDrawer = ({ booking, open, onOpenChange }: BookingDetailsDra
             )}
           </div>
         </div>
-      </SheetContent>
-    </Sheet>
+      </Drawer.Content>
+    </Drawer.Root>
   );
 };
 
-export default BookinsDetailsDrawer;
+export default BookingDetailsDrawer;
