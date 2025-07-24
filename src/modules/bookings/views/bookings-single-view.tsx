@@ -458,7 +458,7 @@ export default function Success(props: PageProps) {
               <div
                 className={classNames(
                   "main bg-default inline-block transform overflow-hidden rounded-lg md:border md:border-bg-soft-200 md:rounded-[24px] sm:my-8 sm:max-w-xl",
-                  !isBackgroundTransparent && " bg-default dark:bg-muted border-booker border-booker-width",
+                  !isBackgroundTransparent && " bg-default dark:bg-muted border-bg-soft-200 border-t-2 rounded-[24px]",
                   "px-8 pb-4 pt-5 text-left align-bottom transition-all sm:w-full sm:py-8 sm:align-middle"
                 )}
                 role="dialog"
@@ -540,7 +540,7 @@ export default function Success(props: PageProps) {
                             {props.paymentStatus.refunded && t("booking_with_payment_cancelled_refunded")}
                           </h4>
                         )}
-                      <div className="text-default grid grid-cols-2 border-t pt-8 mt-4 text-left rtl:text-right">
+                      <div className="text-default grid grid-cols-2 border-t-2 border-t-bg-soft-200 pt-8 mt-4 text-left rtl:text-right">
                         {(isCancelled || reschedule) && cancellationReason && (
                           <>
                             <div className="font-medium">
@@ -716,7 +716,7 @@ export default function Success(props: PageProps) {
                     </div>
                     {requiresLoginToUpdate && (
                       <>
-                          <hr className="mb-8 mx-[70px]" />
+                          <hr className="mb-8 mx-[70px] border-bg-soft-200 border-t-2 rounded-[24px]" />
                         <div className="text-center">
                           <span className="text-emphasis ltr:mr-2 rtl:ml-2">
                             {t("need_to_make_a_change")}
@@ -742,7 +742,7 @@ export default function Success(props: PageProps) {
                       !isRerouting &&
                       (!isCancellationMode ? (
                         <>
-                            <hr className="mb-8 mx-[70px]" />
+                            <hr className="mb-8 mx-[70px] border-bg-soft-200 border-t-2 rounded-[24px]" />
                           <div className="text-center last:pb-0 flex flex-col sm:justify-center sm:items-center gap-2">
                             <span className="pb-5 text-emphasis ltr:mr-2 rtl:ml-2">
                               {tCommon("need_to_make_a_change")}
@@ -783,7 +783,7 @@ export default function Success(props: PageProps) {
                         </>
                       ) : (
                         <>
-                          <hr className="mb-8 mx-[70px]" />
+                          <hr className="mb-8 mx-[70px] border-bg-soft-200 border-t-2 rounded-[24px]" />
                           <CancelBooking
                             booking={{
                               uid: bookingInfo?.uid,
