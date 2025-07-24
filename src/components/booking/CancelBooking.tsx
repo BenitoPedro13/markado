@@ -5,6 +5,7 @@ import type { RecurringEvent } from "@/types/Calendar";
 import * as Button from "@/components/align-ui/ui/button";
 import * as TextArea from "@/components/align-ui/ui/textarea";
 import { RiCloseLine, RiInformationLine } from "@remixicon/react";
+import { useTRPCClient } from "@/utils/trpc";
 
 type Props = {
   booking: {
@@ -39,6 +40,7 @@ export default function CancelBooking(props: Props) {
   const { t } = useLocale();
   const { booking, allRemainingBookings, seatReferenceUid, bookingCancelledEventProps, currentUserEmail } =
     props;
+  const trpc = useTRPCClient();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(booking ? null : t("booking_already_cancelled"));
 
@@ -98,7 +100,9 @@ export default function CancelBooking(props: Props) {
                 variant="neutral"
                 mode="stroke"
                 className="ml-auto"
-                onClick={() => props.setIsCancellationMode(false)}>
+                onClick={() => props.setIsCancellationMode(false)}
+                disabled={cancellationReason.length > 0}
+            >
                 {t("nevermind")}
               </Button.Root>
               <Button.Root
@@ -107,40 +111,24 @@ export default function CancelBooking(props: Props) {
                 data-testid="confirm_cancel"
                 onClick={async () => {
                   setLoading(true);
-
-                  const res = await fetch("/api/cancel", {
-                    body: JSON.stringify({
-                      uid: booking?.uid,
-                      cancellationReason: cancellationReason,
+                  try {
+                    await trpc.booking.cancelBooking.mutate({
+                      uid: booking?.uid!,
+                      cancellationReason,
                       allRemainingBookings,
-                      // @NOTE: very important this shouldn't cancel with number ID use uid instead
                       seatReferenceUid,
                       cancelledBy: currentUserEmail,
-                    }),
-                    headers: {
-                      "Content-Type": "application/json",
-                    },
-                    method: "POST",
-                  });
-
-                  const bookingWithCancellationReason = {
-                    ...(bookingCancelledEventProps.booking as object),
-                    cancellationReason,
-                  } as unknown;
-
-                  if (res.status >= 200 && res.status < 300) {
-                    // tested by apps/web/playwright/booking-pages.e2e.ts
+                    });
                     window.location.reload();
-                  } else {
+                  } catch (err) {
                     setLoading(false);
                     setError(
-                      `${t("error_with_status_code_occured", { status: res.status })} ${t(
-                        "please_try_again"
-                      )}`
+                      `${t("error_with_status_code_occured", { status: "TRPC" })} ${t("please_try_again")}`
                     );
                   }
                 }}
-                disabled={loading}>
+                disabled={cancellationReason.length === 0 || loading}
+              >
                 {props.allRemainingBookings ? t("cancel_all_remaining") : t("cancel_event")}
               </Button.Root>
             </div>

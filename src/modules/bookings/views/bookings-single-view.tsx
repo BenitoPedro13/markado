@@ -8,7 +8,6 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Toaster } from "react-hot-toast";
-import { RRule } from "rrule";
 import { z } from "zod";
 import { useLocale } from "@/hooks/use-locale";
 import { useTranslations } from "next-intl";
@@ -21,8 +20,7 @@ import { useTRPC } from "@/utils/trpc";
 import { useNotification } from "@/hooks/use-notification";
 import { BookingStatus, SchedulingType } from "~/prisma/enums";
 import * as Button from "@/components/align-ui/ui/button";
-import { RiInformationLine, RiCalendarLine, RiCloseLine, RiExternalLinkLine } from "@remixicon/react";
-import * as Alert from "@/components/align-ui/ui/alert";
+import { RiCalendarLine, RiCloseLine, RiExternalLinkLine } from "@remixicon/react";
 import * as Badge from "@/components/align-ui/ui/badge";
 import * as Avatar from "@/components/align-ui/ui/avatar";
 import * as TextArea from "@/components/align-ui/ui/textarea";
@@ -71,6 +69,7 @@ import type { PageProps } from "./bookings-single-view.getServerSideProps";
 import { getEventName } from "@/packages/core/event";
 import { SMS_REMINDER_NUMBER_FIELD, SystemField, TITLE_FIELD } from "@/packages/features/bookings/lib/SystemField";
 import Image from "next/image";
+import CancelBooking from "@/components/booking/CancelBooking";
 
 const stringToBoolean = z
   .string()
