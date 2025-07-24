@@ -78,6 +78,48 @@ export const calendarRouter = router({
           }
         });
 
+        // --- NOVO: Instalar Google Calendar e Google Meet ---
+        // Google Calendar
+        await prisma.credential.upsert({
+          where: {
+            // Chave única composta: userId + appId + type
+            userId_appId_type: {
+              userId: ctx.session.user.id,
+              appId: "google-calendar",
+              type: "google_calendar"
+            }
+          },
+          update: {
+            key: tokens
+          },
+          create: {
+            type: "google_calendar",
+            key: tokens, // tokens completos do Google
+            userId: ctx.session.user.id,
+            appId: "google-calendar"
+          }
+        });
+
+        // Google Meet
+        await prisma.credential.upsert({
+          where: {
+            userId_appId_type: {
+              userId: ctx.session.user.id,
+              appId: "google-meet",
+              type: "google_video"
+            }
+          },
+          update: {
+            key: {} // objeto vazio
+          },
+          create: {
+            type: "google_video",
+            key: {}, // objeto vazio
+            userId: ctx.session.user.id,
+            appId: "google-meet"
+          }
+        });
+
         if (!calendarList.items) {
           throw new TRPCError({
             code: 'BAD_REQUEST',

@@ -1,4 +1,4 @@
-// import type {TFunction} from 'next-intl';
+import type { TFunction } from "next-i18next";
 import short from "short-uuid";
 import { v5 as uuidv5 } from "uuid";
 
@@ -10,7 +10,7 @@ import { useLocale } from "@/hooks/use-locale";
 
 const translator = short();
 
-type TFunction = ReturnType<typeof useLocale>["t"]
+// type TFunction = ReturnType<typeof useLocale>["t"]
 
 // The odd indentation in this file is necessary because otherwise the leading tabs will be applied into the event description.
 

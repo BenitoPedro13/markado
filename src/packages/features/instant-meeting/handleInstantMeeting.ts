@@ -249,7 +249,7 @@ async function handler(req: NextApiRequest) {
     references: {
       create: bookingReferenceToCreate,
     },
-    location: "integrations:daily",
+    location: "integrations:google:meet",
     eventType: {
       connect: {
         id: reqBody.eventTypeId,

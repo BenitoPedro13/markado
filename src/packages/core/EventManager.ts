@@ -6,7 +6,8 @@ import type { z } from "zod";
 
 import { getCalendar } from "@/packages/app-store/_utils/getCalendar";
 import { FAKE_DAILY_CREDENTIAL } from "@/packages/app-store/dailyvideo/lib/VideoApiAdapter";
-import { appKeysSchema as calVideoKeysSchema } from "@/packages/app-store/dailyvideo/zod";
+// import { appKeysSchema as calVideoKeysSchema } from "@/packages/app-store/dailyvideo/zod";
+import {appKeysSchema as googleVideoKeysSchema} from '@/packages/app-store/googlevideo/zod';
 import { getLocationFromApp, MeetLocationType } from "@/core/locations";
 import getApps from "@/packages/app-store/utils";
 import { getUid } from "@/packages/lib/CalEventParser";
@@ -147,14 +148,15 @@ export default class EventManager {
    * @param event
    */
   public async create(event: CalendarEvent): Promise<CreateUpdateResult> {
+    console.log('DEBUG: EventManager.create - evento recebido:', JSON.stringify(event, null, 2));
     const evt = processLocation(event);
 
     // Fallback to cal video if no location is set
     if (!evt.location) {
       // See if cal video is enabled & has keys
-      const calVideo = await prisma.app.findFirst({
+      const googleVideo = await prisma.app.findFirst({
         where: {
-          slug: 'daily-video'
+          slug: 'google-meet'
         },
         select: {
           keys: true,
@@ -162,10 +164,12 @@ export default class EventManager {
         }
       });
 
-      const calVideoKeys = calVideoKeysSchema.safeParse(calVideo?.keys);
+      const googleVideoKeys = googleVideoKeysSchema.safeParse(
+        googleVideo?.keys
+      );
 
-      if (calVideo?.enabled && calVideoKeys.success)
-        evt['location'] = 'integrations:daily';
+      if (googleVideo?.enabled && googleVideoKeys.success)
+        evt['location'] = MeetLocationType;
     }
 
     // Fallback to Markado Video if Google Meet is selected w/o a Google Cal
@@ -181,7 +185,7 @@ export default class EventManager {
       log.warn(
         'Falling back to Markado Video integration as Google Calendar not installed'
       );
-      evt['location'] = 'integrations:daily';
+      evt['location'] = MeetLocationType;
       evt['conferenceCredentialId'] = undefined;
     }
     const isDedicated = evt.location
@@ -194,6 +198,7 @@ export default class EventManager {
     // If and only if event type is a dedicated meeting, create a dedicated video meeting.
     if (isDedicated) {
       const result = await this.createVideoEvent(evt);
+      console.log('DEBUG: EventManager.create - resultado de createVideoEvent:', JSON.stringify(result, null, 2));
 
       if (result?.createdEvent) {
         evt.videoCallData = result.createdEvent;
@@ -216,8 +221,9 @@ export default class EventManager {
 
     // Some calendar libraries may edit the original event so let's clone it
     const clonedCalEvent = cloneDeep(event);
-    // Create the calendar event with the proper video call data
-    results.push(...(await this.createAllCalendarEvents(clonedCalEvent)));
+    const calendarResults = await this.createAllCalendarEvents(clonedCalEvent);
+    console.log('DEBUG: EventManager.create - resultado de createAllCalendarEvents:', JSON.stringify(calendarResults, null, 2));
+    results.push(...calendarResults);
 
     // Since the result can be a new calendar event or video event, we have to create a type guard
     // https://www.typescriptlang.org/docs/handbook/2/narrowing.html#using-type-predicates
@@ -266,7 +272,8 @@ export default class EventManager {
         credentialId: result?.credentialId || undefined
       };
     });
-
+    console.log('DEBUG: EventManager.create - results:', JSON.stringify(results, null, 2));
+    console.log('DEBUG: EventManager.create - referencesToCreate:', JSON.stringify(referencesToCreate, null, 2));
     return {
       results,
       referencesToCreate
