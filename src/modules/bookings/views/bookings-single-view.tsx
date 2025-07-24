@@ -15,7 +15,7 @@ import { useTranslations } from "next-intl";
 import { useRouterQuery } from "@/lib/hooks/userRouterQuery";
 import { useCompatSearchParams } from "@/lib/hooks/useCompatSearchParam";
 import dayjs from "@/lib/dayjs";
-import { getEventName } from "@/packages/core/event";
+import "dayjs/locale/pt-br";
 import { useBrandColors as useBrandColorsHook } from "@/packages/features/bookings/Booker/utils/use-brand-colors";
 import { useTRPC } from "@/utils/trpc";
 import { useNotification } from "@/hooks/use-notification";
@@ -27,6 +27,9 @@ import * as Badge from "@/components/align-ui/ui/badge";
 import * as Avatar from "@/components/align-ui/ui/avatar";
 import * as TextArea from "@/components/align-ui/ui/textarea";
 import { EmptyScreen } from "@/components/align-ui/ui/empty-screen";
+import { format } from "date-fns";
+import { ptBR, enUS } from "date-fns/locale";
+import { getHumanReadableLocationValue } from "@/core/locations";
 
 // Importações comentadas que precisam ser implementadas ou substituídas
 // import BookingPageTagManager from "@/packages/app-store/BookingPageTagManager";
@@ -65,9 +68,8 @@ import { EmptyScreen } from "@/components/align-ui/ui/empty-screen";
 // import { timeZone } from "@/packages/web/lib/clock";
 
 import type { PageProps } from "./bookings-single-view.getServerSideProps";
-import { formatToLocalizedDate, formatToLocalizedTime, formatToLocalizedTimezone } from "@/lib/date-fns";
+import { getEventName } from "@/packages/core/event";
 import { SMS_REMINDER_NUMBER_FIELD, SystemField, TITLE_FIELD } from "@/packages/features/bookings/lib/SystemField";
-import CancelBooking from "@/components/booking/CancelBooking";
 import Image from "next/image";
 
 const stringToBoolean = z
@@ -104,7 +106,7 @@ const useBrandColors = ({
 };
 
 export default function Success(props: PageProps) {
-  const { t } = useLocale();
+  const { t, locale } = useLocale();
   const tCommon = useTranslations('common');
   
   const router = useRouter();
@@ -235,6 +237,10 @@ export default function Success(props: PageProps) {
 
     router.replace(`${pathname}?${_searchParams.toString()}`);
   }
+
+  useEffect(() => {
+    dayjs.locale(locale);
+  }, [locale]);
 
   let evtName = eventType.eventName || eventType.title;
   if (eventType.isDynamic && bookingInfo.responses?.title) {
@@ -560,6 +566,7 @@ export default function Success(props: PageProps) {
                                 is24h={is24h}
                                 isCancelled={isCancelled}
                                 tz={tz}
+                                locale={locale}
                               />
                             </p>
                           )}
@@ -572,6 +579,7 @@ export default function Success(props: PageProps) {
                             is24h={is24h}
                             isCancelled={isCancelled}
                             tz={tz}
+                            locale={locale}
                           />
                         </div>
                         {(bookingInfo?.user || bookingInfo?.attendees) && (
@@ -708,7 +716,7 @@ export default function Success(props: PageProps) {
                     </div>
                     {requiresLoginToUpdate && (
                       <>
-                         <hr className="mb-8 mx-[70px]" />
+                          <hr className="mb-8 mx-[70px]" />
                         <div className="text-center">
                           <span className="text-emphasis ltr:mr-2 rtl:ml-2">
                             {t("need_to_make_a_change")}
@@ -734,7 +742,7 @@ export default function Success(props: PageProps) {
                       !isRerouting &&
                       (!isCancellationMode ? (
                         <>
-                           <hr className="mb-8 mx-[70px]" />
+                            <hr className="mb-8 mx-[70px]" />
                           <div className="text-center last:pb-0 flex flex-col sm:justify-center sm:items-center gap-2">
                             <span className="pb-5 text-emphasis ltr:mr-2 rtl:ml-2">
                               {tCommon("need_to_make_a_change")}
@@ -1101,7 +1109,7 @@ const DisplayLocation = ({
       <RiExternalLinkLine className="text-default inline h-4 w-4" />
     </a>
   ) : (
-    <p className={className}>{locationToDisplay}</p>
+    <p className={className}>{getHumanReadableLocationValue(locationToDisplay, t)}</p>
   );
 };
 
@@ -1117,6 +1125,7 @@ type RecurringBookingsProps = {
   allRemainingBookings: boolean;
   isCancelled: boolean;
   tz: string;
+  locale: string;
 };
 
 function RecurringBookings({
@@ -1128,12 +1137,29 @@ function RecurringBookings({
   is24h,
   isCancelled,
   tz,
+  locale,
 }: RecurringBookingsProps) {
   const [moreEventsVisible, setMoreEventsVisible] = useState(false);
   const { t } = useLocale();
   const recurringBookingsSorted = recurringBookings
     ? recurringBookings.sort((a: string, b: string) => (dayjs(a).isAfter(dayjs(b)) ? 1 : -1))
     : null;
+
+  const localeObj = locale === "pt" ? ptBR : enUS;
+
+  function renderDateBlock(start: Date, end: Date) {
+    const weekDay = format(start, "EEEE", { locale: localeObj }).toLowerCase();
+    const longDate = format(start, "d 'de' MMMM 'de' yyyy", { locale: localeObj }).toLowerCase();
+    const startTime = dayjs(start).tz(tz).format(is24h ? "HH:mm" : "hh:mm A");
+    const endTime = dayjs(end).tz(tz).format(is24h ? "HH:mm" : "hh:mm A");
+    return (
+      <div className={classNames(isCancelled ? "line-through" : "")}> 
+        {weekDay},<br />
+        {longDate}<br />
+        {startTime} - {endTime}
+      </div>
+    );
+  }
 
   if (!duration) return null;
 
@@ -1147,51 +1173,43 @@ function RecurringBookings({
           </span>
         )}
         {eventType.recurringEvent?.count &&
-          recurringBookingsSorted.slice(0, 4).map((dateStr: string, idx: number) => (
-            <div key={idx} className={classNames("mb-2", isCancelled ? "line-through" : "")}>
-              {dayjs.tz(dateStr, tz).format("dddd, MMMM D, YYYY")}
-              <br />
-              {dayjs(dateStr).format(is24h ? "HH:mm" : "h:mm A")} -{" "}
-              {dayjs(dateStr).add(duration, "m").format(is24h ? "HH:mm" : "h:mm A")}{" "}
-              <span className="text-bookinglight">
-                ({dayjs(dateStr).tz(tz).format("z")})
-              </span>
-            </div>
-          ))}
+          recurringBookingsSorted.slice(0, 4).map((dateStr: string, idx: number) => {
+            const startDate = dayjs.tz(dateStr, tz).toDate();
+            const endDate = dayjs.tz(dateStr, tz).add(duration, "minute").toDate();
+            return (
+              <div key={idx} className={classNames("mb-2", isCancelled ? "line-through" : "")}> 
+                {renderDateBlock(startDate, endDate)}
+              </div>
+            );
+          })}
         {recurringBookingsSorted.length > 4 && (
           <Collapsible open={moreEventsVisible} onOpenChange={() => setMoreEventsVisible(!moreEventsVisible)}>
             <CollapsibleTrigger
               type="button"
-              className={classNames("flex w-full", moreEventsVisible ? "hidden" : "")}>
+              className={classNames("flex w-full", moreEventsVisible ? "hidden" : "")}
+            >
               + {t("plus_more", { count: recurringBookingsSorted.length - 4 })}
             </CollapsibleTrigger>
             <CollapsibleContent>
               {eventType.recurringEvent?.count &&
-                recurringBookingsSorted.slice(4).map((dateStr: string, idx: number) => (
-                  <div key={idx} className={classNames("mb-2", isCancelled ? "line-through" : "")}>
-                    {dayjs.tz(dateStr, tz).format("dddd, MMMM D, YYYY")}
-                    <br />
-                    {dayjs(dateStr).format(is24h ? "HH:mm" : "h:mm A")} -{" "}
-                    {dayjs(dateStr).add(duration, "m").format(is24h ? "HH:mm" : "h:mm A")}{" "}
-                    <span className="text-bookinglight">
-                      ({dayjs(dateStr).tz(tz).format("z")})
-                    </span>
-                  </div>
-                                ))}
-              </CollapsibleContent>
-            </Collapsible>
+                recurringBookingsSorted.slice(4).map((dateStr: string, idx: number) => {
+                  const startDate = dayjs.tz(dateStr, tz).toDate();
+                  const endDate = dayjs.tz(dateStr, tz).add(duration, "minute").toDate();
+                  return (
+                    <div key={idx} className={classNames("mb-2", isCancelled ? "line-through" : "")}> 
+                      {renderDateBlock(startDate, endDate)}
+                    </div>
+                  );
+                })}
+            </CollapsibleContent>
+          </Collapsible>
         )}
       </>
     );
   }
 
-  return (
-    <div className={classNames(isCancelled ? "line-through" : "")}> 
-      {date.format("dddd")},
-      <br />
-      {date.format("D [de] MMMM [de] YYYY")}
-      <br />
-      {formatToLocalizedTime(date, 'pt-br', undefined, !is24h, tz)} - {formatToLocalizedTime(dayjs(date).add(duration, "m"), 'pt-br', undefined, !is24h, tz)}
-    </div>
-  );
+  // Para o caso de não recorrente
+  const startDate = dayjs(date).tz(tz).toDate();
+  const endDate = dayjs(date).tz(tz).add(duration || 0, "minute").toDate();
+  return renderDateBlock(startDate, endDate);
 }
