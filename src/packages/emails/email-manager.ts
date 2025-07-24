@@ -81,6 +81,7 @@ const sendEmail = (prepare: () => BaseEmail) => {
   return new Promise((resolve, reject) => {
     try {
       const email = prepare();
+      console.log()
       resolve(email.sendEmail());
     } catch (e) {
       reject(console.error(`${prepare.constructor.name}.sendEmail failed`, e));
@@ -104,6 +105,8 @@ export const sendScheduledEmailsAndSMS = async (
   eventTypeMetadata?: EventTypeMetadata
 ) => {
   const formattedCalEvent = formatCalEvent(calEvent);
+  // Adicionando log detalhado do evento para depuração
+  console.log('DEBUG: Conteúdo do evento enviado para e-mail (sendScheduledEmailsAndSMS):', JSON.stringify(formattedCalEvent, null, 2));
   const emailsToSend: Promise<unknown>[] = [];
 
   if (!hostEmailDisabled && !eventTypeDisableHostEmail(eventTypeMetadata)) {
@@ -141,6 +144,7 @@ export const sendScheduledEmailsAndSMS = async (
   await Promise.all(emailsToSend);
   // const successfullyScheduledSms = new EventSuccessfullyScheduledSMS(calEvent);
   // await successfullyScheduledSms.sendSMSToAttendees();
+  // console.log('sendScheduledEmailsAndSMS', formattedCalEvent);
 };
 
 // for rescheduled round robin booking that assigned new members
@@ -257,6 +261,7 @@ export const sendRescheduledEmailsAndSMS = async (
   await Promise.all(emailsToSend);
   // const successfullyReScheduledSms = new EventSuccessfullyReScheduledSMS(calEvent);
   // await successfullyReScheduledSms.sendSMSToAttendees();
+  console.log('sendRescheduledEmailsAndSMS', calendarEvent);
 };
 
 // export const sendRescheduledSeatEmailAndSMS = async (
@@ -364,6 +369,8 @@ export const sendOrganizerRequestEmail = async (
   }
 
   await Promise.all(emailsToSend);
+
+  console.log('sendOrganizerRequestEmail', calendarEvent);
 };
 
 export const sendAttendeeRequestEmailAndSMS = async (

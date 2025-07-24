@@ -39,6 +39,8 @@ export const OrganizerScheduledEmail = (
     props.calEvent.schedulingType === SchedulingType.COLLECTIVE;
   const attendee = isTeamEvent && props.teamMember ? props.teamMember : props.attendee;
 
+  console.log('OrganizerScheduledEmail', props);
+
   return (
     <BaseScheduledEmail
       locale={locale}
