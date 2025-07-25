@@ -70,6 +70,7 @@ import { getEventName } from "@/packages/core/event";
 import { SMS_REMINDER_NUMBER_FIELD, SystemField, TITLE_FIELD } from "@/packages/features/bookings/lib/SystemField";
 import Image from "next/image";
 import CancelBooking from "@/components/booking/CancelBooking";
+import { useLocaleI18 } from "@/hooks/use-locale";
 
 const stringToBoolean = z
   .string()
@@ -1088,7 +1089,7 @@ const DisplayLocation = ({
   providerName?: string;
   className?: string;
 }) => {
-  const { t } = useLocale();
+  const { t } = useLocaleI18();
   
   // Handle integrations:daily format
   if (locationToDisplay === "integrations:daily") {
