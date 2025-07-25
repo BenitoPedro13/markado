@@ -68,11 +68,11 @@ interface EventMetaProps {
  * Default order in which the event details will be rendered.
  */
 const defaultEventDetailsBlocks = [
+  EventDetailBlocks.LOCATION,
   EventDetailBlocks.REQUIRES_CONFIRMATION,
   EventDetailBlocks.DURATION,
+  EventDetailBlocks.PRICE,
   EventDetailBlocks.OCCURENCES,
-  EventDetailBlocks.LOCATION,
-  EventDetailBlocks.PRICE
 ];
 
 /**
@@ -94,8 +94,8 @@ export const EventMetaBlock = ({
   return (
     <div
       className={classNames(
-        'flex items-start justify-start text-sm',
-        highlight ? 'text-emphasis' : 'text-sub-600',
+        'flex items-start gap-[5px] justify-start text-label-sm text-text-sub-600',
+        // highlight ? 'text-emphasis' : 'text-sub-600',
         className
       )}
     >
@@ -125,14 +125,14 @@ export const EventMetaBlock = ({
           }
         </>
       )}
-      <div
+      {children && <div
         className={classNames(
           'relative z-10 max-w-full break-words',
           contentClassName
         )}
       >
         {children}
-      </div>
+      </div>}
     </div>
   );
 };
@@ -174,6 +174,15 @@ export const EventDetails = ({
         }
 
         switch (block) {
+          case EventDetailBlocks.LOCATION:
+            return (
+              <EventMetaBlock key={block}>
+                <AvailableEventLocations
+                  locations={event.locations ?? ['Google Meet']}
+                />
+              </EventMetaBlock>
+            );
+
           case EventDetailBlocks.DURATION:
             return (
               <EventMetaBlock
@@ -188,13 +197,6 @@ export const EventDetails = ({
                 ) : (
                   <span>Tempo não informado</span>
                 )}
-              </EventMetaBlock>
-            );
-
-          case EventDetailBlocks.LOCATION:
-            return (
-              <EventMetaBlock key={block}>
-                <AvailableEventLocations locations={event.locations ?? ["Google Meet"]} />
               </EventMetaBlock>
             );
 
@@ -230,9 +232,16 @@ export const EventDetails = ({
 
           case EventDetailBlocks.PRICE:
             return (
-              <EventMetaBlock key={block} customIcon={<PriceIcon currency={event.currency} />}>
+              <EventMetaBlock
+                key={block}
+                customIcon={<PriceIcon currency={event.currency} />}
+              >
                 {typeof event.price === 'number' ? (
-                  event.price > 0 ? <Price price={event.price} currency={event.currency} /> : <span>Grátis</span>
+                  event.price > 0 ? (
+                    <Price price={event.price} currency={event.currency} />
+                  ) : (
+                    <span>Grátis</span>
+                  )
                 ) : (
                   <span>Valor não informado</span>
                 )}

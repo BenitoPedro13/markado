@@ -4,6 +4,10 @@ export const useLocale: (namespace?: Parameters<typeof useTranslations>[0]) => {
   locale: ReturnType<typeof useNextIntlLocale>;
   t: ReturnType<typeof useTranslations>;
   isLocaleReady: boolean;
+  i18n: {
+    language: string;
+    locale: string;
+  };
 } = (namespace = 'common') => {
   const t = useTranslations(namespace);
   const locale = useNextIntlLocale();
@@ -12,12 +16,19 @@ export const useLocale: (namespace?: Parameters<typeof useTranslations>[0]) => {
   return {
     locale,
     t,
-    isLocaleReady
+    isLocaleReady,
+    i18n: {
+      language: locale || 'pt',
+      locale: locale || 'pt'
+    }
   };
 };
 
+// Alias for backward compatibility
+// export const useLocaleI18 = useLocale;
+
 import {useTranslation} from 'next-i18next';
-import type { i18n, TFunction } from 'i18next';
+import type {i18n, TFunction} from 'i18next';
 
 export const useLocaleI18: (
   namespace?: Parameters<typeof useTranslation>[0]
@@ -26,7 +37,7 @@ export const useLocaleI18: (
   t: TFunction;
   isLocaleReady: boolean;
 } = (namespace = 'common') => {
-  const { i18n, t } = useTranslation(namespace);
+  const {i18n, t} = useTranslation(namespace);
   const isLocaleReady = Object.keys(i18n).length > 0;
 
   return {

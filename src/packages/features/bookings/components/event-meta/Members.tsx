@@ -59,11 +59,10 @@ export const EventMembers = ({
         ];
 
   return (
-    <div className="flex items-center gap-3">
-
+    <div className="flex items-center gap-[5px]">
       <AvatarGroup.Truncate
-        size="56"
-        className="border-muted"
+        size="40"
+        // className="border-muted"
         items={[
           ...orgOrTeamAvatarItem,
           ...shownUsers.map((user) => ({
@@ -77,14 +76,23 @@ export const EventMembers = ({
         ]}
       />
 
-      <p className="text-base font-normal text-black">
+      {/* <p className="text-base font-normal text-black">
         {showOnlyProfileName
           ? profile.name
           : shownUsers
               .map((user) => user.name)
               .filter((name) => name)
               .join(', ')}
-      </p>
+      </p> */}
+      <h2 className="font-medium text-lg">
+        {/* {host.name} */}
+        {showOnlyProfileName
+          ? profile.name
+          : shownUsers
+              .map((user) => user.name)
+              .filter((name) => name)
+              .join(', ')}
+      </h2>
     </div>
   );
 };

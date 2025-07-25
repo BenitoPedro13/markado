@@ -118,7 +118,7 @@ export const EventMeta = ({
 
   return (
     <div
-      className={`${classNames?.eventMetaContainer || ''} relative z-10 md:px-6`}
+      className={`${classNames?.eventMetaContainer || ''} relative z-10 md:px-5`}
       data-testid="event-meta"
     >
       {isPending && (
@@ -150,15 +150,18 @@ export const EventMeta = ({
               {event?.title}
             </EventTitle>
             {event.description ? (
-              <EventMetaBlock contentClassName="mb-8 break-words max-w-full max-h-[180px] scroll-bar pr-4">
+              <EventMetaBlock contentClassName=" break-words max-w-full max-h-[180px] scroll-bar pr-4">
                 <div dangerouslySetInnerHTML={{__html: event.description}} />
               </EventMetaBlock>
-            ) : (
-              <EventMetaBlock contentClassName="mb-8 break-words max-w-full max-h-[180px] scroll-bar pr-4">
-                <div>Sem descrição informada.</div>
-              </EventMetaBlock>
-            )}
-            <div className="flex flex-col gap-2.5 font-medium rtl:-mr-2">
+            ) : 
+            (
+              // <EventMetaBlock contentClassName="mb-8 break-words max-w-full max-h-[180px] scroll-bar pr-4">
+              //   <div>Sem descrição informada.</div>
+              // </EventMetaBlock>
+              <></>
+            )
+            }
+            <div className="flex flex-col gap-[10px] font-medium rtl:-mr-2">
               {rescheduleUid && bookingData && (
                 <EventMetaBlock icon="calendar">
                   {t('former_time')}

@@ -137,6 +137,7 @@
     "@types/express": "^5.0.3",
     "@types/jest": "^29.5.14",
     "@types/lodash": "^4.17.17",
+    "@types/lru-cache": "^7.10.10",
     "@types/markdown-it": "^14.1.2",
     "@types/node": "^20",
     "@types/nodemailer": "^6.4.17",
