@@ -33,7 +33,7 @@ import { BookingStatus, WebhookTriggerEvents } from "~/prisma/enums";
 import { getTranslation } from "@/packages/lib/server/i18n";
 import { WorkflowReminder, Prisma } from "~/prisma/app/generated/prisma/client";
 // import cancelAttendeeSeat from "./handleSeats/cancel/cancelAttendeeSeat"; // Não encontrado
-
+import {prisma} from '@/lib/prisma'
 const log = logger.getSubLogger({ prefix: ["handleCancelBooking"] });
 
 async function getBookingToDelete(id: number | undefined, uid: string | undefined) {
@@ -296,7 +296,7 @@ async function handler(req: CustomRequest) {
       username: organizer.username || undefined,
       email: bookingToDelete?.userPrimaryEmail ?? organizer.email,
       name: organizer.name ?? "Nameless",
-      timeZone: organizer.timeZone,
+      timeZone: organizer.timeZone ?? "America/Sao_Paulo",
       timeFormat: getTimeFormatStringFromUserTimeFormat(organizer.timeFormat),
       language: { translate: tOrganizer, locale: organizer.locale ?? "en" },
     },
