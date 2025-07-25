@@ -25,11 +25,11 @@ import {
   // sendRoundRobinCancelledEmailsAndSMS,
   // sendRoundRobinRescheduledEmailsAndSMS,
   // sendRoundRobinScheduledEmailsAndSMS,
-  sendScheduledEmailsAndSMS,
-} from "@/packages/emails";
+  sendScheduledEmailsAndSMS
+} from '@/packages/emails';
 import getICalUID from '@/packages/emails/lib/getICalUID';
 import {getBookingFieldsWithSystemFields} from '@/packages/features/bookings/lib/getBookingFields';
-import { handleWebhookTrigger } from "@/packages/features/bookings/lib/handleWebhookTrigger";
+import {handleWebhookTrigger} from '@/packages/features/bookings/lib/handleWebhookTrigger';
 // import { isEventTypeLoggingEnabled } from "@/packages/features/bookings/lib/isEventTypeLoggingEnabled";
 // import {
 // allowDisablingAttendeeConfirmationEmails,
@@ -88,7 +88,10 @@ import type {
   PartialReference
 } from '@/packages/types/EventManager';
 
-import type { EventPayloadType, EventTypeInfo } from "../../webhooks/lib/sendPayload";
+import type {
+  EventPayloadType,
+  EventTypeInfo
+} from '../../webhooks/lib/sendPayload';
 import {getAllCredentials} from './getAllCredentialsForUsersOnEvent/getAllCredentials';
 import {refreshCredentials} from './getAllCredentialsForUsersOnEvent/refreshCredentials';
 import getBookingDataSchema from './getBookingDataSchema';
@@ -119,7 +122,7 @@ import type {
 import {validateBookingTimeIsNotOutOfBounds} from './handleNewBooking/validateBookingTimeIsNotOutOfBounds';
 import {validateEventLength} from './handleNewBooking/validateEventLength';
 import handleSeats from './handleSeats/handleSeats';
-import type { TFunction } from 'i18next';
+import type {TFunction} from 'i18next';
 
 const translator = short();
 const log = logger.getSubLogger({prefix: ['[api] book:user']});
@@ -325,7 +328,10 @@ async function handler(
       paymentAppData: {
         enabled: paymentAppData.enabled,
         price: paymentAppData.price,
-        paymentOption: "paymentOption" in paymentAppData ? paymentAppData.paymentOption: null,
+        paymentOption:
+          'paymentOption' in paymentAppData
+            ? paymentAppData.paymentOption
+            : null,
         currency: paymentAppData.currency,
         appId: paymentAppData.appId
       }
@@ -409,7 +415,9 @@ async function handler(
       console.log('DEBUG: Entrou no if (booking) dentro de seatsPerTimeSlot');
       isFirstSeat = false;
     } else {
-      console.log('DEBUG: Passou pelo if (booking) == false dentro de seatsPerTimeSlot');
+      console.log(
+        'DEBUG: Passou pelo if (booking) == false dentro de seatsPerTimeSlot'
+      );
     }
   } else {
     console.log('DEBUG: Passou pelo if (eventType.seatsPerTimeSlot) == false');
@@ -431,7 +439,9 @@ async function handler(
       })
     };
     if (req.body.allRecurringDates && req.body.isFirstRecurringSlot) {
-      console.log('DEBUG: Entrou no if (req.body.allRecurringDates && req.body.isFirstRecurringSlot)');
+      console.log(
+        'DEBUG: Entrou no if (req.body.allRecurringDates && req.body.isFirstRecurringSlot)'
+      );
       const isTeamEvent =
         eventType.schedulingType === SchedulingType.COLLECTIVE ||
         eventType.schedulingType === SchedulingType.ROUND_ROBIN;
@@ -440,6 +450,13 @@ async function handler(
       } else {
         console.log('DEBUG: Passou pelo if (isTeamEvent) == false');
       }
+
+      const fixedUsers = isTeamEvent
+        ? eventTypeWithUsers.users.filter(
+            (user: IsFixedAwareUser) => user.isFixed
+          )
+        : [];
+
       for (
         let i = 0;
         i < req.body.allRecurringDates.length &&
@@ -465,7 +482,9 @@ async function handler(
             );
           }
         } else {
-          console.log('DEBUG: Passou pelo if (isTeamEvent) == false dentro do for');
+          console.log(
+            'DEBUG: Passou pelo if (isTeamEvent) == false dentro do for'
+          );
           await ensureAvailableUsers(
             eventTypeWithUsers,
             {
@@ -479,11 +498,15 @@ async function handler(
         }
       }
     } else {
-      console.log('DEBUG: Passou pelo if (req.body.allRecurringDates && req.body.isFirstRecurringSlot) == false');
+      console.log(
+        'DEBUG: Passou pelo if (req.body.allRecurringDates && req.body.isFirstRecurringSlot) == false'
+      );
     }
 
     if (!req.body.allRecurringDates || req.body.isFirstRecurringSlot) {
-      console.log('DEBUG: Entrou no if (!req.body.allRecurringDates || req.body.isFirstRecurringSlot)');
+      console.log(
+        'DEBUG: Entrou no if (!req.body.allRecurringDates || req.body.isFirstRecurringSlot)'
+      );
       const availableUsers = await ensureAvailableUsers(
         eventTypeWithUsers,
         {
@@ -522,7 +545,9 @@ async function handler(
         luckyUserPool.length > 0 &&
         luckyUsers.length < 1 /* TODO: Add variable */
       ) {
-        console.log('DEBUG: Entrou no while (luckyUserPool.length > 0 && luckyUsers.length < 1)');
+        console.log(
+          'DEBUG: Entrou no while (luckyUserPool.length > 0 && luckyUsers.length < 1)'
+        );
         const freeUsers = luckyUserPool.filter(
           (user) =>
             !luckyUsers
@@ -531,10 +556,14 @@ async function handler(
         );
         // no more freeUsers after subtracting notAvailableLuckyUsers from luckyUsers :(
         if (freeUsers.length === 0) {
-          console.log('DEBUG: Entrou no if (freeUsers.length === 0) dentro do while');
+          console.log(
+            'DEBUG: Entrou no if (freeUsers.length === 0) dentro do while'
+          );
           break;
         } else {
-          console.log('DEBUG: Passou pelo if (freeUsers.length === 0) == false dentro do while');
+          console.log(
+            'DEBUG: Passou pelo if (freeUsers.length === 0) == false dentro do while'
+          );
         }
         assertNonEmptyArray(freeUsers); // make sure TypeScript knows it too wih an assertion; the error will never be thrown.
         // freeUsers is ensured
@@ -542,8 +571,8 @@ async function handler(
           originalRescheduledBooking && originalRescheduledBooking.userId;
         const isSameRoundRobinHost =
           !!originalRescheduledBookingUserId &&
-          eventType.schedulingType === SchedulingType.ROUND_ROBIN 
-          // && eventType.rescheduleWithSameRoundRobinHost;
+          eventType.schedulingType === SchedulingType.ROUND_ROBIN;
+        // && eventType.rescheduleWithSameRoundRobinHost;
 
         const newLuckyUser = isSameRoundRobinHost
           ? freeUsers.find(
@@ -561,13 +590,17 @@ async function handler(
           console.log('DEBUG: Entrou no if (!newLuckyUser) dentro do while');
           break; // prevent infinite loop
         } else {
-          console.log('DEBUG: Passou pelo if (!newLuckyUser) == false dentro do while');
+          console.log(
+            'DEBUG: Passou pelo if (!newLuckyUser) == false dentro do while'
+          );
         }
         if (
           req.body.isFirstRecurringSlot &&
           eventType.schedulingType === SchedulingType.ROUND_ROBIN
         ) {
-          console.log('DEBUG: Entrou no if (isFirstRecurringSlot && ROUND_ROBIN) dentro do while');
+          console.log(
+            'DEBUG: Entrou no if (isFirstRecurringSlot && ROUND_ROBIN) dentro do while'
+          );
           try {
             for (
               let i = 0;
@@ -575,7 +608,10 @@ async function handler(
               i < req.body.numSlotsToCheckForAvailability;
               i++
             ) {
-              console.log('DEBUG: Loop for allRecurringDates dentro do try, i =', i);
+              console.log(
+                'DEBUG: Loop for allRecurringDates dentro do try, i =',
+                i
+              );
               const start = req.body.allRecurringDates[i].start;
               const end = req.body.allRecurringDates[i].end;
 
@@ -594,14 +630,18 @@ async function handler(
             luckyUsers.push(newLuckyUser);
             console.log('DEBUG: luckyUsers.push(newLuckyUser) dentro do try');
           } catch {
-            console.log('DEBUG: Entrou no catch do try de recurring round robin');
+            console.log(
+              'DEBUG: Entrou no catch do try de recurring round robin'
+            );
             notAvailableLuckyUsers.push(newLuckyUser);
             loggerWithEventDetails.info(
               `Round robin host ${newLuckyUser.name} not available for first two slots. Trying to find another host.`
             );
           }
         } else {
-          console.log('DEBUG: Passou pelo if (isFirstRecurringSlot && ROUND_ROBIN) == false dentro do while');
+          console.log(
+            'DEBUG: Passou pelo if (isFirstRecurringSlot && ROUND_ROBIN) == false dentro do while'
+          );
           luckyUsers.push(newLuckyUser);
         }
       }
@@ -609,10 +649,14 @@ async function handler(
       if (
         fixedUserPool.length !== users.filter((user) => user.isFixed).length
       ) {
-        console.log('DEBUG: Entrou no if (fixedUserPool.length !== users.filter((user) => user.isFixed).length)');
+        console.log(
+          'DEBUG: Entrou no if (fixedUserPool.length !== users.filter((user) => user.isFixed).length)'
+        );
         throw new Error(ErrorCode.HostsUnavailableForBooking);
       } else {
-        console.log('DEBUG: Passou pelo if (fixedUserPool.length !== users.filter((user) => user.isFixed).length) == false');
+        console.log(
+          'DEBUG: Passou pelo if (fixedUserPool.length !== users.filter((user) => user.isFixed).length) == false'
+        );
       }
       // Pushing fixed user before the luckyUser guarantees the (first) fixed user as the organizer.
       users = [...fixedUserPool, ...luckyUsers];
@@ -621,7 +665,9 @@ async function handler(
       req.body.allRecurringDates &&
       eventType.schedulingType === SchedulingType.ROUND_ROBIN
     ) {
-      console.log('DEBUG: Entrou no else if (allRecurringDates && ROUND_ROBIN)');
+      console.log(
+        'DEBUG: Entrou no else if (allRecurringDates && ROUND_ROBIN)'
+      );
       const luckyUsersFromFirstBooking = luckyUsers
         ? eventTypeWithUsers.users.filter((user) =>
             luckyUsers.find((luckyUserId) => luckyUserId === user.id)
@@ -632,7 +678,9 @@ async function handler(
       );
       users = [...fixedHosts, ...luckyUsersFromFirstBooking];
     } else {
-      console.log('DEBUG: Passou pelo else if (allRecurringDates && ROUND_ROBIN) == false');
+      console.log(
+        'DEBUG: Passou pelo else if (allRecurringDates && ROUND_ROBIN) == false'
+      );
     }
   } else {
     console.log('DEBUG: Passou pelo if (isFirstSeat) == false');
@@ -648,7 +696,9 @@ async function handler(
     );
     throw new Error(ErrorCode.NoAvailableUsersFound);
   } else {
-    console.log('DEBUG: Passou pelo if (users.length === 0 && ROUND_ROBIN) == false');
+    console.log(
+      'DEBUG: Passou pelo if (users.length === 0 && ROUND_ROBIN) == false'
+    );
   }
 
   // If the team member is requested then they should be the organizer
@@ -704,14 +754,20 @@ async function handler(
       console.log('DEBUG: Entrou no if (eventType.locations.length > 0)');
       locationBodyString = eventType.locations[0].type;
     } else {
-      console.log('DEBUG: Passou pelo if (eventType.locations.length > 0) == false');
+      console.log(
+        'DEBUG: Passou pelo if (eventType.locations.length > 0) == false'
+      );
       locationBodyString = OrganizerDefaultConferencingAppType;
     }
   } else {
-    console.log('DEBUG: Passou pelo if (locationBodyString.trim().length == 0) == false');
+    console.log(
+      'DEBUG: Passou pelo if (locationBodyString.trim().length == 0) == false'
+    );
   }
   if (locationBodyString == OrganizerDefaultConferencingAppType) {
-    console.log('DEBUG: Entrou no if (locationBodyString == OrganizerDefaultConferencingAppType)');
+    console.log(
+      'DEBUG: Entrou no if (locationBodyString == OrganizerDefaultConferencingAppType)'
+    );
     const metadataParseResult = userMetadataSchema.safeParse(
       organizerUser.metadata
     );
@@ -719,24 +775,34 @@ async function handler(
       ? metadataParseResult.data
       : undefined;
     if (organizerMetadata?.defaultConferencingApp?.appSlug) {
-      console.log('DEBUG: Entrou no if (organizerMetadata?.defaultConferencingApp?.appSlug)');
+      console.log(
+        'DEBUG: Entrou no if (organizerMetadata?.defaultConferencingApp?.appSlug)'
+      );
       const app = getAppFromSlug(
         organizerMetadata?.defaultConferencingApp?.appSlug
       );
       locationBodyString = app?.appData?.location?.type || locationBodyString;
       if (isManagedEventType || isTeamEventType) {
-        console.log('DEBUG: Entrou no if (isManagedEventType || isTeamEventType)');
+        console.log(
+          'DEBUG: Entrou no if (isManagedEventType || isTeamEventType)'
+        );
         organizerOrFirstDynamicGroupMemberDefaultLocationUrl =
           organizerMetadata?.defaultConferencingApp?.appLink;
       } else {
-        console.log('DEBUG: Passou pelo if (isManagedEventType || isTeamEventType) == false');
+        console.log(
+          'DEBUG: Passou pelo if (isManagedEventType || isTeamEventType) == false'
+        );
       }
     } else {
-      console.log('DEBUG: Passou pelo if (organizerMetadata?.defaultConferencingApp?.appSlug) == false');
+      console.log(
+        'DEBUG: Passou pelo if (organizerMetadata?.defaultConferencingApp?.appSlug) == false'
+      );
       locationBodyString = 'integrations:google:meet';
     }
   } else {
-    console.log('DEBUG: Passou pelo if (locationBodyString == OrganizerDefaultConferencingAppType) == false');
+    console.log(
+      'DEBUG: Passou pelo if (locationBodyString == OrganizerDefaultConferencingAppType) == false'
+    );
   }
 
   const invitee: Invitee = [
@@ -747,7 +813,10 @@ async function handler(
       firstName: (typeof bookerName === 'object' && bookerName.firstName) || '',
       lastName: (typeof bookerName === 'object' && bookerName.lastName) || '',
       timeZone: attendeeTimezone,
-      language: { translate: (tAttendees as unknown) as TFunction, locale: attendeeLanguage ?? 'en' }
+      language: {
+        translate: tAttendees as unknown as TFunction,
+        locale: attendeeLanguage ?? 'en'
+      }
     }
   ];
 
@@ -774,7 +843,7 @@ async function handler(
       firstName: '',
       lastName: '',
       timeZone: attendeeTimezone,
-      language: { translate: (tGuests as unknown) as TFunction, locale: 'en' }
+      language: {translate: tGuests as unknown as TFunction, locale: 'en'}
     });
     return guestArray;
   }, [] as Invitee);
@@ -857,7 +926,7 @@ async function handler(
     location: bookingLocation,
     eventDuration: eventType.length,
     bookingFields: {...responses},
-    t: (tOrganizer as unknown) as TFunction
+    t: tOrganizer as unknown as TFunction
   };
 
   const iCalUID = getICalUID({
@@ -918,7 +987,10 @@ async function handler(
       email: organizerEmail,
       username: organizerUser.username || undefined,
       timeZone: getTimezoneWithFallback(organizerUser.timeZone),
-      language: {translate: (tOrganizer as unknown) as TFunction, locale: organizerUser.locale ?? 'en'},
+      language: {
+        translate: tOrganizer as unknown as TFunction,
+        locale: organizerUser.locale ?? 'en'
+      },
       timeFormat: getTimeFormatStringFromUserTimeFormat(
         organizerUser.timeFormat
       )
@@ -957,14 +1029,18 @@ async function handler(
       recurringEventId: req.body.thirdPartyRecurringEventId
     };
   } else {
-    console.log('DEBUG: Passou pelo if (req.body.thirdPartyRecurringEventId) == false');
+    console.log(
+      'DEBUG: Passou pelo if (req.body.thirdPartyRecurringEventId) == false'
+    );
   }
 
   if (isTeamEventType && eventType.schedulingType === 'COLLECTIVE') {
     console.log('DEBUG: Entrou no if (isTeamEventType && COLLECTIVE)');
     evt.destinationCalendar?.push(...teamDestinationCalendars);
   } else {
-    console.log('DEBUG: Passou pelo if (isTeamEventType && COLLECTIVE) == false');
+    console.log(
+      'DEBUG: Passou pelo if (isTeamEventType && COLLECTIVE) == false'
+    );
   }
 
   // data needed for triggering webhooks
@@ -1035,7 +1111,9 @@ async function handler(
 
   // For seats, if the booking already exists then we want to add the new attendee to the existing booking
   if (eventType.seatsPerTimeSlot) {
-    console.log('DEBUG: Entrou no if (eventType.seatsPerTimeSlot) [handleSeats]');
+    console.log(
+      'DEBUG: Entrou no if (eventType.seatsPerTimeSlot) [handleSeats]'
+    );
     const newBooking = await handleSeats({
       rescheduleUid,
       reqBookingUid: reqBody.bookingUid,
@@ -1095,11 +1173,15 @@ async function handler(
       });
     }
   } else {
-    console.log('DEBUG: Passou pelo if (eventType.seatsPerTimeSlot) == false [handleSeats]');
+    console.log(
+      'DEBUG: Passou pelo if (eventType.seatsPerTimeSlot) == false [handleSeats]'
+    );
   }
 
   if (reqBody.recurringEventId && eventType.recurringEvent) {
-    console.log('DEBUG: Entrou no if (reqBody.recurringEventId && eventType.recurringEvent)');
+    console.log(
+      'DEBUG: Entrou no if (reqBody.recurringEventId && eventType.recurringEvent)'
+    );
     // Overriding the recurring event configuration count to be the actual number of events booked for
     // the recurring event (equal or less than recurring event configuration count)
     eventType.recurringEvent = Object.assign({}, eventType.recurringEvent, {
@@ -1107,7 +1189,9 @@ async function handler(
     });
     evt.recurringEvent = eventType.recurringEvent;
   } else {
-    console.log('DEBUG: Passou pelo if (reqBody.recurringEventId && eventType.recurringEvent) == false');
+    console.log(
+      'DEBUG: Passou pelo if (reqBody.recurringEventId && eventType.recurringEvent) == false'
+    );
   }
 
   const changedOrganizer =
@@ -1251,7 +1335,9 @@ async function handler(
 
   //this is the actual rescheduling logic
   if (!eventType.seatsPerTimeSlot && originalRescheduledBooking?.uid) {
-    console.log('DEBUG: Entrou no if (!eventType.seatsPerTimeSlot && originalRescheduledBooking?.uid)');
+    console.log(
+      'DEBUG: Entrou no if (!eventType.seatsPerTimeSlot && originalRescheduledBooking?.uid)'
+    );
     log.silly('Rescheduling booking', originalRescheduledBooking.uid);
     // cancel workflow reminders from previous rescheduled booking
     // await WorkflowRepository.deleteAllWorkflowReminders(
@@ -1279,7 +1365,7 @@ async function handler(
         location: bookingLocation,
         eventDuration: eventType.length,
         bookingFields: {...responses},
-        t: (tOrganizer as unknown) as TFunction
+        t: tOrganizer as unknown as TFunction
       });
       // location might changed and will be new created in eventManager.create (organizer default location)
       evt.videoCallData = undefined;
@@ -1427,7 +1513,9 @@ async function handler(
     evt.appsStatus = handleAppsStatus(results, booking, reqAppsStatus);
 
     if (noEmail !== true && isConfirmedByDefault) {
-      console.log('DEBUG: Entrou no if (noEmail !== true && isConfirmedByDefault) [sendScheduledEmailsAndSMS]');
+      console.log(
+        'DEBUG: Entrou no if (noEmail !== true && isConfirmedByDefault) [sendScheduledEmailsAndSMS]'
+      );
       const copyEvent = cloneDeep(evt);
       const copyEventAdditionalInfo = {
         ...copyEvent,
@@ -1445,7 +1533,9 @@ async function handler(
           - if new rr host is booked, then cancellation email to old host and confirmation email to new host
       */
       if (eventType.schedulingType === SchedulingType.ROUND_ROBIN) {
-        console.log('DEBUG: Entrou no if (ROUND_ROBIN) dentro do bloco de envio de e-mail de confirmação');
+        console.log(
+          'DEBUG: Entrou no if (ROUND_ROBIN) dentro do bloco de envio de e-mail de confirmação'
+        );
         const originalBookingMemberEmails: Person[] = [];
 
         for (const user of originalRescheduledBooking.attendees) {
@@ -1466,7 +1556,9 @@ async function handler(
           originalBookingMemberEmails.push({
             ...originalRescheduledBooking.user,
             name: originalRescheduledBooking.user.name || '',
-            timeZone: getTimezoneWithFallback(originalRescheduledBooking.user.timeZone),
+            timeZone: getTimezoneWithFallback(
+              originalRescheduledBooking.user.timeZone
+            ),
             language: {
               translate,
               locale: originalRescheduledBooking.user.locale ?? 'en'
@@ -1524,7 +1616,9 @@ async function handler(
         //   eventType.metadata
         // );
       } else {
-        console.log('DEBUG: Passou pelo if (ROUND_ROBIN) == false dentro do bloco de envio de e-mail de confirmação');
+        console.log(
+          'DEBUG: Passou pelo if (ROUND_ROBIN) == false dentro do bloco de envio de e-mail de confirmação'
+        );
         // send normal rescheduled emails (non round robin event, where organizers stay the same)
         await sendRescheduledEmailsAndSMS(
           {
@@ -1537,12 +1631,16 @@ async function handler(
         );
       }
     } else {
-      console.log('DEBUG: Passou pelo if (noEmail !== true && isConfirmedByDefault) == false [sendScheduledEmailsAndSMS]');
+      console.log(
+        'DEBUG: Passou pelo if (noEmail !== true && isConfirmedByDefault) == false [sendScheduledEmailsAndSMS]'
+      );
     }
     // If it's not a reschedule, doesn't require confirmation and there's no price,
     // Create a booking
   } else if (isConfirmedByDefault) {
-    console.log('DEBUG: Entrou no else if (isConfirmedByDefault) [createManager]');
+    console.log(
+      'DEBUG: Entrou no else if (isConfirmedByDefault) [createManager]'
+    );
     // Use EventManager to conditionally use all needed integrations.
     const createManager = await eventManager.create(evt);
     if (evt.location) {
@@ -1558,7 +1656,9 @@ async function handler(
       evt.videoCallData && evt.videoCallData.url ? evt.videoCallData.url : null;
 
     if (results.length > 0 && results.every((res) => !res.success)) {
-      console.log('DEBUG: Entrou no if (results.length > 0 && results.every((res) => !res.success)) [createManager]');
+      console.log(
+        'DEBUG: Entrou no if (results.length > 0 && results.every((res) => !res.success)) [createManager]'
+      );
       const error = {
         errorCode: 'BookingCreatingMeetingFailed',
         message: 'Booking failed'
@@ -1569,7 +1669,9 @@ async function handler(
         safeStringify({error, results})
       );
     } else {
-      console.log('DEBUG: Passou pelo if (results.length > 0 && results.every((res) => !res.success)) == false [createManager]');
+      console.log(
+        'DEBUG: Passou pelo if (results.length > 0 && results.every((res) => !res.success)) == false [createManager]'
+      );
       const additionalInformation: AdditionalInformation = {};
 
       if (results.length) {
@@ -1656,11 +1758,15 @@ async function handler(
             }
           });
         } else {
-          console.log('DEBUG: Passou pelo if (evt.iCalUID !== booking.iCalUID) == false');
+          console.log(
+            'DEBUG: Passou pelo if (evt.iCalUID !== booking.iCalUID) == false'
+          );
         }
       }
       if (noEmail !== true) {
-        console.log('DEBUG: Entrou no if (noEmail !== true) [sendScheduledEmailsAndSMS]');
+        console.log(
+          'DEBUG: Entrou no if (noEmail !== true) [sendScheduledEmailsAndSMS]'
+        );
         let isHostConfirmationEmailsDisabled = false;
         let isAttendeeConfirmationEmailDisabled = false;
 
@@ -1696,7 +1802,7 @@ async function handler(
             ...evt,
             additionalInformation,
             additionalNotes,
-            customInputs,
+            customInputs
           },
           eventNameObject,
           isHostConfirmationEmailsDisabled,
@@ -1705,7 +1811,9 @@ async function handler(
         );
         console.log('DEBUG: Após sendScheduledEmailsAndSMS [createManager]');
       } else {
-        console.log('DEBUG: Passou pelo if (noEmail !== true) == false [sendScheduledEmailsAndSMS]');
+        console.log(
+          'DEBUG: Passou pelo if (noEmail !== true) == false [sendScheduledEmailsAndSMS]'
+        );
       }
     }
   } else {
@@ -1727,17 +1835,23 @@ async function handler(
     !originalRescheduledBooking?.paid &&
     !!booking;
 
-    console.log(
-      'noEmail, isConfirmedByDefault, bookingRequiresPayment',
-      noEmail,
-      isConfirmedByDefault,
-      bookingRequiresPayment
-    );
+  console.log(
+    'noEmail, isConfirmedByDefault, bookingRequiresPayment',
+    noEmail,
+    isConfirmedByDefault,
+    bookingRequiresPayment
+  );
 
   // DEBUG: Antes do bloco de envio de e-mail de solicitação de confirmação
-  console.log('DEBUG: Antes do if (!isConfirmedByDefault && noEmail !== true && !bookingRequiresPayment)', { isConfirmedByDefault, noEmail, bookingRequiresPayment });
+  console.log(
+    'DEBUG: Antes do if (!isConfirmedByDefault && noEmail !== true && !bookingRequiresPayment)',
+    {isConfirmedByDefault, noEmail, bookingRequiresPayment}
+  );
   if (!isConfirmedByDefault && noEmail !== true && !bookingRequiresPayment) {
-    console.log('DEBUG: Entrou no bloco de envio de solicitação de confirmação (sendOrganizerRequestEmail, sendAttendeeRequestEmailAndSMS)', { noEmail, isConfirmedByDefault, bookingRequiresPayment });
+    console.log(
+      'DEBUG: Entrou no bloco de envio de solicitação de confirmação (sendOrganizerRequestEmail, sendAttendeeRequestEmailAndSMS)',
+      {noEmail, isConfirmedByDefault, bookingRequiresPayment}
+    );
     loggerWithEventDetails.debug(
       `Emails: Booking ${organizerUser.username} requires confirmation, sending request emails`,
       safeStringify({
@@ -1756,14 +1870,18 @@ async function handler(
     );
     console.log('DEBUG: Após sendAttendeeRequestEmailAndSMS');
   } else {
-    console.log('DEBUG: Passou pelo if (!isConfirmedByDefault && noEmail !== true && !bookingRequiresPayment) == false [sendOrganizerRequestEmail, sendAttendeeRequestEmailAndSMS]');
+    console.log(
+      'DEBUG: Passou pelo if (!isConfirmedByDefault && noEmail !== true && !bookingRequiresPayment) == false [sendOrganizerRequestEmail, sendAttendeeRequestEmailAndSMS]'
+    );
   }
 
   if (booking.location?.startsWith('http')) {
     console.log('DEBUG: Entrou no if (booking.location?.startsWith("http"))');
     videoCallUrl = booking.location;
   } else {
-    console.log('DEBUG: Passou pelo if (booking.location?.startsWith("http")) == false');
+    console.log(
+      'DEBUG: Passou pelo if (booking.location?.startsWith("http")) == false'
+    );
   }
 
   const metadata = videoCallUrl
@@ -1792,7 +1910,9 @@ async function handler(
   };
 
   if (bookingRequiresPayment && 'credentialId' in paymentAppData) {
-    console.log('DEBUG: Entrou no if (bookingRequiresPayment && "credentialId" in paymentAppData)');
+    console.log(
+      'DEBUG: Entrou no if (bookingRequiresPayment && "credentialId" in paymentAppData)'
+    );
     // Load credentials.app.categories
     const credentialPaymentAppCategories = await prisma.credential.findMany({
       where: {
@@ -1829,7 +1949,9 @@ async function handler(
         message: 'Missing payment credentials'
       });
     } else {
-      console.log('DEBUG: Passou pelo if (!eventTypePaymentAppCredential) == false');
+      console.log(
+        'DEBUG: Passou pelo if (!eventTypePaymentAppCredential) == false'
+      );
     }
 
     // Convert type of eventTypePaymentAppCredential to appId: EventTypeAppList
@@ -1840,10 +1962,12 @@ async function handler(
       eventTypePaymentAppCredential as IEventTypePaymentCredentialType,
       {
         ...booking,
-        user: booking.user ? {
-          ...booking.user,
-          timeZone: getTimezoneWithFallback(booking.user.timeZone)
-        } : null
+        user: booking.user
+          ? {
+              ...booking.user,
+              timeZone: getTimezoneWithFallback(booking.user.timeZone)
+            }
+          : null
       },
       fullName,
       bookerEmail,
@@ -1887,7 +2011,9 @@ async function handler(
       paymentId: payment?.id
     };
   } else {
-    console.log('DEBUG: Passou pelo if (bookingRequiresPayment && "credentialId" in paymentAppData) == false');
+    console.log(
+      'DEBUG: Passou pelo if (bookingRequiresPayment && "credentialId" in paymentAppData) == false'
+    );
   }
 
   loggerWithEventDetails.debug(`Booking ${organizerUser.username} completed`);
@@ -1906,17 +2032,23 @@ async function handler(
     // const scheduleTriggerPromises = [];
 
     if (rescheduleUid && originalRescheduledBooking) {
-      console.log('DEBUG: Entrou no if (rescheduleUid && originalRescheduledBooking) [webhooks]');
+      console.log(
+        'DEBUG: Entrou no if (rescheduleUid && originalRescheduledBooking) [webhooks]'
+      );
       //delete all scheduled triggers for meeting ended and meeting started of booking
       // deleteWebhookScheduledTriggerPromise = deleteWebhookScheduledTriggers({
       //   booking: originalRescheduledBooking
       // });
     } else {
-      console.log('DEBUG: Passou pelo if (rescheduleUid && originalRescheduledBooking) == false [webhooks]');
+      console.log(
+        'DEBUG: Passou pelo if (rescheduleUid && originalRescheduledBooking) == false [webhooks]'
+      );
     }
 
     if (booking && booking.status === BookingStatus.ACCEPTED) {
-      console.log('DEBUG: Entrou no if (booking && booking.status === BookingStatus.ACCEPTED) [webhooks]');
+      console.log(
+        'DEBUG: Entrou no if (booking && booking.status === BookingStatus.ACCEPTED) [webhooks]'
+      );
       for (const subscriber of subscribersMeetingEnded) {
         // scheduleTriggerPromises.push(
         //   scheduleTrigger({
@@ -1939,11 +2071,13 @@ async function handler(
         // );
       }
     } else {
-      console.log('DEBUG: Passou pelo if (booking && booking.status === BookingStatus.ACCEPTED) == false [webhooks]');
+      console.log(
+        'DEBUG: Passou pelo if (booking && booking.status === BookingStatus.ACCEPTED) == false [webhooks]'
+      );
     }
 
     await Promise.all([
-      deleteWebhookScheduledTriggerPromise,
+      deleteWebhookScheduledTriggerPromise
       // ...scheduleTriggerPromises
     ]).catch((error) => {
       console.log('DEBUG: Entrou no catch do Promise.all([webhooks])');
@@ -1967,14 +2101,18 @@ async function handler(
 
   try {
     if (hasHashedBookingLink && reqBody.hashedLink) {
-      console.log('DEBUG: Entrou no if (hasHashedBookingLink && reqBody.hashedLink) [hashedLink]');
+      console.log(
+        'DEBUG: Entrou no if (hasHashedBookingLink && reqBody.hashedLink) [hashedLink]'
+      );
       await prisma.hashedLink.delete({
         where: {
           link: reqBody.hashedLink as string
         }
       });
     } else {
-      console.log('DEBUG: Passou pelo if (hasHashedBookingLink && reqBody.hashedLink) == false [hashedLink]');
+      console.log(
+        'DEBUG: Passou pelo if (hasHashedBookingLink && reqBody.hashedLink) == false [hashedLink]'
+      );
     }
   } catch (error) {
     console.log('DEBUG: Entrou no catch do try de hashedLink');
@@ -2055,7 +2193,9 @@ async function handler(
       (booking.location === DailyLocationType ||
         booking.location?.trim() === '')
     ) {
-      console.log('DEBUG: Entrou no if (isConfirmedByDefault && (booking.location === DailyLocationType || booking.location?.trim() === "")) [no show triggers]');
+      console.log(
+        'DEBUG: Entrou no if (isConfirmedByDefault && (booking.location === DailyLocationType || booking.location?.trim() === "")) [no show triggers]'
+      );
       // await scheduleNoShowTriggers({
       //   booking: {startTime: booking.startTime, id: booking.id},
       //   triggerForUser,
@@ -2065,7 +2205,9 @@ async function handler(
       //   orgId
       // });
     } else {
-      console.log('DEBUG: Passou pelo if (isConfirmedByDefault && (booking.location === DailyLocationType || booking.location?.trim() === "")) == false [no show triggers]');
+      console.log(
+        'DEBUG: Passou pelo if (isConfirmedByDefault && (booking.location === DailyLocationType || booking.location?.trim() === "")) == false [no show triggers]'
+      );
     }
   } catch (error) {
     console.log('DEBUG: Entrou no catch do try de no show triggers');

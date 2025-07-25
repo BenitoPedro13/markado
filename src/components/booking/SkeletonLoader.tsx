@@ -1,6 +1,6 @@
 import React from "react";
 
-import { SkeletonText } from "@/packages/ui";
+import { Text as SkeletonText } from "@/components/ui/align-ui/skeleton";
 
 function SkeletonLoader() {
   return (
