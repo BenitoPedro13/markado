@@ -61,6 +61,8 @@ const getBusyVideoTimes = async (withCredentials: CredentialPayload[]) =>
 
 const createMeeting = async (credential: CredentialPayload, calEvent: CalendarEvent) => {
   const uid: string = getUid(calEvent);
+  console.log('DEBUG: createMeeting - credencial recebida:', JSON.stringify(credential, null, 2));
+  console.log('DEBUG: createMeeting - calEvent recebido:', JSON.stringify(calEvent, null, 2));
   log.debug(
     "createMeeting",
     safeStringify({
@@ -110,11 +112,13 @@ const createMeeting = async (credential: CredentialPayload, calEvent: CalendarEv
       throw `Location app ${credential.appId} is either disabled or not seeded at all`;
 
     createdMeeting = await firstVideoAdapter?.createMeeting(calEvent);
-
+    console.log('DEBUG: createMeeting - resultado de firstVideoAdapter.createMeeting:', JSON.stringify(createdMeeting, null, 2));
     returnObject = { ...returnObject, createdEvent: createdMeeting, success: true };
+    console.log('DEBUG: createMeeting - returnObject final:', JSON.stringify(returnObject, null, 2));
     log.debug("created Meeting", safeStringify(returnObject));
   } catch (err) {
     // await sendBrokenIntegrationEmail(calEvent, "video");
+    console.log('DEBUG: createMeeting - erro capturado:', JSON.stringify(err, null, 2));
     log.error(
       "createMeeting failed",
       safeStringify(err),

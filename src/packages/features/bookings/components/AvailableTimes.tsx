@@ -166,94 +166,99 @@ const SlotItem = ({
 
   return (
     // <AnimatePresence>
-      <div className="flex gap-2">
-        <Button.Root
-          key={slot.time}
-          disabled={
-            bookingFull ||
-            !!(slot.bookingUid && slot.bookingUid === bookingData?.uid)
-          }
+    <div className="flex gap-2">
+      <Button.Root
+        key={slot.time}
+        variant="neutral"
+        mode="stroke"
+        disabled={
+          bookingFull ||
+          !!(slot.bookingUid && slot.bookingUid === bookingData?.uid)
+        }
         //   data-testid="time"
         //   data-disabled={bookingFull}
         //   data-time={slot.time}
-          onClick={onButtonClick}
-                      className={classNames(
-              `hover:border-brand-default min-h-9 mb-2 flex h-auto w-full flex-grow flex-col justify-center py-2`,
-              selectedSlots && selectedSlots.length > 0 && selectedSlots.includes(slot.time) && 'border-brand-default',
-              `${customClassNames}`
-            )}
-          // color="secondary"
-        >
-          <div className="flex items-center gap-2">
-            {!hasTimeSlots && overlayCalendarToggled && (
-              <span
-                className={classNames(
-                  'inline-block h-2 w-2 rounded-full',
-                  isOverlapping ? 'bg-rose-600' : 'bg-emerald-400'
-                )}
-              />
-            )}
-            {computedDateWithUsersTimezone.format(timeFormat)}
-          </div>
-          {bookingFull && <p className="text-sm">{t('booking_full')}</p>}
-          {hasTimeSlots && !bookingFull && (
-            <p className="flex items-center text-sm">
-              <span
-                className={classNames(
-                  colorClass,
-                  'mr-1 inline-block h-2 w-2 rounded-full'
-                )}
-                aria-hidden
-              />
-              <SeatsAvailabilityText
-                showExact={!!showAvailableSeatsCount}
-                totalSeats={seatsPerTimeSlot}
-                bookedSeats={slot.attendees || 0}
-              />
-            </p>
+        onClick={onButtonClick}
+        className={classNames(
+          `hover:border-brand-default min-h-9 mb-2 flex h-auto w-full flex-grow flex-col justify-center py-2`,
+          selectedSlots &&
+            selectedSlots.length > 0 &&
+            selectedSlots.includes(slot.time) &&
+            'border-brand-default',
+          `${customClassNames}`
+        )}
+        // color="secondary"
+      >
+        <div className="flex items-center gap-2">
+          {!hasTimeSlots && overlayCalendarToggled && (
+            <span
+              className={classNames(
+                'inline-block h-2 w-2 rounded-full',
+                isOverlapping ? 'bg-rose-600' : 'bg-emerald-400'
+              )}
+            />
           )}
-        </Button.Root>
-        {overlapConfirm && isOverlapping && (
-          <HoverCard.Root>
-            <HoverCard.Trigger asChild>
-              {/* <m.div
+          {computedDateWithUsersTimezone.format(timeFormat)}
+        </div>
+        {bookingFull && <p className="text-sm">{t('booking_full')}</p>}
+        {hasTimeSlots && !bookingFull && (
+          <p className="flex items-center text-sm">
+            <span
+              className={classNames(
+                colorClass,
+                'mr-1 inline-block h-2 w-2 rounded-full'
+              )}
+              aria-hidden
+            />
+            <SeatsAvailabilityText
+              showExact={!!showAvailableSeatsCount}
+              totalSeats={seatsPerTimeSlot}
+              bookedSeats={slot.attendees || 0}
+            />
+          </p>
+        )}
+      </Button.Root>
+      {overlapConfirm && isOverlapping && (
+        <HoverCard.Root>
+          <HoverCard.Trigger asChild>
+            {/* <m.div
                 initial={{width: 0}}
                 animate={{width: 'auto'}}
                 exit={{width: 0}}
               > */}
-                <Button.Root
-                  variant='neutral'
-                  // StartIcon={
-                  //   layout === 'column_view' ? 'chevron-right' : undefined
-                  // }
-                  onClick={() =>
-                    onTimeSelect(
-                      slot.time,
-                      slot?.attendees || 0,
-                      seatsPerTimeSlot,
-                      slot.bookingUid
-                    )
-                  }
-                >
-                  {layout !== 'column_view' && t('confirm')}
-                </Button.Root>
-              {/* </m.div> */}
-            </HoverCard.Trigger>
-            <HoverCard.Portal>
-              <HoverCard.Content side="top" align="end" sideOffset={2}>
-                <div className="text-emphasis bg-inverted w-[var(--booker-timeslots-width)] rounded-md p-3">
-                  <div className="flex items-center gap-2">
-                    <p>Busy</p>
-                  </div>
-                  <p className="text-muted">
-                    {overlappingTimeStart} - {overlappingTimeEnd}
-                  </p>
+            <Button.Root
+              variant="neutral"
+              // StartIcon={
+              //   layout === 'column_view' ? 'chevron-right' : undefined
+              // }
+              onClick={() =>
+                onTimeSelect(
+                  slot.time,
+                  slot?.attendees || 0,
+                  seatsPerTimeSlot,
+                  slot.bookingUid
+                )
+              }
+            >
+              {layout !== 'column_view' && t('confirm')}
+            </Button.Root>
+            {/* </m.div> */}
+          </HoverCard.Trigger>
+          <HoverCard.Portal>
+            <HoverCard.Content side="top" align="end" sideOffset={2}>
+              <div className="text-emphasis bg-inverted w-[var(--booker-timeslots-width)] rounded-md p-3">
+                <div className="flex items-center gap-2">
+                  <p>Busy</p>
                 </div>
-              </HoverCard.Content>
-            </HoverCard.Portal>
-          </HoverCard.Root>
-        )}
-      </div>
+                <p className="text-muted">
+                  {overlappingTimeStart} - {overlappingTimeEnd}
+                </p>
+              </div>
+            </HoverCard.Content>
+          </HoverCard.Portal>
+        </HoverCard.Root>
+      )}
+    </div>
     // </AnimatePresence>
   );
 };

@@ -17,10 +17,17 @@ const MARKADO_URL =
 export const WEBAPP_URL =
   process.env.NEXT_PUBLIC_WEBAPP_URL || 'http://localhost:3000';
 
+/** @deprecated use `WEBAPP_URL` */
+export const BASE_URL = WEBAPP_URL;
 export const WEBSITE_URL =
   process.env.NEXT_PUBLIC_WEBSITE_URL || 'https://markado.co';
-
+export const CONTACT_SUPPORT_LINK = process.env.CONTACT_SUPPORT_LINK || "https://wa.me/5521983449481";
 export const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME || 'Markado.co';
+export const SUPPORT_MAIL_ADDRESS = process.env.NEXT_PUBLIC_SUPPORT_MAIL_ADDRESS || "help@markado.co";
+export const COMPANY_NAME = process.env.NEXT_PUBLIC_COMPANY_NAME || "Markado.co";
+export const SENDER_ID = process.env.NEXT_PUBLIC_SENDER_ID || "Markado";
+export const SENDER_NAME = process.env.NEXT_PUBLIC_SENDGRID_SENDER_NAME || "Markado.co";
+export const EMAIL_FROM_NAME = process.env.EMAIL_FROM_NAME || APP_NAME;
 
 // Extract just the domain part from the URL
 const MARKADO_DOMAIN = MARKADO_URL.includes('://')
@@ -34,6 +41,7 @@ const ALLOWED_HOSTNAMES = JSON.parse(
 const RESERVED_SUBDOMAINS = JSON.parse(
   `[${process.env.RESERVED_SUBDOMAINS || ''}]`
 ) as string[];
+
 
 export const AVATAR_FALLBACK = '/avatar.svg';
 

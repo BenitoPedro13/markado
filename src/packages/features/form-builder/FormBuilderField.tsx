@@ -147,22 +147,22 @@ const WithLabel = ({
       {/* multiemail doesnt show label initially. It is shown on clicking CTA */}
       {/* boolean type doesn't have a label overall, the radio has it's own label */}
       {/* Component itself managing it's label should remove these checks */}
-      {/* {noLabel
+      {noLabel
         ? null
         : field.type !== "boolean" &&
           field.type !== "multiemail" &&
           field.label && (
             <div className="mb-2 flex items-center">
-              <Label className="!mb-0 flex items-center" htmlFor={htmlFor}>
+              <label className="!mb-0 flex items-center" htmlFor={htmlFor}>
                 <span className="!text-strong-950">
                   {field.label}
                   {!readOnly && field.required ? "*" : ""}
                 </span>
 
-                {field.type === "phone" && <InfoBadge content={t("number_in_international_format")} />}
-              </Label>
+                {/* {field.type === "phone" && <InfoBadge content={t("number_in_international_format")} />} */}
+              </label>
             </div>
-          )} */}
+          )}
       {children}
     </div>
   );

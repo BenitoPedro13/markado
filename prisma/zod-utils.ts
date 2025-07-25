@@ -408,7 +408,7 @@ export const createdEventSchema = z
   .passthrough();
 
 const schemaDefaultConferencingApp = z.object({
-  appSlug: z.string().default('daily-video').optional(),
+  appSlug: z.string().default('googlevideo').optional(),
   appLink: z.string().optional()
 });
 

@@ -328,7 +328,7 @@ const BookerComponent = ({
       <div
         className={classNames(
           'main',
-          'bg-white dark:bg-neutral-900 shadow-lg rounded-2xl max-w-5xl mx-auto p-6 flex flex-col items-center',
+          'max-w-[1024px] mx-auto p-6 flex flex-col items-center md:gap-0 md:border md:border-bg-soft-200 md:rounded-[24px]',
           layout === BookerLayouts.MONTH_VIEW
             ? 'overflow-visible'
             : 'overflow-clip'
@@ -337,20 +337,20 @@ const BookerComponent = ({
         <div
           data-testid="booker-container"
           className={classNames(
-            'grid w-full items-start py-4 gap-6 grid-cols-1 md:grid-cols-3',
-            (layout === BookerLayouts.MONTH_VIEW || isEmbed) &&
-              'border-soft-200 rounded-md',
-            !isEmbed && 'sm:transition-[width] sm:duration-300',
-            isEmbed &&
-              layout === BookerLayouts.MONTH_VIEW &&
-              'border-soft-200 sm:border-booker-width',
-            !isEmbed &&
-              layout === BookerLayouts.MONTH_VIEW &&
-              `border-soft-200 border`,
+            'grid w-full items-start gap-6 grid-cols-1 md:grid-cols-8',
+            // (layout === BookerLayouts.MONTH_VIEW || isEmbed) &&
+            //   'border-soft-200 rounded-md',
+            // !isEmbed && 'sm:transition-[width] sm:duration-300',
+            // isEmbed &&
+            //   layout === BookerLayouts.MONTH_VIEW &&
+            //   'border-soft-200 sm:border-booker-width',
+            // !isEmbed &&
+            //   layout === BookerLayouts.MONTH_VIEW &&
+            //   `border-soft-200 border`,
             `${customClassNames?.bookerContainer} rounded-3xl`
           )}
         >
-          <div className="flex flex-col gap-3 mb-4 max-w-full">
+          <div className="flex flex-col gap-3 mb-4 max-w-full col-span-2">
             <EventMeta
               classNames={{
                 eventMetaContainer: classNames(
@@ -370,12 +370,17 @@ const BookerComponent = ({
             />
           </div>
           {bookerState === 'booking' ? (
-            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 md:col-span-2">
-              <h3 className="text-lg font-semibold mb-4">Preencher dados</h3>
+            <div
+              // bg-gray-50
+              // dark:bg-gray-800
+              // rounded-lg
+              className="p-4 md:col-span-6 md:border-l md:border-x-bg-soft-200 pl-6"
+            >
+              {/* <h3 className="text-lg font-semibold mb-4">Preencher dados</h3> */}
               {EventBooker}
             </div>
           ) : (
-            <div className="flex flex-col gap-4 w-full items-center">
+            <div className="flex flex-col gap-4 w-full items-center md:col-span-4 md:border-x md:border-x-bg-soft-200">
               <DatePicker
                 classNames={{
                   datePickerContainer:
@@ -404,7 +409,7 @@ const BookerComponent = ({
             </div>
           )}
           {bookerState !== 'booking' && (
-            <div className="flex flex-col gap-4 w-full">
+            <div className="flex flex-col gap-4 w-full md:col-span-2">
               <AvailableTimeSlots
                 customClassNames={
                   customClassNames?.availableTimeSlotsCustomClassNames

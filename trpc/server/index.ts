@@ -11,6 +11,7 @@ import { scheduleRouter } from './routers/scheadule.router';
 import { slotsRouter } from './routers/slots.router';
 import { publicSlotsRouter } from './routers/public-slots.router';
 import { eventRouter } from './routers/event.router';
+import { bookingRouter } from './routers/booking.router';
 
 export const appRouter = router({
   user: userRouter,
@@ -24,6 +25,7 @@ export const appRouter = router({
   schedule: scheduleRouter,
   slots: slotsRouter,
   event: eventRouter,
+  booking: bookingRouter,
   public: router({
     slots: publicSlotsRouter,
     event: eventRouter,
