@@ -83,25 +83,25 @@ export async function getBookings({
               eventType: {
                 team: {
                   id: {
-                    in: filters.teamIds
-                  }
-                }
-              }
+                    in: filters.teamIds,
+                  },
+                },
+              },
             },
             {
               eventType: {
                 parent: {
                   team: {
                     id: {
-                      in: filters.teamIds
-                    }
-                  }
-                }
-              }
-            }
-          ]
-        }
-      ]
+                      in: filters.teamIds,
+                    },
+                  },
+                },
+              },
+            },
+          ],
+        },
+      ],
     };
   }
 
@@ -115,32 +115,32 @@ export async function getBookings({
                 hosts: {
                   some: {
                     userId: {
-                      in: filters.userIds
+                      in: filters.userIds,
                     },
-                    isFixed: true
-                  }
-                }
-              }
+                    isFixed: true,
+                  },
+                },
+              },
             },
             {
               userId: {
-                in: filters.userIds
-              }
+                in: filters.userIds,
+              },
             },
             {
               eventType: {
                 users: {
                   some: {
                     id: {
-                      in: filters.userIds
-                    }
-                  }
-                }
-              }
-            }
-          ]
-        }
-      ]
+                      in: filters.userIds,
+                    },
+                  },
+                },
+              },
+            },
+          ],
+        },
+      ],
     };
   }
 
@@ -151,21 +151,21 @@ export async function getBookings({
           OR: [
             {
               eventTypeId: {
-                in: filters.eventTypeIds
-              }
+                in: filters.eventTypeIds,
+              },
             },
             {
               eventType: {
                 parent: {
                   id: {
-                    in: filters.eventTypeIds
-                  }
-                }
-              }
-            }
-          ]
-        }
-      ]
+                    in: filters.eventTypeIds,
+                  },
+                },
+              },
+            },
+          ],
+        },
+      ],
     };
   }
 
@@ -173,9 +173,9 @@ export async function getBookings({
     bookingWhereInputFilters.attendeeEmail = {
       attendees: {
         some: {
-          email: filters.attendeeEmail.trim()
-        }
-      }
+          email: filters.attendeeEmail.trim(),
+        },
+      },
     };
   }
 
@@ -183,25 +183,25 @@ export async function getBookings({
     bookingWhereInputFilters.attendeeName = {
       attendees: {
         some: {
-          name: filters.attendeeName.trim()
-        }
-      }
+          name: filters.attendeeName.trim(),
+        },
+      },
     };
   }
 
   if (filters?.afterStartDate) {
     bookingWhereInputFilters.afterStartDate = {
       startTime: {
-        gte: new Date(filters.afterStartDate)
-      }
+        gte: new Date(filters.afterStartDate),
+      },
     };
   }
 
   if (filters?.beforeEndDate) {
     bookingWhereInputFilters.beforeEndDate = {
       endTime: {
-        lte: new Date(filters.beforeEndDate)
-      }
+        lte: new Date(filters.beforeEndDate),
+      },
     };
   }
 
@@ -222,8 +222,8 @@ export async function getBookings({
      */
     routedFromRoutingFormReponse: {
       select: {
-        id: true
-      }
+        id: true,
+      },
     },
     recurringEventId: true,
     location: true,
@@ -246,10 +246,10 @@ export async function getBookings({
           select: {
             id: true,
             name: true,
-            slug: true
-          }
-        }
-      }
+            slug: true,
+          },
+        },
+      },
     },
     status: true,
     paid: true,
@@ -258,15 +258,15 @@ export async function getBookings({
         paymentOption: true,
         amount: true,
         currency: true,
-        success: true
-      }
+        success: true,
+      },
     },
     user: {
       select: {
         id: true,
         name: true,
-        email: true
-      }
+        email: true,
+      },
     },
     rescheduled: true,
     references: true,
@@ -274,18 +274,18 @@ export async function getBookings({
     seatsReferences: {
       where: {
         attendee: {
-          email: user.email
-        }
+          email: user.email,
+        },
       },
       select: {
         referenceUid: true,
         attendee: {
           select: {
-            email: true
-          }
-        }
-      }
-    }
+            email: true,
+          },
+        },
+      },
+    },
   };
 
   const [
@@ -299,21 +299,21 @@ export async function getBookings({
     //////////////////////////
 
     recurringInfoBasic,
-    recurringInfoExtended
+    recurringInfoExtended,
     // We need all promises to be successful, so we are not using Promise.allSettled
   ] = await Promise.all([
     prisma.booking.findMany({
       where: {
         OR: [
           {
-            userId: user.id
-          }
+            userId: user.id,
+          },
         ],
-        AND: [passedBookingsStatusFilter, ...filtersCombined]
+        AND: [passedBookingsStatusFilter, ...filtersCombined],
       },
       orderBy,
       take: take + 1,
-      skip
+      skip,
     }),
     prisma.booking.findMany({
       where: {
@@ -321,16 +321,16 @@ export async function getBookings({
           {
             attendees: {
               some: {
-                email: user.email
-              }
-            }
-          }
+                email: user.email,
+              },
+            },
+          },
         ],
-        AND: [passedBookingsStatusFilter, ...filtersCombined]
+        AND: [passedBookingsStatusFilter, ...filtersCombined],
       },
       orderBy,
       take: take + 1,
-      skip
+      skip,
     }),
     prisma.booking.findMany({
       where: {
@@ -342,19 +342,19 @@ export async function getBookings({
                   some: {
                     userId: user.id,
                     role: {
-                      in: ['ADMIN', 'OWNER']
-                    }
-                  }
-                }
-              }
-            }
-          }
+                      in: ["ADMIN", "OWNER"],
+                    },
+                  },
+                },
+              },
+            },
+          },
         ],
-        AND: [passedBookingsStatusFilter, ...filtersCombined]
+        AND: [passedBookingsStatusFilter, ...filtersCombined],
       },
       orderBy,
       take: take + 1,
-      skip
+      skip,
     }),
     prisma.booking.findMany({
       where: {
@@ -369,21 +369,21 @@ export async function getBookings({
                       some: {
                         userId: user.id,
                         role: {
-                          in: ['ADMIN', 'OWNER']
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
+                          in: ["ADMIN", "OWNER"],
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
         ],
-        AND: [passedBookingsStatusFilter, ...filtersCombined]
+        AND: [passedBookingsStatusFilter, ...filtersCombined],
       },
       orderBy,
       take: take + 1,
-      skip
+      skip,
     }),
     prisma.booking.findMany({
       where: {
@@ -392,45 +392,45 @@ export async function getBookings({
             seatsReferences: {
               some: {
                 attendee: {
-                  email: user.email
-                }
-              }
-            }
-          }
+                  email: user.email,
+                },
+              },
+            },
+          },
         ],
-        AND: [passedBookingsStatusFilter, ...filtersCombined]
+        AND: [passedBookingsStatusFilter, ...filtersCombined],
       },
       orderBy,
       take: take + 1,
-      skip
+      skip,
     }),
     prisma.booking.groupBy({
-      by: ['recurringEventId'],
+      by: ["recurringEventId"],
       _min: {
-        startTime: true
+        startTime: true,
       },
       _count: {
-        recurringEventId: true
+        recurringEventId: true,
       },
       where: {
         recurringEventId: {
-          not: {equals: null}
+          not: { equals: null },
         },
-        userId: user.id
-      }
+        userId: user.id,
+      },
     }),
     prisma.booking.groupBy({
-      by: ['recurringEventId', 'status', 'startTime'],
+      by: ["recurringEventId", "status", "startTime"],
       _min: {
-        startTime: true
+        startTime: true,
       },
       where: {
         recurringEventId: {
-          not: {equals: null}
+          not: { equals: null },
         },
-        userId: user.id
-      }
-    })
+        userId: user.id,
+      },
+    }),
   ]);
 
   const recurringInfo = recurringInfoBasic.map(
@@ -451,13 +451,7 @@ export async function getBookings({
           }
           return prev;
         },
-        {
-          ACCEPTED: [],
-          CANCELLED: [],
-          REJECTED: [],
-          PENDING: [],
-          AWAITING_HOST: []
-        } as {
+        { ACCEPTED: [], CANCELLED: [], REJECTED: [], PENDING: [], AWAITING_HOST: [] } as {
           [key in BookingStatus]: Date[];
         }
       );
@@ -465,7 +459,7 @@ export async function getBookings({
         recurringEventId: info.recurringEventId,
         count: info._count.recurringEventId,
         firstDate: info._min.startTime,
-        bookings
+        bookings,
       };
     }
   );
@@ -487,44 +481,33 @@ export async function getBookings({
       await prisma.booking.findMany({
         where: {
           id: {
-            in: plainBookings.map((booking) => booking.id)
-          }
+            in: plainBookings.map((booking) => booking.id),
+          },
         },
         select: bookingSelect,
         // We need to get the sorted bookings here as well because plainBookings array is not correctly sorted
-        orderBy
+        orderBy,
       })
     ).map(async (booking) => {
       // If seats are enabled and the event is not set to show attendees, filter out attendees that are not the current user
-      if (
-        booking.seatsReferences.length &&
-        !booking.eventType?.seatsShowAttendees
-      ) {
-        booking.attendees = booking.attendees.filter(
-          (attendee) => attendee.email === user.email
-        );
+      if (booking.seatsReferences.length && !booking.eventType?.seatsShowAttendees) {
+        booking.attendees = booking.attendees.filter((attendee) => attendee.email === user.email);
       }
 
       return {
         ...booking,
         eventType: {
           ...booking.eventType,
-          recurringEvent: parseRecurringEvent(
-            booking.eventType?.recurringEvent
-          ),
-          eventTypeColor: parseEventTypeColor(
-            booking.eventType?.eventTypeColor
-          ),
+          recurringEvent: parseRecurringEvent(booking.eventType?.recurringEvent),
+          eventTypeColor: parseEventTypeColor(booking.eventType?.eventTypeColor),
           price: booking.eventType?.price || 0,
-          currency: booking.eventType?.currency || 'usd',
-          metadata: EventTypeMetaDataSchema.parse(
-            booking.eventType?.metadata || {}
-          )
+          currency: booking.eventType?.currency || "usd",
+          metadata: EventTypeMetaDataSchema.parse(booking.eventType?.metadata || {}),
         },
         startTime: booking.startTime.toISOString(),
-        endTime: booking.endTime.toISOString()
+        endTime: booking.endTime.toISOString(),
       };
     })
   );
-  return {bookings, recurringInfo};
+  return { bookings, recurringInfo };
 }
