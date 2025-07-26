@@ -2,26 +2,17 @@ import { FAKE_DAILY_CREDENTIAL } from "@/packages/app-store/dailyvideo/lib/Video
 import { DailyLocationType } from "@/core/locations";
 import EventManager from "@/packages/core/EventManager";
 import dayjs from "@/lib/dayjs";
-// import { sendCancelledEmailsAndSMS } from "@/packages/emails"; // Caminho não encontrado, manter comentado
 import { getCalEventResponses } from "@/packages/features/bookings/lib/getCalEventResponses";
 import { workflowSelect } from "@/packages/features/workflows/lib/getAllWorkflows";
-// import { sendCancelledReminders } from "@/packages/features/workflows/lib/reminders/reminderScheduler"; // Não encontrado
-// import type { GetSubscriberOptions } from "@/packages/features/webhooks/lib/getWebhooks"; // Não encontrado
-//import { deleteWebhookScheduledTriggers } from "@/packages/features/webhooks/lib/scheduleTrigger";
 import sendPayload from "@/packages/features/webhooks/lib/sendOrSchedulePayload";
 import type { EventTypeInfo } from "@/packages/features/webhooks/lib/sendPayload";
 import { isPrismaObjOrUndefined, parseRecurringEvent } from "@/packages/lib";
-// import { getBookerBaseUrl } from "@/packages/lib/getBookerUrl/server"; // Não encontrado
 import getOrgIdFromMemberOrTeamId from "@/packages/lib/getOrgIdFromMemberOrTeamId";
 import { getTeamIdFromEventType } from "@/packages/lib/getTeamIdFromEventType";
 import { HttpError } from "@/packages/lib/http-error";
 import logger from "@/packages/lib/logger";
 import { safeStringify } from "@/lib/safeStringify";
-// import { getTranslation } from "@/packages/lib/server/i18n"; // Não encontrado
 import { getTimeFormatStringFromUserTimeFormat } from "@/packages/features/bookings/lib/timeFormat";
-// import prisma, { bookingMinimalSelect } from "@/prisma"; // Não encontrado
-// import type { WebhookTriggerEvents } from "@/prisma/enums"; // Não encontrado
-// import { BookingStatus } from "@/prisma/enums"; // Não encontrado
 import { credentialForCalendarServiceSelect } from "~/prisma/selects/credential";
 import { bookingMetadataSchema, EventTypeMetaDataSchema, bookingCancelInput } from "~/prisma/zod-utils";
 import type { EventTypeMetadata } from "~/prisma/zod-utils";
@@ -32,7 +23,6 @@ import { NextApiRequest } from "next";
 import { BookingStatus, WebhookTriggerEvents } from "~/prisma/enums";
 import { getTranslation } from "@/packages/lib/server/i18n";
 import { WorkflowReminder, Prisma } from "~/prisma/app/generated/prisma/client";
-// import cancelAttendeeSeat from "./handleSeats/cancel/cancelAttendeeSeat"; // Não encontrado
 
 const log = logger.getSubLogger({ prefix: ["handleCancelBooking"] });
 

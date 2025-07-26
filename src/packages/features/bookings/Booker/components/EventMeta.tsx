@@ -189,13 +189,13 @@ export const EventMeta = ({
                 </EventMetaBlock>
               )}
               <EventDetails event={event} />
-              <div className="mb-4">
+              <div className="mb-4 overflow-hidden">
                   <TimezoneSelectWithStyle
                     value={bookerTimezone}
                     onChange={setBookerTimezone}
                     autoDetect={false}
                     hint={false}
-                    className="max-w-64 border-none"
+                    className="max-w-64 border-none overflow-hidden"
                     variant="inline"
                   />
               </div>

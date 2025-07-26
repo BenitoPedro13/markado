@@ -350,13 +350,13 @@ const BookerComponent = ({
             `${customClassNames?.bookerContainer} rounded-3xl`
           )}
         >
-          <div className="flex flex-col gap-3 mb-4 max-w-full col-span-2">
+          <div className="flex flex-col gap-3 mb-4 w-full md:col-span-2">
             <EventMeta
               classNames={{
                 eventMetaContainer: classNames(
                   customClassNames?.eventMetaCustomClassNames
                     ?.eventMetaContainer,
-                  'flex flex-col gap-3 mb-4 max-w-full'
+                  'flex flex-col gap-3 mb-4 w-full'
                 ),
                 eventMetaTitle:
                   customClassNames?.eventMetaCustomClassNames?.eventMetaTitle,

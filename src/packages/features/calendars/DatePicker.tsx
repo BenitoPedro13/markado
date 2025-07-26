@@ -98,12 +98,12 @@ export const Day = ({
     <button
       type="button"
       className={classNames(
-        'h-10 w-10 p-0 font-normal rounded-[10px] transition-colors flex items-center justify-center text-sub-600 absolute bottom-0 left-0 right-0 top-0 mx-auto border-2 border-transparent text-center disabled:cursor-default disabled:border-transparent hover:bg-gray-100 focus:bg-gray-100',
+        'h-10 w-10 p-0 font-normal rounded-[10px] transition-colors flex items-center justify-center absolute bottom-0 left-0 right-0 top-0 mx-auto border-2 border-transparent text-center disabled:cursor-not-allowed disabled:border-transparent',
         active
-          ? 'bg-gray-700 text-white hover:bg-gray-600 hover:text-white focus:bg-gray-700 focus:text-white'
+          ? 'bg-gray-700 dark:bg-gray-600 text-white hover:bg-gray-600 dark:hover:bg-gray-500 hover:text-white focus:bg-gray-700 dark:focus:bg-gray-600 focus:text-white'
           : !disabled
-            ? 'bg-gray-100 text-gray-900 font-semibold hover:border-brand-default'
-            : 'text-gray-400 opacity-50'
+            ? 'text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 focus:bg-gray-100 dark:focus:bg-gray-800'
+            : 'text-gray-400 dark:text-gray-500 opacity-50 cursor-not-allowed'
       )}
       // data-testid="day"
       // data-disabled={disabled}
@@ -116,7 +116,11 @@ export const Day = ({
         <span
           className={classNames(
             'absolute left-1/2 top-1/2 flex h-[5px] w-[5px] -translate-x-1/2 translate-y-[8px] items-center justify-center rounded-full align-middle sm:translate-y-[12px]',
-            active ? 'bg-white-0' : 'bg-sub-600'
+            active 
+              ? 'bg-white dark:bg-white' 
+              : disabled 
+                ? 'bg-gray-300 dark:bg-gray-600' 
+                : 'bg-gray-600 dark:bg-gray-400'
           )}
         >
           <span className="sr-only">{t('today')}</span>
@@ -221,10 +225,14 @@ const Days = ({
     const oooInfo = slots && slots?.[dateKey] ? slots?.[dateKey]?.find((slot) => slot.away) : null;
     const included = includedDates?.includes(dateKey);
     const excluded = excludedDates.includes(dateKey);
+    
+    const hasAvailableSlots = slots && slots[dateKey] && slots[dateKey].length > 0;
+    const hasNonAwaySlots = slots && slots[dateKey] && slots[dateKey].some(slot => !slot.away);
 
     const isOOOAllDay = !!(slots && slots[dateKey] && slots[dateKey].every((slot) => slot.away));
     const away = isOOOAllDay;
-    const disabled = away ? !oooInfo?.toUser : !included || excluded;
+    
+    const disabled = away ? !oooInfo?.toUser : !included || excluded || !hasAvailableSlots || !hasNonAwaySlots;
 
     return {
       day: day,
@@ -346,7 +354,7 @@ const DatePicker = ({
     : null;
 
   return (
-    <div className={classNames('flex flex-col w-full px-5', className)}>
+    <div className={classNames('flex flex-col w-full ', className)}>
       <div className="flex items-center justify-between text-xl">
         <span className="flex-grow text-base">
           {browsingDate ? (
@@ -422,7 +430,7 @@ const DatePicker = ({
         </div>
       </div>
       <div className="mt-4">
-        <div className="border-subtle mb-2 grid grid-cols-7 gap-4 border-b border-t text-center md:mb-0 md:border-0">
+        <div className="border-subtle mb-2 grid grid-cols-7 gap-4 text-center md:mb-0">
           {weekdayNames(locale, weekStart, 'short').map((weekDay) => (
             <div
               key={weekDay}
