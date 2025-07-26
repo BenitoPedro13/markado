@@ -43,7 +43,6 @@ export const DatePicker = ({
 
   const onMonthChange = (date: Dayjs) => {
     setMonth(date.format('YYYY-MM'));
-    setSelectedDate(date.format('YYYY-MM-DD'));
     setDayCount(null); // Whenever the month is changed, we nullify getting X days
   };
 
@@ -85,7 +84,7 @@ export const DatePicker = ({
       includedDates={nonEmptyScheduleDays}
       locale={locale}
       browsingDate={month ? dayjs(month) : undefined}
-      selected={dayjs(selectedDate)}
+      selected={selectedDate ? dayjs(selectedDate) : undefined}
       weekStart={weekdayToWeekIndex(event?.data?.users?.[0]?.weekStart)}
       slots={schedule?.data?.slots}
       scrollToTimeSlots={scrollToTimeSlots}

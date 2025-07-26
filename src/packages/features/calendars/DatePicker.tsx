@@ -259,16 +259,16 @@ const Days = ({
         })
       : false;
 
-    if (!isSelectedDateAvailable && firstAvailableDateOfTheMonth) {
-      // If selected date not available in the month, select the first available date of the month
-      props.onChange(firstAvailableDateOfTheMonth);
-    }
+    // if (!isSelectedDateAvailable && firstAvailableDateOfTheMonth) {
+    //   // If selected date not available in the month, select the first available date of the month
+    //   props.onChange(firstAvailableDateOfTheMonth);
+    // }
     if (isSelectedDateAvailable) {
       props.onChange(dayjs(selected));
     }
-    if (!firstAvailableDateOfTheMonth) {
-      props.onChange(null);
-    }
+    // if (!firstAvailableDateOfTheMonth) {
+    //   props.onChange(null);
+    // }
   };
 
   useEffect(useHandleInitialDateSelection);
@@ -354,7 +354,7 @@ const DatePicker = ({
     : null;
 
   return (
-    <div className={classNames('flex flex-col w-full ', className)}>
+    <div className={classNames('flex flex-col w-full md:px-5', className)}>
       <div className="flex items-center justify-between text-xl">
         <span className="flex-grow text-base">
           {browsingDate ? (
