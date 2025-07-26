@@ -10,7 +10,7 @@ import {
 } from '@/packages/core/location';
 // import { useIsPlatform } from "@/atoms/monorepo";
 import {cn as classNames} from '@/utils/cn';
-import {useLocaleI18} from '@/hooks/use-locale';
+import {useLocale} from '@/hooks/use-locale';
 // import invertLogoOnDark from '@/lib/invertLogoOnDark';
 // import { Icon } from "@/ui";
 import {RiLink} from '@remixicon/react';
@@ -50,7 +50,7 @@ function RenderIcon({
 }
 
 function RenderLocationTooltip({locations}: {locations: LocationObject[]}) {
-  const {t} = useLocaleI18();
+  const {t} = useLocale();
 
   return (
     <div className="my-2 me-2 flex w-full flex-col space-y-3 break-words">
@@ -90,7 +90,7 @@ export function AvailableEventLocations({
 }: {
   locations: LocationObject[];
 }) {
-  const {t} = useLocaleI18();
+  const {t} = useLocale();
   // const isPlatform = useIsPlatform();
 
   const renderLocations = locations.map(

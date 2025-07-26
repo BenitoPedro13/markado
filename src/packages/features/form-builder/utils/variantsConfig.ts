@@ -1,13 +1,13 @@
 import type z from "zod";
 
-import type { useLocaleI18 } from "@/hooks/use-locale";
+import type { useLocale } from "@/hooks/use-locale";
 
 import { fieldTypesConfigMap } from "../fieldTypes";
 import type { fieldSchema } from "../schema";
 
 type ConfigVariants = NonNullable<ReturnType<typeof getConfig>>["variants"];
 type Field = z.infer<typeof fieldSchema>;
-type Translate = ReturnType<typeof useLocaleI18>["t"];
+type Translate = ReturnType<typeof useLocale>["t"];
 
 function getTranslatedConfigVariants(configVariants: ConfigVariants, translate: Translate) {
   return Object.entries(configVariants).reduce((variantsConfigVariants, [variantName, variant]) => {

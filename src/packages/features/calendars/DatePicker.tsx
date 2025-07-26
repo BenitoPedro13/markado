@@ -31,7 +31,7 @@ const getAvailableDatesInMonth = ({
 };
 import { cn as classNames } from "@/utils/cn";
 import { daysInMonth, yyyymmdd } from "@/lib/date-fns";
-import { useLocaleI18, useLocale } from "@/hooks/use-locale";
+import { useLocale } from "@/hooks/use-locale";
 import { weekdayNames } from "@/lib/weekday";
 import * as SkeletonText from "@/components/align-ui/ui/skeleton";
 import * as Button from "@/components/align-ui/ui/button";
@@ -93,7 +93,7 @@ export const Day = ({
     dayActive?: string;
   };
 }) => {
-  const { t } = useLocaleI18();
+  const { t } = useLocale();
   return (
     <button
       type="button"
@@ -137,7 +137,7 @@ const NoAvailabilityOverlay = ({
   month: string | null;
   nextMonthButton: () => void;
 }) => {
-  const {t} = useLocaleI18();
+  const {t} = useLocale();
 
   return (
     <></>
@@ -335,7 +335,7 @@ const DatePicker = ({
     scrollToTimeSlots?: () => void;
   }) => {
   const browsingDate = passThroughProps.browsingDate || dayjs().startOf("month");
-  const {i18n, t} = useLocaleI18();
+  const {i18n, t} = useLocale();
   const {i18n: {language}} = useLocale();
   const bookingData = useBookerStore((state) => state.bookingData);
   const isBookingInPast = bookingData ? new Date(bookingData.endTime) < new Date() : false;
@@ -346,7 +346,6 @@ const DatePicker = ({
     }
   };
 
-  // console.log(i18n.language);
   const month = browsingDate
     ? new Intl.DateTimeFormat(language, { month: "long" }).format(
         new Date(browsingDate.year(), browsingDate.month())

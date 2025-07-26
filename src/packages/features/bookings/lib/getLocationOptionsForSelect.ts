@@ -2,12 +2,12 @@ import type { LocationObject } from "@/packages/core/location";
 import {locationKeyToString} from '@/packages/core/location';
 import {getEventLocationType} from '@/packages/core/location';
 import {getTranslatedLocation} from '@/packages/core/location';
-import type { useLocaleI18 } from "@/hooks/use-locale";
+import type { useLocale } from "@/hooks/use-locale";
 import notEmpty from "@/packages/lib/notEmpty";
 
 export default function getLocationsOptionsForSelect(
   locations: LocationObject[],
-  t: ReturnType<typeof useLocaleI18>['t']
+  t: any
 ) {
   return locations
     .map((location) => {

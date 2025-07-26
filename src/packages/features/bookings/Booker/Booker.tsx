@@ -15,7 +15,7 @@ import {BookerLayouts} from '~/prisma/zod-utils';
 
 // import { VerifyCodeDialog } from "../components/VerifyCodeDialog";
 import {AvailableTimeSlots} from './components/AvailableTimeSlots';
-// import { BookEventForm } from "./components/BookEventForm/BookEventForm";
+import { BookEventForm } from "./components/BookEventForm/BookEventForm";
 // import { BookFormAsModal } from "./components/BookEventForm/BookFormAsModal";
 import {EventMeta} from './components/EventMeta';
 // import { HavingTroubleFindingTime } from "./components/HavingTroubleFindingTime";
@@ -183,124 +183,62 @@ const BookerComponent = ({
 
   useEffect(() => {
     if (event.isPending) return setBookerState('loading');
-    console.log('event.isPending', event.isPending);
     if (!selectedDate) return setBookerState('selecting_date');
-    console.log('selectedDate', selectedDate);
     if (!selectedTimeslot) return setBookerState('selecting_time');
-    console.log('selectedTimeslot', selectedTimeslot);
-    return setBookerState('booking');
-  }, [event, selectedDate, selectedTimeslot, setBookerState]);
+    
+    // Only set to booking state if we're not already in booking state
+    // This prevents the form from closing when user is typing
+    if (bookerState !== 'booking') {
+      return setBookerState('booking');
+    }
+  }, [event.isPending, selectedDate, selectedTimeslot, setBookerState, bookerState]);
 
   const slot = getQueryParam('slot');
   useEffect(() => {
-    setSelectedTimeslot(slot || null);
-  }, [slot, setSelectedTimeslot]);
+    // Only set selectedTimeslot if it's not already set and we have a slot
+    if (slot && !selectedTimeslot) {
+      setSelectedTimeslot(slot);
+    }
+  }, [slot, setSelectedTimeslot, selectedTimeslot]);
 
-  const EventBooker = useMemo(() => {
-    return bookerState === 'booking' ? (
-      <div>
-        {BookEventFormWrapper && (
-          <BookEventFormWrapper
-            key={key}
-            onCancel={() => {
-              setSelectedTimeslot(null);
-              if (seatedEventData.bookingUid) {
-                setSeatedEventData({
-                  ...seatedEventData,
-                  bookingUid: undefined,
-                  attendees: undefined
-                });
-              }
-            }}
-            // onSubmit={renderConfirmNotVerifyEmailButtonCond ? handleBookEvent : handleVerifyEmail}
-            onSubmit={handleBookEvent}
-            errorRef={bookerFormErrorRef as React.RefObject<HTMLDivElement>}
-            errors={{
-              hasFormErrors: false,
-              formErrors: {},
-              ...errors
-            }}
-            loadingStates={loadingStates}
-            renderConfirmNotVerifyEmailButtonCond={
-              // renderConfirmNotVerifyEmailButtonCond
-              true
+  const EventBooker = bookerState === 'booking' ? (
+    <div>
+      {BookEventFormWrapper && (
+        <BookEventFormWrapper
+          onCancel={() => {
+            // Only cancel if user explicitly wants to go back
+            setSelectedTimeslot(null);
+            if (seatedEventData.bookingUid) {
+              setSeatedEventData({
+                ...seatedEventData,
+                bookingUid: undefined,
+                attendees: undefined
+              });
             }
-            bookingForm={bookingForm}
-            eventQuery={event}
-            extraOptions={extraOptions}
-            rescheduleUid={rescheduleUid}
-            isVerificationCodeSending={
-              // isVerificationCodeSending
-              false
-            }
-            isPlatform={isPlatform}
-          >
-            <>
-              {/* {verifyCode && formEmail ? (
-                <VerifyCodeDialog
-                  isOpenDialog={isEmailVerificationModalVisible}
-                  setIsOpenDialog={setEmailVerificationModalVisible}
-                  email={formEmail}
-                  isUserSessionRequiredToVerify={false}
-                  verifyCodeWithSessionNotRequired={verifyCode.verifyCodeWithSessionNotRequired}
-                  verifyCodeWithSessionRequired={verifyCode.verifyCodeWithSessionRequired}
-                  error={verifyCode.error}
-                  resetErrors={verifyCode.resetErrors}
-                  isPending={verifyCode.isPending}
-                  setIsPending={verifyCode.setIsPending}
-                />
-              ) : (
-                <></>
-              )} */}
-              {/* {!isPlatform && (
-                <RedirectToInstantMeetingModal
-                  expiryTime={expiryTime}
-                  bookingId={parseInt(getQueryParam("bookingId") || "0")}
-                  instantVideoMeetingUrl={instantVideoMeetingUrl}
-                  onGoBack={() => {
-                    onGoBackInstantMeeting();
-                  }}
-                  orgName={event.data?.entity?.name}
-                />
-              )} */}
-            </>
-          </BookEventFormWrapper>
-        )}
-      </div>
-    ) : (
-      <></>
-    );
-  }, [
-    bookerFormErrorRef,
-    instantVideoMeetingUrl,
-    bookerState,
-    bookingForm,
-    errors,
-    event,
-    expiryTime,
-    extraOptions,
-    formEmail,
-    // formErrors,
-    handleBookEvent,
-    // handleVerifyEmail,
-    // isEmailVerificationModalVisible,
-    key,
-    loadingStates,
-    onGoBackInstantMeeting,
-    // renderConfirmNotVerifyEmailButtonCond,
-    rescheduleUid,
-    seatedEventData,
-    // setEmailVerificationModalVisible,
-    setSeatedEventData,
-    setSelectedTimeslot,
-    // verifyCode?.error,
-    // verifyCode?.isPending,
-    // verifyCode?.resetErrors,
-    // verifyCode?.setIsPending,
-    // verifyCode?.verifyCodeWithSessionNotRequired,
-    // verifyCode?.verifyCodeWithSessionRequired,
-    isPlatform
-  ]);
+          }}
+          onSubmit={handleBookEvent}
+          errorRef={bookerFormErrorRef as React.RefObject<HTMLDivElement>}
+          errors={{
+            hasFormErrors: false,
+            formErrors: {},
+            ...errors
+          }}
+          loadingStates={loadingStates}
+          renderConfirmNotVerifyEmailButtonCond={true}
+          bookingForm={bookingForm}
+          eventQuery={event}
+          extraOptions={extraOptions}
+          rescheduleUid={rescheduleUid}
+          isVerificationCodeSending={false}
+          isPlatform={isPlatform}
+        >
+          <></>
+        </BookEventFormWrapper>
+      )}
+    </div>
+  ) : (
+    <></>
+  );
 
   /**
    * Unpublished organization handling - Below

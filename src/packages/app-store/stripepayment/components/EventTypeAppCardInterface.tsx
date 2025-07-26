@@ -5,7 +5,7 @@ import { useAppContextWithSchema } from "@/packages/app-store/EventTypeAppContex
 import AppCard from "@/packages/app-store/_components/AppCard";
 import type { EventTypeAppCardComponent } from "@/packages/app-store/types";
 import { WEBAPP_URL } from "@/constants";
-import { useLocaleI18 } from "@/hooks/use-locale";
+import { useLocale } from "@/hooks/use-locale";
 
 import checkForMultiplePaymentApps from "../../_utils/payments/checkForMultiplePaymentApps";
 import useIsAppEnabled from "../../_utils/useIsAppEnabled";
@@ -17,7 +17,7 @@ const EventTypeAppCard: EventTypeAppCardComponent = function EventTypeAppCard({
   eventType,
   eventTypeFormMetadata,
 }) {
-  const {t} = useLocaleI18();
+  const {t} = useLocale();
   const pathname = usePathname();
   const { getAppData, setAppData, disabled } = useAppContextWithSchema<typeof appDataSchema>();
   const { enabled, updateEnabled } = useIsAppEnabled(app);

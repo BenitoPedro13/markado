@@ -94,9 +94,13 @@ export const BookEventForm = ({
           // Form data is saved in store. This way when user navigates back to
           // still change the timeslot, and comes back to the form, all their values
           // still exist. This gets cleared when the form is submitted.
-          const values = bookingForm.getValues();
-          setFormValues(values);
+          // Use setTimeout to debounce the form value updates and prevent excessive re-renders
+          setTimeout(() => {
+            const values = bookingForm.getValues();
+            setFormValues(values);
+          }, 100);
         }}
+
         form={bookingForm}
         handleSubmit={onSubmit}
         noValidate>
@@ -125,25 +129,37 @@ export const BookEventForm = ({
           </div>
         )}
 
-        <div className="modalsticky mt-auto flex justify-end space-x-2 rtl:space-x-reverse">
+        <div className="flex gap-x-2 justify-end mt-auto">
           {isInstantMeeting ? (
-            <Button.Root type="submit" color="primary" disabled={loadingStates.creatingInstantBooking}>
+            <Button.Root 
+              type="submit" 
+              variant="neutral"
+              mode="filled"
+              disabled={loadingStates.creatingInstantBooking}
+            >
               {loadingStates.creatingInstantBooking
                 ? t("loading")
                 : isPaidEvent
                 ? t("pay_and_book")
-                : t("confirm")}
+                : t("finalize")}
             </Button.Root>
           ) : (
             <>
               {!!onCancel && (
-                <Button.Root color="minimal" type="button" onClick={onCancel} data-testid="back">
+                <Button.Root 
+                  variant="neutral" 
+                  mode="stroke" 
+                  type="button" 
+                  onClick={onCancel} 
+                  data-testid="back"
+                >
                   {t("back")}
                 </Button.Root>
               )}
               <Button.Root
                 type="submit"
-                color="primary"
+                variant="neutral"
+                mode="filled"
                 disabled={
                   loadingStates.creatingBooking ||
                   loadingStates.creatingRecurringBooking ||
@@ -161,7 +177,7 @@ export const BookEventForm = ({
                   : renderConfirmNotVerifyEmailButtonCond
                   ? isPaidEvent
                     ? t("pay_and_book")
-                    : t("confirm")
+                    : t("finalize")
                   : t("verify_email_email_button")}
               </Button.Root>
             </>

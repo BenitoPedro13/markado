@@ -4,7 +4,7 @@ import { Controller, useFormContext } from "react-hook-form";
 import type { z } from "zod";
 
 import { cn as classNames } from "@/utils/cn";
-import { useLocaleI18 } from "@/hooks/use-locale";
+import { useLocale } from "@/hooks/use-locale";
 import * as Label from "@/components/align-ui/ui/label"
 import * as InfoBadge from "@/components/align-ui/ui/info-badge";
 import  {RiInformationLine } from "@remixicon/react"
@@ -56,7 +56,7 @@ export const FormBuilderField = ({
   readOnly: boolean;
   className: string;
 }) => {
-  const { t } = useLocaleI18();
+  const { t } = useLocale();
   const { control, formState } = useFormContext();
 
   const { hidden, placeholder, label, noLabel, translatedDefaultLabel } = getAndUpdateNormalizedValues(
@@ -140,7 +140,7 @@ const WithLabel = ({
   noLabel?: boolean;
   htmlFor: string;
 }) => {
-  const { t } = useLocaleI18();
+  const { t } = useLocale();
 
   return (
     <div>
@@ -171,7 +171,7 @@ const WithLabel = ({
 /**
  * Ensures that `labels` and `placeholders`, wherever they are, are set properly. If direct values are not set, default values from fieldTypeConfig are used.
  */
-function getAndUpdateNormalizedValues(field: RhfFormFields[number], t: ReturnType<typeof useLocaleI18>['t']) {
+function getAndUpdateNormalizedValues(field: RhfFormFields[number], t: any) {
   let noLabel = false;
   let hidden = !!field.hidden;
   if (field.type === "radioInput") {
@@ -237,7 +237,7 @@ export const ComponentForField = ({
 } & ValueProps) => {
   const fieldType = field.type || "text";
   const componentConfig = Components[fieldType];
-  const { t } = useLocaleI18();
+  const { t } = useLocale();
 
   const isValueOfPropsType = (val: unknown, propsType: typeof componentConfig.propsType) => {
     const isValid = isValidValueProp[propsType](val);
