@@ -161,7 +161,6 @@ export default function ServiceDetails({slug}: Props) {
               {...register('badgeColor')}
               // value={watch('badgeColor')}
               onValueChange={(value: string) => {
-                console.log('Selected badge color:', value);
                 setValue('badgeColor', value as ServiceBadgeColor);
               }}
             >

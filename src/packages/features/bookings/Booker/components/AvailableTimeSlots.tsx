@@ -189,7 +189,7 @@ export const AvailableTimeSlots = ({
               className={customClassNames?.availableTimeSlotsContainer}
               customClassNames={customClassNames?.availableTimes}
               showTimeFormatToggle={!isColumnView}
-              onTimeSelect={() => {}} // Função vazia para slots desabilitados
+              onTimeSelect={() => {}}
               slots={mockSlots}
               seatsPerTimeSlot={seatsPerTimeSlot}
               showAvailableSeatsCount={showAvailableSeatsCount}

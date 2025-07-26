@@ -194,10 +194,7 @@ export const EventDetails = ({
 
   // Helper function to get conference link info
   const getConferenceInfo = () => {
-    console.log('Event locations:', event.locations);
-    
     if (!event.locations || event.locations.length === 0) {
-      // Fallback: se não há locations, vamos mostrar Google Meet como padrão
       return {
         icon: <GoogleMeetIcon />,
         name: 'Google Meet'

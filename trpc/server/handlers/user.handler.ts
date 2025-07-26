@@ -160,7 +160,6 @@ export async function getUserByUsernameHandler(ctx: Context, username: string) {
 
 export async function getHostUserByUsername(username: string) {
   try {
-    console.log('[getHostUserByUsername] username recebido:', username);
     const user = await prisma.user.findFirst({
       where: {
         username
@@ -183,7 +182,7 @@ export async function getHostUserByUsername(username: string) {
         }
       }
     });
-    console.log('[getHostUserByUsername] resultado user:', user);
+
     if (!user) {
       console.error('[getHostUserByUsername] Usuário não encontrado para username:', username);
       throw new TRPCError({

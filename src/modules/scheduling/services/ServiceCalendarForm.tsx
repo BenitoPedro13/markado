@@ -182,13 +182,11 @@ const ServiceCalendarForm = ({
     const dayjsSelected = dayjs(selected).utc().format('YYYY-MM-DD');
 
     params.set('d', dayjsSelected);
-    console.log('dayjsSelected', dayjsSelected);
 
     window.history.replaceState(null, '', `?${params.toString()}`);
   };
 
   const handleTimeSelect = (selected: string) => {
-    console.log('selected', selected);
     const params = new URLSearchParams(searchParams?.toString() || '');
 
     if (!day || !encodedTimezone || !selected) {
