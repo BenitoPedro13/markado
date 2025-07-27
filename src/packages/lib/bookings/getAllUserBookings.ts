@@ -1,26 +1,32 @@
-import { PrismaClient } from "@prisma/client";
-import { Prisma } from "~/prisma/app/generated/prisma/client";
-import { BookingStatus } from "~/prisma/enums";
-import { getBookings } from "~/trpc/server/handlers/bookings/get.handler";
+import type {Prisma} from '~/prisma/app/generated/prisma/client';
+import {BookingStatus} from '~/prisma/enums';
+import {getBookings} from '~/trpc/server/handlers/bookings/get.handler';
+import {prisma} from '@/lib/prisma';
+import {auth} from '@/auth';
 
-type InputByStatus = "upcoming" | "recurring" | "past" | "cancelled" | "unconfirmed";
+type InputByStatus =
+  | 'upcoming'
+  | 'recurring'
+  | 'past'
+  | 'cancelled'
+  | 'unconfirmed';
 type SortOptions = {
-  sortStart?: "asc" | "desc";
-  sortEnd?: "asc" | "desc";
-  sortCreated?: "asc" | "desc";
+  sortStart?: 'asc' | 'desc';
+  sortEnd?: 'asc' | 'desc';
+  sortCreated?: 'asc' | 'desc';
 };
 type GetOptions = {
-  ctx: {
-    user: { id: number; email: string };
-    prisma: PrismaClient;
-  };
+  // ctx: {
+  //   user: { id: number; email: string };
+  //   prisma: PrismaClient;
+  // };
   bookingListingByStatus: InputByStatus[];
   take: number;
   skip: number;
   filters: {
     status?: InputByStatus;
     teamIds?: number[] | undefined;
-    userIds?: number[] | undefined;
+    userIds?: string[] | undefined;
     eventTypeIds?: number[] | undefined;
     attendeeEmail?: string;
     attendeeName?: string;
@@ -28,63 +34,78 @@ type GetOptions = {
   sort?: SortOptions;
 };
 
-const getAllUserBookings = async ({ ctx, filters, bookingListingByStatus, take, skip, sort }: GetOptions) => {
-  const { prisma, user } = ctx;
+const getAllUserBookings = async ({
+  // ctx,
+  filters,
+  bookingListingByStatus,
+  take,
+  skip,
+  sort
+}: GetOptions) => {
+  // const { prisma, user } = ctx;
 
-  const bookingListingFilters: Record<InputByStatus, Prisma.BookingWhereInput> = {
-    upcoming: {
-      endTime: { gte: new Date() },
-      // These changes are needed to not show confirmed recurring events,
-      // as rescheduling or cancel for recurring event bookings should be
-      // handled separately for each occurrence
-      OR: [
-        {
-          recurringEventId: { not: null },
-          status: { equals: BookingStatus.ACCEPTED },
-        },
-        {
-          recurringEventId: { equals: null },
-          status: { notIn: [BookingStatus.CANCELLED, BookingStatus.REJECTED] },
-        },
-      ],
-    },
-    recurring: {
-      endTime: { gte: new Date() },
-      AND: [
-        { NOT: { recurringEventId: { equals: null } } },
-        { status: { notIn: [BookingStatus.CANCELLED, BookingStatus.REJECTED] } },
-      ],
-    },
-    past: {
-      endTime: { lte: new Date() },
-      AND: [
-        { NOT: { status: { equals: BookingStatus.CANCELLED } } },
-        { NOT: { status: { equals: BookingStatus.REJECTED } } },
-      ],
-    },
-    cancelled: {
-      OR: [{ status: { equals: BookingStatus.CANCELLED } }, { status: { equals: BookingStatus.REJECTED } }],
-    },
-    unconfirmed: {
-      endTime: { gte: new Date() },
-      status: { equals: BookingStatus.PENDING },
-    },
-  };
+  const session = await auth();
+
+  const bookingListingFilters: Record<InputByStatus, Prisma.BookingWhereInput> =
+    {
+      upcoming: {
+        endTime: {gte: new Date()},
+        // These changes are needed to not show confirmed recurring events,
+        // as rescheduling or cancel for recurring event bookings should be
+        // handled separately for each occurrence
+        OR: [
+          {
+            recurringEventId: {not: null},
+            status: {equals: BookingStatus.ACCEPTED}
+          },
+          {
+            recurringEventId: {equals: null},
+            status: {notIn: [BookingStatus.CANCELLED, BookingStatus.REJECTED]}
+          }
+        ]
+      },
+      recurring: {
+        endTime: {gte: new Date()},
+        AND: [
+          {NOT: {recurringEventId: {equals: null}}},
+          {status: {notIn: [BookingStatus.CANCELLED, BookingStatus.REJECTED]}}
+        ]
+      },
+      past: {
+        endTime: {lte: new Date()},
+        AND: [
+          {NOT: {status: {equals: BookingStatus.CANCELLED}}},
+          {NOT: {status: {equals: BookingStatus.REJECTED}}}
+        ]
+      },
+      cancelled: {
+        OR: [
+          {status: {equals: BookingStatus.CANCELLED}},
+          {status: {equals: BookingStatus.REJECTED}}
+        ]
+      },
+      unconfirmed: {
+        endTime: {gte: new Date()},
+        status: {equals: BookingStatus.PENDING}
+      }
+    };
 
   const orderBy = getOrderBy(bookingListingByStatus, sort);
 
-  const combinedFilters = bookingListingByStatus.map((status) => bookingListingFilters[status]);
+  const combinedFilters = bookingListingByStatus.map(
+    (status) => bookingListingFilters[status]
+  );
 
-  const { bookings, recurringInfo } = await getBookings({
-    user,
+  const {bookings, recurringInfo} = await getBookings({
+    user: {id: Number(session!.user.id), email: session!.user.email},
     prisma,
     passedBookingsStatusFilter: {
-      OR: combinedFilters,
+      OR: combinedFilters
     },
     filters: filters,
     orderBy,
     take,
-    skip,
+    skip
   });
 
   const bookingsFetched = bookings.length;
@@ -98,7 +119,7 @@ const getAllUserBookings = async ({ ctx, filters, bookingListingByStatus, take, 
   return {
     bookings,
     recurringInfo,
-    nextCursor,
+    nextCursor
   };
 };
 
@@ -106,12 +127,15 @@ function getOrderBy(
   bookingListingByStatus: InputByStatus[],
   sort?: SortOptions
 ): Prisma.BookingOrderByWithAggregationInput {
-  const bookingListingOrderby: Record<InputByStatus, Prisma.BookingOrderByWithAggregationInput> = {
-    upcoming: { startTime: "asc" },
-    recurring: { startTime: "asc" },
-    past: { startTime: "desc" },
-    cancelled: { startTime: "desc" },
-    unconfirmed: { startTime: "asc" },
+  const bookingListingOrderby: Record<
+    InputByStatus,
+    Prisma.BookingOrderByWithAggregationInput
+  > = {
+    upcoming: {startTime: 'asc'},
+    recurring: {startTime: 'asc'},
+    past: {startTime: 'desc'},
+    cancelled: {startTime: 'desc'},
+    unconfirmed: {startTime: 'asc'}
   };
 
   if (bookingListingByStatus?.length === 1 && !sort) {
@@ -119,16 +143,16 @@ function getOrderBy(
   }
 
   if (sort?.sortStart) {
-    return { startTime: sort.sortStart };
+    return {startTime: sort.sortStart};
   }
   if (sort?.sortEnd) {
-    return { endTime: sort.sortEnd };
+    return {endTime: sort.sortEnd};
   }
   if (sort?.sortCreated) {
-    return { createdAt: sort.sortCreated };
+    return {createdAt: sort.sortCreated};
   }
 
-  return { startTime: "asc" };
+  return {startTime: 'asc'};
 }
 
 export default getAllUserBookings;

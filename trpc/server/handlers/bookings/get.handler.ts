@@ -25,7 +25,7 @@ export const getHandler = async ({ ctx, input }: GetOptions) => {
   const bookingListingByStatus = [input.filters.status || defaultStatus];
 
   const { bookings, recurringInfo, nextCursor } = await getAllUserBookings({
-    ctx: { user: { id: user.id, email: user.email }, prisma: prisma },
+    // ctx: { user: { id: user.id, email: user.email }, prisma: prisma },
     bookingListingByStatus: bookingListingByStatus,
     take: take,
     skip: skip,

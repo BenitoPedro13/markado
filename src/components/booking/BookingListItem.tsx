@@ -14,7 +14,8 @@ import * as Dialog from '@/components/align-ui/ui/modal';
 import * as Dropdown from '@/components/align-ui/ui/dropdown';
 import * as Tooltip from '@/components/align-ui/ui/tooltip';
 import { RouterOutputs } from "@/types/trpc-router-outputs";
-
+import {TGetInputSchema} from '~/trpc/server/schemas/bookings/get.schema';
+import {getHandler} from '~/trpc/server/handlers/bookings/get.handler';
 // import { AddGuestsDialog } from "@components/dialog/AddGuestsDialog";
 // import { ChargeCardDialog } from "@components/dialog/ChargeCardDialog";
 // import { EditLocationDialog } from "@components/dialog/EditLocationDialog";
@@ -23,13 +24,17 @@ import { RouterOutputs } from "@/types/trpc-router-outputs";
 // import { RescheduleDialog } from "@components/dialog/RescheduleDialog";
 
 
-type BookingListingStatus = RouterInputs["viewer"]["bookings"]["get"]["filters"]["status"];
+type BookingListingStatus = TGetInputSchema['filters']['status']
+// RouterInputs["viewer"]["bookings"]["get"]["filters"]["status"];
 
-type BookingItem = RouterOutputs["viewer"]["bookings"]["get"]["bookings"][number];
+type BookingItem = Awaited<ReturnType<typeof getHandler>>['bookings'][number];
+// RouterOutputs["viewer"]["bookings"]["get"]["bookings"][number];
 
 type BookingItemProps = BookingItem & {
   listingStatus: BookingListingStatus;
-  recurringInfo: RouterOutputs["viewer"]["bookings"]["get"]["recurringInfo"][number] | undefined;
+  recurringInfo:
+    | Awaited<ReturnType<typeof getHandler>>['recurringInfo'][number]
+    | undefined;
   loggedInUser: {
     userId: number | undefined;
     userTimeZone: string | undefined;

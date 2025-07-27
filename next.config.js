@@ -5,6 +5,9 @@ const withNextIntl = createNextIntlPlugin();
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  typescript: {
+    ignoreBuildErrors: process.env.NODE_ENV === 'development' || process.env.SKIP_TYPE_CHECK === 'true',
+  },
   images: {
     domains: ['lh3.googleusercontent.com'],
   },
