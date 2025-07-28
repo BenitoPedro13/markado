@@ -267,6 +267,12 @@ function buildNewBookingData(params: CreateBookingParams) {
 
   let originalBookingUpdateDataForCancellation: Prisma.BookingUpdateArgs | undefined = undefined;
 
+  if (rescheduledBy) {
+    newBookingData.rescheduledBy = rescheduledBy;
+    newBookingData.rescheduled = true;
+  }
+
+  
   if (originalRescheduledBooking) {
     newBookingData.metadata = {
       ...(typeof originalRescheduledBooking.metadata === "object" && originalRescheduledBooking.metadata),

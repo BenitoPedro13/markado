@@ -306,14 +306,15 @@ export const useBookerStore = create<BookerStore>((set, get) => ({
       removeQueryParam('duration');
     }
 
-    // Unset selected timeslot if user is rescheduling. This could happen
+    // Unset selected timeslot and date if user is rescheduling. This could happen
     // if the user reschedules a booking right after the confirmation page.
     // In that case the time would still be store in the store, this way we
     // force clear this.
     // Also, fetch the original booking duration if user is rescheduling and
     // update the selectedDuration
     if (rescheduleUid && bookingData) {
-      set({selectedTimeslot: null});
+      set({selectedTimeslot: null, selectedDate: null});
+      removeQueryParam('date');
       const originalBookingLength = dayjs(bookingData?.endTime).diff(
         dayjs(bookingData?.startTime),
         'minutes'
