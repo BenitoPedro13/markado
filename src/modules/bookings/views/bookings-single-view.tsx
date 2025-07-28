@@ -168,6 +168,7 @@ export default function Success(props: PageProps) {
     session?.user?.email ??
     undefined;
 
+  const isRescheduling = !!searchParams?.get("rescheduledBy");
   const defaultRating = isNaN(parsedRating) ? 3 : parsedRating > 5 ? 5 : parsedRating < 1 ? 1 : parsedRating;
   const [rateValue, setRateValue] = useState<number>(defaultRating);
   const [isFeedbackSubmitted, setIsFeedbackSubmitted] = useState(false);
@@ -757,7 +758,7 @@ export default function Success(props: PageProps) {
                                   >
                                     <Link
                                       href={`/reschedule/${seatReferenceUid || bookingInfo?.uid}${
-                                        currentUserEmail
+                                        isRescheduling && currentUserEmail
                                           ? `?rescheduledBy=${encodeURIComponent(currentUserEmail)}`
                                           : ""
                                       }`}
