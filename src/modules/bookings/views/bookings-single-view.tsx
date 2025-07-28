@@ -454,12 +454,12 @@ export default function Success(props: PageProps) {
                 isEmbed ? "" : " inset-0"
               )}
               aria-hidden="true">
-              <div
+               <div
                 className={classNames(
-                  "main bg-default inline-block transform overflow-hidden rounded-lg md:border md:border-bg-soft-200 md:rounded-[24px] sm:my-8 sm:max-w-xl",
-                  !isBackgroundTransparent && " bg-default dark:bg-muted border-bg-soft-200 border-t-2 rounded-[24px]",
+                  "main bg-bg-white-0 inline-block transform overflow-hidden rounded-lg md:border md:border-bg-soft-200 md:rounded-[24px] sm:my-8 sm:max-w-xl",
+                  !isBackgroundTransparent && " bg-bg-white-0 dark:bg-bg-white-0 border-bg-soft-200 border-t-2 rounded-[24px]",
                   "px-8 pb-4 pt-5 text-left align-bottom transition-all sm:w-full sm:py-8 sm:align-middle"
-                )}
+                )}
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="modal-headline">
