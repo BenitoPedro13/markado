@@ -168,6 +168,8 @@ export default async function ReschedulePage({ params, searchParams }: PageProps
     destinationUrlSearchParams.set("rescheduledBy", currentUserEmail);
   }
 
+  destinationUrlSearchParams.set("rescheduleUid", uid);
+
   const destination = `/${username}/${slug}?${destinationUrlSearchParams.toString()}`;
   
   redirect(destination);

@@ -100,8 +100,25 @@ export default function CancelBooking(props: Props) {
                 variant="neutral"
                 mode="stroke"
                 className="ml-auto"
-                onClick={() => props.setIsCancellationMode(false)}
-                disabled={cancellationReason.length > 0}
+                onClick={async () => {
+                  setLoading(true);
+                  try {
+                    await trpc.booking.cancelBooking.mutate({
+                      uid: booking?.uid!,
+                      cancellationReason: t("nevermind"),
+                      allRemainingBookings,
+                      seatReferenceUid,
+                      cancelledBy: currentUserEmail,
+                    });
+                    window.location.reload();
+                  } catch (err) {
+                    setLoading(false);
+                    setError(
+                      `${t("error_with_status_code_occured", { status: "TRPC" })} ${t("please_try_again")}`
+                    );
+                  }
+                }}
+                disabled={loading}
             >
                 {t("nevermind")}
               </Button.Root>

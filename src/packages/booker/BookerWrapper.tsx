@@ -3,9 +3,7 @@
 import {useSession} from 'next-auth/react';
 import {useSearchParams} from 'next/navigation';
 import {usePathname, useRouter} from 'next/navigation';
-import {useMemo, useCallback, 
-  // useEffect
-} from 'react';
+import {useMemo, useCallback, useEffect, useState } from 'react';
 import {useShallow} from 'zustand/shallow';
 
 import dayjs from '@/lib/dayjs';
@@ -55,18 +53,22 @@ export const BookerWrapper = (props: BookerWrapperProps) => {
   const selectedDate = searchParams?.get('date');
   const isRedirect = searchParams?.get('redirected') === 'true' || false;
   const fromUserNameRedirected = searchParams?.get('username') || '';
-  const rescheduleUid =
-    typeof window !== 'undefined'
-      ? new URLSearchParams(window.location.search).get('rescheduleUid')
-      : null;
-  const rescheduledBy =
-    typeof window !== 'undefined'
-      ? new URLSearchParams(window.location.search).get('rescheduledBy')
-      : null;
-  const bookingUid =
-    typeof window !== 'undefined'
-      ? new URLSearchParams(window.location.search).get('bookingUid')
-      : null;
+  const rescheduleUid = searchParams?.get('rescheduleUid') ?? null;
+  const rescheduledBy = searchParams?.get('rescheduledBy') ?? null;
+  const bookingUid = searchParams?.get('bookingUid') ?? null;
+  
+  // Buscar bookingData quando há um rescheduleUid
+  const [bookingData, setBookingData] = useState(null);
+  
+  useEffect(() => {
+    if (rescheduleUid) {
+      // Buscar os dados do booking original
+      fetch(`/api/bookings/${rescheduleUid}`)
+        .then(res => res.json())
+        .then(data => setBookingData(data))
+        .catch(err => console.error('Erro ao buscar booking data:', err));
+    }
+  }, [rescheduleUid]);
   const date = dayjs(selectedDate).format('YYYY-MM-DD');
 
   // useEffect(() => {
@@ -79,6 +81,7 @@ export const BookerWrapper = (props: BookerWrapperProps) => {
     eventId: props.entity.eventTypeId ?? event?.data?.id,
     rescheduleUid,
     rescheduledBy,
+    bookingData,
     bookingUid: bookingUid,
     layout: bookerLayout.defaultLayout,
     org: props.entity.orgSlug
