@@ -45,10 +45,14 @@ const ServiceSchedulingPage = async (props: {
     d: string | undefined;
     t: string | undefined;
     duration: string | undefined;
+    rescheduleUid?: string;
+    reschedule?: string;
+    rescheduledBy?: string;
   }>;
 }) => {
   const searchParams = await props.searchParams;
   const params = await props.params;
+
   const host = await getHostUserByUsername(params.username);
   const {props: userPageProps} = await getUserPageProps({
     username: params.username,
@@ -142,7 +146,6 @@ const ServiceSchedulingPage = async (props: {
             />
           );
         })()}
-         {/* <ServiceCalendarForm service={userPageProps.eventData} host={host} /> */}
       </div>
     </>
   );
