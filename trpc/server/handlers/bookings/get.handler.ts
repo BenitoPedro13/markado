@@ -20,16 +20,16 @@ export const getHandler = async ({ ctx, input }: GetOptions) => {
   // for orderBy, but we don't use a unique column in our orderBy
   const take = input.limit ?? 10;
   const skip = input.cursor ?? 0;
-  const { prisma, user } = ctx;
-  const defaultStatus = "upcoming";
+  // const { prisma, user } = ctx;
+  const defaultStatus = 'upcoming';
   const bookingListingByStatus = [input.filters.status || defaultStatus];
 
-  const { bookings, recurringInfo, nextCursor } = await getAllUserBookings({
+  const {bookings, recurringInfo, nextCursor} = await getAllUserBookings({
     // ctx: { user: { id: user.id, email: user.email }, prisma: prisma },
     bookingListingByStatus: bookingListingByStatus,
     take: take,
     skip: skip,
-    filters: input.filters,
+    filters: input.filters
   });
 
   return {
