@@ -6,7 +6,7 @@ import type {
   TextLikeComponentProps
 } from '@/packages/app-store/routing-forms/components/react-awesome-query-builder/widgets';
 import Widgets from '@/packages/app-store/routing-forms/components/react-awesome-query-builder/widgets';
-import {useLocaleI18} from '@/hooks/use-locale';
+import {useLocale} from '@/hooks/use-locale';
 import {
   // AddressInput,
   // Button,
@@ -321,7 +321,7 @@ export const Components: Record<FieldType, Component> = {
     //TODO: Make it a ui component
     factory: function MultiEmail({value, readOnly, label, setValue, ...props}) {
       const placeholder = props.placeholder;
-      const {t} = useLocaleI18();
+      const {t} = useLocale();
       value = value || [];
       const inputClassName =
         'dark:placeholder:text-muted focus:border-emphasis border-subtle block w-full rounded-md border-default text-sm focus:ring-black disabled:bg-emphasis disabled:hover:cursor-not-allowed dark:selection:bg-green-500 disabled:dark:text-subtle bg-default';
@@ -548,7 +548,7 @@ export const Components: Record<FieldType, Component> = {
         }
       }, [options, setValue, value]);
 
-      const {t} = useLocaleI18();
+      const {t} = useLocale();
 
       const didUserProvideLabel = (
         label: string | undefined,

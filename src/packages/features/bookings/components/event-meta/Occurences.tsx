@@ -2,7 +2,7 @@ import {useEffect, useState} from 'react';
 
 import {useBookerStore} from '@/packages/features/bookings/Booker/store';
 import type {BookerEvent} from '@/packages/features/bookings/types';
-import {useLocaleI18} from '@/hooks/use-locale';
+import {useLocale} from '@/hooks/use-locale';
 import {parseRecurringDates} from '@/packages/lib/parse-dates';
 import {getRecurringFreq} from '@/packages/lib/recurringStrings';
 import {
@@ -21,7 +21,7 @@ export const EventOccurences = ({
   event: Pick<BookerEvent, 'recurringEvent'>;
 }) => {
   const maxOccurences = event.recurringEvent?.count || null;
-  const {t, i18n} = useLocaleI18();
+  const {t, i18n} = useLocale();
   const [
     setRecurringEventCount,
     recurringEventCount,
@@ -77,7 +77,7 @@ export const EventOccurences = ({
           >
             <Tooltip.Trigger asChild>
               <p className=" text-sm">
-                + {t('plus_more', {count: recurringStrings.length - 5})}
+                {t('plus_more', {count: recurringStrings.length - 5})}
               </p>
             </Tooltip.Trigger>
             <Tooltip.Content size="small">

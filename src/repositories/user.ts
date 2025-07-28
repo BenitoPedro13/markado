@@ -311,7 +311,6 @@ export class UserRepository {
     user: T;
     upId: UpId;
   }) {
-    console.log("enrichUserWithTheProfile", safeStringify({ user, upId }));
     const profile = await ProfileRepository.findByUpId(upId);
     if (!profile) {
       return {

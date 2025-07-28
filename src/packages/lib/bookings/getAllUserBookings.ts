@@ -117,12 +117,15 @@ function getOrderBy(
   bookingListingByStatus: InputByStatus[],
   sort?: SortOptions
 ): Prisma.BookingOrderByWithAggregationInput {
-  const bookingListingOrderby: Record<InputByStatus, Prisma.BookingOrderByWithAggregationInput> = {
-    upcoming: { startTime: "asc" },
-    recurring: { startTime: "asc" },
-    past: { startTime: "desc" },
-    cancelled: { startTime: "desc" },
-    unconfirmed: { startTime: "asc" },
+  const bookingListingOrderby: Record<
+    InputByStatus,
+    Prisma.BookingOrderByWithAggregationInput
+  > = {
+    upcoming: {startTime: 'asc'},
+    recurring: {startTime: 'asc'},
+    past: {startTime: 'desc'},
+    cancelled: {startTime: 'desc'},
+    unconfirmed: {startTime: 'asc'}
   };
 
   if (bookingListingByStatus?.length === 1 && !sort) {

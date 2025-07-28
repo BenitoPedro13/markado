@@ -44,6 +44,7 @@ type AvailableTimesProps = {
     data?: Pick<BookerEvent, 'length'> | null;
   };
   customClassNames?: string;
+  disabled?: boolean;
 };
 
 const SlotItem = ({
@@ -53,7 +54,8 @@ const SlotItem = ({
   onTimeSelect,
   showAvailableSeatsCount,
   event,
-  customClassNames
+  customClassNames,
+  disabled
 }: {
   slot: Slots[string][number];
   seatsPerTimeSlot?: number | null;
@@ -64,6 +66,7 @@ const SlotItem = ({
     data?: Pick<BookerEvent, 'length'> | null;
   };
   customClassNames?: string;
+  disabled?: boolean;
 }) => {
   const {t} = useLocale();
 
@@ -173,7 +176,8 @@ const SlotItem = ({
         mode="stroke"
         disabled={
           bookingFull ||
-          !!(slot.bookingUid && slot.bookingUid === bookingData?.uid)
+          !!(slot.bookingUid && slot.bookingUid === bookingData?.uid) ||
+          disabled
         }
         //   data-testid="time"
         //   data-disabled={bookingFull}
@@ -272,7 +276,8 @@ export const AvailableTimes = ({
   className,
   selectedSlots,
   event,
-  customClassNames
+  customClassNames,
+  disabled
 }: AvailableTimesProps) => {
   const {t} = useLocale();
 
@@ -317,6 +322,7 @@ export const AvailableTimes = ({
               seatsPerTimeSlot={seatsPerTimeSlot}
               showAvailableSeatsCount={showAvailableSeatsCount}
               event={event}
+              disabled={disabled}
             />
           );
         })}

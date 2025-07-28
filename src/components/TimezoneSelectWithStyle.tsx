@@ -207,13 +207,13 @@ export function TimezoneSelectWithStyle({
       >
         <Select.Trigger
           className={cn(
-            'flex items-center gap-1 border-none w-full',
+            'flex items-center gap-1 border-none w-full overflow-hidden',
             (disabled || isDetecting) && 'opacity-50 cursor-not-allowed',
             className
           )}
         >
-          <RiGlobalLine size={20} color="var(--text-soft-400)" />
-          <span className="text-text-sub-600 text-paragraph-sm">
+          <RiGlobalLine size={20} color="var(--text-soft-400)" className="flex-shrink-0" />
+          <span className="text-text-sub-600 text-paragraph-sm truncate min-w-0">
             {isDetecting ? 'Detecting timezone...' : formattedValue}
           </span>
         </Select.Trigger>

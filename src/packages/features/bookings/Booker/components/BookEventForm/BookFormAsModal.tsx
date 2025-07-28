@@ -2,7 +2,7 @@ import type {ReactNode} from 'react';
 import React from 'react';
 
 // import { useEventTypeById, useIsPlatform } from "@/atoms/monorepo";
-import {useLocaleI18} from '@/hooks/use-locale';
+import {useLocale} from '@/hooks/use-locale';
 // import { Badge, Dialog, DialogContent } from "@/components/align-ui/ui/alert";
 import {RiCalendarLine, RiTimeLine} from '@remixicon/react';
 import {Root as Badge} from '@/components/align-ui/ui/badge';
@@ -55,7 +55,7 @@ export const BookEventFormWrapperComponent = ({
   child: ReactNode;
   eventLength?: number;
 }) => {
-  const {i18n, t} = useLocaleI18();
+  const {i18n, t} = useLocale();
   const selectedTimeslot = useBookerStore((state) => state.selectedTimeslot);
   const selectedDuration = useBookerStore((state) => state.selectedDuration);
   const {timeFormat, timezone} = useTimePreferences();

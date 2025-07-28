@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
 import type { EventTypeAppSettingsComponent } from "@/packages/app-store/types";
-import { useLocaleI18 } from "@/hooks/use-locale";
+import { useLocale } from "@/hooks/use-locale";
 import * as Alert from "@/components/align-ui/ui/alert";
 import * as Select from "@/components/align-ui/ui/select";
 //import * as TextField from "@/components/align-ui/ui/text-field";
@@ -33,7 +33,7 @@ const EventTypeAppSettingsInterface: EventTypeAppSettingsComponent = ({
   const paymentOptionSelectValue = paymentOptions.find((option) => paymentOption === option.value);
   const requirePayment = getAppData("enabled");
 
-  const {t} = useLocaleI18();
+  const {t} = useLocale();
   const recurringEventDefined = eventType.recurringEvent?.count !== undefined;
   const seatsEnabled = !!eventType.seatsPerTimeSlot;
   const getCurrencySymbol = (locale: string, currency: string) =>

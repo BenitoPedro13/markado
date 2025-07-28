@@ -15,7 +15,51 @@ import {AvailableEventLocations} from './AvailableEventLocations';
 import {EventDuration} from './Duration';
 import {EventOccurences} from './Occurences';
 import {Price} from './Price';
-import {RiTimeLine, RiCheckboxLine, RiRefreshLine} from '@remixicon/react';
+import {RiTimeLine, RiCheckboxLine, RiRefreshLine, RiLink} from '@remixicon/react';
+
+// Google Meet icon component
+const GoogleMeetIcon = () => (
+  <svg
+    width="20"
+    height="20"
+    viewBox="0 0 20 20"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M3.125 14.7246C3.125 15.2219 3.53124 15.6246 4.03176 15.6246H4.04479C3.53661 15.6246 3.125 15.2219 3.125 14.7246Z"
+      fill="#FBBC05"
+    />
+    <path
+      d="M10.9172 7.74998V10.0997L14.0851 7.54448V5.275C14.0851 4.77775 13.6789 4.375 13.1784 4.375H6.31522L6.30908 7.74998H10.9172Z"
+      fill="#FBBC05"
+    />
+    <path
+      d="M10.9171 12.4503H6.30126L6.2959 15.6251H13.1782C13.6795 15.6251 14.085 15.2223 14.085 14.7251V12.6761L10.9171 10.1006V12.4503Z"
+      fill="#34A853"
+    />
+    <path
+      d="M6.31514 4.375L3.125 7.74998H6.30977L6.31514 4.375Z"
+      fill="#EA4335"
+    />
+    <path
+      d="M3.125 12.4502V14.7249C3.125 15.2222 3.53661 15.6249 4.04479 15.6249H6.29597L6.30134 12.4502H3.125Z"
+      fill="#1967D2"
+    />
+    <path
+      d="M6.30977 7.75H3.125V12.4502H6.30134L6.30977 7.75Z"
+      fill="#4285F4"
+    />
+    <path
+      d="M16.8706 13.925V6.20006C16.692 5.17481 15.5676 6.35005 15.5676 6.35005L14.0859 7.5448V12.6755L16.2068 14.3998C16.9725 14.5003 16.8706 13.925 16.8706 13.925Z"
+      fill="#34A853"
+    />
+    <path
+      d="M10.917 10.0994L14.0857 12.6756V7.54492L10.917 10.0994Z"
+      fill="#188038"
+    />
+  </svg>
+);
 
 type EventDetailsPropsBase = {
   event: Pick<
@@ -32,24 +76,9 @@ type EventDetailsPropsBase = {
   className?: string;
 };
 
-type EventDetailDefaultBlock = {
-  blocks?: EventDetailBlocks[];
+type EventDetailsProps = EventDetailsPropsBase & {
+  blocks?: (EventDetailBlocks | React.FC<{event: EventDetailsPropsBase['event']}>)[];
 };
-
-// Rendering a custom block requires passing a name prop,
-// which is used as a key for the block.
-// type EventDetailCustomBlock = {
-//   blocks?: React.FC[];
-//   name: string;
-// };
-
-type EventDetailCustomBlock = {
-  blocks?: React.FC<{event: EventDetailsPropsBase["event"]}>[];
-  name: string;
-};
-
-type EventDetailsProps = EventDetailsPropsBase &
-  (EventDetailDefaultBlock | EventDetailCustomBlock);
 
 interface EventMetaProps {
   customIcon?: React.ReactNode;
@@ -94,7 +123,7 @@ export const EventMetaBlock = ({
   return (
     <div
       className={classNames(
-        'flex items-start gap-[5px] justify-start text-label-sm text-text-sub-600',
+        'flex items-start gap-[5px] justify-start text-label-sm text-text-sub-600 overflow-hidden',
         // highlight ? 'text-emphasis' : 'text-sub-600',
         className
       )}
@@ -114,7 +143,11 @@ export const EventMetaBlock = ({
       ) : (
         <>
           {
-            customIcon
+            customIcon && (
+              <div className="flex-shrink-0">
+                {customIcon}
+              </div>
+            )
             //    ||
             //     (!!icon && (
             //       <Icon
@@ -127,7 +160,7 @@ export const EventMetaBlock = ({
       )}
       {children && <div
         className={classNames(
-          'relative z-10 max-w-full break-words',
+          'relative z-10 max-w-full break-words truncate min-w-0',
           contentClassName
         )}
       >
@@ -158,6 +191,55 @@ export const EventDetails = ({
   const {t} = useLocale();
   const rescheduleUid = useBookerStore((state) => state.rescheduleUid);
   const isInstantMeeting = useBookerStore((store) => store.isInstantMeeting);
+
+  // Helper function to get conference link info
+  const getConferenceInfo = () => {
+    if (!event.locations || event.locations.length === 0) {
+      return {
+        icon: <GoogleMeetIcon />,
+        name: 'Google Meet'
+      };
+    }
+    
+    const conferenceLocation = event.locations.find(location => 
+      location.type === 'integrations:google_meet' || 
+      location.type === 'integrations:zoom' ||
+      location.type === 'integrations:teams' ||
+      location.link
+    );
+    
+    if (!conferenceLocation) {
+      // Fallback: se não encontrou uma localização de conferência específica
+      return {
+        icon: <GoogleMeetIcon />,
+        name: 'Google Meet'
+      };
+    }
+    
+    const isGoogleMeet = conferenceLocation.type === 'integrations:google_meet';
+    const isZoom = conferenceLocation.type === 'integrations:zoom';
+    const isTeams = conferenceLocation.type === 'integrations:teams';
+    
+    let icon, name;
+    
+    if (isGoogleMeet) {
+      icon = <GoogleMeetIcon />;
+      name = 'Google Meet';
+    } else if (isZoom) {
+      icon = <RiLink size={20} color="var(--text-sub-600)" />;
+      name = 'Zoom';
+    } else if (isTeams) {
+      icon = <RiLink size={20} color="var(--text-sub-600)" />;
+      name = 'Microsoft Teams';
+    } else {
+      icon = <RiLink size={20} color="var(--text-sub-600)" />;
+      name = conferenceLocation.type || 'Link';
+    }
+    
+    return { icon, name };
+  };
+
+  const conferenceInfo = getConferenceInfo();
 
   return (
     <>
@@ -249,6 +331,14 @@ export const EventDetails = ({
             );
         }
       })}
+      
+      {/* Conference/Link block */}
+      <EventMetaBlock
+        customIcon={conferenceInfo.icon}
+        className="items-center"
+      >
+        {conferenceInfo.name}
+      </EventMetaBlock>
     </>
   );
 };

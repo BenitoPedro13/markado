@@ -5,7 +5,7 @@ import React, {forwardRef, useCallback, useId, useState} from 'react';
 import {useFormContext} from 'react-hook-form';
 
 import {cn as classNames} from '@/utils/cn';
-import {useLocaleI18} from '@/hooks/use-locale';
+import {useLocale} from '@/hooks/use-locale';
 
 import * as Alert from '@/components/align-ui/ui/alert';
 // import { Icon } from "@/components/align-ui/ui/icon";
@@ -25,7 +25,7 @@ export function InputLeading(props: JSX.IntrinsicElements['div']) {
 
 export const PasswordField = forwardRef<HTMLInputElement, InputFieldProps>(
   function PasswordField(props, ref) {
-    const {t} = useLocaleI18();
+    const {t} = useLocale();
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const toggleIsPasswordVisible = useCallback(
       () => setIsPasswordVisible(!isPasswordVisible),
@@ -135,7 +135,7 @@ export const TextAreaField = forwardRef<
   TextAreaFieldProps
 >(function TextField(props, ref) {
   const id = useId();
-  const {t: _t} = useLocaleI18();
+  const {t: _t} = useLocale();
   const t = props.t || _t;
   const methods = useFormContext();
   const {

@@ -7,7 +7,7 @@ import {cn as classNames} from '@/utils/cn';
 import {RiCloseLine} from '@remixicon/react'
 // import { Skeleton } from "../../skeleton";
 // import { HintsOrErrors } from "./HintOrErrors";
-import {useLocaleI18} from '@/hooks/use-locale';
+import {useLocale} from '@/hooks/use-locale';
 // import * as Label from "@/components/align-ui/ui/label";
 import type { InputFieldProps, InputProps } from "./form/types";
 
@@ -66,7 +66,7 @@ const Addon = ({ isFilled, children, className, error, onClickAddon }: AddonProp
 
 export const InputField = forwardRef<HTMLInputElement, InputFieldProps>(function InputField(props, ref) {
   const id = useId();
-  const {t: _t, isLocaleReady, i18n} = useLocaleI18();
+  const {t: _t, isLocaleReady, i18n} = useLocale();
   const t = props.t || _t;
   const name = props.name || "";
   const {
@@ -75,7 +75,7 @@ export const InputField = forwardRef<HTMLInputElement, InputFieldProps>(function
     labelClassName,
     disabled,
     LockedIcon,
-    placeholder = isLocaleReady && i18n.exists(`${name}_placeholder`) ? t(`${name}_placeholder`) : "",
+    placeholder = isLocaleReady ? t(`${name}_placeholder`) : "",
     className,
     addOnLeading,
     addOnSuffix,

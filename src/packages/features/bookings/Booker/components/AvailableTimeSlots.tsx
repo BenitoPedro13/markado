@@ -60,7 +60,6 @@ export const AvailableTimeSlots = ({
       state.layout
     ])
   );
-  const date = selectedDate || dayjs().format('YYYY-MM-DD');
   const isColumnView = layout === BookerLayouts.COLUMN_VIEW;
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -85,19 +84,35 @@ export const AvailableTimeSlots = ({
   const slots = (schedule && typeof schedule === 'object' && schedule !== null && 'slots' in schedule) ? (schedule as any).slots : undefined;
   
   const nonEmptyScheduleDays = useNonEmptyScheduleDays(slots);
-  const nonEmptyScheduleDaysFromSelectedDate = nonEmptyScheduleDays.filter(
+  const nonEmptyScheduleDaysFromSelectedDate = selectedDate ? nonEmptyScheduleDays.filter(
     (slot) => dayjs(selectedDate).diff(slot, 'day') <= 0
-  );
+  ) : [];
 
   // Creates an array of dates to fetch slots for.
   // If `extraDays` is passed in, we will extend the array with the next `extraDays` days.
   const dates = !extraDays
-    ? [date]
+    ? (selectedDate ? [selectedDate] : [])
     : nonEmptyScheduleDaysFromSelectedDate.length > 0
       ? nonEmptyScheduleDaysFromSelectedDate.slice(0, extraDays)
       : [];
 
   const slotsPerDay = useSlotsForAvailableDates(dates, slots);
+
+  const hasSelectedDate = !!selectedDate;
+
+  const mockSlots = hasSelectedDate ? [] : [
+    '09:00', '09:15', '09:30', '09:45',
+    '10:00', '10:15', '10:30', '10:45',
+    '11:00', '11:15', '11:30', '11:45',
+    '12:00', '12:15', '12:30', '12:45',
+    '13:00', '13:15', '13:30', '13:45',
+    '14:00', '14:15', '14:30', '14:45'
+  ].map(time => ({
+    time: dayjs().format('YYYY-MM-DD') + 'T' + time + ':00.000Z',
+    attendees: 0,
+    bookingUid: undefined,
+    away: false
+  }));
 
   return (
     <>
@@ -148,7 +163,7 @@ export const AvailableTimeSlots = ({
           Array.from({length: 1 + (extraDays ?? 0)}).map((_, i) => (
             <AvailableTimesSkeleton key={i} />
           ))}
-        {!isLoading &&
+        {!isLoading && hasSelectedDate &&
           slotsPerDay.length > 0 &&
           slotsPerDay.map((slots) => (
             <div
@@ -168,6 +183,22 @@ export const AvailableTimeSlots = ({
               />
             </div>
           ))}
+        {!isLoading && !hasSelectedDate && (
+          <div className="scrollbar-none h-full w-full overflow-y-auto overflow-x-hidden">
+            <AvailableTimes
+              className={customClassNames?.availableTimeSlotsContainer}
+              customClassNames={customClassNames?.availableTimes}
+              showTimeFormatToggle={!isColumnView}
+              onTimeSelect={() => {}}
+              slots={mockSlots}
+              seatsPerTimeSlot={seatsPerTimeSlot}
+              showAvailableSeatsCount={showAvailableSeatsCount}
+              event={event}
+              selectedSlots={[]}
+              disabled={true}
+            />
+          </div>
+        )}
       </div>
     </>
   );

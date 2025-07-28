@@ -4,7 +4,7 @@ import type { GroupBase, Props, SingleValue, MultiValue } from "react-select";
 import ReactSelect from "react-select";
 
 import {cn as cx} from "@/utils/cn";
-import { useLocaleI18 } from "@/hooks/use-locale";
+import { useLocale } from "@/hooks/use-locale";
 
 import { Label } from "../inputs/Label";
 import { getReactSelectProps } from "./selectTheme";
@@ -120,7 +120,7 @@ export const SelectField = function SelectField<
     error?: string;
   } & SelectProps<Option, IsMulti, Group>
 ) {
-  const {t} = useLocaleI18();
+  const {t} = useLocale();
   const { label = t(props.name || ""), containerClassName, labelProps, className, ...passThrough } = props;
   const id = useId();
   return (

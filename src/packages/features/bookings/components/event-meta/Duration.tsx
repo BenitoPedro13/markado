@@ -6,7 +6,7 @@ import {useEffect, useRef} from 'react';
 import {useBookerStore} from '@/packages/features/bookings/Booker/store';
 import type {BookerEvent} from '@/packages/features/bookings/types';
 import {cn as classNames} from '@/utils/cn';
-import {useLocaleI18} from '@/hooks/use-locale';
+import {useLocale} from '@/hooks/use-locale';
 import {
   useShouldShowArrows
 } from '@/packages/lib/hooks/useShouldShowArrows';
@@ -55,7 +55,7 @@ export const EventDuration = ({
 }: {
   event: Pick<BookerEvent, 'length' | 'metadata' | 'isDynamic'>;
 }) => {
-  const {t} = useLocaleI18();
+  const {t} = useLocale();
   const itemRefs = useRef<(HTMLLIElement | null)[]>([]);
   // const isPlatform = useIsPlatform();
   const selectedDuration = useBookerStore((state) => state.selectedDuration);

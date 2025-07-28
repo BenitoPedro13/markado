@@ -170,9 +170,6 @@ export const useBookerStore = create<BookerStore>((set, get) => ({
   setLayout: (layout: BookerLayout) => {
     // If we switch to a large layout and don't have a date selected yet,
     // we selected it here, so week title is rendered properly.
-    if (['week_view', 'column_view'].includes(layout) && !get().selectedDate) {
-      set({selectedDate: dayjs().format('YYYY-MM-DD')});
-    }
     updateQueryParam('layout', layout);
     return set({layout});
   },
@@ -296,7 +293,7 @@ export const useBookerStore = create<BookerStore>((set, get) => ({
       selectedDate:
         selectedDateInStore ||
         (['week_view', 'column_view'].includes(layout)
-          ? dayjs().format('YYYY-MM-DD')
+          ? null
           : null),
       teamMemberEmail
     });

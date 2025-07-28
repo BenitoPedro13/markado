@@ -35,8 +35,6 @@ export function formatLongDateIntl(
   date: Date,
   localeStr: string = 'pt-BR'
 ): string {
-  console.log('localeStr', localeStr)
-
   if (localeStr === 'en') {
     return format(date, 'EEEE, MMMM d', {locale: enUS});
   }

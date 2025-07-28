@@ -70,7 +70,6 @@ import { getEventName } from "@/packages/core/event";
 import { SMS_REMINDER_NUMBER_FIELD, SystemField, TITLE_FIELD } from "@/packages/features/bookings/lib/SystemField";
 import Image from "next/image";
 import CancelBooking from "@/components/booking/CancelBooking";
-import { useLocaleI18 } from "@/hooks/use-locale";
 
 const stringToBoolean = z
   .string()
@@ -169,6 +168,7 @@ export default function Success(props: PageProps) {
     session?.user?.email ??
     undefined;
 
+  const isRescheduling = !!searchParams?.get("rescheduledBy");
   const defaultRating = isNaN(parsedRating) ? 3 : parsedRating > 5 ? 5 : parsedRating < 1 ? 1 : parsedRating;
   const [rateValue, setRateValue] = useState<number>(defaultRating);
   const [isFeedbackSubmitted, setIsFeedbackSubmitted] = useState(false);
@@ -198,7 +198,6 @@ export default function Success(props: PageProps) {
     mutate: async (data: any) => {
       try {
         // Placeholder for markHostAsNoShow mutation
-        console.log('Mark host as no show:', data);
         notification({
           title: "Thank you, feedback submitted",
           status: "success",
@@ -759,7 +758,7 @@ export default function Success(props: PageProps) {
                                   >
                                     <Link
                                       href={`/reschedule/${seatReferenceUid || bookingInfo?.uid}${
-                                        currentUserEmail
+                                        isRescheduling && currentUserEmail
                                           ? `?rescheduledBy=${encodeURIComponent(currentUserEmail)}`
                                           : ""
                                       }`}
@@ -1089,7 +1088,7 @@ const DisplayLocation = ({
   providerName?: string;
   className?: string;
 }) => {
-  const { t } = useLocaleI18();
+  const { t } = useLocale();
   
   // Handle integrations:daily format
   if (locationToDisplay === "integrations:daily") {
@@ -1188,7 +1187,7 @@ function RecurringBookings({
               type="button"
               className={classNames("flex w-full", moreEventsVisible ? "hidden" : "")}
             >
-              + {t("plus_more", { count: recurringBookingsSorted.length - 4 })}
+              {t("plus_more", { count: recurringBookingsSorted.length - 4 })}
             </CollapsibleTrigger>
             <CollapsibleContent>
               {eventType.recurringEvent?.count &&

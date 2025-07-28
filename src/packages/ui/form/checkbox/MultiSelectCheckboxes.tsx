@@ -11,7 +11,7 @@ import { components } from "react-select";
 import type { Props } from "react-select";
 
 import {cn as classNames} from '@/utils/cn';
-import { useLocaleI18 } from "@/hooks/use-locale";
+import { useLocale } from "@/hooks/use-locale";
 
 import { Select } from "@/packages/ui/components/form/select";
 
@@ -67,7 +67,7 @@ const MultiValue = ({
   getValue: () => readonly Option[];
   countText: string;
 }) => {
-  const {t} = useLocaleI18();
+  const {t} = useLocale();
   const count = getValue().filter((option) => option.value !== "all").length;
   return <>{!index && count !== 0 && <div>{t(countText, { count })}</div>}</>;
 };

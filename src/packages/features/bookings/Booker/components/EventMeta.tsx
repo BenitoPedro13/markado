@@ -10,7 +10,7 @@ import { SeatsAvailabilityText } from "@/packages/features/bookings/components/S
 import { EventMetaBlock } from "@/packages/features/bookings/components/event-meta/Details";
 import { useTimePreferences } from "@/packages/features/bookings/lib";
 import type { BookerEvent } from "@/packages/features/bookings/types";
-import { useLocaleI18 } from "@/hooks/use-locale";
+import { useLocale } from "@/hooks/use-locale";
 import { formatToLocalizedTimezone } from '@/lib/date-fns';
 import dayjs from '@/lib/dayjs';
 import TimezoneSelectWithStyle from '@/components/TimezoneSelectWithStyle';
@@ -69,7 +69,7 @@ export const EventMeta = ({
   const [seatedEventData, setSeatedEventData] = useBookerStore(
     useShallow((state) => [state.seatedEventData, state.setSeatedEventData])
   );
-  const {i18n, t} = useLocaleI18();
+  const {i18n, t} = useLocale();
   // const embedUiConfig = useEmbedUiConfig();
   // const isEmbed = useIsEmbed();
   // const hideEventTypeDetails = isEmbed ? embedUiConfig.hideEventTypeDetails : false;
@@ -189,13 +189,13 @@ export const EventMeta = ({
                 </EventMetaBlock>
               )}
               <EventDetails event={event} />
-              <div className="mb-4">
+              <div className="mb-4 overflow-hidden">
                   <TimezoneSelectWithStyle
                     value={bookerTimezone}
                     onChange={setBookerTimezone}
                     autoDetect={false}
                     hint={false}
-                    className="max-w-64 border-none"
+                    className="max-w-64 border-none overflow-hidden"
                     variant="inline"
                   />
               </div>

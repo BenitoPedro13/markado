@@ -1,5 +1,4 @@
-// page can be a server component
-import type { GetServerSidePropsContext } from "next";
+import { redirect } from 'next/navigation';
 import { URLSearchParams } from "url";
 import { z } from "zod";
 import { auth } from '@/auth';
@@ -10,9 +9,9 @@ import { BookingStatus } from '~/prisma/enums';
 import { getDefaultEvent } from '@/packages/lib/defaultEvents';
 import { UserRepository } from '@/repositories/user';
 import { buildEventUrlFromBooking } from "@/packages/lib/bookings/buildEventUrlFromBooking";
+import { prisma } from '@/lib/prisma';
 
 const querySchema = z.object({
-  uid: z.string(),
   seatReferenceUid: z.string().optional(),
   rescheduledBy: z.string().optional(),
   allowRescheduleForCancelledBooking: z
@@ -21,21 +20,30 @@ const querySchema = z.object({
     .optional(),
 });
 
-export async function getServerSideProps(context: GetServerSidePropsContext) {
+interface PageProps {
+  params: Promise<{ uid: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}
+
+export default async function ReschedulePage({ params, searchParams }: PageProps) {
+  const resolvedParams = await params;
+  const resolvedSearchParams = await searchParams;
+  
   const session = await auth();
   const user = await getUserFromSession(session);
 
+  const bookingUid = resolvedParams.uid;
+  
   const {
-    uid: bookingUid,
     seatReferenceUid,
     rescheduledBy,
     /**
      * This is for the case of request-reschedule where the booking is cancelled
      */
     allowRescheduleForCancelledBooking,
-  } = querySchema.parse(context.query);
+  } = querySchema.parse(resolvedSearchParams);
 
-  const coepFlag = context.query["flag.coep"];
+  const coepFlag = resolvedSearchParams["flag.coep"];
   const { uid, seatReferenceUid: maybeSeatReferenceUid } = await maybeGetBookingUidFromSeat(
     prisma,
     bookingUid
@@ -66,6 +74,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
           owner: {
             select: {
               id: true,
+              username: true,
             },
           },
           hosts: {
@@ -88,9 +97,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   const dynamicEventSlugRef = booking?.dynamicEventSlugRef || "";
 
   if (!booking) {
-    return {
-      notFound: true,
-    } as const;
+    redirect('/404');
   }
 
   // If booking is already CANCELLED or REJECTED, we can't reschedule this booking. Take the user to the booking page which would show it's correct status and other details.
@@ -99,21 +106,12 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     !allowRescheduleForCancelledBooking &&
     (booking.status === BookingStatus.CANCELLED || booking.status === BookingStatus.REJECTED)
   ) {
-    return {
-      redirect: {
-        destination: `/booking/${uid}`,
-        permanent: false,
-      },
-    };
+    redirect(`/booking/${uid}`);
   }
 
   if (!booking?.eventType && !booking?.dynamicEventSlugRef) {
     // TODO: Show something in UI to let user know that this booking is not rescheduleable
-    return {
-      notFound: true,
-    } as {
-      notFound: true;
-    };
+    redirect('/404');
   }
 
   // if booking event type is for a seated event and no seat reference uid is provided, throw not found
@@ -121,12 +119,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     const userId = user?.id;
 
     if (!userId && !seatReferenceUid) {
-      return {
-        redirect: {
-          destination: `/auth/login?callbackUrl=/reschedule/${bookingUid}`,
-          permanent: false,
-        },
-      };
+      redirect(`/auth/login?callbackUrl=/reschedule/${bookingUid}`);
     }
     const userIsHost = booking?.eventType.hosts.find((host: any) => {
       if (host.user.id === userId) return true;
@@ -135,11 +128,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     const userIsOwnerOfEventType = booking?.eventType.owner?.id === userId;
 
     if (!userIsHost && !userIsOwnerOfEventType) {
-      return {
-        notFound: true,
-      } as {
-        notFound: true;
-      };
+      redirect('/404');
     }
   }
 
@@ -171,8 +160,6 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   }
 
   const destinationUrlSearchParams = new URLSearchParams();
-  destinationUrlSearchParams.set("rescheduleUid", seatReferenceUid || bookingUid);
-  destinationUrlSearchParams.set("reschedule", "true");
   if (coepFlag) {
     destinationUrlSearchParams.set("flag.coep", coepFlag as string);
   }
@@ -181,10 +168,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     destinationUrlSearchParams.set("rescheduledBy", currentUserEmail);
   }
 
-  return {
-    redirect: {
-      destination: `/${username}/${slug}?${destinationUrlSearchParams.toString()}`,
-      permanent: false,
-    },
-  };
+  const destination = `/${username}/${slug}?${destinationUrlSearchParams.toString()}`;
+  
+  redirect(destination);
 }
