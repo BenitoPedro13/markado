@@ -1,6 +1,6 @@
 // import { AnimatePresence, LazyMotion, m } from "framer-motion";
 import dynamic from 'next/dynamic';
-import {useEffect, useMemo, useRef} from 'react';
+import {useEffect, useRef} from 'react';
 // import { Toaster } from "react-hot-toast";
 // import StickyBox from "react-sticky-box";
 import {useShallow} from 'zustand/shallow';
@@ -12,6 +12,7 @@ import {useNonEmptyScheduleDays} from '@/packages/features/schedules';
 import {cn as classNames} from '@/utils/cn';
 import {useLocale} from '@/hooks/use-locale';
 import {BookerLayouts} from '~/prisma/zod-utils';
+import BookingSkeleton from '@/components/booking/BookingSkeleton';
 
 // import { VerifyCodeDialog } from "../components/VerifyCodeDialog";
 import {AvailableTimeSlots} from './components/AvailableTimeSlots';
@@ -254,6 +255,10 @@ const BookerComponent = ({
   // if (event.isSuccess && !event.data) {
   //   return <NotFound />;
   // }
+
+  if (loadingStates.creatingBooking || loadingStates.creatingRecurringBooking || loadingStates.creatingInstantBooking) {
+    return <BookingSkeleton />;
+  }
 
   if (bookerState === 'loading') {
     return null;
