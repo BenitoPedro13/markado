@@ -160,7 +160,7 @@ export const EventMetaBlock = ({
       )}
       {children && <div
         className={classNames(
-          'relative z-10 max-w-full break-words truncate min-w-0',
+          'relative z-10 max-w-full break-words min-w-0',
           contentClassName
         )}
       >

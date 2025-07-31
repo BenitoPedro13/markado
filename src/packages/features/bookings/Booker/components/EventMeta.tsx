@@ -150,7 +150,7 @@ export const EventMeta = ({
               {event?.title}
             </EventTitle>
             {event.description ? (
-              <EventMetaBlock contentClassName=" break-words max-w-full max-h-[180px] scroll-bar pr-4">
+              <EventMetaBlock contentClassName="break-words max-w-full">
                 <div dangerouslySetInnerHTML={{__html: event.description}} />
               </EventMetaBlock>
             ) : 
