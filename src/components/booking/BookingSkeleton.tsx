@@ -3,7 +3,7 @@ import { Text as SkeletonText } from "@/components/align-ui/ui/skeleton";
 
 export default function BookingSkeleton() {
   return (
-    <div className="h-screen flex items-center justify-center bg-[url('/patterns/vertical_stripes.svg')] bg-no-repeat bg-[auto_500px] bg-bottom" data-testid="success-page">
+    <div className="h-fit flex items-center justify-center bg-[url('/patterns/vertical_stripes.svg')] bg-no-repeat bg-[auto_500px] bg-bottom" data-testid="success-page">
       <main className="mx-auto max-w-3xl">
         <div className="overflow-y-auto z-50">
           <div className="text-center flex items-end justify-center px-4 pb-20 pt-4 sm:flex sm:p-0">
