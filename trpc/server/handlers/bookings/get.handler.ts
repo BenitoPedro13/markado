@@ -1,21 +1,24 @@
-import { PrismaClient } from "@prisma/client";
-import { TGetInputSchema } from "../../schemas/services.schema";
+import { PrismaClient } from "~/prisma/app/generated/prisma/client";
+import { TGetInputSchema } from "../../schemas/bookings/get.schema";
 import getAllUserBookings from "@/packages/lib/bookings/getAllUserBookings";
 import { Prisma } from "~/prisma/app/generated/prisma/client";
 import { parseEventTypeColor, parseRecurringEvent } from "@/packages/lib";
 import { EventTypeMetaDataSchema } from "~/prisma/zod-utils";
 import { bookingMinimalSelect } from "~/prisma/selects";
-import { TrpcSessionUser } from "../../trpc";
+// import { TrpcSessionUser } from "../../trpc";
+import { BookingStatus } from "~/prisma/enums";
 
 type GetOptions = {
-  ctx: {
-    user: NonNullable<TrpcSessionUser>;
-    prisma: PrismaClient;
-  };
+  // ctx: {
+  //   user: NonNullable<TrpcSessionUser>;
+  //   prisma: PrismaClient;
+  // };
   input: TGetInputSchema;
 };
 
-export const getHandler = async ({ ctx, input }: GetOptions) => {
+export const getHandler = async ({
+  // ctx,
+   input }: GetOptions) => {
   // using offset actually because cursor pagination requires a unique column
   // for orderBy, but we don't use a unique column in our orderBy
   const take = input.limit ?? 10;
@@ -59,7 +62,7 @@ export async function getBookings({
   take,
   skip,
 }: {
-  user: { id: number; email: string };
+  user: { id: string; email: string };
   filters: TGetInputSchema["filters"];
   prisma: PrismaClient;
   passedBookingsStatusFilter: Prisma.BookingWhereInput;

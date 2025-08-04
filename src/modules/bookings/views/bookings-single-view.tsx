@@ -1,7 +1,7 @@
 "use client";
 
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@radix-ui/react-collapsible";
-import classNames from "classnames";
+import {cn as classNames} from "@/utils/cn";
 import { createEvent } from "ics";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { Toaster } from "react-hot-toast";
 import { z } from "zod";
 import { useLocale } from "@/hooks/use-locale";
+import {useLocaleI18} from "@/hooks/use-locale-i18"
 import { useTranslations } from "next-intl";
 import { useRouterQuery } from "@/lib/hooks/userRouterQuery";
 import { useCompatSearchParams } from "@/lib/hooks/useCompatSearchParam";
@@ -608,7 +609,7 @@ export default function Success(props: PageProps) {
                                       {attendee.phoneNumber}
                                     </p>
                                   )}
-                                  {!attendee.email.includes("sms.cal.com") && (
+                                  {!attendee.email.includes("sms.markado.co") && (
                                     <p data-testid={`attendee-email-${attendee.email}`}>{attendee.email}</p>
                                   )}
                                 </div>
@@ -1088,7 +1089,7 @@ const DisplayLocation = ({
   providerName?: string;
   className?: string;
 }) => {
-  const { t } = useLocale();
+  const { t } = useLocaleI18();
   
   // Handle integrations:daily format
   if (locationToDisplay === "integrations:daily") {
