@@ -98,7 +98,12 @@ const Header = () => {
   return (
     <header className="relative w-full py-6 px-11 gap-6 border-b border-b-bg-soft-200 border-b-soft flex justify-between items-center">
       <div className="w-full flex flex-row justify-between items-center gap-6">
-        <Link href={'/'} className="">
+        <Link 
+          href={process.env.NEXT_PUBLIC_LANDING_URL || 'https://markado.co'} 
+          className=""
+          target="_blank"
+          rel="noopener"
+        >
           <Logo />
         </Link>
 
