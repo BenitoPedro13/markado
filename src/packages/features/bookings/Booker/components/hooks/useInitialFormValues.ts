@@ -99,7 +99,29 @@ export function useInitialFormValues({
         setDefaultValues(defaults);
       }
 
-      if (!rescheduleUid && !bookingData) {
+      if (rescheduleUid) {
+        const defaults = {
+          responses: {} as Partial<z.infer<ReturnType<typeof getBookingResponsesSchema>>>,
+          bookingId: bookingData?.id,
+        };
+
+        const responses = eventType.bookingFields.reduce((responses, field) => {
+          return {
+            ...responses,
+            [field.name]: bookingData?.responses?.[field.name] || undefined,
+          };
+        }, {});
+
+        defaults.responses = {
+          ...responses,
+          name: defaultUserValues.name,
+          email: defaultUserValues.email ?? "",
+        };
+        setDefaultValues(defaults);
+        return;
+      }
+
+      if (!isRescheduling && !bookingData) {
         return {};
       }
 
