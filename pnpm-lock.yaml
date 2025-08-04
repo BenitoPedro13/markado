@@ -83,6 +83,18 @@ dependencies:
   '@remixicon/react':
     specifier: ^4.5.0
     version: 4.6.0(react@19.1.0)
+  '@schedule-x/calendar':
+    specifier: ^2.36.0
+    version: 2.36.0(@preact/signals@2.2.1)(preact@10.27.0)
+  '@schedule-x/events-service':
+    specifier: ^2.36.0
+    version: 2.36.0
+  '@schedule-x/react':
+    specifier: ^2.36.0
+    version: 2.36.0(@schedule-x/calendar@2.36.0)(react-dom@19.1.0)(react@19.1.0)
+  '@schedule-x/theme-default':
+    specifier: ^2.36.0
+    version: 2.36.0
   '@sendgrid/client':
     specifier: ^8.1.5
     version: 8.1.5
@@ -2430,6 +2442,19 @@ packages:
 
   /@popperjs/core@2.11.8:
     resolution: {integrity: sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==}
+    dev: false
+
+  /@preact/signals-core@1.11.0:
+    resolution: {integrity: sha512-jglbibeWHuFRzEWVFY/TT7wB1PppJxmcSfUHcK+2J9vBRtiooMfw6tAPttojNYrrpdGViqAYCbPpmWYlMm+eMQ==}
+    dev: false
+
+  /@preact/signals@2.2.1(preact@10.27.0):
+    resolution: {integrity: sha512-cX3mijdjHbbz3dBoJ6z687CGYEOp9ifj3uFnm4UKW+DxXKPMvE2y/VSdm0PXhXmHnr6F0iSnDJ+dLwmV7CYT5A==}
+    peerDependencies:
+      preact: '>= 10.25.0'
+    dependencies:
+      '@preact/signals-core': 1.11.0
+      preact: 10.27.0
     dev: false
 
   /@prisma/client@6.6.0(prisma@6.6.0)(typescript@5.8.3):
@@ -5251,6 +5276,36 @@ packages:
   /@rushstack/eslint-patch@1.11.0:
     resolution: {integrity: sha512-zxnHvoMQVqewTJr/W4pKjF0bMGiKJv1WX7bSrkl46Hg0QjESbzBROWK0Wg4RphzSOS5Jiy7eFimmM3UgMrMZbQ==}
     dev: true
+
+  /@schedule-x/calendar@2.36.0(@preact/signals@2.2.1)(preact@10.27.0):
+    resolution: {integrity: sha512-UqPMoxjok3SFNvgx1+PY5Whmoig+gU7sjy80z68A9QQ1FjIt1Q3ODPZKdA3G0spDss9lDtKilpO393vWpXJyfg==}
+    peerDependencies:
+      '@preact/signals': ^2.0.2
+      preact: ^10.19.2
+    dependencies:
+      '@preact/signals': 2.2.1(preact@10.27.0)
+      preact: 10.27.0
+    dev: false
+
+  /@schedule-x/events-service@2.36.0:
+    resolution: {integrity: sha512-M4dz8AgaEtpbXAanvYvuPnEDAKlhMO7d6R8WQ8wX8hXsJSzWa18XS3qLJOT+5jCR7O8QD8aDIDg3RpihleUeiA==}
+    dev: false
+
+  /@schedule-x/react@2.36.0(@schedule-x/calendar@2.36.0)(react-dom@19.1.0)(react@19.1.0):
+    resolution: {integrity: sha512-MZAs67Krn1zmxmmlM1iWUdypmYAiOkIV7Z4wi9PJKWjt4Dtbx8K8Q4kW38aWmfDCImPbfBUGDp3LaP9u53zCzg==}
+    peerDependencies:
+      '@schedule-x/calendar': ^2.25.0
+      react: ^16.7.0 || ^17 || ^18 || ^19
+      react-dom: ^16.7.0 || ^17 || ^18 || ^19
+    dependencies:
+      '@schedule-x/calendar': 2.36.0(@preact/signals@2.2.1)(preact@10.27.0)
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+    dev: false
+
+  /@schedule-x/theme-default@2.36.0:
+    resolution: {integrity: sha512-jkN9/srYS54dO2h12iCvNMMrLEiod6BAoUc47KbOgGE66zyUU+kmQwUOYQ3A2LrKyIWjwtCp3Ewdd4h/HHvG9A==}
+    dev: false
 
   /@schummar/icu-type-parser@1.21.5:
     resolution: {integrity: sha512-bXHSaW5jRTmke9Vd0h5P7BtWZG9Znqb8gSDxZnxaGSJnGwPLDPfS+3g0BKzeWqzgZPsIVZkM7m2tbo18cm5HBw==}
@@ -10763,6 +10818,10 @@ packages:
 
   /preact@10.11.3:
     resolution: {integrity: sha512-eY93IVpod/zG3uMF22Unl8h9KkrcKIRs2EGar8hwLZZDU1lkjph303V9HZBwufh2s736U6VXuhD109LYqPoffg==}
+    dev: false
+
+  /preact@10.27.0:
+    resolution: {integrity: sha512-/DTYoB6mwwgPytiqQTh/7SFRL98ZdiD8Sk8zIUVOxtwq4oWcwrcd1uno9fE/zZmUaUrFNYzbH14CPebOz9tZQw==}
     dev: false
 
   /prelude-ls@1.2.1:
