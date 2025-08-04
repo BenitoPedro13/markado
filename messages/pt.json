@@ -131,7 +131,8 @@
     "location": "Local",
     "what_is_this_meeting_about": "Sobre o que é esta reunião?",
     "location_placeholder": "Informe o local...",
-    "what_is_this_meeting_about_placeholder": "Descreva o assunto da reunião..."
+    "what_is_this_meeting_about_placeholder": "Descreva o assunto da reunião...",
+    "former_time": "Horário anterior:"
   },
   "Error": {
     "description": "<p>Infelizmente encontramos um erro.</p><p>Você pode tentar <retry>recarregar a página</retry> que estava tentando visitar.</p>",

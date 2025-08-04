@@ -122,7 +122,8 @@
     "verify_email_email_button": "Verify email",
     "reschedule_fail": "Reschedule failed",
     "can_you_try_again": "Can you try again?",
-    "Internal Server Error": "Internal Server Error"
+    "Internal Server Error": "Internal Server Error",
+    "former_time": "Previous time:"
   },
   "Error": {
     "description": "<p>Unfortunately we encountered an error.</p><p>You can try to <retry>reload the page</retry> you were trying to visit.</p>",
