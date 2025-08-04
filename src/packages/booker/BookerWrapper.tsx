@@ -5,6 +5,7 @@ import {useSearchParams} from 'next/navigation';
 import {usePathname, useRouter} from 'next/navigation';
 import {useMemo, useCallback, useEffect, useState } from 'react';
 import {useShallow} from 'zustand/shallow';
+import { getBookingByUid } from "@/lib/actions/booking-actions";
 
 import dayjs from '@/lib/dayjs';
 // import {sdkActionManager} from '@/embed-core/embed-iframe';
@@ -57,16 +58,13 @@ export const BookerWrapper = (props: BookerWrapperProps) => {
   const rescheduledBy = searchParams?.get('rescheduledBy') ?? null;
   const bookingUid = searchParams?.get('bookingUid') ?? null;
   
-  // Buscar bookingData quando há um rescheduleUid
-  const [bookingData, setBookingData] = useState(null);
+  const [bookingData, setBookingData] = useState<any>(null);
   
   useEffect(() => {
     if (rescheduleUid) {
-      // Buscar os dados do booking original
-      fetch(`/api/bookings/${rescheduleUid}`)
-        .then(res => res.json())
-        .then(data => setBookingData(data))
-        .catch(err => console.error('Erro ao buscar booking data:', err));
+      getBookingByUid(rescheduleUid)
+        .then((data: any) => setBookingData(data))
+        .catch((err: any) => console.error('Erro ao buscar booking data:', err));
     }
   }, [rescheduleUid]);
   const date = dayjs(selectedDate).format('YYYY-MM-DD');
