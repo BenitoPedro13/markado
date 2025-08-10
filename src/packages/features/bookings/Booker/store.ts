@@ -271,10 +271,9 @@ export const useBookerStore = create<BookerStore>((set, get) => ({
       get().eventId === eventId &&
       get().rescheduleUid === rescheduleUid &&
       get().bookingUid === bookingUid &&
-      get().bookingData?.responses.email === bookingData?.responses.email &&
       get().layout === layout &&
       get().rescheduledBy === rescheduledBy &&
-      get().teamMemberEmail
+      get().teamMemberEmail === teamMemberEmail
     )
       return;
     set({
@@ -312,15 +311,19 @@ export const useBookerStore = create<BookerStore>((set, get) => ({
     // force clear this.
     // Also, fetch the original booking duration if user is rescheduling and
     // update the selectedDuration
-    if (rescheduleUid && bookingData) {
+    if (rescheduleUid) {
       set({selectedTimeslot: null, selectedDate: null});
       removeQueryParam('date');
-      const originalBookingLength = dayjs(bookingData?.endTime).diff(
-        dayjs(bookingData?.startTime),
-        'minutes'
-      );
-      set({selectedDuration: originalBookingLength});
-      updateQueryParam('duration', originalBookingLength ?? '');
+      removeQueryParam('slot');
+      
+      if (bookingData) {
+        const originalBookingLength = dayjs(bookingData?.endTime).diff(
+          dayjs(bookingData?.startTime),
+          'minutes'
+        );
+        set({selectedDuration: originalBookingLength});
+        updateQueryParam('duration', originalBookingLength ?? '');
+      }
     }
     if (month) set({month});
 
