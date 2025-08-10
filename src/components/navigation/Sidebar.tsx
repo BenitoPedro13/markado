@@ -106,7 +106,11 @@ const Sidebar = ({children}: PropsWithChildren) => {
             <div
               className={`h-10 flex justify-start items-center gap-2.5 ${isCollapsed ? 'w-[41px] h-[41px]' : 'opacity-100'} transition-all duration-300`}
             >
-              <Link href="/">
+              <Link 
+                href={process.env.NEXT_PUBLIC_LANDING_URL || 'https://markado.co'}
+                target="_blank"
+                rel="noopener"
+              >
                 <Logo isCollapsed={isCollapsed} />
               </Link>
             </div>
