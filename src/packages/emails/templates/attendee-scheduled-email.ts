@@ -5,6 +5,7 @@ import type { TFunction } from "next-i18next";
 import { getRichDescription } from "@/packages/lib/CalEventParser";
 import {TimeFormat} from '@/packages/lib/timeFormat';
 import type {CalendarEvent, Person} from '@/types/Calendar';
+import dayjs from "@/lib/dayjs";
 
 import { renderEmail } from "../";
 import generateIcsFile, { GenerateIcsRole } from "../lib/generateIcsFile";
@@ -95,9 +96,17 @@ ${getRichDescription(this.calEvent, this.t)}
 
   public getFormattedDate() {
     const inviteeTimeFormat = this.calEvent.organizer.timeFormat || TimeFormat.TWELVE_HOUR;
-
-    return `${this.getInviteeStart(inviteeTimeFormat)} - ${this.getInviteeEnd(inviteeTimeFormat)}, ${this.t(
-      this.getInviteeStart("dddd").toLowerCase()
-    )}, ${this.t(this.getInviteeStart("MMMM").toLowerCase())} ${this.getInviteeStart("D, YYYY")}`;
+    const locale = this.getLocale();
+    
+    const startTime = dayjs(this.calEvent.startTime).tz(this.getTimezone()).locale(locale);
+    const endTime = dayjs(this.calEvent.endTime).tz(this.getTimezone()).locale(locale);
+    
+    const timeFormat = inviteeTimeFormat === TimeFormat.TWELVE_HOUR ? "h:mmA" : "HH:mm";
+    const dayOfWeek = startTime.format("dddd");
+    const month = startTime.format("MMMM");
+    const day = startTime.format("D");
+    const year = startTime.format("YYYY");
+    
+    return `${startTime.format(timeFormat)} - ${endTime.format(timeFormat)}, ${dayOfWeek}, ${month} ${day}, ${year}`;
   }
 }

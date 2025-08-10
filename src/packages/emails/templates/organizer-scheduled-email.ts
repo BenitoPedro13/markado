@@ -11,6 +11,7 @@ import { renderEmail } from "../";
 import generateIcsFile from "../lib/generateIcsFile";
 import { GenerateIcsRole } from "../lib/generateIcsFile";
 import BaseEmail from "./_base-email";
+import dayjs from "@/lib/dayjs";
 
 type Reassigned = { name: string | null; email: string; reason?: string; byUser?: string };
 export default class OrganizerScheduledEmail extends BaseEmail {
@@ -121,10 +122,17 @@ ${callToAction}
 
   protected getFormattedDate() {
     const organizerTimeFormat = this.calEvent.organizer.timeFormat || TimeFormat.TWELVE_HOUR;
-    return `${this.getOrganizerStart(organizerTimeFormat)} - ${this.getOrganizerEnd(
-      organizerTimeFormat
-    )}, ${this.t(this.getOrganizerStart("dddd").toLowerCase())}, ${this.t(
-      this.getOrganizerStart("MMMM").toLowerCase()
-    )} ${this.getOrganizerStart("D, YYYY")}`;
+    const locale = this.getLocale();
+    
+    const startTime = dayjs(this.calEvent.startTime).tz(this.getTimezone()).locale(locale);
+    const endTime = dayjs(this.calEvent.endTime).tz(this.getTimezone()).locale(locale);
+    
+    const timeFormat = organizerTimeFormat === TimeFormat.TWELVE_HOUR ? "h:mmA" : "HH:mm";
+    const dayOfWeek = startTime.format("dddd");
+    const month = startTime.format("MMMM");
+    const day = startTime.format("D");
+    const year = startTime.format("YYYY");
+    
+    return `${startTime.format(timeFormat)} - ${endTime.format(timeFormat)}, ${dayOfWeek}, ${month} ${day}, ${year}`;
   }
 }
