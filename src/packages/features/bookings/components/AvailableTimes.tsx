@@ -296,7 +296,7 @@ export const AvailableTimes = ({
         {!slots.length && (
           <div
             data-testid="no-slots-available"
-            className="bg-subtle border-subtle flex h-full flex-col items-center rounded-md border p-6 dark:bg-transparent"
+            className="bg-subtle flex h-full flex-col items-center p-6 dark:bg-transparent"
           >
             <RiCalendar2Line className="text-muted mb-2 h-4 w-4" />
             <p
