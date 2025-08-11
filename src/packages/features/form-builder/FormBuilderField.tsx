@@ -251,6 +251,7 @@ export const ComponentForField = ({
       `Value ${value} is not valid for type ${componentConfig.propsType} for field ${field.name}`
     );
   }
+
   if (componentConfig.propsType === "text") {
     return (
       <WithLabel field={field} htmlFor={field.name} readOnly={readOnly} noLabel={noLabel}>
@@ -367,6 +368,24 @@ export const ComponentForField = ({
     const translatedVariantsConfig = getTranslatedVariantsConfig(field, t);
     if (!translatedVariantsConfig) {
       return null;
+    }
+
+    // If it's a `name` field (which uses variants under the hood), we still want to
+    // render a top label like other fields. Wrap it with WithLabel conditionally.
+    if (field.type === "name") {
+      return (
+        <WithLabel field={field} htmlFor={field.name} readOnly={readOnly} noLabel={noLabel}>
+          <componentConfig.factory
+            placeholder={field.placeholder}
+            readOnly={readOnly}
+            name={field.name}
+            variant={field.variant}
+            value={value as { value: string; optionValue: string }}
+            setValue={setValue as (arg: Record<string, string> | string) => void}
+            variants={translatedVariantsConfig.variants}
+          />
+        </WithLabel>
+      );
     }
 
     return (

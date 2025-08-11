@@ -6,10 +6,10 @@ import {
   RiInformationLine,
 } from '@remixicon/react';
 // import { Skeleton } from "../../skeleton";
-import { HintsOrErrors }from "./HintOrErrors";
+import { HintsOrErrors } from "./HintOrErrors";
 import * as Label from "@/components/align-ui/ui/label"
 import type { InputFieldProps, InputProps } from "./types";
-import {cn as classNames} from "@/utils/cn"
+import { cn as classNames } from "@/utils/cn"
 import { useLocale } from "@/hooks/use-locale";
 
 
@@ -103,20 +103,20 @@ export const InputField = forwardRef<HTMLInputElement, InputFieldProps>(function
 
   return (
     <div className={classNames(containerClassName)}>
-      {/* // {!!name && !noLabel && (
-      //   <Skeleton
-      //     as={Label}
-      //     htmlFor={id}
-      //     loadingClassName="w-16"
-      //     {...labelProps}
-      //     className={classNames(labelClassName, labelSrOnly && "sr-only", props.error && "text-error")}>
-      //     {label}
-      //     {showAsteriskIndicator && !readOnly && passThrough.required ? (
-      //       <span className="text-default ml-1 font-medium">*</span>
-      //     ) : null}
-      //     {LockedIcon}
-      //   </Skeleton>
-      // )} */}
+      {/* {!!name && !noLabel && (
+        <Skeleton
+          as={Label}
+          htmlFor={id}
+          loadingClassName="w-16"
+          {...labelProps}
+          className={classNames(labelClassName, labelSrOnly && "sr-only", props.error && "text-error")}>
+          {label}
+          {showAsteriskIndicator && !readOnly && passThrough.required ? (
+            <span className="text-default ml-1 font-medium">*</span>
+          ) : null}
+          {LockedIcon}
+        </Skeleton>
+      )} */}
       {addOnLeading || addOnSuffix ? (
         <div
           dir="ltr"
@@ -189,7 +189,7 @@ export const InputField = forwardRef<HTMLInputElement, InputFieldProps>(function
         />
       )}
       <HintsOrErrors hintErrors={hintErrors} fieldName={name} t={t} />
-        {hint && <div className="text-default mt-2 flex items-center text-sm">{hint}</div>}
+      {hint && <div className="text-default mt-2 flex items-center text-sm">{hint}</div>}
     </div>
   );
 });

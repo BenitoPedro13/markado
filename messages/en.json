@@ -13,6 +13,10 @@
     "noResults": "No results found",
     "required": "Required",
     "optional": "Optional",
+    "back": "Back",
+    "today": "Today",
+    "confirm": "Confirm",
+    "add_another": "Add another",
     "phone_number": "Phone number",
     "additional_guests": "Additional guests",
     "email_address": "Email address",
@@ -123,6 +127,11 @@
     "reschedule_fail": "Reschedule failed",
     "can_you_try_again": "Can you try again?",
     "Internal Server Error": "Internal Server Error",
+    "email": "Email",
+    "location": "Location",
+    "what_is_this_meeting_about": "What is this meeting about?",
+    "location_placeholder": "Enter the location...",
+    "what_is_this_meeting_about_placeholder": "Describe the subject of the meeting...",
     "former_time": "Previous time:"
   },
   "Error": {
