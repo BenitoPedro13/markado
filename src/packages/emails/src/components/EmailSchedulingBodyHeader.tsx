@@ -8,24 +8,28 @@ import Row from "./Row";
 export type BodyHeadType = "checkCircle" | "xCircle" | "calendarCircle" | "teamCircle";
 
 export const getHeadImage = (headerType: BodyHeadType): string => {
-  switch (headerType) {
-    case "checkCircle":
-      return IS_PRODUCTION
-        ? `${BASE_URL}/emails/checkCircle@2x.png`
-        : "https://app.markado.co/emails/checkCircle@2x.png";
-    case "xCircle":
-      return IS_PRODUCTION
-        ? `${BASE_URL}/emails/xCircle@2x.png`
-        : "https://app.markado.co/emails/xCircle@2x.png";
-    case "calendarCircle":
-      return IS_PRODUCTION
-        ? `${BASE_URL}/emails/calendarCircle@2x.png`
-        : "https://app.markado.co/emails/calendarCircle@2x.png";
-    case "teamCircle":
-      return IS_PRODUCTION
-        ? `${BASE_URL}/emails/teamCircle@2x.png`
-        : "https://app.markado.co/emails/teamCircle@2x.png";
-  }
+  return `${BASE_URL}/images/logoMarkado_.png`
+  // return `https://dev.markado.co/images/logoMarkado_.png`
+
+  
+  // switch (headerType) {
+  //   case "checkCircle":
+  //     return IS_PRODUCTION
+  //       ? `${BASE_URL}/emails/checkCircle@2x.png`
+  //       : "https://app.markado.co/emails/checkCircle@2x.png";
+  //   case "xCircle":
+  //     return IS_PRODUCTION
+  //       ? `${BASE_URL}/emails/xCircle@2x.png`
+  //       : "https://app.markado.co/emails/xCircle@2x.png";
+  //   case "calendarCircle":
+  //     return IS_PRODUCTION
+  //       ? `${BASE_URL}/emails/calendarCircle@2x.png`
+  //       : "https://app.markado.co/emails/calendarCircle@2x.png";
+  //   case "teamCircle":
+  //     return IS_PRODUCTION
+  //       ? `${BASE_URL}/emails/teamCircle@2x.png`
+  //       : "https://app.markado.co/emails/teamCircle@2x.png";
+  // }
 };
 
 const EmailSchedulingBodyHeader = (props: { headerType: BodyHeadType; headStyles?: CSSProperties }) => {
