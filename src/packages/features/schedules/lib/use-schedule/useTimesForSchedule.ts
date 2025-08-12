@@ -4,7 +4,7 @@ import type { UseScheduleWithCacheArgs } from "./useSchedule";
 
 type UseTimesForScheduleProps = Pick<
   UseScheduleWithCacheArgs,
-  "month" | "monthCount" | "dayCount" | "selectedDate" | "prefetchNextMonth"
+  "month" | "monthCount" | "dayCount" | "selectedDate" | "prefetchNextMonth" | "timezone"
 >;
 export const useTimesForSchedule = ({
   month,
@@ -12,6 +12,7 @@ export const useTimesForSchedule = ({
   selectedDate,
   dayCount,
   prefetchNextMonth,
+  timezone,
 }: UseTimesForScheduleProps): [string, string] => {
   const now = dayjs();
   const monthDayjs = month ? dayjs(month) : now;
@@ -24,8 +25,11 @@ export const useTimesForSchedule = ({
 
   if (!!dayCount && dayCount > 0) {
     if (selectedDate) {
-      startTime = dayjs(selectedDate).toISOString();
-      endTime = dayjs(selectedDate).add(dayCount, "day").toISOString();
+      const selectedDateInTimezone = timezone 
+        ? dayjs(selectedDate).tz(timezone).startOf('day')
+        : dayjs(selectedDate).startOf('day');
+      startTime = selectedDateInTimezone.toISOString();
+      endTime = selectedDateInTimezone.add(dayCount, "day").toISOString();
     } else if (monthDayjs.month() === now.month()) {
       startTime = now.startOf("day").toISOString();
       endTime = now.startOf("day").add(dayCount, "day").toISOString();

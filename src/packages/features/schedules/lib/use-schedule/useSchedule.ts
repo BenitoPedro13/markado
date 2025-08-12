@@ -45,6 +45,7 @@ export const useSchedule = ({
     dayCount,
     prefetchNextMonth,
     selectedDate,
+    timezone,
   });
   const searchParams = useSearchParams();
   // const routedTeamMemberIds = searchParams ? getRoutedTeamMemberIdsFromSearchParams(searchParams) : null;
