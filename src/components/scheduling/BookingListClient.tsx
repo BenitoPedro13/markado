@@ -10,6 +10,7 @@ import { BookingSort as ValidBookingSort } from './BookingSort';
 import { useTRPC } from '@/utils/trpc';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { Booking } from '@/data/bookings';
+import BookingListSkeleton from '@/components/skeletons/BookingListSkeleton';
 
 const VALID_VIEWS = ['list', 'calendar'];
 const VALID_STATUSES = ['all', 'confirmed', 'canceled'];
@@ -81,7 +82,9 @@ function mapLocalStatusToTrpcStatus(localStatus: ValidBookingStatus): 'upcoming'
 function transformTrpcBooking(trpcBooking: any): Booking {
   return {
     id: trpcBooking.id,
-    title: trpcBooking.title || trpcBooking.eventType?.title || 'Untitled',
+    title: (trpcBooking.title || trpcBooking.eventType?.title || 'Untitled').includes(' entre ') 
+      ? (trpcBooking.title || trpcBooking.eventType?.title || 'Untitled').split(' entre ')[0] 
+      : (trpcBooking.title || trpcBooking.eventType?.title || 'Untitled'),
     duration: trpcBooking.eventType?.length || 30,
     startTime: new Date(trpcBooking.startTime),
     endTime: new Date(trpcBooking.endTime),
@@ -156,7 +159,7 @@ export default function BookingListClient({ searchParams }: BookingListClientPro
   }, [data, searchTerm, sort]);
 
   if (isLoading) {
-    return <div>Loading bookings...</div>;
+    return <BookingListSkeleton />;
   }
 
   if (error) {
