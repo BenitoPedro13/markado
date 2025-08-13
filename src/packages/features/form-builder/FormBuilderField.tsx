@@ -83,6 +83,7 @@ export const FormBuilderField = ({
                 }}
                 noLabel={noLabel}
                 translatedDefaultLabel={translatedDefaultLabel}
+                placeholder={placeholder}
               />
               {/* <ErrorMessage
                 name="responses"
@@ -202,7 +203,7 @@ function getAndUpdateNormalizedValues(field: RhfFormFields[number], t: any) {
 
   const translatedDefaultLabel = t(field.defaultLabel || "");
   const label = field.labelAsSafeHtml || field.label || translatedDefaultLabel;
-  const placeholder = field.placeholder || t(field.defaultPlaceholder || "");
+  const placeholder = field.placeholder || (field.defaultPlaceholder ? t(field.defaultPlaceholder) : "");
 
   if (field.variantsConfig?.variants) {
     Object.entries(field.variantsConfig.variants).forEach(([variantName, variant]) => {
@@ -226,6 +227,7 @@ export const ComponentForField = ({
   readOnly,
   noLabel,
   translatedDefaultLabel,
+  placeholder,
 }: {
   field: Omit<RhfFormField, "editable" | "label"> & {
     // Label is optional because radioInput doesn't have a label
@@ -234,6 +236,7 @@ export const ComponentForField = ({
   readOnly: boolean;
   noLabel?: boolean;
   translatedDefaultLabel?: string;
+  placeholder?: string;
 } & ValueProps) => {
   const fieldType = field.type || "text";
   const componentConfig = Components[fieldType];
@@ -256,7 +259,7 @@ export const ComponentForField = ({
     return (
       <WithLabel field={field} htmlFor={field.name} readOnly={readOnly} noLabel={noLabel}>
         <componentConfig.factory
-          placeholder={field.placeholder}
+          placeholder={placeholder}
           minLength={field.minLength}
           maxLength={field.maxLength}
           name={field.name}
@@ -278,7 +281,7 @@ export const ComponentForField = ({
           readOnly={readOnly}
           value={value as boolean}
           setValue={setValue as (arg: typeof value) => void}
-          placeholder={field.placeholder}
+          placeholder={placeholder}
         />
       </WithLabel>
     );
@@ -288,7 +291,7 @@ export const ComponentForField = ({
     return (
       <WithLabel field={field} htmlFor={field.name} readOnly={readOnly} noLabel={noLabel}>
         <componentConfig.factory
-          placeholder={field.placeholder}
+          placeholder={placeholder}
           name={field.name}
           label={field.label}
           readOnly={readOnly}
@@ -310,7 +313,7 @@ export const ComponentForField = ({
           readOnly={readOnly}
           value={value as string}
           name={field.name}
-          placeholder={field.placeholder}
+          placeholder={placeholder}
           setValue={setValue as (arg: typeof value) => void}
           options={field.options.map((o) => ({ ...o, title: o.label }))}
         />
@@ -325,7 +328,7 @@ export const ComponentForField = ({
     return (
       <WithLabel field={field} htmlFor={field.name} readOnly={readOnly} noLabel={noLabel}>
         <componentConfig.factory
-          placeholder={field.placeholder}
+          placeholder={placeholder}
           name={field.name}
           readOnly={readOnly}
           value={value as string[]}
@@ -349,7 +352,7 @@ export const ComponentForField = ({
     return field.options.length ? (
       <WithLabel field={field} htmlFor={field.name} readOnly={readOnly} noLabel={noLabel}>
         <componentConfig.factory
-          placeholder={field.placeholder}
+          placeholder={placeholder}
           readOnly={readOnly}
           name={field.name}
           label={field.label}

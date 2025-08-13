@@ -17,6 +17,7 @@ import BookingSkeleton from '@/components/booking/BookingSkeleton';
 // import { VerifyCodeDialog } from "../components/VerifyCodeDialog";
 import {AvailableTimeSlots} from './components/AvailableTimeSlots';
 import { BookEventForm } from "./components/BookEventForm/BookEventForm";
+import { FormSkeleton } from "./components/BookEventForm/Skeleton";
 // import { BookFormAsModal } from "./components/BookEventForm/BookFormAsModal";
 import {EventMeta} from './components/EventMeta';
 // import { HavingTroubleFindingTime } from "./components/HavingTroubleFindingTime";
@@ -52,7 +53,7 @@ const BookEventFormWrapper = dynamic(
     }),
   {
     ssr: false,
-    loading: () => <div>Carregando formulário...</div>
+    loading: () => <FormSkeleton />
   }
 );
 

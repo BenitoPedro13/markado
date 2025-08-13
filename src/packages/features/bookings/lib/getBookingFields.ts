@@ -162,6 +162,7 @@ export const ensureBookingInputsHaveSystemFields = ({
       editable: 'system',
       // This Label is used in Email only as of now.
       defaultLabel: 'your_name',
+      defaultPlaceholder: 'name_placeholder',
       required: true,
       sources: [
         {
@@ -175,6 +176,7 @@ export const ensureBookingInputsHaveSystemFields = ({
       defaultLabel: 'email_address',
       type: 'email',
       name: 'email',
+      defaultPlaceholder: 'email_placeholder',
       required: !isEmailFieldOptional,
       editable: isOrgTeamEvent ? 'system-but-optional' : 'system',
       sources: [
@@ -257,12 +259,13 @@ export const ensureBookingInputsHaveSystemFields = ({
       ]
     },
     {
-      defaultLabel: 'additional_notes',
+      defaultLabel: 'observations',
       type: 'textarea',
       name: 'notes',
       editable: 'system-but-optional',
       required: additionalNotesRequired,
-      defaultPlaceholder: 'share_additional_notes',
+              defaultPlaceholder: 'observations_placeholder',
+      maxLength: 200,
       sources: [
         {
           label: 'Default',

@@ -20,7 +20,7 @@ import {
   // RadioField,
   // Tooltip
 } from '@/packages/ui';
-import {RiAddLine} from '@remixicon/react';
+import {RiAddLine, RiUser6Line, RiMailLine, RiDeleteBinLine} from '@remixicon/react';
 import {InputField} from '@/packages/ui/components/form/inputs/TextField';
 import AddressInput from '@/packages/ui/form/AddressInput';
 import {Group, RadioField} from '@/packages/ui/form/radio-area';
@@ -70,8 +70,6 @@ import PhoneInput from "@/components/align-ui/ui/phone-input";
 //     <Label.Root>{label}</Label.Root>
 //   </div>
 // );
-
-import {RiInformationLine} from '@remixicon/react';
 
 import {ComponentForField} from './FormBuilderField';
 import {propsTypes} from './propsTypes';
@@ -220,19 +218,21 @@ export const Components: Record<FieldType, Component> = {
         const variant = props.variants[variantName];
         const variantField = variant.fields[0];
         return (
-          <InputField
-            id="name"
-            placeholder={variantField.placeholder}
-            label={variantField.label}
-            containerClassName="w-full"
-            readOnly={props.readOnly}
-            value={value}
-            required={variantField.required}
-            type="text"
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              props.setValue(e.target.value);
-            }}
-          />
+                     <InputField
+             id="name"
+             placeholder={variantField.placeholder}
+             label={variantField.label}
+             containerClassName="w-full"
+             readOnly={props.readOnly}
+             value={value}
+             required={variantField.required}
+             type="text"
+             addOnLeading={<RiUser6Line className="h-4 w-4 text-text-soft-400" />}
+             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+               props.setValue(e.target.value);
+             }}
+             name=""
+           />
         );
       }
 
@@ -245,23 +245,24 @@ export const Components: Record<FieldType, Component> = {
       return (
         <div className="flex space-x-4">
           {variant.fields.map((variantField) => (
-            <InputField
-              // Because the container is flex(and thus margin is being computed towards container height), I need to explicitly ensure that margin-bottom for the input becomes 0, which is mb-2 otherwise
-              className="!mb-0"
-              showAsteriskIndicator={true}
-              key={variantField.name}
-              name={variantField.name}
-              readOnly={props.readOnly}
-              placeholder={variantField.placeholder}
-              label={variantField.label}
-              containerClassName={`w-full testid-${variantField.name}`}
-              value={value[variantField.name as keyof typeof value]}
-              required={variantField.required}
-              type="text"
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                onChange(variantField.name, e.target.value)
-              }
-            />
+                         <InputField
+               // Because the container is flex(and thus margin is being computed towards container height), I need to explicitly ensure that margin-bottom for the input becomes 0, which is mb-2 otherwise
+               className="!mb-0"
+               showAsteriskIndicator={true}
+               key={variantField.name}
+               name=""
+               readOnly={props.readOnly}
+               placeholder={variantField.placeholder}
+               label={variantField.label}
+               containerClassName={`w-full testid-${variantField.name}`}
+               value={value[variantField.name as keyof typeof value]}
+               required={variantField.required}
+               type="text"
+               addOnLeading={<RiUser6Line className="h-4 w-4 text-text-soft-400" />}
+               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                 onChange(variantField.name, e.target.value)
+               }
+             />
           ))}
         </div>
       );
@@ -291,14 +292,21 @@ export const Components: Record<FieldType, Component> = {
       if (!props) {
         return <div />;
       }
-      return (
-        <Widgets.TextWidget
-          type="email"
-          id={props.name}
-          noLabel={true}
-          {...props}
-        />
-      );
+             return (
+         <InputField
+           type="email"
+           id={props.name}
+           noLabel={true}
+           addOnLeading={<RiMailLine className="h-4 w-4 text-text-soft-400" />}
+           placeholder={props.placeholder}
+           value={props.value}
+           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+             props.setValue(e.target.value);
+           }}
+           readOnly={props.readOnly}
+           name=""
+         />
+       );
     }
   },
   address: {
@@ -359,7 +367,7 @@ export const Components: Record<FieldType, Component> = {
                           <Tooltip.Root>
                             <Tooltip.Trigger asChild>
                               <button className="m-1" type="button">
-                                <RiInformationLine className="text-default w-5 h-5" />
+                                <RiDeleteBinLine className="text-default w-5 h-5" />
                               </button>
                               {/* <Button.Root
                                 className="text-default m-1"
@@ -382,17 +390,17 @@ export const Components: Record<FieldType, Component> = {
                 ))}
               </ul>
               {!readOnly && (
-                <Button.Root
-                  className="my-2.5"
-                  variant="neutral"
-                  mode="ghost"
-                  size="small"
-                  type="button"
-                  onClick={() => {
-                    value.push('');
-                    setValue(value);
-                  }}
-                >
+                                 <Button.Root
+                   className="my-2.5 px-4 py-2"
+                   variant="neutral"
+                   mode="ghost"
+                   size="small"
+                   type="button"
+                   onClick={() => {
+                     value.push('');
+                     setValue(value);
+                   }}
+                 >
                   <Button.Icon as={RiAddLine} />
                   {t('add_another')}
                 </Button.Root>
@@ -430,17 +438,17 @@ export const Components: Record<FieldType, Component> = {
             //   <span className="flex-1">{label}</span>
             // </Button.Root>
 
-            <Button.Root
-              className="mr-auto h-fit whitespace-normal text-left"
-              variant="neutral"
-              mode="ghost"
-              size="small"
-              type="button"
-              onClick={() => {
-                value.push('');
-                setValue(value);
-              }}
-            >
+                         <Button.Root
+               className="mr-auto h-fit whitespace-normal text-left px-4 py-2"
+               variant="neutral"
+               mode="ghost"
+               size="small"
+               type="button"
+               onClick={() => {
+                 value.push('');
+                 setValue(value);
+               }}
+             >
               <Button.Icon as={RiAddLine} />
               <span className="flex-1">{label}</span>
             </Button.Root>
