@@ -130,6 +130,7 @@ function transformTrpcBooking(trpcBooking: any): Booking {
   };
 
   return {
+    uid: trpcBooking.uid ?? String(trpcBooking.id),
     id: trpcBooking.id,
     title: cleanTitle(rawTitle),
     duration: trpcBooking.eventType?.length || 30,

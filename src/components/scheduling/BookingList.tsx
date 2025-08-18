@@ -12,6 +12,7 @@ export default function BookingList({bookings}: BookingListProps) {
       {bookings.map((booking, index) => (
         <div key={booking.id}>
           <BookingListItem
+            uid={booking.uid}
             key={booking.id}
             id={booking.id}
             title={booking.title}

@@ -22,8 +22,10 @@ import {
 import * as Modal from '@/components/align-ui/ui/modal';
 import * as Notification from '@/components/align-ui/ui/notification';
 import {useState, useEffect} from 'react';
+import Link from 'next/link';
 
 type BookingProps = {
+  uid: string;
   id: string;
   title: string;
   duration: number;
@@ -44,6 +46,7 @@ type LocationType = 'online' | 'presential';
 type OnlinePlatform = 'google-meet' | 'zoom' | 'teams';
 
 export default function BookingListItem({
+  uid,
   id,
   title,
   duration,
@@ -234,9 +237,11 @@ export default function BookingListItem({
                   Entrar no Google Meet
                 </Button.Root>
               )}
-              <Button.Root variant="neutral" mode="stroke" size="small">
-                <Button.Icon as={RiTimeLine} />
-                Reagendar
+              <Button.Root asChild variant="neutral" mode="stroke" size="small">
+                <Link href={`/reschedule/${uid}`}>
+                  <Button.Icon as={RiTimeLine} />
+                  Reagendar
+                </Link>
               </Button.Root>
               <Dropdown.Root>
                 <Dropdown.Trigger asChild>
@@ -389,13 +394,8 @@ export default function BookingListItem({
                   >
                     Cancelar
                   </Button.Root>
-                  <Button.Root
-                    variant="neutral"
-                    mode="stroke"
-                    size="medium"
-                    className="w-full"
-                  >
-                    Reagendar
+                  <Button.Root asChild variant="neutral" mode="stroke" size="medium" className="w-full">
+                    <Link href={`/reschedule/${uid}`}>Reagendar</Link>
                   </Button.Root>
                 </div>
               </div>
