@@ -88,6 +88,15 @@ export default function BookingListItem({
   );
   const [isRescheduleModalOpen, setIsRescheduleModalOpen] = useState(false);
   const [rescheduleMessage, setRescheduleMessage] = useState('');
+  const getRescheduleHref = () =>
+    `/reschedule/${uid}` + (status === 'canceled' ? `?allowRescheduleForCancelledBooking=true` : '');
+  const openRescheduleInNewTab = () => {
+    try {
+      if (typeof window !== 'undefined') {
+        window.open(getRescheduleHref(), '_blank', 'noopener,noreferrer');
+      }
+    } catch {}
+  };
 
   useEffect(() => {
     if (isLocationModalOpen) {
@@ -238,7 +247,7 @@ export default function BookingListItem({
                 </Button.Root>
               )}
               <Button.Root asChild variant="neutral" mode="stroke" size="small">
-                <Link href={`/reschedule/${uid}`}>
+                <Link href={getRescheduleHref()}>
                   <Button.Icon as={RiTimeLine} />
                   Reagendar
                 </Link>
@@ -260,7 +269,7 @@ export default function BookingListItem({
                     <Dropdown.ItemIcon as={RiUserAddLine} />
                     Adicionar participantes
                   </Dropdown.Item>
-                  <Dropdown.Item onClick={() => setIsRescheduleModalOpen(true)}>
+                  <Dropdown.Item onClick={openRescheduleInNewTab}>
                     <Dropdown.ItemIcon as={RiSendPlane2Line} />
                     Solicitar reagendamento
                   </Dropdown.Item>
@@ -272,7 +281,7 @@ export default function BookingListItem({
               </Dropdown.Root>
             </>
           ) : (
-            <Button.Root variant="neutral" mode="stroke" size="small">
+            <Button.Root variant="neutral" mode="stroke" size="small" onClick={openRescheduleInNewTab}>
               <Button.Icon as={RiSendPlaneLine} />
               Solicitar reagendamento
             </Button.Root>
@@ -395,7 +404,7 @@ export default function BookingListItem({
                     Cancelar
                   </Button.Root>
                   <Button.Root asChild variant="neutral" mode="stroke" size="medium" className="w-full">
-                    <Link href={`/reschedule/${uid}`}>Reagendar</Link>
+                    <Link href={getRescheduleHref()}>Reagendar</Link>
                   </Button.Root>
                 </div>
               </div>
