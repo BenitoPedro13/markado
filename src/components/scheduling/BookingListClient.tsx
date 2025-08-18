@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { trpc } from '~/trpc/client';
 import BookingList from './BookingList';
 import BookingFilter from './BookingFilter';
@@ -154,6 +154,8 @@ export default function BookingListClient({ searchParams }: BookingListClientPro
 
     return filteredBookings;
   }, [data, searchTerm, sort]);
+
+  useEffect(() => setSearchTerm(search || ''), [search]);
 
   if (isLoading) {
     return <div>Loading bookings...</div>;
