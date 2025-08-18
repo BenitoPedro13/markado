@@ -22,8 +22,10 @@ import {
 import * as Modal from '@/components/align-ui/ui/modal';
 import * as Notification from '@/components/align-ui/ui/notification';
 import {useState, useEffect} from 'react';
+import Link from 'next/link';
 
 type BookingProps = {
+  uid: string;
   id: string;
   title: string;
   duration: number;
@@ -44,6 +46,7 @@ type LocationType = 'online' | 'presential';
 type OnlinePlatform = 'google-meet' | 'zoom' | 'teams';
 
 export default function BookingListItem({
+  uid,
   id,
   title,
   duration,
@@ -85,6 +88,15 @@ export default function BookingListItem({
   );
   const [isRescheduleModalOpen, setIsRescheduleModalOpen] = useState(false);
   const [rescheduleMessage, setRescheduleMessage] = useState('');
+  const getRescheduleHref = () =>
+    `/reschedule/${uid}` + (status === 'canceled' ? `?allowRescheduleForCancelledBooking=true` : '');
+  const openRescheduleInNewTab = () => {
+    try {
+      if (typeof window !== 'undefined') {
+        window.open(getRescheduleHref(), '_blank', 'noopener,noreferrer');
+      }
+    } catch {}
+  };
 
   useEffect(() => {
     if (isLocationModalOpen) {
@@ -234,9 +246,11 @@ export default function BookingListItem({
                   Entrar no Google Meet
                 </Button.Root>
               )}
-              <Button.Root variant="neutral" mode="stroke" size="small">
-                <Button.Icon as={RiTimeLine} />
-                Reagendar
+              <Button.Root asChild variant="neutral" mode="stroke" size="small">
+                <Link href={getRescheduleHref()}>
+                  <Button.Icon as={RiTimeLine} />
+                  Reagendar
+                </Link>
               </Button.Root>
               <Dropdown.Root>
                 <Dropdown.Trigger asChild>
@@ -255,7 +269,7 @@ export default function BookingListItem({
                     <Dropdown.ItemIcon as={RiUserAddLine} />
                     Adicionar participantes
                   </Dropdown.Item>
-                  <Dropdown.Item onClick={() => setIsRescheduleModalOpen(true)}>
+                  <Dropdown.Item onClick={openRescheduleInNewTab}>
                     <Dropdown.ItemIcon as={RiSendPlane2Line} />
                     Solicitar reagendamento
                   </Dropdown.Item>
@@ -267,7 +281,7 @@ export default function BookingListItem({
               </Dropdown.Root>
             </>
           ) : (
-            <Button.Root variant="neutral" mode="stroke" size="small">
+            <Button.Root variant="neutral" mode="stroke" size="small" onClick={openRescheduleInNewTab}>
               <Button.Icon as={RiSendPlaneLine} />
               Solicitar reagendamento
             </Button.Root>
@@ -389,13 +403,8 @@ export default function BookingListItem({
                   >
                     Cancelar
                   </Button.Root>
-                  <Button.Root
-                    variant="neutral"
-                    mode="stroke"
-                    size="medium"
-                    className="w-full"
-                  >
-                    Reagendar
+                  <Button.Root asChild variant="neutral" mode="stroke" size="medium" className="w-full">
+                    <Link href={getRescheduleHref()}>Reagendar</Link>
                   </Button.Root>
                 </div>
               </div>
