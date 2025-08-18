@@ -153,7 +153,7 @@ export const BookEventForm = ({
                   onClick={onCancel} 
                   data-testid="back"
                 >
-                  {t("back")}
+                  {t("previous_step")}
                 </Button.Root>
               )}
               <Button.Root

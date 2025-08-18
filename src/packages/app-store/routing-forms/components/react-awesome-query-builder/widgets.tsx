@@ -98,7 +98,11 @@ const TextAreaWidget = (props: TextLikeComponentPropsRAQB) => {
       maxLength={maxLength}
       {...customProps}
       {...remainingProps}
-    />
+    >
+      {maxLength && (
+        <TextArea.CharCounter current={textValue.length} max={maxLength} />
+      )}
+    </TextArea.Root>
   );
 };
 

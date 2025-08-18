@@ -1,29 +1,29 @@
 import { Text as SkeletonText } from "@/components/align-ui/ui/skeleton";
 
 export const FormSkeleton = () => (
-  <div className="flex flex-col">
-    <SkeletonText className="h-7 w-32" />
-    <SkeletonText className="mt-2 h-7 w-full" />
-    <SkeletonText className="mt-4 h-7 w-28" />
-    <SkeletonText className="mt-2 h-7 w-full" />
-
-    <div className="mt-12 flex h-7 w-full flex-row items-center gap-4">
-      <SkeletonText className="inline h-4 w-4 rounded-full" />
-      <SkeletonText className="inline h-7 w-32" />
-    </div>
-    <div className="mt-2 flex h-7 w-full flex-row items-center gap-4">
-      <SkeletonText className="inline h-4 w-4 rounded-full" />
-      <SkeletonText className="inline h-7 w-28" />
+  <div className="flex flex-col space-y-6">
+    {/* Nome */}
+    <div>
+      <SkeletonText className="h-5 w-16 mb-2" />
+      <SkeletonText className="h-10 w-full rounded-[10px]" />
     </div>
 
-    <SkeletonText className="mt-8 h-7 w-32" />
-    <SkeletonText className="mt-2 h-7 w-full" />
-    <SkeletonText className="mt-4 h-7 w-28" />
-    <SkeletonText className="mt-2 h-7 w-full" />
+    {/* Email */}
+    <div>
+      <SkeletonText className="h-5 w-20 mb-2" />
+      <SkeletonText className="h-10 w-full rounded-[10px]" />
+    </div>
 
-    <div className="mt-6 flex flex-row gap-3">
-      <SkeletonText className="ml-auto h-8 w-20" />
-      <SkeletonText className="h-8 w-20" />
+    {/* Notas */}
+    <div>
+      <SkeletonText className="h-5 w-16 mb-2" />
+      <SkeletonText className="h-20 w-full rounded-[10px]" />
+    </div>
+
+    {/* Botões */}
+    <div className="flex gap-3 justify-end mt-8">
+      <SkeletonText className="h-10 w-20 rounded-[10px]" />
+      <SkeletonText className="h-10 w-24 rounded-[10px]" />
     </div>
   </div>
 );

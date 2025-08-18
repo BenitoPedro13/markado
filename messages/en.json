@@ -14,6 +14,9 @@
     "required": "Required",
     "optional": "Optional",
     "back": "Back",
+    "back_to_home": "Back to home",
+    "previous_step": "Previous step",
+    "need_help": "Need help?",
     "today": "Today",
     "confirm": "Confirm",
     "add_another": "Add another",
@@ -21,6 +24,7 @@
     "additional_guests": "Additional guests",
     "email_address": "Email address",
     "your_name": "Your name",
+    "service": "Service",
     "add_a_booking_question": "Add a question",
     "booking_questions_title": "Booking Form",
     "show_on_booking_page": "Show on booking page",
@@ -73,7 +77,6 @@
     "observations": "Observations",
     "observations_optional": "(Optional)",
     "observations_placeholder": "Leave your observations for this event here...",
-    "share_additional_notes": "Share additional notes...",
     "finalize": "Finalize",
     "reason": "Reason",
     "reschedule_reason": "Reschedule reason",
@@ -132,7 +135,9 @@
     "what_is_this_meeting_about": "What is this meeting about?",
     "location_placeholder": "Enter the location...",
     "what_is_this_meeting_about_placeholder": "Describe the subject of the meeting...",
-    "former_time": "Previous time:"
+    "former_time": "Previous time:",
+    "email_placeholder": "Enter your email...",
+    "name_placeholder": "Enter your name..."
   },
   "Error": {
     "description": "<p>Unfortunately we encountered an error.</p><p>You can try to <retry>reload the page</retry> you were trying to visit.</p>",

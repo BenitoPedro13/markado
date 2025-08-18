@@ -1,15 +1,12 @@
 import ServiceCalendarForm from '@/modules/scheduling/services/ServiceCalendarForm';
 import ServiceInviteForm from '@/modules/scheduling/services/ServiceInviteForm';
+import { ServiceSchedulingPageClient } from './ServiceSchedulingPageClient';
 import dayjs from 'dayjs';
-import Link from 'next/link';
 import {redirect, notFound} from 'next/navigation';
 import {getHostUserByUsername} from '~/trpc/server/handlers/user.handler';
-import * as Button from '@/components/align-ui/ui/button';
-import {RiArrowLeftSLine} from '@remixicon/react';
 import type {GetBookingType} from '@/packages/features/bookings/lib/get-booking';
 import type {getPublicEvent} from '@/packages/features/eventtypes/lib/getPublicEvent';
 import {getUserPageProps} from '@/lib/getUserPageProps';
-import {SUPORT_WHATSAPP_NUMBER} from '@/constants';
 import { BookerWrapper } from '@/packages/booker/BookerWrapper';
 import { getMultipleDurationValue } from '@/utils/getMultipleDurationValue';
 
@@ -103,24 +100,7 @@ const ServiceSchedulingPage = async (props: {
   }
   return (
     <>
-      <div className="w-full flex justify-between">
-        <Link href={`/${host.username}`} className="flex items-center gap-x-2">
-          <Button.Root variant="neutral" mode="stroke">
-            <Button.Icon as={RiArrowLeftSLine} />
-            <span className="text-text-sub-600">Voltar</span>
-          </Button.Root>
-        </Link>
-
-        <Link
-          href={`https://wa.me/${SUPORT_WHATSAPP_NUMBER}`}
-          className="flex items-center gap-x-2"
-          target="_blank"
-        >
-          <Button.Root variant="neutral" mode="stroke">
-            <span className="text-text-sub-600">Precisa de ajuda?</span>
-          </Button.Root>
-        </Link>
-      </div>
+      <ServiceSchedulingPageClient username={host.username ?? ""} />
       <div className="grow w-full flex flex-col justify-center items-center">
         {(() => {
           return (
@@ -135,9 +115,6 @@ const ServiceSchedulingPage = async (props: {
               }}
               durationConfig={userPageProps.eventData.metadata?.multipleDuration}
               orgBannerUrl={userPageProps.orgBannerUrl}
-              /* TODO: Currently unused, evaluate it is needed-
-               *       Possible alternative approach is to have onDurationChange.
-               */
               duration={getMultipleDurationValue(
                 userPageProps.eventData.metadata?.multipleDuration,
                 searchParams?.duration,

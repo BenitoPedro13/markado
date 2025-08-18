@@ -20,7 +20,7 @@ const Textarea = React.forwardRef<
       className={cn(
         [
           // base
-          'block w-full resize-none text-paragraph-sm text-text-strong-950 outline-none',
+          'block w-full resize-none text-sm leading-4 text-text-strong-950 outline-none',
           !simple && [
             'pointer-events-auto h-full min-h-[82px] bg-transparent pl-3 pr-2.5 pt-2.5',
           ],

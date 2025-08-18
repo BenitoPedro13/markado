@@ -14,6 +14,9 @@
     "required": "Obrigatório",
     "optional": "Opcional",
     "back": "Voltar",
+    "back_to_home": "Voltar à página inicial",
+    "previous_step": "Etapa anterior",
+    "need_help": "Precisa de ajuda?",
     "today": "Hoje",
     "confirm": "Confirmar",
     "add_another": "Adicionar outro",
@@ -21,6 +24,7 @@
     "additional_guests": "Participantes Adicionais",
     "email_address": "Endereço de e-mail",
     "your_name": "Seu nome",
+    "service": "Serviço",
     "add_a_booking_question": "Adicione uma pergunta",
     "booking_questions_title": "Formulário da Reserva",
     "show_on_booking_page": "Mostrar na página de agendamento",
@@ -73,7 +77,6 @@
     "observations": "Observações",
     "observations_optional": "(Opcional)",
     "observations_placeholder": "Deixe aqui suas observações para esse evento...",
-    "share_additional_notes": "Compartilhe notas adicionais...",
     "finalize": "Finalizar",
     "reason": "Motivo",
     "reschedule_reason": "Motivo do reagendamento",
@@ -132,7 +135,9 @@
     "what_is_this_meeting_about": "Sobre o que é esta reunião?",
     "location_placeholder": "Informe o local...",
     "what_is_this_meeting_about_placeholder": "Descreva o assunto da reunião...",
-    "former_time": "Horário anterior:"
+    "former_time": "Horário anterior:",
+    "email_placeholder": "Digite seu e-mail...",
+    "name_placeholder": "Digite seu nome..."
   },
   "Error": {
     "description": "<p>Infelizmente encontramos um erro.</p><p>Você pode tentar <retry>recarregar a página</retry> que estava tentando visitar.</p>",

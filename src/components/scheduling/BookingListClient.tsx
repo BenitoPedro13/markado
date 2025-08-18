@@ -10,6 +10,7 @@ import { BookingSort as ValidBookingSort } from './BookingSort';
 import { useTRPC } from '@/utils/trpc';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { Booking } from '@/data/bookings';
+import BookingListSkeleton from '@/components/skeletons/BookingListSkeleton';
 
 const VALID_VIEWS = ['list', 'calendar'];
 const VALID_STATUSES = ['all', 'confirmed', 'canceled'];
@@ -77,18 +78,67 @@ function mapLocalStatusToTrpcStatus(localStatus: ValidBookingStatus): 'upcoming'
   }
 }
 
-// Transform tRPC booking to local booking format
+// // Transform tRPC booking to local booking format
+// function transformTrpcBooking(trpcBooking: any): Booking {
+//   return {
+//     id: trpcBooking.id,
+//     title: (trpcBooking.title || trpcBooking.eventType?.title || 'Untitled').includes(' entre ') 
+//       ? (trpcBooking.title || trpcBooking.eventType?.title || 'Untitled').split(' entre ')[0] 
+//       : (trpcBooking.title || trpcBooking.eventType?.title || 'Untitled'),
+//     duration: trpcBooking.eventType?.length || 30,
+//     startTime: new Date(trpcBooking.startTime),
+//     endTime: new Date(trpcBooking.endTime),
+//     organizer: trpcBooking.user?.name || trpcBooking.user?.email || 'Unknown',
+//     type: (trpcBooking.location?.includes('Meet') || trpcBooking.location?.includes('Teams')) ? 'online' : 'presential',
+//     participants: trpcBooking.attendees?.map((attendee: any) => attendee.name || attendee.email) || [],
+//     status: trpcBooking.status === 'CANCELLED' ? 'canceled' : 'confirmed',
+//     location: trpcBooking.location || undefined,
+//   };
+// }
+
 function transformTrpcBooking(trpcBooking: any): Booking {
+  // Extract the base title from trpcBooking
+  const rawTitle = trpcBooking.title || trpcBooking.eventType?.title || 'Untitled';
+  
+  // Clean the title by removing participant names after "entre" or "between"
+  const cleanTitle = (title: string): string => {
+    const separators = [' entre ', ' between '];
+    
+    for (const separator of separators) {
+      if (title.includes(separator)) {
+        return title.split(separator)[0];
+      }
+    }
+    
+    return title;
+  };
+
+  // Determine meeting type based on location
+  const getMeetingType = (location?: string): 'online' | 'presential' => {
+    if (!location) return 'presential';
+    return (location.includes('Meet') || location.includes('Teams')) ? 'online' : 'presential';
+  };
+
+  // Extract participant names from attendees
+  const getParticipants = (attendees?: any[]): string[] => {
+    return attendees?.map((attendee: any) => attendee.name || attendee.email) || [];
+  };
+
+  // Convert booking status
+  const getBookingStatus = (status?: string): 'canceled' | 'confirmed' => {
+    return status === 'CANCELLED' ? 'canceled' : 'confirmed';
+  };
+
   return {
     id: trpcBooking.id,
-    title: trpcBooking.title || trpcBooking.eventType?.title || 'Untitled',
+    title: cleanTitle(rawTitle),
     duration: trpcBooking.eventType?.length || 30,
     startTime: new Date(trpcBooking.startTime),
     endTime: new Date(trpcBooking.endTime),
     organizer: trpcBooking.user?.name || trpcBooking.user?.email || 'Unknown',
-    type: (trpcBooking.location?.includes('Meet') || trpcBooking.location?.includes('Teams')) ? 'online' : 'presential',
-    participants: trpcBooking.attendees?.map((attendee: any) => attendee.name || attendee.email) || [],
-    status: trpcBooking.status === 'CANCELLED' ? 'canceled' : 'confirmed',
+    type: getMeetingType(trpcBooking.location),
+    participants: getParticipants(trpcBooking.attendees),
+    status: getBookingStatus(trpcBooking.status),
     location: trpcBooking.location || undefined,
   };
 }
@@ -158,7 +208,7 @@ export default function BookingListClient({ searchParams }: BookingListClientPro
   useEffect(() => setSearchTerm(search || ''), [search]);
 
   if (isLoading) {
-    return <div>Loading bookings...</div>;
+    return <BookingListSkeleton />;
   }
 
   if (error) {
