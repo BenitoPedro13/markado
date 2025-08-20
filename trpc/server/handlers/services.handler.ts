@@ -317,18 +317,18 @@ export const getEventTypesFromGroup = async ({
     (isFilterSet && filters?.upIds && !isUpIdInFilter);
 
   // Primeiro, verificar se o usuário tem algum serviço no banco (sem filtros)
-  const hasAnyServices = await prisma.eventType.findFirst({
-    where: {
-      userId: user.id,
-      teamId: null,
-      schedulingType: null
-    }
-  });
+  // const hasAnyServices = await prisma.eventType.findFirst({
+  //   where: {
+  //     userId: user.id,
+  //     teamId: null,
+  //     schedulingType: null
+  //   }
+  // });
 
-  // Se não tem nenhum serviço, criar os serviços padrão
-  if (!hasAnyServices) {
-    await createServicesBatch();
-  }
+  // // Se não tem nenhum serviço, criar os serviços padrão
+  // if (!hasAnyServices) {
+  //   await createServicesBatch();
+  // }
 
   const eventTypes: MappedEventType[] = [];
   const currentCursor = cursor;
