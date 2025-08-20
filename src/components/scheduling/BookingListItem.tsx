@@ -90,6 +90,10 @@ export default function BookingListItem({
   const [rescheduleMessage, setRescheduleMessage] = useState('');
   const getRescheduleHref = () =>
     `/reschedule/${uid}` + (status === 'canceled' ? `?allowRescheduleForCancelledBooking=true` : '');
+  const getCancelHref = () => {
+    const normalized = cancelMessage.replace(/\s+/g, ' ').trim();
+    return `/booking/${uid}?cancel=true&reason=${encodeURIComponent(normalized)}`;
+  };
   const openRescheduleInNewTab = () => {
     try {
       if (typeof window !== 'undefined') {
@@ -139,11 +143,9 @@ export default function BookingListItem({
   const startDate = formatDate(startTime);
   const endDate = formatDate(endTime);
 
-  const handleCancel = (message?: string) => {
-    updateBookingStatus(id, 'canceled');
+  const handleCancel = () => {
     setIsCancelModalOpen(false);
     setCancelMessage('');
-    setIsDrawerOpen(false);
   };
 
   const handleAddEmailInput = () => {
@@ -437,20 +439,35 @@ export default function BookingListItem({
               mode="stroke"
               size="medium"
               className="w-full"
-              onClick={() => handleCancel()}
+              onClick={handleCancel}
             >
               Não importa
             </Button.Root>
-            <Button.Root
-              variant="error"
-              mode="filled"
-              size="medium"
-              className="w-full"
-              disabled={cancelMessage.trim().length === 0}
-              onClick={() => handleCancel(cancelMessage)}
-            >
-              Cancelar este evento
-            </Button.Root>
+            {cancelMessage.trim().length === 0 ? (
+              <Button.Root
+                variant="error"
+                mode="filled"
+                size="medium"
+                className="w-full"
+                disabled
+              >
+                Cancelar este evento
+              </Button.Root>
+            ) : (
+              <Button.Root asChild variant="error" mode="filled" size="medium" className="w-full">
+                <Link
+                  href={getCancelHref()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => {
+                    setIsCancelModalOpen(false);
+                    setIsDrawerOpen(false);
+                  }}
+                >
+                  Cancelar este evento
+                </Link>
+              </Button.Root>
+            )}
           </Modal.Footer>
         </Modal.Content>
       </Modal.Root>
