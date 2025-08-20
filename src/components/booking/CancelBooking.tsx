@@ -1,4 +1,4 @@
-import { SetStateAction, useCallback, useState } from "react";
+import { SetStateAction, useCallback, useEffect, useState } from "react";
 
 import { useLocale } from "@/hooks/use-locale";
 import type { RecurringEvent } from "@/types/Calendar";
@@ -6,6 +6,7 @@ import * as Button from "@/components/align-ui/ui/button";
 import * as TextArea from "@/components/align-ui/ui/textarea";
 import { RiCloseLine, RiInformationLine } from "@remixicon/react";
 import { useTRPCClient } from "@/utils/trpc";
+import { useSearchParams } from "next/navigation";
 
 type Props = {
   booking: {
@@ -43,6 +44,7 @@ export default function CancelBooking(props: Props) {
   const trpc = useTRPCClient();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(booking ? null : t("booking_already_cancelled"));
+  const searchParams = useSearchParams();
 
   const cancelBookingRef = useCallback((node: HTMLTextAreaElement) => {
     if (node !== null) {
@@ -52,6 +54,18 @@ export default function CancelBooking(props: Props) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    try {
+      const fromQuery = searchParams?.get("reason");
+      if (fromQuery) {
+        // Normalize any "+" and repeated spaces just in case
+        const normalized = fromQuery.replace(/\+/g, " ").replace(/\s+/g, " ").trim();
+        setCancellationReason(normalized);
+      }
+    } catch {}
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   return (
     <>
