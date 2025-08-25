@@ -86,12 +86,28 @@ export async function middleware(request: NextRequest) {
     response.headers.set('x-pathname', pathname);
 
     // Check if the route is public
-    const isPublicRoute = publicRoutes.some((route) =>
-      pathname.startsWith(route)
-    );
+    const isPublicRoute = publicRoutes.some((route) => pathname.startsWith(route));
 
-    // If the route is public, allow access
-    if (isPublicRoute) {
+    // Treat /:username (and subpaths) as public unless the first segment is a reserved prefix
+    const segments = pathname.split('/').filter(Boolean);
+    const reserved = new Set(
+      publicRoutes
+        .map((r) => r.split('/').filter(Boolean)[0])
+        .filter(Boolean)
+        .concat([
+          'services',
+          'availability',
+          'settings',
+          'bookings',
+          'booking',
+          'reschedule',
+          'sitemap.xml',
+        ])
+    );
+    const isUsernameNamespace = segments.length >= 1 && !reserved.has(segments[0]);
+
+    // If the route is public or within a username namespace, allow access
+    if (isPublicRoute || isUsernameNamespace) {
       return response;
     }
 
