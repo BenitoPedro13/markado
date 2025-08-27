@@ -4,23 +4,23 @@ const prisma = new PrismaClient();
 const mainAppStore = require("./seed-app-store.js");
 
 async function main() {
-  // Clean the database
-  await prisma.user.deleteMany();
+  // // Clean the database
+  // await prisma.user.deleteMany();
 
-  // Create initial users
-  const users = await Promise.all([
-    prisma.user.create({
-      data: {name: 'Bilbo 0'}
-    }),
-    prisma.user.create({
-      data: {name: 'Bilbo 1'}
-    }),
-    prisma.user.create({
-      data: {name: 'Bilbo 2'}
-    })
-  ]);
+  // // Create initial users
+  // const users = await Promise.all([
+  //   prisma.user.create({
+  //     data: {name: 'Bilbo 0'}
+  //   }),
+  //   prisma.user.create({
+  //     data: {name: 'Bilbo 1'}
+  //   }),
+  //   prisma.user.create({
+  //     data: {name: 'Bilbo 2'}
+  //   })
+  // ]);
 
-  console.log('Seed data created:', {users});
+  // console.log('Seed data created:', {users});
 }
 
 main()
