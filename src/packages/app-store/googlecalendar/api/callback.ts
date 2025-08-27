@@ -27,7 +27,7 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse) {
       res.redirect(
         getSafeRedirectUrl(state.onErrorReturnTo) ??
           getSafeRedirectUrl(state?.returnTo) ??
-          `${WEBAPP_URL}/apps/installed`
+          `${WEBAPP_URL}/sign-up/calendar?error=no_code`
       );
       return;
     }
@@ -60,7 +60,7 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse) {
       res.redirect(
         getSafeRedirectUrl(state.onErrorReturnTo) ??
           getSafeRedirectUrl(state?.returnTo) ??
-          `${WEBAPP_URL}/apps/installed`
+          `${WEBAPP_URL}/sign-up/calendar`
       );
       return;
     }
@@ -94,7 +94,7 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse) {
     if (!primaryCal?.id) {
       res.redirect(
         getSafeRedirectUrl(state?.returnTo) ??
-          getInstalledAppPath({ variant: "calendar", slug: "google-calendar" })
+          `${WEBAPP_URL}/sign-up/calendar`
       );
       return;
     }
@@ -121,7 +121,7 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse) {
         if (await renewSelectedCalendarCredentialId(selectedCalendarWhereUnique, gcalCredential.id)) {
           res.redirect(
             getSafeRedirectUrl(state?.returnTo) ??
-              getInstalledAppPath({ variant: "calendar", slug: "google-calendar" })
+              `${WEBAPP_URL}/sign-up/calendar`
           );
           return;
         }
@@ -132,7 +132,7 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse) {
       res.redirect(
         `${
           getSafeRedirectUrl(state?.onErrorReturnTo) ??
-          getInstalledAppPath({ variant: "calendar", slug: "google-calendar" })
+          `${WEBAPP_URL}/sign-up/calendar`
         }?error=${errorMessage}`
       );
       return;
@@ -143,7 +143,7 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse) {
   if (!state?.installGoogleVideo) {
     res.redirect(
       getSafeRedirectUrl(state?.returnTo) ??
-        getInstalledAppPath({ variant: "calendar", slug: "google-calendar" })
+        `${WEBAPP_URL}/sign-up/calendar`
     );
     return;
   }
@@ -156,8 +156,8 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse) {
   // If the user already has a google meet credential, there's nothing to do in here
   if (existingGoogleMeetCredential) {
     res.redirect(
-      getSafeRedirectUrl(`${WEBAPP_URL}/apps/installed/conferencing?hl=google-meet`) ??
-        getInstalledAppPath({ variant: "conferencing", slug: "google-meet" })
+      getSafeRedirectUrl(`${WEBAPP_URL}/sign-up/calendar`) ??
+       `${WEBAPP_URL}/sign-up/calendar`
     );
     return;
   }
@@ -167,8 +167,8 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse) {
     userId: session?.user?.id
   });
   res.redirect(
-    getSafeRedirectUrl(`${WEBAPP_URL}/apps/installed/conferencing?hl=google-meet`) ??
-      getInstalledAppPath({ variant: "conferencing", slug: "google-meet" })
+    getSafeRedirectUrl(`${WEBAPP_URL}/sign-up/calendar`) ??
+      `${WEBAPP_URL}/sign-up/calendar`
   );
 }
 

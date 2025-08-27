@@ -31,7 +31,7 @@ export default function LogoutPage() {
 
       <div className="w-full h-[1px] bg-bg-soft-200" />
 
-      <Link href={`/${locale}/sign-in`} className="w-full">
+      <Link href={`/sign-in`} className="w-full">
         <Button
           className="w-full"
           variant="neutral"

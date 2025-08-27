@@ -20,7 +20,7 @@
     "db:migrate:reset": "prisma migrate reset",
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
-    "db:seed": "ts-node prisma/seed.ts",
+    "db:seed": "node prisma/seed.js",
     "db:reset": "prisma db push --force-reset",
     "setup": "pnpm install && pnpm db:generate",
     "setup:db": "pnpm db:start && pnpm db:push",

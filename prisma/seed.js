@@ -1,6 +1,8 @@
 const {PrismaClient} = require('./app/generated/prisma/client/index.js');
 const prisma = new PrismaClient();
 
+const mainAppStore = require("./seed-app-store.js");
+
 async function main() {
   // Clean the database
   await prisma.user.deleteMany();
@@ -22,6 +24,7 @@ async function main() {
 }
 
 main()
+.then(() => mainAppStore())
   .catch((e) => {
     console.error(e);
     process.exit(1);
