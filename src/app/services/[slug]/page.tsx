@@ -38,7 +38,7 @@ export default async function ServiceDetailsServerPage(props: Props) {
 
   return (
     <PageLayout title="Detalhes do Serviço">
-      <ServicesDetailsProvider initialServiceDetails={service.eventType} initialMe={me} initialScheduleList={scheduleList.schedules}>
+      <ServicesDetailsProvider initialServiceDetails={service.eventType} locationOptions={service.locationOptions} initialMe={me} initialScheduleList={scheduleList.schedules}>
         <ServiceDetailsPage slug={slug} />
       </ServicesDetailsProvider>
     </PageLayout>

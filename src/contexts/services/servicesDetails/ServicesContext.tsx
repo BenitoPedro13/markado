@@ -1,23 +1,23 @@
 'use client';
 
-import {DEFAULT_SCHEDULE} from '@/lib/availability';
-import {TimeRange} from '@/types/scheadule';
-import {zodResolver} from '@hookform/resolvers/zod';
-import {useQuery} from '@tanstack/react-query';
-import {inferRouterOutputs} from '@trpc/server';
-import {createContext, useContext, useEffect, useMemo, useState} from 'react';
-import {FormProvider, useForm, UseFormReturn} from 'react-hook-form';
-import {z} from 'zod';
-import {useTRPC} from '@/utils/trpc';
-import {AppRouter} from '~/trpc/server';
+import { DEFAULT_SCHEDULE } from '@/lib/availability';
+import { TimeRange } from '@/types/scheadule';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useQuery } from '@tanstack/react-query';
+import { inferRouterOutputs } from '@trpc/server';
+import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { FormProvider, useForm, UseFormReturn } from 'react-hook-form';
+import { z } from 'zod';
+import { useTRPC } from '@/utils/trpc';
+import { AppRouter } from '~/trpc/server';
 import useMeQuery from '@/hooks/use-me-query';
 import { useSessionStore } from '@/providers/session-store-provider';
 import { usePathname } from 'next/navigation';
-import { EventType } from '@/packages/event-types/getEventTypeBySlug';
+import type { EventType } from '@/packages/event-types/getEventTypeBySlug';
 import { ServiceBadgeColor } from '~/prisma/enums';
 import { LocationObject } from '@/core/locations';
 import { TSchedulesList } from '~/trpc/server/handlers/availability.handler';
-import {eventTypeBookingFields, EventTypeMetaDataSchema, EventTypeMetadata} from '~/prisma/zod-utils';
+import { eventTypeBookingFields, EventTypeMetaDataSchema, EventTypeMetadata } from '~/prisma/zod-utils';
 import { Me } from '~/trpc/server/handlers/user.handler';
 
 const updateServicesDetailsFormSchema = z.object({
@@ -29,7 +29,7 @@ const updateServicesDetailsFormSchema = z.object({
   isHidden: z.boolean().optional(),
   duration: z.number().positive().int(),
   price: z.number().nonnegative(),
-  locations: z.array(z.custom<LocationObject>()).optional(),
+  locations: z.array(z.custom<LocationObject>()),
   schedule: z.number().int().gte(0).optional(),
   bookingFields: eventTypeBookingFields,
   seatsPerTimeSlotEnabled: z.boolean(),
@@ -55,6 +55,7 @@ type ServicesDetailsContextType = {
   queries: {
     serviceDetails: EventType['eventType'];
     initialMe: Me;
+    locationOptions: EventType['locationOptions'];
     initialScheduleList: TSchedulesList['schedules'];
   };
   ServicesDetailsForm: UseFormReturn<UpdateServicesDetailsFormData>;
@@ -65,6 +66,7 @@ const ServicesDetailsContext = createContext<ServicesDetailsContextType | null>(
 type ServicesDetailsProviderProps = {
   children: React.ReactNode;
   initialServiceDetails: EventType['eventType'];
+  locationOptions: EventType['locationOptions'];
   initialMe: Me;
   initialScheduleList: TSchedulesList['schedules'];
 };
@@ -72,6 +74,7 @@ type ServicesDetailsProviderProps = {
 export function ServicesDetailsProvider({
   children,
   initialServiceDetails,
+  locationOptions,
   initialMe,
   initialScheduleList
 }: ServicesDetailsProviderProps) {
@@ -123,6 +126,7 @@ export function ServicesDetailsProvider({
       queries: {
         initialMe,
         serviceDetails: initialServiceDetails,
+        locationOptions,
         initialScheduleList
       },
       ServicesDetailsForm: serviceForm
@@ -136,6 +140,7 @@ export function ServicesDetailsProvider({
       isEditing,
       setIsEditing,
       initialServiceDetails,
+      locationOptions,
       initialMe,
       initialScheduleList
     ]

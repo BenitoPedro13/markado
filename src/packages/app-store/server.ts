@@ -11,7 +11,7 @@ import { defaultLocations } from "@/core/locations";
 
 export async function getLocationGroupedOptions(
   userOrTeamId: { userId: string } | { teamId: number },
-  t: TFunction
+  t: any
 ) {
   const apps: Record<
     string,

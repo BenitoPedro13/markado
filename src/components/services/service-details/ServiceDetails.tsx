@@ -1,15 +1,17 @@
 'use client';
 
-import {useForm} from 'react-hook-form';
+import { Control, Controller, FormState, useForm, UseFormGetValues, UseFormSetValue } from 'react-hook-form';
 import * as Input from '@/components/align-ui/ui/input';
 import * as Textarea from '@/components/align-ui/ui/textarea';
 import * as Button from '@/components/align-ui/ui/button';
-import {Service, ServiceBadgeColor} from '@/types/service';
+import { Service, ServiceBadgeColor } from '@/types/service';
 import * as Divider from '@/components/align-ui/ui/divider';
-import {useEffect, useRef} from 'react';
+import { useEffect, useRef } from 'react';
 import * as Select from '@/components/align-ui/ui/select';
-import {useServicesDetails} from '@/contexts/services/servicesDetails/ServicesContext';
+import { useServicesDetails } from '@/contexts/services/servicesDetails/ServicesContext';
 import { MARKADO_DOMAIN } from '@/constants';
+import { LocationFormValues } from '@/packages/features/eventtypes/lib/types';
+import Locations from "@/packages/features/eventtypes/components/Locations";
 
 type ServiceDetailsFormData = Pick<
   Service,
@@ -23,28 +25,28 @@ type ServiceDetailsFormData = Pick<
 >;
 
 // Array com as opções de cores e seus emojis
-const colorOptions: {value: ServiceBadgeColor; label: string}[] = [
-  {value: 'faded', label: 'Cinza ⚫️'},
-  {value: 'information', label: 'Azul 🔵'},
-  {value: 'warning', label: 'Amarelo 🟡'},
-  {value: 'error', label: 'Vermelho 🔴'},
-  {value: 'success', label: 'Verde 🟢'},
-  {value: 'away', label: 'Laranja 🟧'},
-  {value: 'feature', label: 'Roxo 🟣'},
-  {value: 'verified', label: 'Azul Céu 🔷'},
-  {value: 'highlighted', label: 'Rosa 🎀'},
-  {value: 'stable', label: 'Verde Água 🌊'}
+const colorOptions: { value: ServiceBadgeColor; label: string }[] = [
+  { value: 'faded', label: 'Cinza ⚫️' },
+  { value: 'information', label: 'Azul 🔵' },
+  { value: 'warning', label: 'Amarelo 🟡' },
+  { value: 'error', label: 'Vermelho 🔴' },
+  { value: 'success', label: 'Verde 🟢' },
+  { value: 'away', label: 'Laranja 🟧' },
+  { value: 'feature', label: 'Roxo 🟣' },
+  { value: 'verified', label: 'Azul Céu 🔷' },
+  { value: 'highlighted', label: 'Rosa 🎀' },
+  { value: 'stable', label: 'Verde Água 🌊' }
 ];
 
 type Props = {
   slug: string;
 };
 
-export default function ServiceDetails({slug}: Props) {
+export default function ServiceDetails({ slug }: Props) {
   const formRef = useRef<HTMLFormElement>(null);
   const {
-    queries: {initialMe},
-    ServicesDetailsForm: {register, handleSubmit, watch, getValues, setValue}
+    queries: { initialMe, serviceDetails, locationOptions },
+    ServicesDetailsForm: { register, formState, watch, getValues, setValue, control }
   } = useServicesDetails();
   // const service = services.find((s) => s.slug === slug);
 
@@ -98,7 +100,7 @@ export default function ServiceDetails({slug}: Props) {
   //   };
   // }, []);
 
-  // console.log('Localizações:', watch('locations')); // Apenas para debug
+  console.log('Localizações:', watch('locations')); // Apenas para debug
 
   return (
     <form
@@ -229,6 +231,37 @@ export default function ServiceDetails({slug}: Props) {
               ou qualquer outra informação relevante.
             </span>
           )} */}
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <label className="text-sm font-medium text-text-strong-950">
+            Localização
+          </label>
+          <Controller
+            name="locations"
+            control={control}
+            defaultValue={getValues("locations") || []}
+            render={() => (
+              <Locations
+                showAppStoreLink={false}
+                team={null}
+                destinationCalendar={serviceDetails?.destinationCalendar || null}
+                eventType={serviceDetails}
+                locationOptions={locationOptions}
+                // isChildrenManagedEventType={isChildrenManagedEventType}
+                // isManagedEventType={isManagedEventType}
+                // disableLocationProp={shouldLockDisableProps("locations").disabled}
+                isChildrenManagedEventType={false}
+                isManagedEventType={false}
+                disableLocationProp={false}
+                getValues={getValues as unknown as UseFormGetValues<LocationFormValues>}
+                setValue={setValue as unknown as UseFormSetValue<LocationFormValues>}
+                control={control as unknown as Control<LocationFormValues>}
+                formState={formState as unknown as FormState<LocationFormValues>}
+              // {...props}
+              />
+            )}
+          />
         </div>
       </div>
     </form>

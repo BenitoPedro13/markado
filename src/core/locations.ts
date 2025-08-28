@@ -10,7 +10,7 @@ import { appStoreMetadata } from "@/packages/app-store/bookerAppsMetaData";
 // import type { Ensure, Optional } from "@/types/utils";
 
 import type { EventLocationTypeFromAppMeta } from "@/packages/types/App";
-import { TFunction } from "next-i18next";
+import type { TFunction } from "next-i18next";
 
 // export type DefaultEventLocationType = {
 //   default: true;

@@ -251,10 +251,11 @@ export const createServicesBatch = async () => {
         price: service.price,
         badgeColor: service.badgeColor,
         hidden: false,
-        locations: service.locations ? service.locations.map(location => ({
-          type: 'integrations:google:meet',
-          address: location
-        })) : undefined,
+        // locations: service.locations ? service.locations.map(location => ({
+        //   type: 'integrations:google:meet',
+        //   address: location
+        // })) : undefined,
+        locations: service.locations,
       };
 
       await createServiceHandler({ input });
