@@ -12,15 +12,15 @@ import type { EventLocationType } from "@/core/locations";
 import { getEventLocationType, MeetLocationType } from "@/core/locations";
 // import { useIsPlatform } from "@/atoms/monorepo";
 import type { LocationFormValues, EventTypeSetupProps } from "@/packages/features/eventtypes/lib/types";
-import { CheckboxField } from "@/packages/ui/form/checkbox/Checkbox";
+import { CheckboxField } from "@/packages/features/form-builder/FormBuilder";
 import type { SingleValueLocationOption } from "@/packages/features/form/components/LocationSelect";
 import LocationSelect from "@/packages/features/form/components/LocationSelect";
 import { WEBAPP_URL } from "@/constants";
-import { useLocaleI18 as useLocale } from "@/hooks/use-locale-i18";
+import { useLocale as useLocale } from "@/hooks/use-locale";
 import { RiCloseLine, RiArrowRightDownLine, RiCheckLine } from "@remixicon/react";
 // import { Icon, Input, PhoneInput, Button, showToast } from "@/ui";
-import { Input } from "@/packages/ui/components/form/inputs/TextField";
-import PhoneInput from "@/components/align-ui/ui/phone-input"
+// import { Input } from "@/packages/ui/components/form/inputs/TextField";
+import * as Input from "@/components/align-ui/ui/input"
 import { useNotification } from "@/hooks/use-notification";
 import {
   Root as Button,
@@ -157,7 +157,7 @@ const Locations: React.FC<LocationsProps> = ({
           defaultValue={defaultValue}
           render={({ field: { onChange, value } }) => {
             return (
-              <Input
+              <Input.Root><Input.Input
                 name={`locations[${index}].${eventLocationType.defaultValueVariable}`}
                 placeholder={t(eventLocationType.organizerInputPlaceholder || "")}
                 type="text"
@@ -165,35 +165,36 @@ const Locations: React.FC<LocationsProps> = ({
                 onChange={onChange}
                 value={value}
                 {...(disableLocationProp ? { disabled: true } : {})}
-                className="my-0"
+                // className="my-0"
                 {...rest}
               />
+              </Input.Root>
             );
           }}
         />
       );
-    } else if (eventLocationType?.organizerInputType === "phone") {
-      const { defaultValue, ...rest } = remainingProps;
+      // } else if (eventLocationType?.organizerInputType === "phone") {
+      //   const { defaultValue, ...rest } = remainingProps;
 
-      return (
-        <Controller
-          name={`locations.${index}.${eventLocationType.defaultValueVariable}`}
-          defaultValue={defaultValue}
-          render={({ field: { onChange, value } }) => {
-            return (
-              <PhoneInput
-                required
-                disabled={disableLocationProp}
-                placeholder={t(eventLocationType.organizerInputPlaceholder || "")}
-                name={`locations[${index}].${eventLocationType.defaultValueVariable}`}
-                value={value}
-                onChange={onChange}
-                {...rest}
-              />
-            );
-          }}
-        />
-      );
+      //   return (
+      //     <Controller
+      //       name={`locations.${index}.${eventLocationType.defaultValueVariable}`}
+      //       defaultValue={defaultValue}
+      //       render={({ field: { onChange, value } }) => {
+      //         return (
+      //           <PhoneInput
+      //             required
+      //             disabled={disableLocationProp}
+      //             placeholder={t(eventLocationType.organizerInputPlaceholder || "")}
+      //             name={`locations[${index}].${eventLocationType.defaultValueVariable}`}
+      //             value={value}
+      //             onChange={onChange}
+      //             {...rest}
+      //           />
+      //         );
+      //       }}
+      //     />
+      //   );
     }
     return null;
   };
@@ -224,6 +225,8 @@ const Locations: React.FC<LocationsProps> = ({
   // const isPlatorm = useIsPlatform();
   const isPlatorm = false;
 
+  // console.log('locationOptions', locationOptions);
+
   return (
     <div className="w-full">
       <ul ref={animationRef} className="space-y-2">
@@ -237,10 +240,10 @@ const Locations: React.FC<LocationsProps> = ({
               <div className="flex w-full items-center">
                 <LocationSelect
                   name={`locations[${index}].type`}
-                  placeholder={t("select")}
+                  placeholder={t("select_location")}
                   options={locationOptions}
                   isDisabled={disableLocationProp}
-                  defaultValue={option}
+                  value={option}
                   isSearchable={false}
                   className="block min-w-0 flex-1 rounded-sm text-sm"
                   menuPlacement="auto"
@@ -290,7 +293,7 @@ const Locations: React.FC<LocationsProps> = ({
                     }
                   }}
                 />
-                {!(disableLocationProp && isChildrenManagedEventType) && (
+                {/* {!(disableLocationProp && isChildrenManagedEventType) && (
                   <button
                     // data-testid={`delete-locations.${index}.type`}
                     className="min-h-9 block h-9 px-2"
@@ -301,7 +304,7 @@ const Locations: React.FC<LocationsProps> = ({
                       <RiCloseLine name="x" className="border-l-1 hover:text-emphasis text-subtle h-4 w-4" />
                     </div>
                   </button>
-                )}
+                )} */}
               </div>
 
               {eventLocationType?.organizerInputType && (
@@ -337,14 +340,14 @@ const Locations: React.FC<LocationsProps> = ({
                       disabled={disableLocationProp}
                       defaultChecked={defaultLocation?.displayLocationPublicly}
                       description={t("display_location_label")}
-                      onChange={(e) => {
+                      onCheckedChange={(checked) => {
                         const fieldValues = getValues("locations")[index];
                         updateLocationField(index, {
                           ...fieldValues,
-                          displayLocationPublicly: e.target.checked,
+                          displayLocationPublicly: checked,
                         });
                       }}
-                      informationIconText={t("display_location_info_badge")}
+                      // informationIconText={t("display_location_info_badge")}
                     />
                   </div>
                 </div>
@@ -356,7 +359,7 @@ const Locations: React.FC<LocationsProps> = ({
           <div className="flex">
             <LocationSelect
               defaultMenuIsOpen={showEmptyLocationSelect}
-              placeholder={t("select")}
+              placeholder={t("select_location")}
               options={locationOptions}
               value={selectedNewOption}
               isDisabled={disableLocationProp}
@@ -401,7 +404,7 @@ const Locations: React.FC<LocationsProps> = ({
             />
           </div>
         )}
-        {validLocations.some(
+        {/* {validLocations.some(
           (location) =>
             location.type === MeetLocationType && props.destinationCalendar?.integration !== "google_calendar"
         ) && (
@@ -420,7 +423,7 @@ const Locations: React.FC<LocationsProps> = ({
                 </Trans>
               </p>
             </div>
-          )}
+          )} */}
         {isChildrenManagedEventType && !locationAvailable && locationDetails && (
           <p className="pl-1 text-sm leading-none text-red-600">
             {t("app_not_connected", { appName: locationDetails.name })}{" "}
@@ -429,10 +432,11 @@ const Locations: React.FC<LocationsProps> = ({
             </a>
           </p>
         )}
-        {validLocations.length > 0 && !disableLocationProp && (
+        {/* {validLocations.length > 0 && !disableLocationProp && (
           //  && !isChildrenManagedEventType : Add this to hide add-location button only when location is disabled by Admin
           <li>
             <Button
+              type="button"
               // data-testid="add-location"
               // StartIcon="plus"
               color="minimal"
@@ -442,7 +446,7 @@ const Locations: React.FC<LocationsProps> = ({
               {t("add_location")}
             </Button>
           </li>
-        )}
+        )} */}
       </ul>
       {props.showAppStoreLink && !isPlatorm && (
         <p className="text-default mt-2 text-sm">

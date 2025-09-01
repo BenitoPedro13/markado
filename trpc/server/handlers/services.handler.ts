@@ -1,11 +1,11 @@
 'use server';
 
-import {Prisma} from '~/prisma/app/generated/prisma/client';
-import {PrismaClientKnownRequestError} from '@prisma/client/runtime/library';
-import {prisma} from '@/lib/prisma';
-import {EventTypeRepository} from '@/repositories/eventType';
-import {generateHashedLink} from '@/lib/generateHashedLink';
-import {SchedulingType} from '~/prisma/enums';
+import { Prisma } from '~/prisma/app/generated/prisma/client';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { prisma } from '@/lib/prisma';
+import { EventTypeRepository } from '@/repositories/eventType';
+import { generateHashedLink } from '@/lib/generateHashedLink';
+import { SchedulingType } from '~/prisma/enums';
 import type {
   EventTypeLocation,
   TDeleteInputSchema,
@@ -13,23 +13,23 @@ import type {
   TGetEventTypesFromGroupSchema,
   TGetInputSchema
 } from '~/trpc/server/schemas/services.schema';
-import {TRPCError} from '@trpc/server';
-import type {TCreateInputSchema} from '~/trpc/server/schemas/services.schema';
-import {auth} from '@/auth';
-import {UserRepository} from '@/repositories/user';
-import {safeStringify} from '@/lib/safeStringify';
-import {hasFilter, mapEventType} from '~/trpc/server/utils/services/util';
-import {revalidatePath} from 'next/cache';
+import { TRPCError } from '@trpc/server';
+import type { TCreateInputSchema } from '~/trpc/server/schemas/services.schema';
+import { auth } from '@/auth';
+import { UserRepository } from '@/repositories/user';
+import { safeStringify } from '@/lib/safeStringify';
+import { hasFilter, mapEventType } from '~/trpc/server/utils/services/util';
+import { revalidatePath } from 'next/cache';
 import getEventTypeBySlug from '@/packages/event-types/getEventTypeBySlug';
-import {validateIntervalLimitOrder} from '@/packages/lib';
-import {validateBookerLayouts} from '@/packages/lib/validateBookerLayouts';
+import { validateIntervalLimitOrder } from '@/packages/lib';
+import { validateBookerLayouts } from '@/packages/lib/validateBookerLayouts';
 import {
   ensureUniqueBookingFields,
   ensureEmailOrPhoneNumberIsPresent,
   handleCustomInputs,
   handlePeriodType
 } from '~/trpc/server/utils/services/util';
-import {TUpdateInputSchema} from '~/trpc/server/schemas/services.schema';
+import { TUpdateInputSchema } from '~/trpc/server/schemas/services.schema';
 import { baseServices } from '@/data/services';
 import { log } from 'console';
 
@@ -38,7 +38,7 @@ type CreateOptions = {
   input: TCreateInputSchema;
 };
 
-export const createServiceHandler = async ({input}: CreateOptions) => {
+export const createServiceHandler = async ({ input }: CreateOptions) => {
   const session = await auth();
 
   if (!session) {
@@ -55,8 +55,8 @@ export const createServiceHandler = async ({input}: CreateOptions) => {
     });
   }
 
-  const user = await UserRepository.findByIdOrThrow({id: session.user.id});
-  const enrichedUser = await UserRepository.enrichUserWithItsProfile({user});
+  const user = await UserRepository.findByIdOrThrow({ id: session.user.id });
+  const enrichedUser = await UserRepository.enrichUserWithItsProfile({ user });
 
   const {
     schedulingType,
@@ -75,16 +75,16 @@ export const createServiceHandler = async ({input}: CreateOptions) => {
 
   const data: Prisma.EventTypeCreateInput = {
     ...rest,
-    owner: teamId ? undefined : {connect: {id: userId}},
+    owner: teamId ? undefined : { connect: { id: userId } },
     metadata: (metadata as Prisma.InputJsonObject) ?? undefined,
     // Only connecting the current user for non-managed event types and non team event types
     users:
       // isManagedEventType || schedulingType
       // ? undefined
       // :
-      {connect: {id: userId}},
+      { connect: { id: userId } },
     locations,
-    schedule: scheduleId ? {connect: {id: scheduleId}} : undefined
+    schedule: scheduleId ? { connect: { id: scheduleId } } : undefined
   };
 
   // if (teamId && schedulingType) {
@@ -147,7 +147,7 @@ export const createServiceHandler = async ({input}: CreateOptions) => {
       ...data,
       profileId: profile.id
     });
-    return {eventType};
+    return { eventType };
   } catch (e) {
     console.warn(e);
     if (e instanceof PrismaClientKnownRequestError) {
@@ -162,7 +162,7 @@ export const createServiceHandler = async ({input}: CreateOptions) => {
         });
       }
     }
-    throw new TRPCError({code: 'BAD_REQUEST'});
+    throw new TRPCError({ code: 'BAD_REQUEST' });
   }
 };
 
@@ -171,7 +171,7 @@ type GetOptions = {
 };
 
 // get detailed service by slug or id
-export const getServiceHandler = async ({input}: GetOptions) => {
+export const getServiceHandler = async ({ input }: GetOptions) => {
   try {
     const session = await auth();
 
@@ -189,8 +189,8 @@ export const getServiceHandler = async ({input}: GetOptions) => {
       });
     }
 
-    const user = await UserRepository.findByIdOrThrow({id: session.user.id});
-    const enrichedUser = await UserRepository.enrichUserWithItsProfile({user});
+    const user = await UserRepository.findByIdOrThrow({ id: session.user.id });
+    const enrichedUser = await UserRepository.enrichUserWithItsProfile({ user });
     const userProfile = enrichedUser.profile;
 
     return await getEventTypeBySlug({
@@ -239,7 +239,18 @@ export const createServicesBatch = async () => {
   }
 
   const user = await UserRepository.findByIdOrThrow({ id: session.user.id });
-  const enrichedUser = await UserRepository.enrichUserWithItsProfile({ user });
+  // const enrichedUser = await UserRepository.enrichUserWithItsProfile({ user });
+
+  // Primeiro, verificar se o usuário tem algum serviço no banco (sem filtros)
+  const hasAnyServices = await prisma.eventType.findFirst({
+    where: {
+      userId: user.id,
+      teamId: null,
+      schedulingType: null
+    }
+  });
+
+  if (hasAnyServices) return
 
   try {
     for (const service of baseServices) {
@@ -302,12 +313,12 @@ export const getEventTypesFromGroup = async ({
     });
   }
 
-  const user = await UserRepository.findByIdOrThrow({id: session.user.id});
-  const enrichedUser = await UserRepository.enrichUserWithItsProfile({user});
+  const user = await UserRepository.findByIdOrThrow({ id: session.user.id });
+  const enrichedUser = await UserRepository.enrichUserWithItsProfile({ user });
 
   const userProfile = enrichedUser.profile;
-  const {group, limit, cursor, filters, searchQuery} = input;
-  const {teamId} = group;
+  const { group, limit, cursor, filters, searchQuery } = input;
+  const { teamId } = group;
 
   const isFilterSet = (filters && hasFilter(filters)) || !!teamId;
   const isUpIdInFilter = filters?.upIds?.includes(userProfile.upId);
@@ -374,8 +385,8 @@ const fetchEventTypesBatch = async (
   searchQuery: TGetEventTypesFromGroupSchema['searchQuery']
 ) => {
   const userProfile = user.profile;
-  const {group, limit, filters} = input;
-  const {teamId, parentId} = group;
+  const { group, limit, filters } = input;
+  const { teamId, parentId } = group;
   const isFilterSet = (filters && hasFilter(filters)) || !!teamId;
 
   const eventTypes: EventType[] = [];
@@ -392,10 +403,10 @@ const fetchEventTypesBatch = async (
             teamId: null,
             schedulingType: null,
             ...(searchQuery
-              ? {title: {contains: searchQuery, mode: 'insensitive'}}
+              ? { title: { contains: searchQuery, mode: 'insensitive' } }
               : {}),
-            ...(filters && filters.hidden !== null 
-              ? {hidden: filters.hidden} 
+            ...(filters && filters.hidden !== null
+              ? { hidden: filters.hidden }
               : {})
           },
           orderBy: [
@@ -425,11 +436,11 @@ const fetchEventTypesBatch = async (
         where: {
           ...(isFilterSet && !!filters?.schedulingTypes
             ? {
-                schedulingType: {in: filters.schedulingTypes}
-              }
+              schedulingType: { in: filters.schedulingTypes }
+            }
             : null),
           ...(searchQuery
-            ? {title: {contains: searchQuery, mode: 'insensitive'}}
+            ? { title: { contains: searchQuery, mode: 'insensitive' } }
             : {})
         },
         orderBy: [
@@ -453,7 +464,7 @@ const fetchEventTypesBatch = async (
 
   const mappedEventTypes = await Promise.all(eventTypes.map(mapEventType));
 
-  return {eventTypes: mappedEventTypes, nextCursor: nextCursor ?? undefined};
+  return { eventTypes: mappedEventTypes, nextCursor: nextCursor ?? undefined };
 };
 
 const filterEventTypes = async (
@@ -525,7 +536,7 @@ export type UpdateEventTypeReturn = Awaited<
   ReturnType<typeof updateServiceHandler>
 >;
 
-export const updateServiceHandler = async ({input}: UpdateOptions) => {
+export const updateServiceHandler = async ({ input }: UpdateOptions) => {
   const session = await auth();
 
   if (!session) {
@@ -542,8 +553,8 @@ export const updateServiceHandler = async ({input}: UpdateOptions) => {
     });
   }
 
-  const user = await UserRepository.findByIdOrThrow({id: session.user.id});
-  const enrichedUser = await UserRepository.enrichUserWithItsProfile({user});
+  const user = await UserRepository.findByIdOrThrow({ id: session.user.id });
+  const enrichedUser = await UserRepository.enrichUserWithItsProfile({ user });
 
   const userProfile = enrichedUser.profile;
 
@@ -576,7 +587,7 @@ export const updateServiceHandler = async ({input}: UpdateOptions) => {
   } = input;
 
   const eventType = await prisma.eventType.findUniqueOrThrow({
-    where: {id},
+    where: { id },
     select: {
       title: true,
       // isRRWeightsEnabled: true,
@@ -645,7 +656,7 @@ export const updateServiceHandler = async ({input}: UpdateOptions) => {
     eventType.team?.id &&
     input.teamId !== eventType.team.id
   ) {
-    throw new TRPCError({code: 'UNAUTHORIZED'});
+    throw new TRPCError({ code: 'UNAUTHORIZED' });
   }
 
   const teamId = input.teamId || eventType.team?.id;
@@ -777,7 +788,7 @@ export const updateServiceHandler = async ({input}: UpdateOptions) => {
   if (users?.length) {
     data.users = {
       set: [],
-      connect: users.map((userId: string) => ({id: userId}))
+      connect: users.map((userId: string) => ({ id: userId }))
     };
   }
 
@@ -1027,7 +1038,7 @@ export const updateServiceHandler = async ({input}: UpdateOptions) => {
 
   try {
     updatedEventType = await prisma.eventType.update({
-      where: {id},
+      where: { id },
       data,
       select: updatedEventTypeSelect
     });
@@ -1076,16 +1087,16 @@ export const updateServiceHandler = async ({input}: UpdateOptions) => {
   revalidatePath('/services'); // revalidate the list page
   revalidatePath(`/${user.username}/${updatedEventType.slug}`); // revalidate the service page
   revalidatePath(`/${userProfile.username}/${updatedEventType.slug}`); // revalidate the service page
-  return {eventType};
+  return { eventType };
 };
 
 // Delete
 
 type ChangeServiceHiddenStatusOptions = {
-  input: {id: number; hidden: boolean};
+  input: { id: number; hidden: boolean };
 };
 export const changeServiceHiddenStatus = async ({
-  input: {id, hidden}
+  input: { id, hidden }
 }: ChangeServiceHiddenStatusOptions) => {
   const session = await auth();
 
@@ -1130,7 +1141,7 @@ export const changeServiceHiddenStatus = async ({
   });
   revalidatePath('/services'); // revalidate the list page
 
-  return {id};
+  return { id };
 };
 
 export const deleteService = async (input: TDeleteInputSchema) => {
@@ -1149,7 +1160,7 @@ export const deleteService = async (input: TDeleteInputSchema) => {
     });
   }
 
-  const {id} = input;
+  const { id } = input;
 
   const existingService = await prisma.eventType.findFirst({
     where: {
@@ -1186,7 +1197,7 @@ export const deleteService = async (input: TDeleteInputSchema) => {
 
 export const submitDeleteService = async (serviceId: number) => {
   try {
-    const serviceResult = await deleteService({id: serviceId});
+    const serviceResult = await deleteService({ id: serviceId });
 
     if (!serviceResult.id) return;
 
@@ -1249,7 +1260,7 @@ export const duplicateHandler = async (input: TDuplicateInputSchema) => {
     });
 
     if (!eventType) {
-      throw new TRPCError({code: 'NOT_FOUND'});
+      throw new TRPCError({ code: 'NOT_FOUND' });
     }
 
     // Validate user is owner of event type or in the team
@@ -1262,7 +1273,7 @@ export const duplicateHandler = async (input: TDuplicateInputSchema) => {
           }
         });
         if (!isMember) {
-          throw new TRPCError({code: 'FORBIDDEN'});
+          throw new TRPCError({ code: 'FORBIDDEN' });
         }
       }
     }
@@ -1302,16 +1313,16 @@ export const duplicateHandler = async (input: TDuplicateInputSchema) => {
       description: newDescription,
       length: newLength,
       locations: locations ?? undefined,
-      team: team ? {connect: {id: team.id}} : undefined,
+      team: team ? { connect: { id: team.id } } : undefined,
       users: users
-        ? {connect: users.map((user) => ({id: user.id}))}
+        ? { connect: users.map((user) => ({ id: user.id })) }
         : undefined,
       hosts: hosts
         ? {
-            createMany: {
-              data: hosts.map(({eventTypeId: _, ...rest}) => rest)
-            }
+          createMany: {
+            data: hosts.map(({ eventTypeId: _, ...rest }) => rest)
           }
+        }
         : undefined,
 
       recurringEvent: recurringEvent || undefined,
@@ -1348,7 +1359,7 @@ export const duplicateHandler = async (input: TDuplicateInputSchema) => {
     // Create custom inputs
     if (customInputs) {
       const customInputsData = customInputs.map((customInput) => {
-        const {id: _, options, ...rest} = customInput;
+        const { id: _, options, ...rest } = customInput;
         return {
           options: options ?? undefined,
           ...rest,
@@ -1365,7 +1376,7 @@ export const duplicateHandler = async (input: TDuplicateInputSchema) => {
         data: {
           link: generateHashedLink(users[0]?.id ?? newEventType.teamId),
           eventType: {
-            connect: {id: newEventType.id}
+            connect: { id: newEventType.id }
           }
         }
       });
@@ -1373,7 +1384,7 @@ export const duplicateHandler = async (input: TDuplicateInputSchema) => {
 
     if (workflows.length > 0) {
       const relationCreateData = workflows.map((workflow) => {
-        return {eventTypeId: newEventType.id, workflowId: workflow.workflowId};
+        return { eventTypeId: newEventType.id, workflowId: workflow.workflowId };
       });
 
       await prisma.workflowsOnEventTypes.createMany({

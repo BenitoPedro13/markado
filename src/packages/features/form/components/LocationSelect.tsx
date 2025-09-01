@@ -8,6 +8,7 @@ import { cn as classNames } from "@/utils/cn";
 import { RiPhoneLine, RiMapPinLine, RiLink, RiVideoChatLine, RiMap2Line } from "@remixicon/react";
 
 import * as Select from "@/components/align-ui/ui/select";
+import { GoogleMeetIcon } from "@/modules/scheduling/services/ServiceCalendarForm";
 
 export type LocationOption = {
   label: string;
@@ -49,22 +50,24 @@ const OptionWithIcon = ({ icon, label, value }: { icon?: string; label: string; 
   // const isPlatform = useIsPlatform();
   const isPlatform = false;
 
+  // console.log('OptionWithIcon render', { icon, label, value });
+
   const getIconFromValue = (value: string) => {
     switch (value) {
       case "phone":
-        return <RiPhoneLine name="phone" className="h-3.5 w-3.5" />;
+        return <RiPhoneLine name="phone" className="h-5 w-5" />;
       case "userPhone":
-        return <RiPhoneLine name="phone" className="h-3.5 w-3.5" />;
+        return <RiPhoneLine name="phone" className="h-5 w-5" />;
       case "inPerson":
-        return <RiMapPinLine name="map-pin" className="h-3.5 w-3.5" />;
+        return <RiMapPinLine name="map-pin" className="h-5 w-5" />;
       case "attendeeInPerson":
-        return <RiMapPinLine name="map-pin" className="h-3.5 w-3.5" />;
+        return <RiMapPinLine name="map-pin" className="h-5 w-5" />;
       case "link":
-        return <RiLink name="link" className="h-3.5 w-3.5" />;
+        return <RiLink name="link" className="h-5 w-5" />;
       case "somewhereElse":
-        return <RiMap2Line name="map" className="h-3.5 w-3.5" />;
+        return <RiMap2Line name="map" className="h-5 w-5" />;
       default:
-        return <RiVideoChatLine name="video" className="h-3.5 w-3.5" />;
+        return <GoogleMeetIcon />;
     }
   };
 
@@ -72,7 +75,7 @@ const OptionWithIcon = ({ icon, label, value }: { icon?: string; label: string; 
     return (
       <div className="flex items-center gap-3">
         {getIconFromValue(value)}
-        <span className={classNames("text-sm font-medium")}>{label}</span>
+        <span className={classNames("")}>{label}</span>
       </div>
     );
   }
@@ -80,10 +83,11 @@ const OptionWithIcon = ({ icon, label, value }: { icon?: string; label: string; 
   return (
     <div className="flex items-center gap-3">
       {icon && getIconFromValue(value)}
-      <span className={classNames("text-sm font-medium")}>{label}</span>
+      <span className={classNames("")}>{label}</span>
     </div>
   );
 };
+
 
 export default function LocationSelect(props: LocationSelectProps) {
   // const isPlatform = useIsPlatform();
@@ -126,6 +130,7 @@ export default function LocationSelect(props: LocationSelectProps) {
     },
     [flatOptions, onChange]
   );
+  // console.log('selectedOption.label:', selectedOption?.label)
 
   return (
     <Select.Root
@@ -140,22 +145,11 @@ export default function LocationSelect(props: LocationSelectProps) {
         {selectedOption ? (
           <div className="flex items-center gap-3 truncate">
             {/* If an external icon url is available, show it */}
-            {selectedOption.icon && !isPlatform ? (
-              <img
-                src={selectedOption.icon}
-                alt="app-icon"
-                className={classNames(
-                  selectedOption.icon.includes("-dark") && "dark:invert",
-                  "h-5 w-5 shrink-0"
-                )}
-              />
-            ) : (
-              <>{
-                /* Fallback to mapped icons */
-                <OptionWithIcon icon={undefined} label="" value={selectedOption.value} />
-              }</>
-            )}
-            <span className="truncate text-sm font-medium">{selectedOption.label}</span>
+
+            <OptionWithIcon icon={selectedOption.icon} label={selectedOption.label} value={selectedOption.value} />
+
+
+            {/* <span className="truncate text-sm font-medium">{selectedOption.label}</span> */}
           </div>
         ) : (
           <span className="text-text-sub-600 text-sm truncate">{placeholder}</span>
@@ -167,22 +161,16 @@ export default function LocationSelect(props: LocationSelectProps) {
           <React.Fragment key={`g-${gi}-${group.label}`}>
             {group.label ? (
               <Select.Group>
-                <Select.GroupLabel className="text-default text-xs font-medium px-2 pt-2 pb-1">
+                {/* <Select.GroupLabel className="text-default text-xs font-medium px-2 pt-2 pb-1">
                   {group.label}
-                </Select.GroupLabel>
+                </Select.GroupLabel> */}
                 {group.options.map((opt) => (
                   <Select.Item key={opt.value} value={opt.value}>
                     <div className="flex items-center gap-3" data-testid={`location-select-item-${opt.value}`}>
-                      {opt.icon && !isPlatform ? (
-                        <img
-                          src={opt.icon}
-                          alt="app-icon"
-                          className={classNames(opt.icon.includes("-dark") && "dark:invert", "h-5 w-5")}
-                        />
-                      ) : (
-                        <OptionWithIcon icon={opt.icon} label={opt.label} value={opt.value} />
-                      )}
-                      <span className="text-sm font-medium">{opt.label}</span>
+
+                      <OptionWithIcon icon={opt.icon} label={opt.label} value={opt.value} />
+
+                      {/* <span className="text-sm font-medium">{opt.label}</span> */}
                     </div>
                   </Select.Item>
                 ))}
@@ -191,16 +179,10 @@ export default function LocationSelect(props: LocationSelectProps) {
               group.options.map((opt) => (
                 <Select.Item key={opt.value} value={opt.value}>
                   <div className="flex items-center gap-3" data-testid={`location-select-item-${opt.value}`}>
-                    {opt.icon && !isPlatform ? (
-                      <img
-                        src={opt.icon}
-                        alt="app-icon"
-                        className={classNames(opt.icon.includes("-dark") && "dark:invert", "h-5 w-5")}
-                      />
-                    ) : (
-                      <OptionWithIcon icon={opt.icon} label={opt.label} value={opt.value} />
-                    )}
-                    <span className="text-sm font-medium">{opt.label}</span>
+
+                    <OptionWithIcon icon={opt.icon} label={opt.label} value={opt.value} />
+
+                    {/* <span className="text-sm font-medium">{opt.label}</span> */}
                   </div>
                 </Select.Item>
               ))

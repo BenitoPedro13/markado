@@ -164,7 +164,14 @@
     "october": "October",
     "november": "November",
     "december": "December",
-    "meeting_url": "Meeting Link"
+    "meeting_url": "Meeting Link",
+    "in_person": "In Person",
+    "in person": "In Person",
+    "conferencing": "Conferencing",
+    "Google Meet ": "Google Meet",
+    "google_meet": "Google Meet",
+    "display_location_label": "Display location before booking",
+    "select_location": "Select location"
   },
   "Error": {
     "description": "<p>Unfortunately we encountered an error.</p><p>You can try to <retry>reload the page</retry> you were trying to visit.</p>",

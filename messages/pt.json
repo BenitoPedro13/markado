@@ -164,7 +164,14 @@
     "october": "Outubro",
     "november": "Novembro",
     "december": "Dezembro",
-    "meeting_url": "Link da reunião"
+    "meeting_url": "Link da reunião",
+    "in_person": "Presencial",
+    "in person": "Presencial",
+    "conferencing": "Videochamada",
+    "Google Meet ": "Google Meet",
+    "google_meet": "Google Meet",
+    "display_location_label": "Apresentar a localização antes da reserva",
+    "select_location": "Selecionar local"
   },
   "Error": {
     "description": "<p>Infelizmente encontramos um erro.</p><p>Você pode tentar <retry>recarregar a página</retry> que estava tentando visitar.</p>",

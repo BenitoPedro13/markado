@@ -231,7 +231,7 @@ export default function CreateServiceModal() {
       title: '',
       description: '',
       slug: '',
-      duration: 0,
+      duration: 15,
       price: 0,
       location: '',
       badgeColor: 'faded'

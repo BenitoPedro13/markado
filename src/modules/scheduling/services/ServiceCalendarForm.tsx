@@ -31,7 +31,7 @@ const capitalizeFirstLetter = (str: string) => {
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
-const GoogleMeetIcon = () => (
+export const GoogleMeetIcon = () => (
   <svg
     width="20"
     height="20"

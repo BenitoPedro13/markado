@@ -77,7 +77,7 @@ export default function ServiceDetails({ slug }: Props) {
   //         duration: Number(data.duration)
   //       };
 
-  //       console.log('Serviço atualizado:', services[serviceIndex]);
+  //       // console.log('Serviço atualizado:', services[serviceIndex]);
   //       alert('Serviço atualizado com sucesso!');
   //     }
   //   } catch (error) {
@@ -100,7 +100,7 @@ export default function ServiceDetails({ slug }: Props) {
   //   };
   // }, []);
 
-  console.log('Localizações:', watch('locations')); // Apenas para debug
+  // // console.log('Localizações:', watch('locations')); // Apenas para debug
 
   return (
     <form
@@ -214,7 +214,7 @@ export default function ServiceDetails({ slug }: Props) {
           </div>
         </div>
 
-        <div className="flex flex-col gap-2">
+        {/* <div className="flex flex-col gap-2">
           <label className="text-sm font-medium text-text-strong-950">
             Localização
           </label>
@@ -223,7 +223,7 @@ export default function ServiceDetails({ slug }: Props) {
               {...register('locations')}
               placeholder="Ex: Online via Google Meet"
             />
-          </Input.Root>
+          </Input.Root> */}
           {/* {watch('locations') && (
             <span className="text-paragraph-xs text-text-sub-600">
               Esta localização será usada para identificar onde o serviço será
@@ -231,7 +231,7 @@ export default function ServiceDetails({ slug }: Props) {
               ou qualquer outra informação relevante.
             </span>
           )} */}
-        </div>
+        {/* </div> */}
 
         <div className="flex flex-col gap-2">
           <label className="text-sm font-medium text-text-strong-950">
@@ -240,7 +240,7 @@ export default function ServiceDetails({ slug }: Props) {
           <Controller
             name="locations"
             control={control}
-            defaultValue={getValues("locations") || []}
+            defaultValue={serviceDetails.locations || []}
             render={() => (
               <Locations
                 showAppStoreLink={false}

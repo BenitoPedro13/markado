@@ -77,7 +77,7 @@ const Checkbox = React.forwardRef<
             // hover
             'group-hover/checkbox:fill-bg-sub-300',
             // focus
-            'group-focus/checkbox:fill-primary-base',
+            'group-focus/checkbox:fill-primary-darker',
             // disabled
             'group-disabled/checkbox:fill-bg-soft-200',
             // hover
@@ -87,8 +87,8 @@ const Checkbox = React.forwardRef<
             'group-focus/checkbox:group-data-[state=checked]/checkbox:fill-primary-dark',
             'group-focus/checkbox:group-data-[state=indeterminate]/checkbox:fill-primary-dark',
             // checked
-            'group-data-[state=checked]/checkbox:fill-primary-base',
-            'group-data-[state=indeterminate]/checkbox:fill-primary-base',
+            'group-data-[state=checked]/checkbox:fill-primary-darker',
+            'group-data-[state=indeterminate]/checkbox:fill-primary-darker',
             // disabled checked
             'group-disabled/checkbox:group-data-[state=checked]/checkbox:fill-bg-soft-200',
             'group-disabled/checkbox:group-data-[state=indeterminate]/checkbox:fill-bg-soft-200',

@@ -93,6 +93,7 @@ interface CheckboxFieldProps {
   defaultChecked?: boolean;
   onCheckedChange?: (checked: boolean) => void;
   name?: string;
+  disabled?: boolean;
 }
 
 export const CheckboxField = React.forwardRef<HTMLButtonElement, CheckboxFieldProps>(

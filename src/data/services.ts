@@ -84,7 +84,7 @@ export const baseServices = [
     length: 60,
     price: 150,
     hidden: false,
-    locations: [defaultLocations[3]],
+    locations: [defaultLocations[0]],
     description: 'Reuniao de 1 hora',
     badgeColor: ServiceBadgeColor.information,
   },
@@ -95,7 +95,7 @@ export const baseServices = [
     length: 60,
     price: 100,
     hidden: false,
-    locations: [defaultLocations[6]],
+    locations: [defaultLocations[0]],
     description: 'Aula Teste',
     badgeColor: ServiceBadgeColor.success,
   }
