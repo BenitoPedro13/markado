@@ -3,18 +3,19 @@ import type {
   EventLocationTypeFromApp,
   LocationObject
 } from '@/packages/core/location';
-import {JSX} from 'react';
+import { JSX } from 'react';
 import {
   getEventLocationType,
   getTranslatedLocation
-} from '@/packages/core/location';
+} from '@/core/locations';
 // import { useIsPlatform } from "@/atoms/monorepo";
-import {cn as classNames} from '@/utils/cn';
-import {useLocale} from '@/hooks/use-locale';
+import { cn as classNames } from '@/utils/cn';
+import { useLocale as useLocale } from '@/hooks/use-locale';
 // import invertLogoOnDark from '@/lib/invertLogoOnDark';
 // import { Icon } from "@/ui";
-import {RiLink} from '@remixicon/react';
+import { RiLink, RiMapPinLine } from '@remixicon/react';
 import * as Tooltip from '@/components/align-ui/ui/tooltip';
+import { GoogleMeetIcon } from '@/modules/scheduling/services/ServiceCalendarForm';
 const excludeNullValues = (value: unknown) => !!value;
 
 function RenderIcon({
@@ -49,8 +50,8 @@ function RenderIcon({
   );
 }
 
-function RenderLocationTooltip({locations}: {locations: LocationObject[]}) {
-  const {t} = useLocale();
+function RenderLocationTooltip({ locations }: { locations: LocationObject[] }) {
+  const { t } = useLocale();
 
   return (
     <div className="my-2 me-2 flex w-full flex-col space-y-3 break-words">
@@ -90,8 +91,9 @@ export function AvailableEventLocations({
 }: {
   locations: LocationObject[];
 }) {
-  const {t} = useLocale();
+  const { t } = useLocale();
   // const isPlatform = useIsPlatform();
+
 
   const renderLocations = locations.map(
     (
@@ -114,28 +116,31 @@ export function AvailableEventLocations({
         t
       );
 
+      console.log('AvailableEventLocations render', { locations, eventLocationType, translatedLocation });
+
+
       return (
         <div
           key={`${location.type}-${index}`}
-          className="flex flex-row items-center text-sm font-medium"
+          className="flex flex-row gap-[5px] text-sm font-medium"
         >
-          {eventLocationType.iconUrl === '/link.svg' ? (
-            <RiLink
-              name="link"
-              className="text-default h-4 w-4 ltr:mr-[10px] rtl:ml-[10px]"
+          {eventLocationType.iconUrl === "/map-pin-dark.svg" ? (
+            <RiMapPinLine
+              name="location"
+              className="h-5 w-5 ltr:mr-[10px] rtl:ml-[10px]"
             />
-          ) : (
+          ) : eventLocationType.iconUrl === "/app-store/googlevideo/logo.webp" ? (<GoogleMeetIcon />) : (
             <RenderIcon
               eventLocationType={eventLocationType}
               isTooltip={false}
             />
           )}
-          <Tooltip.Root>
-            <Tooltip.Trigger asChild>
-              <p className="line-clamp-1">{translatedLocation}</p>
-            </Tooltip.Trigger>
+          {/* <Tooltip.Root>
+            <Tooltip.Trigger asChild> */}
+          <p className="line-clamp-1">{translatedLocation}</p>
+          {/* </Tooltip.Trigger>
             <Tooltip.Content size="small">{translatedLocation}</Tooltip.Content>
-          </Tooltip.Root>
+          </Tooltip.Root> */}
         </div>
       );
     }

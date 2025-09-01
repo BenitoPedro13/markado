@@ -255,11 +255,14 @@ export const getTranslatedLocation = (
     .string()
     .default('')
     .parse(locationKeyToString(location));
+    // console.log('getTranslatedLocation',locationKey, translateAbleKeys.includes(locationKey));
   const translatedLocation = location.type.startsWith('integrations:')
     ? eventLocationType.label
     : translateAbleKeys.includes(locationKey)
       ? t(locationKey)
       : locationKey;
+
+  // console.log('getTranslatedLocation', t(locationKey), locationKey);
 
   return translatedLocation;
 };

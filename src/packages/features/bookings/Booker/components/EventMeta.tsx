@@ -161,7 +161,7 @@ export const EventMeta = ({
               <></>
             )
             }
-            <div className="flex flex-col gap-[10px] font-medium rtl:-mr-2">
+            <div className="mt-4 flex flex-col gap-[10px] font-medium rtl:-mr-2">
               {rescheduleUid && bookingData && (
                 <EventMetaBlock icon="calendar">
                   {t('former_time')}

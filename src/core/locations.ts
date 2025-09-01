@@ -11,6 +11,7 @@ import { appStoreMetadata } from "@/packages/app-store/bookerAppsMetaData";
 
 import type { EventLocationTypeFromAppMeta } from "@/packages/types/App";
 import type { TFunction } from "next-i18next";
+import { z } from "zod";
 
 // export type DefaultEventLocationType = {
 //   default: true;
@@ -189,16 +190,16 @@ export const defaultLocations: DefaultEventLocationType[] = [
   // },
 ];
 
-// const translateAbleKeys = [
-//   "in_person_attendee_address",
-//   "in_person",
-//   "attendee_phone_number",
-//   "link_meeting",
-//   "organizer_phone_number",
-//   "organizer_default_conferencing_app",
-//   "somewhere_else",
-//   "custom_attendee_location",
-// ];
+const translateAbleKeys = [
+  "in_person_attendee_address",
+  "in_person",
+  "attendee_phone_number",
+  "link_meeting",
+  "organizer_phone_number",
+  "organizer_default_conferencing_app",
+  "somewhere_else",
+  "custom_attendee_location",
+];
 
 export type LocationObject = {
   type: string;
@@ -353,18 +354,18 @@ export const getHumanReadableLocationValue = (
   return linkValue || "";
 };
 
-// export const locationKeyToString = (location: LocationObject) => {
-//   const eventLocationType = getEventLocationType(location.type);
-//   if (!eventLocationType) {
-//     return null;
-//   }
-//   const defaultValueVariable = eventLocationType.defaultValueVariable;
-//   if (!defaultValueVariable) {
-//     console.error(`defaultValueVariable not set for ${location.type}`);
-//     return "";
-//   }
-//   return location[defaultValueVariable] || eventLocationType.label;
-// };
+export const locationKeyToString = (location: LocationObject) => {
+  const eventLocationType = getEventLocationType(location.type);
+  if (!eventLocationType) {
+    return null;
+  }
+  const defaultValueVariable = eventLocationType.defaultValueVariable;
+  if (!defaultValueVariable) {
+    console.error(`defaultValueVariable not set for ${location.type}`);
+    return "";
+  }
+  return location[defaultValueVariable] || eventLocationType.label;
+};
 
 // export const getEventLocationWithType = (
 //   locations: LocationObject[],
@@ -458,21 +459,21 @@ export const getHumanReadableLocationValue = (
 //   return locationToDisplay;
 // }
 
-// export const getTranslatedLocation = (
-//   location: PrivacyFilteredLocationObject,
-//   eventLocationType: ReturnType<typeof getEventLocationType>,
-//   t: TFunction
-// ) => {
-//   if (!eventLocationType) return null;
-//   const locationKey = z.string().default("").parse(locationKeyToString(location));
-//   const translatedLocation = location.type.startsWith("integrations:")
-//     ? eventLocationType.label
-//     : translateAbleKeys.includes(locationKey)
-//     ? t(locationKey)
-//     : locationKey;
+export const getTranslatedLocation = (
+  location: PrivacyFilteredLocationObject,
+  eventLocationType: ReturnType<typeof getEventLocationType>,
+  t: TFunction
+) => {
+  if (!eventLocationType) return null;
+  const locationKey = z.string().default("").parse(locationKeyToString(location));
+  const translatedLocation = location.type.startsWith("integrations:")
+    ? eventLocationType.label
+    : translateAbleKeys.includes(locationKey)
+    ? t(locationKey)
+    : locationKey;
 
-//   return translatedLocation;
-// };
+  return translatedLocation;
+};
 
 export const getOrganizerInputLocationTypes = () => {
   const result: DefaultEventLocationType["type"] | EventLocationTypeFromApp["type"][] = [];

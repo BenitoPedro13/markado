@@ -144,6 +144,8 @@
     "someone_requested_an_event": "Someone requested an event",
     "reject": "Reject",
     "new_event_scheduled": "New event scheduled",
+    "Novo evento agendado": "New event scheduled",
+    "New event scheduled": "New event scheduled",
     "new_event_scheduled_recurring": "New recurring event scheduled",
     "new_seat_subject": "New seat assigned",
     "new_seat_title": "New seat",
