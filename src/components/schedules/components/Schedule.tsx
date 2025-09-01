@@ -26,21 +26,22 @@ import {
   useFormContext,
   useWatch
 } from 'react-hook-form';
+import * as FancyButton from '@/components/align-ui/ui/fancy-button';
 
-import type {ConfigType} from '@/lib/dayjs';
+import type { ConfigType } from '@/lib/dayjs';
 import dayjs from '@/lib/dayjs';
-import {defaultDayRange as DEFAULT_DAY_RANGE} from '@/lib/availability';
-import {cn as classNames} from '@/utils/cn';
-import {useLocale} from '@/hooks/use-locale';
-import {weekdayNames} from '@/lib/weekday';
-import {useMeQuery} from '@/hooks/use-me-query';
+import { defaultDayRange as DEFAULT_DAY_RANGE } from '@/lib/availability';
+import { cn as classNames } from '@/utils/cn';
+import { useLocale } from '@/hooks/use-locale';
+import { weekdayNames } from '@/lib/weekday';
+import { useMeQuery } from '@/hooks/use-me-query';
 
 // Import AlignUI components
 import {
   Root as Button,
   Icon as ButtonIcon
 } from '@/components/align-ui/ui/button';
-import {Root as Checkbox} from '@/components/align-ui/ui/checkbox';
+import { Root as Checkbox } from '@/components/align-ui/ui/checkbox';
 import {
   Root as DropdownMenu,
   Trigger as DropdownMenuTrigger,
@@ -54,13 +55,13 @@ import {
   Item as SelectItem,
   Value as SelectValue
 } from '@/components/align-ui/ui/select';
-import {Root as Switch} from '@/components/align-ui/ui/switch';
-import {Text as SkeletonText} from '@/components/align-ui/ui/skeleton';
+import { Root as Switch } from '@/components/align-ui/ui/switch';
+import { Text as SkeletonText } from '@/components/align-ui/ui/skeleton';
 
-import {TimeRange} from '@/types/scheadule';
-import {RiAddLine, RiDeleteBinLine} from '@remixicon/react';
+import { TimeRange } from '@/types/scheadule';
+import { RiAddLine, RiDeleteBinLine, RiFileCopyFill } from '@remixicon/react';
 
-export type {TimeRange};
+export type { TimeRange };
 
 export type ScheduleLabelsType = {
   addTime: string;
@@ -73,8 +74,8 @@ export type FieldPathByValue<TFieldValues extends FieldValues, TValue> = {
     TFieldValues,
     Key
   > extends TValue
-    ? Key
-    : never;
+  ? Key
+  : never;
 }[FieldPath<TFieldValues>];
 
 export const ScheduleDay = <TFieldValues extends FieldValues>({
@@ -116,7 +117,7 @@ export const ScheduleDay = <TFieldValues extends FieldValues>({
     return null;
   }
 
-  const {fields, append, remove} = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     control: effectiveControl,
     name
   });
@@ -197,29 +198,41 @@ const CopyButton = ({
   weekStart: number;
   labels?: ScheduleLabelsType;
 }) => {
-  const {t} = useLocale();
+  const { t } = useLocale();
   const [open, setOpen] = useState(false);
   const fieldArrayName = getValuesFromDayRange.substring(
     0,
     getValuesFromDayRange.lastIndexOf('.')
   );
-  const {setValue, getValues} = useFormContext();
+  const { setValue, getValues } = useFormContext();
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
-        <Button
+        {/* <Button
           className={classNames(
             'text-sub-600 hover:bg-white-0 border-soft-200 border',
             open &&
-              'ring-brand-500 !bg-subtle outline-none ring-2 ring-offset-1'
+            'ring-brand-500 !bg-subtle outline-none ring-2 ring-offset-1'
           )}
-          data-testid="copy-button"
+          // data-testid="copy-button"
           type="button"
           variant="neutral"
           mode="ghost"
-        />
+        >
+
+        </Button> */}
+        <Button
+          className="text-sub-600"
+          type="button"
+          variant="neutral"
+          mode="stroke"
+          size="small"
+
+        >
+          <ButtonIcon as={RiFileCopyFill} />
+        </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="bg-white-0 rounded-[10px]">
+      <DropdownMenuContent align="end" className="rounded-[10px]">
         <CopyTimes
           weekStart={weekStart}
           disabled={parseInt(
@@ -307,7 +320,7 @@ export const ScheduleComponent = <
     labelAndSwitchContainer?: string;
   };
 }) => {
-  const {locale, isLocaleReady} = useLocale();
+  const { locale, isLocaleReady } = useLocale();
   const formContext = useFormContext<TFieldValues>();
 
   // Use the provided control or fall back to the form context
@@ -348,13 +361,13 @@ export const ScheduleComponent = <
               weekday={weekday}
               control={effectiveControl}
               timezone={timezone}
-              // CopyButton={
-              //   <CopyButton
-              //     weekStart={weekStart}
-              //     labels={labels}
-              //     getValuesFromDayRange={dayRangeName}
-              //   />
-              // }
+              CopyButton={
+                <CopyButton
+                  weekStart={weekStart}
+                  labels={labels}
+                  getValuesFromDayRange={dayRangeName}
+                />
+              }
             />
           );
         }
@@ -383,7 +396,7 @@ export const DayRanges = <TFieldValues extends FieldValues>({
     timeRangeField?: string;
   };
 }) => {
-  const {t} = useLocale();
+  const { t } = useLocale();
   const formContext = useFormContext<TFieldValues>();
 
   // Use the provided control or fall back to the form context
@@ -395,7 +408,7 @@ export const DayRanges = <TFieldValues extends FieldValues>({
     return null;
   }
 
-  const {remove, fields, prepend, append} = useFieldArray({
+  const { remove, fields, prepend, append } = useFieldArray({
     control: effectiveControl,
     name
   });
@@ -410,7 +423,7 @@ export const DayRanges = <TFieldValues extends FieldValues>({
             <Controller
               name={`${name}.${index}` as any}
               control={effectiveControl}
-              render={({field}) => {
+              render={({ field }) => {
                 return (
                   <TimeRangeField
                     className={className?.timeRangeField}
@@ -435,8 +448,8 @@ export const DayRanges = <TFieldValues extends FieldValues>({
                   const slotRange: any = getDateSlotRange(
                     formContext?.getValues
                       ? formContext.getValues(
-                          `${name}.${fields.length - 1}` as any
-                        )
+                        `${name}.${fields.length - 1}` as any
+                      )
                       : undefined,
                     formContext?.getValues
                       ? formContext.getValues(`${name}.0` as any)
@@ -515,7 +528,7 @@ const TimeRangeField = forwardRef<
   timezone
 }, ref) => {
   // this is a controlled component anyway given it uses LazySelect, so keep it RHF agnostic.
-  
+
   // Ensure we have valid Date objects
   const startDate = value.start instanceof Date ? value.start : new Date(value.start);
   const endDate = value.end instanceof Date ? value.end : new Date(value.end);
@@ -535,9 +548,9 @@ const TimeRangeField = forwardRef<
           if (newStart >= endDate) {
             const newEnd = new Date(option?.value as number);
             newEnd.setMinutes(newEnd.getMinutes() + INCREMENT);
-            onChange({...value, start: newStart, end: newEnd});
+            onChange({ ...value, start: newStart, end: newEnd });
           } else {
-            onChange({...value, start: newStart});
+            onChange({ ...value, start: newStart });
           }
         }}
       />
@@ -551,7 +564,7 @@ const TimeRangeField = forwardRef<
         min={startDate}
         menuPlacement="bottom"
         onChange={(option: IOption) => {
-          onChange({...value, end: new Date(option?.value as number)});
+          onChange({ ...value, end: new Date(option?.value as number) });
         }}
       />
     </div>
@@ -580,24 +593,24 @@ const LazySelect = ({
   [key: string]: any;
 }) => {
   // Lazy-loaded options, otherwise adding a field has a noticeable redraw delay.
-  const {options, filter} = useOptions(userTimeFormat, timezone);
-  
+  const { options, filter } = useOptions(userTimeFormat, timezone);
+
   // Convert the Date value to a timestamp for comparison
   const valueTimestamp = value instanceof Date ? value.getTime() : dayjs(value).toDate().valueOf();
 
   useEffect(() => {
-    filter({current: value});
+    filter({ current: value });
   }, [filter, value]);
 
   return (
     <Select
       onOpenChange={(open: boolean) => {
         if (open) {
-          if (min) filter({offset: min});
-          if (max) filter({limit: max});
-          if (!min && !max) filter({offset: 0, limit: 0});
+          if (min) filter({ offset: min });
+          if (max) filter({ limit: max });
+          if (!min && !max) filter({ offset: 0, limit: 0 });
         } else {
-          filter({current: value});
+          filter({ current: value });
         }
       }}
       value={valueTimestamp.toString()}
@@ -652,7 +665,7 @@ const useOptions = (timeFormat: number | null, timezone: string = 'America/Sao_P
     // Create start and end times in user's timezone
     const start = dayjs().tz(timezone).startOf('day');
     const end = dayjs().tz(timezone).endOf('day');
-    
+
     const options: IOption[] = [];
     for (
       let t = start;
@@ -687,10 +700,10 @@ const useOptions = (timeFormat: number | null, timezone: string = 'America/Sao_P
     }) => {
       if (current) {
         // Convert current to a timestamp for comparison
-        const currentTimestamp = current instanceof Date 
-          ? current.getTime() 
+        const currentTimestamp = current instanceof Date
+          ? current.getTime()
           : dayjs(current).toDate().valueOf();
-          
+
         const currentOption = options.find(
           (option) => option.value === currentTimestamp
         );
@@ -709,7 +722,7 @@ const useOptions = (timeFormat: number | null, timezone: string = 'America/Sao_P
     [options]
   );
 
-  return {options: filteredOptions, filter};
+  return { options: filteredOptions, filter };
 };
 
 const getDateSlotRange = (
@@ -723,9 +736,9 @@ const getDateSlotRange = (
   const nextRangeEnd =
     nextRangeStart.hour() === 23
       ? dayjs(nextRangeStart)
-          .add(59, 'minutes')
-          .add(59, 'seconds')
-          .add(999, 'milliseconds')
+        .add(59, 'minutes')
+        .add(59, 'seconds')
+        .add(999, 'milliseconds')
       : dayjs(nextRangeStart).add(1, 'hour');
 
   const endOfDay = nextRangeStart.endOf('day');
@@ -770,7 +783,7 @@ const CopyTimes = ({
   weekStart: number;
 }) => {
   const [selected, setSelected] = useState<number[]>([]);
-  const {isLocaleReady, locale, t} = useLocale('Schedules');
+  const { isLocaleReady, locale, t } = useLocale('Schedules');
   const itteratablesByKeyRef = useRef<(HTMLInputElement | HTMLButtonElement)[]>(
     []
   );
@@ -886,37 +899,26 @@ const CopyTimes = ({
           )}
         </ol>
       </div>
-      <hr className="border-subtle" />
-      <div className="space-x-2 px-2 rtl:space-x-reverse">
-        <Button
-          color="minimal"
-          onClick={() => onCancel()}
+      <hr className="border-soft-200" />
+      <div className="flex items-center space-x-2 px-2 rtl:space-x-reverse">
+        <Button variant="neutral" mode="stroke" onClick={() => onCancel()}
           ref={(ref) => {
             if (ref) {
               itteratablesByKeyRef.current.push(ref as HTMLButtonElement);
             }
-          }}
-        >
+          }}>
+
           {t('cancel')}
         </Button>
-        <Button
-          color="primary"
-          onClick={() => onClick(selected)}
+        <FancyButton.Root variant="neutral" onClick={() => onClick(selected)}
           ref={(ref) => {
             if (ref) {
               itteratablesByKeyRef.current.push(ref as HTMLButtonElement);
             }
-          }}
-          className="bg-button-primary shadow-button-primary border-linear-12 font-jakarta text-white-fixed text-sm font-medium tracking-tighter"
-          style={{
-            background:
-              'linear-gradient(180deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.00) 100%), var(--markado-brand-primary-base, #717784)',
-            boxShadow:
-              '0px 1px 2px 0px rgba(14, 18, 27, 0.24), 0px 0px 0px 1px var(--markado-brand-primary-base, #717784)'
-          }}
-        >
+          }}>
+          {/* <FancyButton.Icon as={RiAddLine} /> */}
           {t('apply')}
-        </Button>
+        </FancyButton.Root>
       </div>
     </div>
   );

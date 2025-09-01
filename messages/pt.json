@@ -431,6 +431,7 @@
     "authentication_required": "Você precisa fazer login para acessar esta página"
   },
   "Schedules": {
+    "apply": "Copiar",
     "copy_times_to": "Copiar horários para",
     "select_all": "Selecionar todos",
     "cancel": "Cancelar",
