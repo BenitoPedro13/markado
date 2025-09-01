@@ -7,57 +7,60 @@ import {
 import * as HorizontalStepper from '@/components/align-ui/ui/horizontal-stepper';
 import LocaleSwitcher from '@/components/LocaleSwitcher';
 import Logo from '@/components/navigation/Logo';
-import {RiArrowLeftSLine, RiHeadphoneLine} from '@remixicon/react';
-import {useTranslations} from 'next-intl';
+import { RiArrowLeftSLine, RiHeadphoneLine } from '@remixicon/react';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
-import {usePathname} from 'next/navigation';
-import {createContext, PropsWithChildren, useContext, useEffect} from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+import { createContext, PropsWithChildren, useContext, useEffect } from 'react';
 import VerticalStripesPattern from '~/public/patterns/vertical_stripes.svg';
+
 
 type ContextType = {
   pathname: string | null;
   isInSignUpFlow: boolean;
-  steps: {path: string; label: string}[];
+  steps: { path: string; label: string }[];
   getStepState: (stepPath: string) => 'default' | 'active' | 'completed';
+  currentIndex: number;
 };
 
 const Context = createContext<ContextType>({
   pathname: null,
   isInSignUpFlow: false,
   steps: [],
-  getStepState: () => 'default'
+  getStepState: () => 'default',
+  currentIndex: 0,
 });
 
-const Provider = ({children}: PropsWithChildren) => {
+const stepOrder = [
+  '/sign-up/email',
+  '/sign-up/password',
+  '/sign-up/personal',
+  '/sign-up/calendar',
+  '/sign-up/availability',
+  '/sign-up/profile',
+  '/sign-up/summary'
+];
+
+const Provider = ({ children }: PropsWithChildren) => {
   const pathname = usePathname();
   const t = useTranslations('SignUpStepper');
 
   const isInSignUpFlow =
     (pathname?.startsWith('/sign-up') &&
-    pathname !== '/sign-up' &&
-    pathname !== '/sign-up/email') ||
+      pathname !== '/sign-up' &&
+      pathname !== '/sign-up/email') ||
     false;
 
-  const steps: {path: string; label: string}[] = [
-    {path: '/sign-up/password', label: t('password')},
-    {path: '/sign-up/personal', label: t('personal')},
-    {path: '/sign-up/calendar', label: t('connect')},
-    {path: '/sign-up/availability', label: t('availability')},
-    {path: '/sign-up/profile', label: t('finalization')}
+  const steps: { path: string; label: string }[] = [
+    { path: '/sign-up/password', label: t('password') },
+    { path: '/sign-up/personal', label: t('personal') },
+    { path: '/sign-up/calendar', label: t('connect') },
+    { path: '/sign-up/availability', label: t('availability') },
+    { path: '/sign-up/profile', label: t('finalization') }
   ];
 
   const getStepState = (stepPath: string) => {
-    const stepOrder = [
-      '/sign-up/email',
-      '/sign-up/password',
-      '/sign-up/personal',
-      '/sign-up/calendar',
-      '/sign-up/availability',
-      '/sign-up/profile',
-      '/sign-up/summary'
-    ];
-
     const currentIndex = stepOrder.indexOf(pathname || '');
     const stepIndex = stepOrder.indexOf(stepPath);
 
@@ -76,7 +79,7 @@ const Provider = ({children}: PropsWithChildren) => {
 
   return (
     <Context.Provider
-      value={{pathname: pathname || '', isInSignUpFlow, steps, getStepState}}
+      value={{ pathname: pathname || '', isInSignUpFlow, steps, getStepState, currentIndex: stepOrder.indexOf(pathname || '') }}
     >
       {children}
     </Context.Provider>
@@ -93,13 +96,13 @@ const useAuthContext = () => {
 const Header = () => {
   const t = useTranslations('SignInHeader');
 
-  const {pathname, isInSignUpFlow, steps, getStepState} = useAuthContext();
+  const { pathname, isInSignUpFlow, steps, getStepState } = useAuthContext();
 
   return (
     <header className="relative w-full py-6 px-11 gap-6 border-b border-b-bg-soft-200 border-b-soft flex justify-between items-center">
       <div className="w-full flex flex-row justify-between items-center gap-6">
-        <Link 
-          href={process.env.NEXT_PUBLIC_LANDING_URL || 'https://markado.co'} 
+        <Link
+          href={process.env.NEXT_PUBLIC_LANDING_URL || 'https://markado.co'}
           className=""
           target="_blank"
           rel="noopener"
@@ -176,29 +179,52 @@ const Footer = () => {
   );
 };
 
-export default function AuthLayout({children}: PropsWithChildren) {
-  const {pathname, isInSignUpFlow, steps, getStepState} = useAuthContext();
+export default function AuthLayout({ children }: PropsWithChildren) {
+  const pathname = usePathname();
+  const isInSignUpFlow =
+    (pathname?.startsWith('/sign-up') &&
+      pathname !== '/sign-up' &&
+      pathname !== '/sign-up/email') ||
+    false;
   const t = useTranslations('SignInPage');
+  const router = useRouter();
+
+  const handleBack = () => {
+    const currentPath = pathname || '';
+    const currentIndex = stepOrder.indexOf(currentPath);
+
+    if (currentIndex > 0) {
+      router.push(stepOrder[currentIndex - 1]);
+      return;
+    }
+
+    if (currentIndex === 0) {
+      router.push('/sign-up');
+      return;
+    }
+
+    router.back();
+  };
 
   return (
     <Provider>
       <Header />
 
       <div className="w-full h-full px-11 py-6 flex flex-col justify-between">
+        {/* Show back when in sign-up flow or on email page */}
         {isInSignUpFlow && (
           <>
             {/** Back button */}
-            {pathname !== '/sign-up/email' && pathname !== '/sign-up' && (
-              <Link
-                className="absolute left-0 top-0"
-                href={pathname?.split('/').slice(0, -1).join('/') || '/'}
-              >
-                <Button variant="neutral" mode="stroke">
-                  <RiArrowLeftSLine size={20} color="var(--text-sub-600)" />
-                  <span className="text-text-sub-600">Voltar</span>
-                </Button>
-              </Link>
-            )}
+            {/* <button
+              type="button"
+              onClick={handleBack}
+              className="absolute left-0 top-0"
+            > */}
+              <Button variant="neutral" mode="stroke" onClick={handleBack} className="absolute left-12 top-[114px]">
+                <RiArrowLeftSLine size={20} color="var(--text-sub-600)" />
+                <span className="text-text-sub-600">Voltar</span>
+              </Button>
+            {/* </button> */}
           </>
         )}
 
