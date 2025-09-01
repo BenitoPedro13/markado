@@ -172,7 +172,7 @@ const SignInForm = () => {
 
         {(authStoreError || oauthError) && (
           <div className="text-red-500 text-sm">
-            {oauthError || authStoreError}
+            {oauthError || (authStoreError ? t(authStoreError) : null)}
           </div>
         )}
       </div>
