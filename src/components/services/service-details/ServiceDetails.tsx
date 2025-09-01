@@ -6,12 +6,18 @@ import * as Textarea from '@/components/align-ui/ui/textarea';
 import * as Button from '@/components/align-ui/ui/button';
 import { Service, ServiceBadgeColor } from '@/types/service';
 import * as Divider from '@/components/align-ui/ui/divider';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as Select from '@/components/align-ui/ui/select';
 import { useServicesDetails } from '@/contexts/services/servicesDetails/ServicesContext';
 import { MARKADO_DOMAIN } from '@/constants';
 import { LocationFormValues } from '@/packages/features/eventtypes/lib/types';
 import Locations from "@/packages/features/eventtypes/components/Locations";
+import { SettingsToggle } from '@/packages/ui';
+import { cn as classNames } from '@/utils/cn';
+import { useLocale } from '@/hooks/use-locale';
+import * as Label from '@/components/align-ui/ui/label';
+import * as Hint from '@/components/align-ui/ui/hint';
+import { RiErrorWarningFill } from '@remixicon/react';
 
 type ServiceDetailsFormData = Pick<
   Service,
@@ -48,6 +54,12 @@ export default function ServiceDetails({ slug }: Props) {
     queries: { initialMe, serviceDetails, locationOptions },
     ServicesDetailsForm: { register, formState, watch, getValues, setValue, control }
   } = useServicesDetails();
+
+  const { t } = useLocale();
+
+  const [priceVisible, setPriceVisible] = useState(
+    !!getValues('price')
+  );
   // const service = services.find((s) => s.slug === slug);
 
   // Carrega os dados do serviço atual
@@ -185,8 +197,61 @@ export default function ServiceDetails({ slug }: Props) {
 
         <Divider.Root />
         <div className="text-title-h6">Dados do Serviço</div>
-        <div className="grid grid-cols-2 gap-4">
-          <div className="flex flex-col gap-2">
+        <div className="grid gap-4">
+          
+          <Controller
+            name="price"
+            render={({ field: { value, onChange } }) => (
+              <>
+                <SettingsToggle
+                  labelClassName="text-text-strong-950 font-medium text-label-md"
+                  toggleSwitchAtTheEnd={true}
+                  switchContainerClassName={classNames(
+                    'border-subtle rounded-lg',
+                    priceVisible && 'rounded-b-none'
+                  )}
+                  childrenClassName="lg:ml-0"
+                  title={t('service_price_title')}
+                  description={t('service_price_description')}
+                  checked={priceVisible}
+
+                  onCheckedChange={(e) => {
+                    setPriceVisible(e);
+                    onChange(e ? value : '');
+                  }}
+                >
+                  <div className="border-subtle border-t-0 pt-4">
+                    <Label.Root className="mb-1 text-sm font-medium text-text-strong-950">Preço (R$)</Label.Root>
+                    <Input.Root>
+                      <Input.Input
+                        type="number"
+                        {...register('price')}
+                        placeholder="100.00"
+                        step="0.01"
+                        required={priceVisible}
+                      />
+                    </Input.Root>
+                    {/* <Hint.Root
+                      className={classNames(
+                        'text-error-base  gap-1 mt-1',
+                        getValues('price') ? 'flex' : 'hidden'
+                      )}
+                    >
+                      <Hint.Icon
+                        as={RiErrorWarningFill}
+                        className="text-error-base"
+                      />
+
+                      {t('redirect_url_warning')}
+                    </Hint.Root> */}
+                  </div>
+                </SettingsToggle>
+              </>
+            )}
+          />
+          <Divider.Root />
+          
+          <div className="w-full flex flex-col gap-2">
             <label className="text-sm font-medium text-text-strong-950">
               Duração (minutos)
             </label>
@@ -199,39 +264,10 @@ export default function ServiceDetails({ slug }: Props) {
             </Input.Root>
           </div>
 
-          <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-text-strong-950">
-              Preço (R$)
-            </label>
-            <Input.Root>
-              <Input.Input
-                type="number"
-                {...register('price')}
-                placeholder="100.00"
-                step="0.01"
-              />
-            </Input.Root>
-          </div>
+          <Divider.Root />
+          
+          
         </div>
-
-        {/* <div className="flex flex-col gap-2">
-          <label className="text-sm font-medium text-text-strong-950">
-            Localização
-          </label>
-          <Input.Root>
-            <Input.Input
-              {...register('locations')}
-              placeholder="Ex: Online via Google Meet"
-            />
-          </Input.Root> */}
-          {/* {watch('locations') && (
-            <span className="text-paragraph-xs text-text-sub-600">
-              Esta localização será usada para identificar onde o serviço será
-              realizado. Pode ser um link de videoconferência, endereço físico
-              ou qualquer outra informação relevante.
-            </span>
-          )} */}
-        {/* </div> */}
 
         <div className="flex flex-col gap-2">
           <label className="text-sm font-medium text-text-strong-950">

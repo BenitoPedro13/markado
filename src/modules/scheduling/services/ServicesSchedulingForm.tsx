@@ -2,27 +2,27 @@
 
 import * as Avatar from '@/components/align-ui/ui/avatar';
 import * as Badge from '@/components/align-ui/ui/badge';
-import {badgeVariants} from '@/components/align-ui/ui/badge';
+import { badgeVariants } from '@/components/align-ui/ui/badge';
 import * as Skeleton from '@/components/align-ui/ui/skeleton';
-import {useBusiness} from '@/components/settings/business/Business';
-import {services as initialServices} from '@/data/services';
-import {ServiceBadgeColor} from '@/types/service';
-import {cn} from '@/utils/cn';
-import type {VariantProps} from '@/utils/tv';
+import { useBusiness } from '@/components/settings/business/Business';
+import { services as initialServices } from '@/data/services';
+import { ServiceBadgeColor } from '@/types/service';
+import { cn } from '@/utils/cn';
+import type { VariantProps } from '@/utils/tv';
 import {
   RiArrowRightSLine,
   RiTimeLine
 } from '@remixicon/react';
 import Link from 'next/link';
 
-import {UserProfile} from '@/types/UserProfile';
-import type {EventTypeMetaDataSchema} from '~/prisma/zod-utils';
+import { UserProfile } from '@/types/UserProfile';
+import type { EventTypeMetaDataSchema } from '~/prisma/zod-utils';
 import {
   // RedirectType,
   type EventType,
   type User
 } from '~/prisma/app/generated/prisma/client';
-import {z} from 'zod';
+import { z } from 'zod';
 import { getHostUserByUsername } from '~/trpc/server/handlers/user.handler';
 import SocialIcons from '@/components/SocialIcons';
 
@@ -144,16 +144,16 @@ const ServicesSchedulingForm = ({
   const businessName = businessContext.businessName || host?.name || '';
   const businessColor = businessContext.businessColor || 'faded';
   const businessDescription = businessContext.businessDescription || host?.biography || '';
-  
-  const socialLinks = Object.keys(businessContext.socialLinks || {}).length > 0 
-    ? businessContext.socialLinks 
+
+  const socialLinks = Object.keys(businessContext.socialLinks || {}).length > 0
+    ? businessContext.socialLinks
     : {
-        instagram: host?.instagram || undefined,
-        linkedin: host?.linkedin || undefined,
-        twitter: host?.twitter || undefined,
-        facebook: host?.facebook || undefined,
-        website: host?.website || undefined
-      };
+      instagram: host?.instagram || undefined,
+      linkedin: host?.linkedin || undefined,
+      twitter: host?.twitter || undefined,
+      facebook: host?.facebook || undefined,
+      website: host?.website || undefined
+    };
 
   const services = servicesSchedulingFormProps?.eventTypes ?? initialServices;
 
@@ -187,7 +187,7 @@ const ServicesSchedulingForm = ({
             className={cn(
               'p-4 flex gap-4 justify-between items-center hover:bg-stroke-soft-200 transition hover:cursor-pointer',
               index !== initialServices.length - 1 &&
-                'border-b border-stroke-soft-200'
+              'border-b border-stroke-soft-200'
             )}
           >
             <div className="flex flex-col gap-2">
@@ -197,16 +197,16 @@ const ServicesSchedulingForm = ({
               <div className="flex items-center gap-2">
                 <Badge.Root
                   variant="light"
-                  color={mapServiceColorToBadgeColor(service.badgeColor ?? businessColor )}
+                  color={mapServiceColorToBadgeColor(service.badgeColor ?? businessColor)}
                   size="medium"
                 >
                   <Badge.Icon as={RiTimeLine} />
                   {formatDuration(service.length)}
                 </Badge.Root>
 
-                <p className="text-label-sm text-text-sub-600">
+                {service.price > 0 && <p className="text-label-sm text-text-sub-600">
                   {formatPrice(service.price)}
-                </p>
+                </p>}
               </div>
             </div>
             <RiArrowRightSLine size={24} color="var(--text-sub-600)" />

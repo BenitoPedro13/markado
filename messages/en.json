@@ -175,7 +175,9 @@
     "display_location_label": "Display location before booking",
     "select_location": "Select location",
     "event_request_cancelled": "Event request cancelled",
-    "event_cancelled_subject": "Canceled: {title} at {date}"
+    "event_cancelled_subject": "Canceled: {title} at {date}",
+    "service_price_title": "Price",
+    "service_price_description": "Defina um preço para o seu serviço se quiser cobrar por ele. Você pode deixar em branco para serviços gratuitos."
   },
   "Error": {
     "description": "<p>Unfortunately we encountered an error.</p><p>You can try to <retry>reload the page</retry> you were trying to visit.</p>",
