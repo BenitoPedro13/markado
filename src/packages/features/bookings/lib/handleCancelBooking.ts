@@ -25,6 +25,7 @@ import { getTranslation } from "@/packages/lib/server/i18n";
 import { WorkflowReminder, Prisma } from "~/prisma/app/generated/prisma/client";
 // import cancelAttendeeSeat from "./handleSeats/cancel/cancelAttendeeSeat"; // Não encontrado
 import {prisma} from '@/lib/prisma'
+import { sendCancelledEmailsAndSMS } from "@/packages/emails";
 const log = logger.getSubLogger({ prefix: ["handleCancelBooking"] });
 
 async function getBookingToDelete(id: number | undefined, uid: string | undefined) {
@@ -527,11 +528,11 @@ async function handler(req: CustomRequest) {
   try {
   //   // TODO: if emails fail try to requeue m
   //   if (!platformClientId || (platformClientId && arePlatfEmailsEnabled))
-  //     await sendCancelledEmailsAndSMS(
-  //       evt,
-  //       { eventName: bookingToDel?.evente?.eventName },
-  //       bookingToDelete?.eventType?.metadata as EventTypeMetadata
-  //     );
+       await sendCancelledEmailsAndSMS(
+        evt,
+        { eventName: bookingToDelete?.eventType?.eventName },
+        bookingToDelete?.eventType?.metadata as EventTypeMetadata
+      );
   } catch (error) {
   //   console.error("Error deleting event", error);
   // }
