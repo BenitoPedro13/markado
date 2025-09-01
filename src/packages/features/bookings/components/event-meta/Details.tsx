@@ -117,7 +117,7 @@ export const EventMetaBlock = ({
   contentClassName,
   className,
   isDark
-}: EventMetaProps) => {
+}: EventMetaProps): React.ReactNode => {
   if (!React.Children.count(children)) return null;
 
   return (
@@ -260,7 +260,7 @@ export const EventDetails = ({
             return (
               <EventMetaBlock key={block}>
                 <AvailableEventLocations
-                  locations={event.locations ?? ['Google Meet']}
+                  locations={event.locations}
                 />
               </EventMetaBlock>
             );
@@ -333,12 +333,12 @@ export const EventDetails = ({
       })}
       
       {/* Conference/Link block */}
-      <EventMetaBlock
+      {/* <EventMetaBlock
         customIcon={conferenceInfo.icon}
         className="items-center"
       >
         {conferenceInfo.name}
-      </EventMetaBlock>
+      </EventMetaBlock> */}
     </>
   );
 };

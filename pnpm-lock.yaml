@@ -23,6 +23,9 @@ dependencies:
   '@hello-pangea/dnd':
     specifier: ^18.0.1
     version: 18.0.1(@types/react@19.1.6)(react-dom@19.1.0)(react@19.1.0)
+  '@hookform/error-message':
+    specifier: ^2.0.1
+    version: 2.0.1(react-dom@19.1.0)(react-hook-form@7.56.1)(react@19.1.0)
   '@hookform/resolvers':
     specifier: ^5.0.1
     version: 5.0.1(react-hook-form@7.56.1)
@@ -1365,6 +1368,18 @@ packages:
       redux: 5.0.1
     transitivePeerDependencies:
       - '@types/react'
+    dev: false
+
+  /@hookform/error-message@2.0.1(react-dom@19.1.0)(react-hook-form@7.56.1)(react@19.1.0):
+    resolution: {integrity: sha512-U410sAr92xgxT1idlu9WWOVjndxLdgPUHEB8Schr27C9eh7/xUnITWpCMF93s+lGiG++D4JnbSnrb5A21AdSNg==}
+    peerDependencies:
+      react: '>=16.8.0'
+      react-dom: '>=16.8.0'
+      react-hook-form: ^7.0.0
+    dependencies:
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+      react-hook-form: 7.56.1(react@19.1.0)
     dev: false
 
   /@hookform/resolvers@5.0.1(react-hook-form@7.56.1):

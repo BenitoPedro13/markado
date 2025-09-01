@@ -144,6 +144,8 @@
     "someone_requested_an_event": "Someone requested an event",
     "reject": "Reject",
     "new_event_scheduled": "New event scheduled",
+    "Novo evento agendado": "New event scheduled",
+    "New event scheduled": "New event scheduled",
     "new_event_scheduled_recurring": "New recurring event scheduled",
     "new_seat_subject": "New seat assigned",
     "new_seat_title": "New seat",
@@ -164,7 +166,14 @@
     "october": "October",
     "november": "November",
     "december": "December",
-    "meeting_url": "Meeting Link"
+    "meeting_url": "Meeting Link",
+    "in_person": "In Person",
+    "in person": "In Person",
+    "conferencing": "Conferencing",
+    "Google Meet ": "Google Meet",
+    "google_meet": "Google Meet",
+    "display_location_label": "Display location before booking",
+    "select_location": "Select location"
   },
   "Error": {
     "description": "<p>Unfortunately we encountered an error.</p><p>You can try to <retry>reload the page</retry> you were trying to visit.</p>",

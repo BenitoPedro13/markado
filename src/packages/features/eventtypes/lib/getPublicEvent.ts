@@ -486,10 +486,10 @@ export const getPublicEvent = async (
     description: markdownToSafeHTML(eventWithUserProfiles.description),
     metadata: eventMetaData,
     customInputs: customInputSchema.array().parse(event.customInputs || []),
-    // locations: privacyFilteredLocations(
-    //   (eventWithUserProfiles.locations || []) as LocationObject[]
-    // ),
-    locations: privacyFilteredLocations([] as LocationObject[]),
+    locations: privacyFilteredLocations(
+      (eventWithUserProfiles.locations || []) as LocationObject[]
+    ),
+    // locations: privacyFilteredLocations([] as LocationObject[]),
     bookingFields: getBookingFieldsWithSystemFields(event),
     recurringEvent: isRecurringEvent(eventWithUserProfiles.recurringEvent)
       ? parseRecurringEvent(event.recurringEvent)

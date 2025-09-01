@@ -10,7 +10,8 @@ import { appStoreMetadata } from "@/packages/app-store/bookerAppsMetaData";
 // import type { Ensure, Optional } from "@/types/utils";
 
 import type { EventLocationTypeFromAppMeta } from "@/packages/types/App";
-import { TFunction } from "next-i18next";
+import type { TFunction } from "next-i18next";
+import { z } from "zod";
 
 // export type DefaultEventLocationType = {
 //   default: true;
@@ -94,34 +95,34 @@ export const MeetLocationType = "integrations:google:meet";
 // }
 
 export const defaultLocations: DefaultEventLocationType[] = [
-  {
-    default: true,
-    type: DefaultEventLocationTypeEnum.AttendeeInPerson,
-    label: "in_person_attendee_address",
-    variable: "address",
-    organizerInputType: null,
-    messageForOrganizer: "Markado will ask your invitee to enter an address before scheduling.",
-    attendeeInputType: "attendeeAddress",
-    attendeeInputPlaceholder: "enter_address",
-    defaultValueVariable: "attendeeAddress",
-    iconUrl: "/map-pin-dark.svg",
-    category: "in person",
-    linkType: "static",
-  },
-  {
-    default: true,
-    type: DefaultEventLocationTypeEnum.SomewhereElse,
-    label: "custom_attendee_location",
-    variable: "address",
-    organizerInputType: null,
-    messageForOrganizer: "Markado will ask your invitee to enter any location before scheduling.",
-    attendeeInputType: "somewhereElse",
-    attendeeInputPlaceholder: "any_location",
-    defaultValueVariable: "somewhereElse",
-    iconUrl: "/message-pin.svg",
-    category: "other",
-    linkType: "static",
-  },
+  // {
+  //   default: true,
+  //   type: DefaultEventLocationTypeEnum.AttendeeInPerson,
+  //   label: "in_person_attendee_address",
+  //   variable: "address",
+  //   organizerInputType: null,
+  //   messageForOrganizer: "Markado will ask your invitee to enter an address before scheduling.",
+  //   attendeeInputType: "attendeeAddress",
+  //   attendeeInputPlaceholder: "enter_address",
+  //   defaultValueVariable: "attendeeAddress",
+  //   iconUrl: "/map-pin-dark.svg",
+  //   category: "in person",
+  //   linkType: "static",
+  // },
+  // {
+  //   default: true,
+  //   type: DefaultEventLocationTypeEnum.SomewhereElse,
+  //   label: "custom_attendee_location",
+  //   variable: "address",
+  //   organizerInputType: null,
+  //   messageForOrganizer: "Markado will ask your invitee to enter any location before scheduling.",
+  //   attendeeInputType: "somewhereElse",
+  //   attendeeInputPlaceholder: "any_location",
+  //   defaultValueVariable: "somewhereElse",
+  //   iconUrl: "/message-pin.svg",
+  //   category: "other",
+  //   linkType: "static",
+  // },
   {
     default: true,
     type: DefaultEventLocationTypeEnum.InPerson,
@@ -135,70 +136,70 @@ export const defaultLocations: DefaultEventLocationType[] = [
     category: "in person",
     linkType: "static",
   },
-  {
-    default: true,
-    type: DefaultEventLocationTypeEnum.Conferencing,
-    iconUrl: "/link.svg",
-    organizerInputType: null,
-    label: "organizer_default_conferencing_app",
-    variable: "hostDefault",
-    defaultValueVariable: "hostDefault",
-    category: "conferencing",
-    messageForOrganizer: "",
-    linkType: "static",
-  },
-  {
-    default: true,
-    type: DefaultEventLocationTypeEnum.Link,
-    label: "link_meeting",
-    organizerInputType: "text",
-    variable: "locationLink",
-    messageForOrganizer: "Provide a Meeting Link",
-    defaultValueVariable: "link",
-    iconUrl: "/link.svg",
-    category: "other",
-    linkType: "static",
-  },
-  {
-    default: true,
-    type: DefaultEventLocationTypeEnum.Phone,
-    label: "attendee_phone_number",
-    variable: "phone",
-    organizerInputType: null,
-    attendeeInputType: "phone",
-    attendeeInputPlaceholder: `enter_phone_number`,
-    defaultValueVariable: "phone",
-    messageForOrganizer: "Markado will ask your invitee to enter a phone number before scheduling.",
-    // This isn't inputType phone because organizer doesn't need to provide it.
-    // inputType: "phone"
-    iconUrl: "/phone.svg",
-    category: "phone",
-    linkType: "static",
-  },
-  {
-    default: true,
-    type: DefaultEventLocationTypeEnum.UserPhone,
-    label: "organizer_phone_number",
-    messageForOrganizer: "Provide your phone number",
-    organizerInputType: "phone",
-    variable: "locationPhoneNumber",
-    defaultValueVariable: "hostPhoneNumber",
-    iconUrl: "/phone.svg",
-    category: "phone",
-    linkType: "static",
-  },
+  // {
+  //   default: true,
+  //   type: DefaultEventLocationTypeEnum.Conferencing,
+  //   iconUrl: "/link.svg",
+  //   organizerInputType: null,
+  //   label: "organizer_default_conferencing_app",
+  //   variable: "hostDefault",
+  //   defaultValueVariable: "hostDefault",
+  //   category: "conferencing",
+  //   messageForOrganizer: "",
+  //   linkType: "static",
+  // },
+  // {
+  //   default: true,
+  //   type: DefaultEventLocationTypeEnum.Link,
+  //   label: "link_meeting",
+  //   organizerInputType: "text",
+  //   variable: "locationLink",
+  //   messageForOrganizer: "Provide a Meeting Link",
+  //   defaultValueVariable: "link",
+  //   iconUrl: "/link.svg",
+  //   category: "other",
+  //   linkType: "static",
+  // },
+  // {
+  //   default: true,
+  //   type: DefaultEventLocationTypeEnum.Phone,
+  //   label: "attendee_phone_number",
+  //   variable: "phone",
+  //   organizerInputType: null,
+  //   attendeeInputType: "phone",
+  //   attendeeInputPlaceholder: `enter_phone_number`,
+  //   defaultValueVariable: "phone",
+  //   messageForOrganizer: "Markado will ask your invitee to enter a phone number before scheduling.",
+  //   // This isn't inputType phone because organizer doesn't need to provide it.
+  //   // inputType: "phone"
+  //   iconUrl: "/phone.svg",
+  //   category: "phone",
+  //   linkType: "static",
+  // },
+  // {
+  //   default: true,
+  //   type: DefaultEventLocationTypeEnum.UserPhone,
+  //   label: "organizer_phone_number",
+  //   messageForOrganizer: "Provide your phone number",
+  //   organizerInputType: "phone",
+  //   variable: "locationPhoneNumber",
+  //   defaultValueVariable: "hostPhoneNumber",
+  //   iconUrl: "/phone.svg",
+  //   category: "phone",
+  //   linkType: "static",
+  // },
 ];
 
-// const translateAbleKeys = [
-//   "in_person_attendee_address",
-//   "in_person",
-//   "attendee_phone_number",
-//   "link_meeting",
-//   "organizer_phone_number",
-//   "organizer_default_conferencing_app",
-//   "somewhere_else",
-//   "custom_attendee_location",
-// ];
+const translateAbleKeys = [
+  "in_person_attendee_address",
+  "in_person",
+  "attendee_phone_number",
+  "link_meeting",
+  "organizer_phone_number",
+  "organizer_default_conferencing_app",
+  "somewhere_else",
+  "custom_attendee_location",
+];
 
 export type LocationObject = {
   type: string;
@@ -353,18 +354,18 @@ export const getHumanReadableLocationValue = (
   return linkValue || "";
 };
 
-// export const locationKeyToString = (location: LocationObject) => {
-//   const eventLocationType = getEventLocationType(location.type);
-//   if (!eventLocationType) {
-//     return null;
-//   }
-//   const defaultValueVariable = eventLocationType.defaultValueVariable;
-//   if (!defaultValueVariable) {
-//     console.error(`defaultValueVariable not set for ${location.type}`);
-//     return "";
-//   }
-//   return location[defaultValueVariable] || eventLocationType.label;
-// };
+export const locationKeyToString = (location: LocationObject) => {
+  const eventLocationType = getEventLocationType(location.type);
+  if (!eventLocationType) {
+    return null;
+  }
+  const defaultValueVariable = eventLocationType.defaultValueVariable;
+  if (!defaultValueVariable) {
+    console.error(`defaultValueVariable not set for ${location.type}`);
+    return "";
+  }
+  return location[defaultValueVariable] || eventLocationType.label;
+};
 
 // export const getEventLocationWithType = (
 //   locations: LocationObject[],
@@ -458,21 +459,21 @@ export const getHumanReadableLocationValue = (
 //   return locationToDisplay;
 // }
 
-// export const getTranslatedLocation = (
-//   location: PrivacyFilteredLocationObject,
-//   eventLocationType: ReturnType<typeof getEventLocationType>,
-//   t: TFunction
-// ) => {
-//   if (!eventLocationType) return null;
-//   const locationKey = z.string().default("").parse(locationKeyToString(location));
-//   const translatedLocation = location.type.startsWith("integrations:")
-//     ? eventLocationType.label
-//     : translateAbleKeys.includes(locationKey)
-//     ? t(locationKey)
-//     : locationKey;
+export const getTranslatedLocation = (
+  location: PrivacyFilteredLocationObject,
+  eventLocationType: ReturnType<typeof getEventLocationType>,
+  t: TFunction
+) => {
+  if (!eventLocationType) return null;
+  const locationKey = z.string().default("").parse(locationKeyToString(location));
+  const translatedLocation = location.type.startsWith("integrations:")
+    ? eventLocationType.label
+    : translateAbleKeys.includes(locationKey)
+    ? t(locationKey)
+    : locationKey;
 
-//   return translatedLocation;
-// };
+  return translatedLocation;
+};
 
 export const getOrganizerInputLocationTypes = () => {
   const result: DefaultEventLocationType["type"] | EventLocationTypeFromApp["type"][] = [];

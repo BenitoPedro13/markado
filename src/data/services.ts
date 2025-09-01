@@ -1,5 +1,6 @@
 import { ServiceBadgeColor } from '~/prisma/enums';
 import { ServicesProps } from '@/components/services/Service';
+import { defaultLocations } from '@/core/locations';
 
 export const services: ServicesProps[] = [
   {
@@ -72,7 +73,7 @@ export const baseServices = [
     length: 30,
     price: 150,
     hidden: false,
-    locations: ['Online via Google Meet'],
+    locations: [defaultLocations[0]],
     description: 'Reunião de 30min',
     badgeColor: ServiceBadgeColor.feature,
   },
@@ -83,7 +84,7 @@ export const baseServices = [
     length: 60,
     price: 150,
     hidden: false,
-    locations: ['Online via Google Meet'],
+    locations: [defaultLocations[0]],
     description: 'Reuniao de 1 hora',
     badgeColor: ServiceBadgeColor.information,
   },
@@ -94,7 +95,7 @@ export const baseServices = [
     length: 60,
     price: 100,
     hidden: false,
-    locations: ['Online via Google Meet'],
+    locations: [defaultLocations[0]],
     description: 'Aula Teste',
     badgeColor: ServiceBadgeColor.success,
   }

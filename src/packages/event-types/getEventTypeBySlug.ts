@@ -1,6 +1,6 @@
 import {Prisma} from '~/prisma/app/generated/prisma/client';
 
-// import { getLocationGroupedOptions } from "@/app-store/server";
+import { getLocationGroupedOptions } from "@/packages/app-store/server";
 // import { getEventTypeAppData } from "@/app-store/utils";
 import type { LocationObject } from "@/core/locations";
 import { getBookingFieldsWithSystemFields } from "@/packages/features/bookings/lib/getBookingFields";
@@ -11,7 +11,7 @@ import {
   parseEventTypeColor
 } from '@/packages/lib';
 import {getUserAvatarUrl} from '@/packages/lib/getAvatarUrl';
-// import {getTranslation} from '@/lib/server/i18n';
+import {getTranslation} from '@/packages/lib/server/i18n';
 import {EventTypeRepository} from '@/repositories/eventType';
 import {UserRepository} from '@/repositories/user';
 import type {PrismaClient} from '~/prisma/app/generated/prisma/client';
@@ -188,7 +188,7 @@ export const getEventTypeBySlug = async ({
 
   const currentUser = eventType.users.find((u) => u.id === userId);
 
-  // const t = await getTranslation(currentUser?.locale ?? 'en', 'common');
+  const t = await getTranslation(currentUser?.locale ?? 'en', 'common');
 
   if (!currentUser?.id && !eventType.teamId) {
     throw new TRPCError({
@@ -197,22 +197,22 @@ export const getEventTypeBySlug = async ({
     });
   }
 
-  // const locationOptions = await getLocationGroupedOptions(
-  //   eventType.teamId ? {teamId: eventType.teamId} : {userId},
-  //   t
-  // );
-  // if (eventType.schedulingType === SchedulingType.MANAGED) {
-  //   locationOptions.splice(0, 0, {
-  //     label: t('default'),
-  //     options: [
-  //       {
-  //         label: t('members_default_location'),
-  //         value: '',
-  //         icon: '/user-check.svg'
-  //       }
-  //     ]
-  //   });
-  // }
+  const locationOptions = await getLocationGroupedOptions(
+    eventType.teamId ? {teamId: eventType.teamId} : {userId},
+    t
+  );
+  if (eventType.schedulingType === SchedulingType.MANAGED) {
+    locationOptions.splice(0, 0, {
+      label: t('default'),
+      options: [
+        {
+          label: t('members_default_location'),
+          value: '',
+          icon: '/user-check.svg'
+        }
+      ]
+    });
+  }
 
   const isOrgTeamEvent = !!eventType?.teamId && !!eventType.team?.parentId;
   const eventTypeObject = Object.assign({}, eventType, {
@@ -260,7 +260,7 @@ export const getEventTypeBySlug = async ({
 
   const finalObj = {
     eventType: eventTypeObject,
-    // locationOptions,
+    locationOptions,
     destinationCalendar,
     team: eventTypeObject.team || null,
     teamMembers,
