@@ -19,23 +19,9 @@ export const useAuthStore = create<AuthState>((set) => ({
   signInWithEmail: async (email, password, redirectTo = '/') => {
     try {
       set({ isLoading: true, error: null });
-      const result: any = await signInWithEmailPassword(email, password, redirectTo);
-
-      // If the server action returned a URL, perform a client-side redirect
-      if (result?.ok && result.url) {
-        if (typeof window !== 'undefined') {
-          window.location.assign(result.url);
-        }
-        return;
-      }
-
-      // Map known error codes to UI-friendly codes handled by translations
-      if (result && result.ok === false) {
-        set({ error: result.code || 'invalid_credentials' });
-        return;
-      }
+      await signInWithEmailPassword(email, password, redirectTo);
     } catch (error) {
-      set({ error: error instanceof Error ? error.message : 'invalid_credentials' });
+      set({ error: 'invalid_credentials' });
     } finally {
       set({ isLoading: false });
     }

@@ -62,6 +62,8 @@ export const DEFAULT_DARK_BRAND_COLOR = '#fafafa';
 export const WEBAPP_URL_FOR_OAUTH =
   IS_PRODUCTION || IS_DEV ? WEBAPP_URL : 'http://localhost:3000';
 
+export const IS_PREMIUM_USERNAME_ENABLED = false;
+
 /**
  * The maximum number of days we should check for if we don't find all required bookable days
  * Counter start from current day and we would like to not go beyond 2 months(max days possible) from current day.

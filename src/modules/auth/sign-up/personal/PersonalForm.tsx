@@ -1,31 +1,98 @@
 'use client';
 
-import {MARKADO_DOMAIN} from '@/constants';
-import {Root as Button} from '@/components/align-ui/ui/button';
+import { MARKADO_DOMAIN, WEBAPP_URL } from '@/constants';
+import { Root as Button } from '@/components/align-ui/ui/button';
 import * as Input from '@/components/align-ui/ui/input';
-import {Asterisk, Root as Label} from '@/components/align-ui/ui/label';
+import { Asterisk, Root as Label } from '@/components/align-ui/ui/label';
 import RoundedIconWrapper from '@/components/RoundedIconWrapper';
-import {TimezoneSelectWithStyle} from '@/components/TimezoneSelectWithStyle';
-import {useSignUp} from '@/contexts/SignUpContext';
-import {useTRPC} from '@/utils/trpc';
-import {RiAccountPinBoxFill} from '@remixicon/react';
-import {useTranslations} from 'next-intl';
-import {FormEvent, useEffect, useState, useRef} from 'react';
-import {useMutation} from '@tanstack/react-query';
-import {useRouter} from 'next/navigation';
+import { TimezoneSelectWithStyle } from '@/components/TimezoneSelectWithStyle';
+import { useSignUp } from '@/contexts/SignUpContext';
+import { useTRPC } from '@/utils/trpc';
+import { RiAccountPinBoxFill } from '@remixicon/react';
+import { useTranslations } from 'next-intl';
+import { FormEvent, useEffect, useState, useRef } from 'react';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
-
-import {getMeByUserId} from '~/trpc/server/handlers/user.handler';
-import {setStepComplete, clearEditMode, setNextStep, isEditMode} from '@/utils/cookie-utils';
+import { useSearchParams } from "next/navigation";
+import useRouterQuery from "@/lib/hooks/useRouterQuery";
+import { getMeByUserId } from '~/trpc/server/handlers/user.handler';
+import { setStepComplete, clearEditMode, setNextStep, isEditMode } from '@/utils/cookie-utils';
+import { TRPCClientErrorLike } from '@trpc/client';
+import { AppRouter } from '~/trpc/server';
+import { Controller, useForm } from 'react-hook-form';
+import { UsernameTextfield } from '@/components/ui/UsernameTextfield';
 
 interface PersonalFormProps {
   user: Awaited<ReturnType<typeof getMeByUserId>>;
 }
 
-const PersonalForm = ({user}: PersonalFormProps) => {
+interface UsernameAvailabilityFieldProps {
+  // user: Awaited<ReturnType<typeof getMeByUserId>>;
+  onSuccessMutation?: () => void;
+  onErrorMutation?: (error: TRPCClientErrorLike<AppRouter>) => void;
+}
+
+export const UsernameAvailabilityField = ({
+  // user,
+  onSuccessMutation,
+  onErrorMutation,
+}: UsernameAvailabilityFieldProps) => {
+  const trpc = useTRPC();
+  const searchParams = useSearchParams();
+  // const [user] = trpc.me.useSuspenseQuery();
+  const { data: user } = useQuery(trpc.user.me.queryOptions());
+  const [currentUsernameState, setCurrentUsernameState] = useState(user?.username || "");
+  const { username: usernameFromQuery, setQuery: setUsernameFromQuery } = useRouterQuery("username");
+  const { username: currentUsername, setQuery: setCurrentUsername } =
+    searchParams?.get("username") && user?.username === null
+      ? { username: usernameFromQuery, setQuery: setUsernameFromQuery }
+      : { username: currentUsernameState || "", setQuery: setCurrentUsernameState };
+
+  const { forms, goToStep } = useSignUp();
+  //       const formMethods = useForm({
+  //     defaultValues: {
+  //       username: currentUsername,
+  //     },
+  //   });
+  // forms.personal.c
+  // const orgBranding = useOrgBranding();
+
+  // const usernamePrefix = orgBranding
+  //   ? orgBranding?.fullDomain.replace(/^(https?:|)\/\//, "")
+  //   : `${WEBSITE_URL?.replace(/^(https?:|)\/\//, "")}`;
+
+  const usernamePrefix = `${WEBAPP_URL?.replace(/^(https?:|)\/\//, "")}`;
+
+  // const isPremium = !true && !user.organization?.id;
+
+  return (
+    <Controller
+      control={forms.personal.control}
+      name="username"
+      render={({ field: { ref, onChange, value } }) => (
+        <UsernameTextfield
+          currentUsername={currentUsername}
+          setCurrentUsername={setCurrentUsername}
+          inputUsernameValue={value}
+          usernameRef={ref}
+          setInputUsernameValue={onChange}
+          onSuccessMutation={onSuccessMutation}
+          onErrorMutation={onErrorMutation}
+          // disabled={!!user?.organization?.id}
+          disabled={false}
+          addOnLeading={`${usernamePrefix}/`}
+          isPremium={false}
+        />
+      )}
+    />
+  );
+};
+
+const PersonalForm = ({ user }: PersonalFormProps) => {
   const trpc = useTRPC();
   const router = useRouter();
-  const {forms, goToStep} = useSignUp();
+  const { forms, goToStep } = useSignUp();
   const t = useTranslations('SignUpPage.PersonalForm');
 
   // New mutation to update onboarding progress
@@ -153,12 +220,14 @@ const PersonalForm = ({user}: PersonalFormProps) => {
               {...forms.personal.register('username')}
             />
           </Input.Root>
+          {/* <UsernameAvailabilityField /> */}
           {forms.personal.formState.errors.username && (
             <span className="text-paragraph-xs text-red-500">
               {t('username_required')}
             </span>
           )}
         </div>
+
         <div className="flex flex-col gap-1">
           <Label>{t('time_zone')}</Label>
           <TimezoneSelectWithStyle

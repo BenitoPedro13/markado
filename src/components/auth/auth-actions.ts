@@ -16,37 +16,14 @@ export async function signInWithGoogle(redirectTo: string = '/') {
 } 
 
 // Sign in with email and password
-export async function signInWithEmailPassword(
-  email: string,
-  password: string,
-  redirectTo: string = '/'
-) {
-  // Use redirect: false so we can handle errors gracefully and
-  // return a friendly error code to the client instead of throwing.
-  try {
-    const result: any = await nextAuthSignIn('credentials', {
-      email,
-      password,
-      redirect: false,
-      redirectTo,
-    });
-
-    // If NextAuth returns a URL, proceed with client-side redirect.
-    if (result?.url) {
-      return { ok: true, url: result.url } as const;
-    }
-
-    // NextAuth may return an error code like "CredentialsSignin" on failure.
-    if (result?.error) {
-      return { ok: false, code: 'invalid_credentials' } as const;
-    }
-
-    // Fallback: consider it failed if neither url nor explicit error are present
-    return { ok: false, code: 'invalid_credentials' } as const;
-  } catch (err: any) {
-    // In case of unexpected errors, return a safe, generic message code
-    return { ok: false, code: 'invalid_credentials' } as const;
-  }
+export async function signInWithEmailPassword(email: string, password: string, redirectTo: string = '/') {
+  // Use redirect: true so NextAuth manages redirects/cookies correctly.
+  return nextAuthSignIn('credentials', {
+    email,
+    password,
+    redirectTo,
+    redirect: true
+  });
 }
 
 // Sign up with email and password

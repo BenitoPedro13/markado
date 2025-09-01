@@ -1,5 +1,6 @@
 {
   "common": {
+    "update": "Atualizar",
     "loading": "Carregando...",
     "error": "Erro",
     "success": "Sucesso",

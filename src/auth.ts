@@ -31,9 +31,10 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
           return null;
         }
 
-        // Check if email is verified
+        // Check if email is verified; return null to avoid throwing
+        // and let the client show a friendly error message.
         if (!user.emailVerified) {
-          throw new Error('Please verify your email before signing in');
+          return null;
         }
 
         // Check if this is a one-time login token
