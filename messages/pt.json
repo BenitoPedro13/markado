@@ -173,7 +173,9 @@
     "Google Meet ": "Google Meet",
     "google_meet": "Google Meet",
     "display_location_label": "Apresentar a localização antes da reserva",
-    "select_location": "Selecionar local"
+    "select_location": "Selecionar local",
+    "event_request_cancelled": "Solicitação de evento cancelada",
+    "event_cancelled_subject": "Cancelado: {{title}} em {{date}}"
   },
   "Error": {
     "description": "<p>Infelizmente encontramos um erro.</p><p>Você pode tentar <retry>recarregar a página</retry> que estava tentando visitar.</p>",
