@@ -431,6 +431,7 @@
     "authentication_required": "You need to sign in to access this page"
   },
   "Schedules": {
+    "apply": "Apply",
     "copy_times_to": "Copy times to",
     "select_all": "Select all",
     "cancel": "Cancel",
