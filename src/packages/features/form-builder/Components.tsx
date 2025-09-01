@@ -21,7 +21,7 @@ import {
   // Tooltip
 } from '@/packages/ui';
 import {RiAddLine, RiUser6Line, RiMailLine, RiDeleteBinLine} from '@remixicon/react';
-import {InputField} from '@/packages/ui/components/form/inputs/TextField';
+import {TextField as InputField} from '@/components/align-ui/ui/text-field';
 import AddressInput from '@/packages/ui/form/AddressInput';
 import {Group, RadioField} from '@/packages/ui/form/radio-area';
 import {EmailField} from '@/packages/ui/components/form/inputs/Input';
