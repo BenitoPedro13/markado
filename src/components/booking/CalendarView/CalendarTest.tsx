@@ -1,11 +1,25 @@
 import * as ButtonGroup from '@/components/align-ui/ui/button-group';
 import {RiArrowLeftSLine, RiArrowRightSLine} from '@remixicon/react';
 import * as Button from '@/components/align-ui/ui/button';
+
 export const CalendarTest = () => {
+
+  const HOURS = Array.from({ length: 24 }, (_, i) => i);
+
+  const HOUR_PX = 120; // height per hour row (px)
+
+  const labelHour = (h: number) => {
+    if (h === 0) return '12 AM';
+    if (h === 12) return '12 PM';
+    if (h < 12) return `${h} AM`;
+    return `${h - 12} PM`;
+  };
+
   return (
-    <div className="relative z-20 -mx-4 overflow-auto px-4 lg:mx-0 lg:overflow-visible lg:px-0">
-      <div className="w-fit bg-bg-white-0 lg:w-full mt-4">
-        <div className="flex overflow-clip rounded-xl border border-stroke-soft-200 lg:overflow-auto">
+    <div className="relative z-20 -mx-4 px-4 lg:mx-0 lg:px-0">
+      <div className="w-full bg-bg-white-0 mt-4">
+        {/* Scroll container: vertical to see all hours, horizontal on small screens */}
+        <div className="flex max-h-[70vh] overflow-auto rounded-xl border border-stroke-soft-200">
           {/* navigate days button group + hours label column */}
           <div className="sticky -left-4 z-30 -ml-px w-[104px] shrink-0 overflow-hidden border-x border-stroke-soft-200 bg-bg-white-0 lg:left-0 lg:border-l-0">
             <div className="grid h-8 w-full shrink-0 grid-cols-2 divide-x divide-stroke-soft-200 border-b border-stroke-soft-200">
@@ -22,42 +36,15 @@ export const CalendarTest = () => {
                 <RiArrowRightSLine className="text-text-sub-600 w-5 h-5" />
               </button>
             </div>
-            <div className="h-10"></div>
-            <div className="row-span-4 flex h-[120px] items-start justify-center">
-              <div className="-translate-y-1/2 text-center text-label-sm text-text-sub-600">
-                6 AM
+            <div className="h-10" />
+            {HOURS.map((h) => (
+              <div key={h} className="flex items-start justify-center" style={{ height: HOUR_PX }}>
+                <div className="-translate-y-1/2 text-center text-label-sm text-text-sub-600">
+                  {labelHour(h)}
+                </div>
               </div>
-            </div>
-            <div className="row-span-4 flex h-[120px] items-start justify-center">
-              <div className="-translate-y-1/2 text-center text-label-sm text-text-sub-600">
-                7 AM
-              </div>
-            </div>
-            <div className="row-span-4 flex h-[120px] items-start justify-center">
-              <div className="-translate-y-1/2 text-center text-label-sm text-text-sub-600">
-                8 AM
-              </div>
-            </div>
-            <div className="row-span-4 flex h-[120px] items-start justify-center">
-              <div className="-translate-y-1/2 text-center text-label-sm text-text-sub-600">
-                9 AM
-              </div>
-            </div>
-            <div className="row-span-4 flex h-[120px] items-start justify-center">
-              <div className="-translate-y-1/2 text-center text-label-sm text-text-sub-600">
-                10 AM
-              </div>
-            </div>
-            <div className="row-span-4 flex h-[120px] items-start justify-center">
-              <div className="-translate-y-1/2 text-center text-label-sm text-text-sub-600">
-                11 AM
-              </div>
-            </div>
-            <div className="flex h-10 items-start justify-center">
-              <div className="-translate-y-1/2 text-center text-label-sm text-text-sub-600">
-                12 PM
-              </div>
-            </div>
+            ))}
+            <div className="h-10" />
           </div>
           {/* week days label header + main grid */}
           <div>
@@ -89,79 +76,21 @@ export const CalendarTest = () => {
             <div className="grid w-full content-start items-start">
               {/* main grid */}
               <div className="grid w-full auto-cols-[200px] grid-flow-col divide-x divide-stroke-soft-200 [grid-area:1/1]">
-                <div className="grid divide-y divide-stroke-soft-200">
-                  <div className="h-10"></div>
-                  <div className="row-span-4 h-[120px]"></div>
-                  <div className="row-span-4 h-[120px]"></div>
-                  <div className="row-span-4 h-[120px]"></div>
-                  <div className="row-span-4 h-[120px]"></div>
-                  <div className="row-span-4 h-[120px]"></div>
-                  <div className="row-span-4 h-[120px]"></div>
-                  <div className="h-10"></div>
-                </div>
-                <div className="grid divide-y divide-stroke-soft-200">
-                  <div className="h-10"></div>
-                  <div className="row-span-4 h-[120px]"></div>
-                  <div className="row-span-4 h-[120px]"></div>
-                  <div className="row-span-4 h-[120px]"></div>
-                  <div className="row-span-4 h-[120px]"></div>
-                  <div className="row-span-4 h-[120px]"></div>
-                  <div className="row-span-4 h-[120px]"></div>
-                  <div className="h-10"></div>
-                </div>
-                <div className="grid divide-y divide-stroke-soft-200">
-                  <div className="h-10"></div>
-                  <div className="row-span-4 h-[120px]"></div>
-                  <div className="row-span-4 h-[120px]"></div>
-                  <div className="row-span-4 h-[120px]"></div>
-                  <div className="row-span-4 h-[120px]"></div>
-                  <div className="row-span-4 h-[120px]"></div>
-                  <div className="row-span-4 h-[120px]"></div>
-                  <div className="h-10"></div>
-                </div>
-                <div className="grid divide-y divide-stroke-soft-200">
-                  <div className="h-10"></div>
-                  <div className="row-span-4 h-[120px]"></div>
-                  <div className="row-span-4 h-[120px]"></div>
-                  <div className="row-span-4 h-[120px]"></div>
-                  <div className="row-span-4 h-[120px]"></div>
-                  <div className="row-span-4 h-[120px]"></div>
-                  <div className="row-span-4 h-[120px]"></div>
-                  <div className="h-10"></div>
-                </div>
-                <div className="grid divide-y divide-stroke-soft-200">
-                  <div className="h-10"></div>
-                  <div className="row-span-4 h-[120px]"></div>
-                  <div className="row-span-4 h-[120px]"></div>
-                  <div className="row-span-4 h-[120px]"></div>
-                  <div className="row-span-4 h-[120px]"></div>
-                  <div className="row-span-4 h-[120px]"></div>
-                  <div className="row-span-4 h-[120px]"></div>
-                  <div className="h-10"></div>
-                </div>
-                <div className="grid divide-y divide-stroke-soft-200">
-                  <div className="h-10"></div>
-                  <div className="row-span-4 h-[120px]"></div>
-                  <div className="row-span-4 h-[120px]"></div>
-                  <div className="row-span-4 h-[120px]"></div>
-                  <div className="row-span-4 h-[120px]"></div>
-                  <div className="row-span-4 h-[120px]"></div>
-                  <div className="row-span-4 h-[120px]"></div>
-                  <div className="h-10"></div>
-                </div>
+                {[0,1,2,3,4,5].map((day) => (
+                  <div key={day} className="grid divide-y divide-stroke-soft-200">
+                    <div className="h-10" />
+                    {HOURS.map((h) => (
+                      <div key={h} style={{ height: HOUR_PX }} />
+                    ))}
+                    <div className="h-10" />
+                  </div>
+                ))}
               </div>
                 {/* booking cards + disabled hours overlay */}
               <div
                 className="grid w-full auto-cols-[200px] grid-flow-col gap-y-px [grid-area:1/1]"
-                style={{ gridTemplateRows: '40px repeat(24, 29px) 39px' }}
-              >
-                <div
-                  className="col-span-1 grid gap-2 px-2 py-1 pt-2 pb-2"
-                  style={{ gridRow: '2 / 22', gridColumnStart: 6 }}
-                >
-                  <div className="calendar-disabled-hour -m-2 min-w-0"></div>
-                </div>
-              </div>
+                style={{ gridTemplateRows: `40px repeat(24, ${HOUR_PX}px) 40px` }}
+              />
             </div>
           </div>
         </div>
