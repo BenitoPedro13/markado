@@ -12,6 +12,7 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import { Booking } from '@/data/bookings';
 import BookingListSkeleton from '@/components/skeletons/BookingListSkeleton';
 import WeeklyCalendar from '@/components/booking/CalendarView/WeeklyCalendar';
+import { CalendarTest } from '@/components/booking/CalendarView/CalendarTest';
 
 const VALID_VIEWS = ['list', 'calendar'];
 const VALID_STATUSES = ['all', 'confirmed', 'canceled'];
@@ -249,7 +250,8 @@ export default function BookingListClient({ searchParams }: BookingListClientPro
           )
         }
         {view === 'calendar' && (
-          <WeeklyCalendar bookings={bookings} />
+          // <WeeklyCalendar bookings={bookings} />
+          <CalendarTest/>
         )}
       </div>
     </>
