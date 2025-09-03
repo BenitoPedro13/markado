@@ -61,6 +61,7 @@ export const CalendarTest = () => {
           </div>
           {/* week days label header + main grid */}
           <div>
+            {/* week days label header */}
             <div className="sticky top-0 z-20 overflow-hidden rounded-tr-xl bg-bg-white-0">
               <header className="flex divide-x divide-stroke-soft-200">
                 <div className="grid w-full auto-cols-[200px] grid-flow-col divide-x divide-stroke-soft-200">
@@ -86,6 +87,7 @@ export const CalendarTest = () => {
               </header>
             </div>
             <div className="grid w-full content-start items-start">
+              {/* main grid */}
               <div className="grid w-full auto-cols-[200px] grid-flow-col divide-x divide-stroke-soft-200 [grid-area:1/1]">
                 <div className="grid divide-y divide-stroke-soft-200">
                   <div className="h-10"></div>
@@ -148,6 +150,7 @@ export const CalendarTest = () => {
                   <div className="h-10"></div>
                 </div>
               </div>
+                {/* booking cards + disabled hours overlay */}
               <div
                 className="grid w-full auto-cols-[200px] grid-flow-col gap-y-px [grid-area:1/1]"
                 style={{ gridTemplateRows: '40px repeat(24, 29px) 39px' }}
