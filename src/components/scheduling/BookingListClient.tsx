@@ -11,6 +11,7 @@ import { useTRPC } from '@/utils/trpc';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { Booking } from '@/data/bookings';
 import BookingListSkeleton from '@/components/skeletons/BookingListSkeleton';
+import WeeklyCalendar from '@/components/booking/CalendarView/WeeklyCalendar';
 
 const VALID_VIEWS = ['list', 'calendar'];
 const VALID_STATUSES = ['all', 'confirmed', 'canceled'];
@@ -99,17 +100,17 @@ function mapLocalStatusToTrpcStatus(localStatus: ValidBookingStatus): 'upcoming'
 function transformTrpcBooking(trpcBooking: any): Booking {
   // Extract the base title from trpcBooking
   const rawTitle = trpcBooking.title || trpcBooking.eventType?.title || 'Untitled';
-  
+
   // Clean the title by removing participant names after "entre" or "between"
   const cleanTitle = (title: string): string => {
     const separators = [' entre ', ' between '];
-    
+
     for (const separator of separators) {
       if (title.includes(separator)) {
         return title.split(separator)[0];
       }
     }
-    
+
     return title;
   };
 
@@ -229,19 +230,28 @@ export default function BookingListClient({ searchParams }: BookingListClientPro
         </div>
       </div>
       <div className="w-full gap-8 px-8">
-        <BookingList bookings={bookings} />
-        {hasNextPage && (
-          <div className="mt-4 text-center">
-            <button
-              onClick={() => fetchNextPage()}
-              disabled={isFetchingNextPage}
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
-            >
-              {isFetchingNextPage ? 'Loading more...' : 'Load more'}
-            </button>
-          </div>
+        {view === 'list' &&
+          (<>
+            <BookingList bookings={bookings} />
+            {hasNextPage && (
+              <div className="mt-4 text-center">
+                <button
+                  onClick={() => fetchNextPage()}
+                  disabled={isFetchingNextPage}
+                  className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
+                >
+                  {isFetchingNextPage ? 'Loading more...' : 'Load more'}
+                </button>
+              </div>
+            )}
+          </>
+
+          )
+        }
+        {view === 'calendar' && (
+          <WeeklyCalendar bookings={bookings} />
         )}
       </div>
     </>
-  );
+  )
 } 
