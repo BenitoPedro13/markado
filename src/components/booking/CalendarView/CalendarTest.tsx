@@ -319,7 +319,7 @@ export const CalendarTest = () => {
                           return (
                             <div
                               key={e.id}
-                              className="absolute left-2 right-2 rounded-lg px-3 py-2 bg-primary-alpha-10 backdrop-blur-xl overflow-hidden pointer-events-auto"
+                              className="absolute left-2 right-2 rounded-lg px-3 py-2 bg-information-lighter backdrop-blur-xl overflow-hidden pointer-events-auto"
                               style={{ top: topWithGap, height: heightAdjusted }}
                               title={`${e.title}`}
                             >
