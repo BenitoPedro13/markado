@@ -97,7 +97,6 @@ export const CalendarTest = () => {
                   </div>
                 ))}
               </div>
-              <div style={{ height: HEADER_PX }} />
             </div>
 
             {/* week days main grid */}
@@ -114,14 +113,13 @@ export const CalendarTest = () => {
                       {HOURS.map((h) => (
                         <div key={h} className="border-b border-stroke-soft-200" style={{ height: HOUR_PX }} />
                       ))}
-                      <div style={{ height: HEADER_PX }} />
                     </div>
                   ))}
                 </div>
                 {/* booking cards + disabled hours overlay */}
                 <div
-                  className="grid w-full grid-flow-col gap-y-px [grid-area:1/1]"
-                  style={{ gridAutoColumns: `minmax(${DAY_MIN_WIDTH}px,1fr)`, gridTemplateRows: `${HEADER_PX}px repeat(24, ${HOUR_PX}px) ${HEADER_PX}px` }}
+                  className="grid w-full grid-flow-col [grid-area:1/1]"
+                  style={{ gridAutoColumns: `minmax(${DAY_MIN_WIDTH}px,1fr)`, gridTemplateRows: `${HEADER_PX}px repeat(24, ${HOUR_PX}px)` }}
                 />
               </div>
             </div>
