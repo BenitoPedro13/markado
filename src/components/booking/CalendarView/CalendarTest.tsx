@@ -47,77 +47,83 @@ export const CalendarTest = () => {
     <div className="relative z-20 -mx-4 px-4 lg:mx-0 lg:px-0">
       <div className="w-full bg-bg-white-0 mt-4">
         {/* Scroll container: vertical to see all hours, horizontal on small screens */}
-        <div className="flex max-h-[calc(100vh-228px)] overflow-auto rounded-xl border border-stroke-soft-200">
-          {/* navigate days button group + hours label column */}
-          <div className="sticky -left-4 z-30 w-full max-w-[104px] -ml-px w- h-fit shrink-0 overflow-hidden border-x border-stroke-soft-200 bg-bg-white-0 lg:left-0 lg:border-l-0">
-            {/* sticky nav bar on top */}
-            <div className="sticky top-0 grid h-10 w-full shrink-0 grid-cols-2 divide-x divide-stroke-soft-200 border-b border-stroke-soft-200 bg-bg-white-0">
-              <button type="button" onClick={previousWeek} aria-label="Previous week" className="flex items-center justify-center bg-bg-white-0">
-                <RiArrowLeftSLine className="text-text-sub-600 w-5 h-5" />
-              </button>
-              <button type="button" onClick={nextWeek} aria-label="Next week" className="flex items-center justify-center bg-bg-white-0">
-                <RiArrowRightSLine className="text-text-sub-600 w-5 h-5" />
-              </button>
-            </div>
-            {/* spacer equal header height */}
-            <div style={{ height: HEADER_PX }} />
-            {/* absolute-positioned hour labels */}
-            <div style={{ height: (24 * HOUR_PX) }} className="relative">
-              {HOURS.map((h) => (
+        <div className="max-h-[calc(100vh-228px)] overflow-auto rounded-xl border border-stroke-soft-200">
+          {/* Sticky header spanning left controls + day labels */}
+          <div className="sticky top-0 z-40 bg-bg-white-0 border-b border-stroke-soft-200">
+            <div className="grid grid-cols-[103px_1fr]">
+              {/* Left: navigation buttons, sticky on horizontal scroll */}
+              <div className="border-r border-stroke-soft-200 sticky -left-4 -ml-px z-40 grid h-10 grid-cols-2 divide-x divide-stroke-soft-200 bg-bg-white-0 lg:left-0">
+                <button type="button" onClick={previousWeek} aria-label="Previous week" className="flex items-center justify-center">
+                  <RiArrowLeftSLine className="text-text-sub-600 w-5 h-5" />
+                </button>
+                <button type="button" onClick={nextWeek} aria-label="Next week" className="flex items-center justify-center">
+                  <RiArrowRightSLine className="text-text-sub-600 w-5 h-5" />
+                </button>
+              </div>
+              {/* Right: day headers aligned with columns (match body width for small screens) */}
+              <div
+                className="min-w-0"
+                style={{ minWidth: `${days.length * DAY_MIN_WIDTH}px` }}
+              >
                 <div
-                  key={h}
-                  style={{ top: h * HOUR_PX }}
-                  className="absolute left-0 right-0 -translate-y-1/2 text-center text-label-sm text-text-sub-600"
-                >
-                  {labelHour(h)}
-                </div>
-              ))}
-            </div>
-            <div style={{ height: HEADER_PX }} />
-          </div>
-          {/* week days label header + main grid */}
-          <div
-            className='h-fit flex-1 min-w-0'
-            style={{ minWidth: `${days.length * DAY_MIN_WIDTH}px` }}
-          >
-            {/* week days label header */}
-            <div className="sticky top-0 z-20 overflow-hidden rounded-tr-xl bg-bg-white-0">
-
-              <header className="flex divide-x divide-stroke-soft-200">
-                
-                <div
-                  className="grid w-full grid-flow-col divide-x divide-stroke-soft-200"
+                  className="grid grid-flow-col divide-x divide-stroke-soft-200"
                   style={{ gridAutoColumns: `minmax(${DAY_MIN_WIDTH}px,1fr)` }}
                 >
                   {days.map((d) => (
-                    <div key={d.toDateString()} className="flex h-10 items-center justify-center border-b border-stroke-soft-200 bg-bg-weak-50 text-center text-label-xs text-text-soft-400">
+                    <div key={d.toDateString()} className="flex h-10 items-center justify-center bg-bg-weak-50 text-center text-label-xs text-text-soft-400">
                       {formatDayHeader(d)}
                     </div>
                   ))}
                 </div>
-              </header>
+              </div>
             </div>
-            <div className="grid w-full content-start items-start">
-              {/* main grid */}
-              <div
-                className="grid w-full grid-flow-col divide-x divide-stroke-soft-200 [grid-area:1/1]"
-                style={{ gridAutoColumns: `minmax(${DAY_MIN_WIDTH}px,1fr)` }}
-              >
-                {days.map((d, i) => (
-                  <div key={i} className="grid divide-y divide-stroke-soft-200">
-                    <div style={{ height: HEADER_PX }} />
-                    {HOURS.map((h) => (
-                      <div key={h} className="border-b border-stroke-soft-200" style={{ height: HOUR_PX }} />
-                    ))}
-                    <div style={{ height: HEADER_PX }} />
+          </div>
+
+          {/* Body: two columns (left hours + right grid) */}
+          <div className="flex">
+            {/* hours label column */}
+            <div className="sticky -left-4 z-20 -ml-px w-[104px] h-fit shrink-0 overflow-hidden border-x border-stroke-soft-200 bg-bg-white-0 lg:left-0 lg:border-l-0">
+              {/* spacer equal header height */}
+              <div style={{ height: HEADER_PX }} />
+              {/* absolute-positioned hour labels */}
+              <div style={{ height: 24 * HOUR_PX }} className="relative">
+                {HOURS.map((h) => (
+                  <div
+                    key={h}
+                    style={{ top: h * HOUR_PX }}
+                    className="absolute left-0 right-0 -translate-y-1/2 text-center text-label-sm text-text-sub-600"
+                  >
+                    {labelHour(h)}
                   </div>
                 ))}
               </div>
+              <div style={{ height: HEADER_PX }} />
+            </div>
+
+            {/* week days main grid */}
+            <div className='h-fit flex-1 min-w-0' style={{ minWidth: `${days.length * DAY_MIN_WIDTH}px` }}>
+              <div className="grid w-full content-start items-start">
+                {/* background grid */}
+                <div
+                  className="grid w-full grid-flow-col divide-x divide-stroke-soft-200 [grid-area:1/1]"
+                  style={{ gridAutoColumns: `minmax(${DAY_MIN_WIDTH}px,1fr)` }}
+                >
+                  {days.map((d, i) => (
+                    <div key={i} className="grid divide-y divide-stroke-soft-200">
+                      <div style={{ height: HEADER_PX }} />
+                      {HOURS.map((h) => (
+                        <div key={h} className="border-b border-stroke-soft-200" style={{ height: HOUR_PX }} />
+                      ))}
+                      <div style={{ height: HEADER_PX }} />
+                    </div>
+                  ))}
+                </div>
                 {/* booking cards + disabled hours overlay */}
-              <div
-                className="grid w-full grid-flow-col gap-y-px [grid-area:1/1]"
-                style={{ gridAutoColumns: `minmax(${DAY_MIN_WIDTH}px,1fr)`, gridTemplateRows: `${HEADER_PX}px repeat(24, ${HOUR_PX}px) ${HEADER_PX}px` }}
-              />
+                <div
+                  className="grid w-full grid-flow-col gap-y-px [grid-area:1/1]"
+                  style={{ gridAutoColumns: `minmax(${DAY_MIN_WIDTH}px,1fr)`, gridTemplateRows: `${HEADER_PX}px repeat(24, ${HOUR_PX}px) ${HEADER_PX}px` }}
+                />
+              </div>
             </div>
           </div>
         </div>
