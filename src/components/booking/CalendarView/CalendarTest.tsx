@@ -133,7 +133,7 @@ export const CalendarTest = () => {
                       {getDisabledForDate(d).map((r, rIdx) => (
                         <div
                           key={`disabled-${i}-${rIdx}`}
-                          className="calendar-disabled-hour bg-red-400"
+                          className="calendar-disabled-hour"
                           style={{
                             gridColumn: `${i + 1} / ${i + 2}`,
                             gridRow: `${r.start + 2} / ${r.end + 2}`,
