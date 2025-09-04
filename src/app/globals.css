@@ -449,3 +449,7 @@
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+
+.calendar-disabled-hour {
+    background: repeating-linear-gradient(-60deg, hsl(var(--stroke-soft-200)) 0 1px, transparent 1px 8px) -4px 50% / 200% 120px;
+}
