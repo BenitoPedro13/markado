@@ -14,6 +14,7 @@ const startOfWeek = (date: Date, weekStartsOn: 0 | 1) => {
   d.setHours(0, 0, 0, 0);
   return d;
 };
+
 const addDays = (date: Date, days: number) => {
   const d = new Date(date);
   d.setDate(d.getDate() + days);
@@ -35,13 +36,12 @@ export const CalendarTest = () => {
     return `${h - 12} PM`;
   };
 
-  // week navigation
-  const [anchorDate, setAnchorDate] = React.useState<Date>(() => new Date());
+  // day-by-day navigation (shifts visible window by 1 day)
   const weekStartsOn: 0 | 1 = 0; // 0 = Sunday
-  const weekStart = React.useMemo(() => startOfWeek(anchorDate, weekStartsOn), [anchorDate]);
-  const days = React.useMemo(() => Array.from({ length: 7 }, (_, i) => addDays(weekStart, i)), [weekStart]);
-  const previousWeek = () => setAnchorDate((d) => addDays(d, -7));
-  const nextWeek = () => setAnchorDate((d) => addDays(d, 7));
+  const [viewStart, setViewStart] = React.useState<Date>(() => startOfWeek(new Date(), weekStartsOn));
+  const days = React.useMemo(() => Array.from({ length: 7 }, (_, i) => addDays(viewStart, i)), [viewStart]);
+  const previousWeek = () => setViewStart((d) => addDays(d, -1));
+  const nextWeek = () => setViewStart((d) => addDays(d, 1));
 
   return (
     <div className="relative z-20 -mx-4 px-4 lg:mx-0 lg:px-0">
