@@ -13,6 +13,7 @@ import { Booking } from '@/data/bookings';
 import BookingListSkeleton from '@/components/skeletons/BookingListSkeleton';
 import WeeklyCalendar from '@/components/booking/CalendarView/WeeklyCalendar';
 import { CalendarTest } from '@/components/booking/CalendarView/CalendarTest';
+import { TypeGetBookingsListing } from '~/trpc/server/handlers/bookings/get.handler';
 
 const VALID_VIEWS = ['list', 'calendar'];
 const VALID_STATUSES = ['all', 'confirmed', 'canceled'];
@@ -98,6 +99,8 @@ function mapLocalStatusToTrpcStatus(localStatus: ValidBookingStatus): 'upcoming'
 //   };
 // }
 
+type TypeGetBookingsListingItem = TypeGetBookingsListing['bookings'][number];
+
 function transformTrpcBooking(trpcBooking: any): Booking {
   // Extract the base title from trpcBooking
   const rawTitle = trpcBooking.title || trpcBooking.eventType?.title || 'Untitled';
@@ -127,6 +130,8 @@ function transformTrpcBooking(trpcBooking: any): Booking {
       loc.includes('teams');
     return isOnline ? 'online' : 'presential';
   };
+
+  // no-op placeholder (if needed in future)
 
   // Extract participant names from attendees
   const getParticipants = (attendees?: any[]): string[] => {
@@ -171,6 +176,23 @@ function transformTrpcBooking(trpcBooking: any): Booking {
     }
   }
 
+
+  // Resolve meeting URL: metadata > references > location URL
+  const meetingUrlFromMetadata: string | undefined = trpcBooking?.metadata?.videoCallUrl;
+  const meetingUrlFromReferences: string | undefined = (() => {
+    const refs = trpcBooking?.references as Array<any> | undefined;
+    if (!Array.isArray(refs)) return undefined;
+    const googleRef = refs.find((r) => r?.type === 'google_meet_video' && typeof r?.meetingUrl === 'string');
+    if (googleRef?.meetingUrl) return googleRef.meetingUrl as string;
+    const anyRef = refs.find((r) => typeof r?.meetingUrl === 'string');
+    return anyRef?.meetingUrl as string | undefined;
+  })();
+  const meetingUrlFromLocation: string | undefined =
+    typeof trpcBooking?.location === 'string' && /^https?:\/\//i.test(trpcBooking.location)
+      ? (trpcBooking.location as string)
+      : undefined;
+  const meetingUrl = meetingUrlFromMetadata || meetingUrlFromReferences || meetingUrlFromLocation;
+
   return {
     uid: trpcBooking.uid ?? String(trpcBooking.id),
     id: trpcBooking.id,
@@ -183,6 +205,7 @@ function transformTrpcBooking(trpcBooking: any): Booking {
     participants: getParticipants(trpcBooking.attendees),
     status: getBookingStatus(trpcBooking.status),
     location: resolvedLocation,
+    meetingUrl,
   };
 }
 
@@ -291,7 +314,7 @@ export default function BookingListClient({ searchParams }: BookingListClientPro
         }
         {view === 'calendar' && (
           // <WeeklyCalendar bookings={bookings} />
-          <CalendarTest bookings={bookings} />
+          <CalendarTest bookings={bookings} hasNextPage={hasNextPage} isFetchingNextPage={isFetchingNextPage} fetchNextPage={fetchNextPage} />
         )}
       </div>
     </>

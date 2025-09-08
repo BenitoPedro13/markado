@@ -70,6 +70,7 @@ type CalendarCardEventProps = {
   status: Booking['status'];
   location?: string;
   participants?: string[];
+  meetingUrl?: string;
 };
 
 export const CalendarCardEvent = ({
@@ -78,7 +79,8 @@ export const CalendarCardEvent = ({
   end,
   type,
   status,
-  location
+  location,
+  meetingUrl
 }: CalendarCardEventProps) => {
   const minutes = Math.max(
     0,
@@ -90,6 +92,7 @@ export const CalendarCardEvent = ({
   const rawLoc = location ?? '';
   const loc = rawLoc.toLowerCase();
   const looksOnline = /integrations:google:meet|\bmeet\b|zoom|teams/.test(loc);
+  const isGoogleMeetProvider = /integrations:google:meet/.test(loc);
   const isInPerson = type !== 'online' && !looksOnline;
   const bg =
     status === 'canceled'
@@ -98,10 +101,10 @@ export const CalendarCardEvent = ({
         ? 'bg-warning-lighter'
         : 'bg-information-lighter';
 
-        console.log({location, looksOnline, isInPerson, rawLoc, loc});
+  console.log({location, looksOnline, isInPerson, rawLoc, loc});
   return (
     <div
-      className={`flex h-full min-h-0 w-full min-w-0 flex-col justify-between overflow-hidden rounded-lg px-3 py-2 backdrop-blur-xl ${bg}`}
+      className={`flex h-full min-h-0 w-full min-w-0 flex-col justify-between overflow-hidden rounded-lg px-3 py-2 backdrop-blur-xl cursor-pointer ${bg}`}
     >
       <div className="space-y-0.5">
         <div className="text-label-xs truncate text-text-strong-950">
@@ -115,7 +118,18 @@ export const CalendarCardEvent = ({
       </div>
       {showLocation && (!isInPerson || looksOnline) ? (
         <div className="text-paragraph-xs text-text-sub-600 truncate">
-          {'on Meet'}
+          {/* {isGoogleMeetProvider && meetingUrl ? (
+            <a
+              href={meetingUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:opacity-80"
+            >
+              Join with Google Meet
+            </a>
+          ) : ( */}
+            {'on Meet'}
+          {/* )} */}
         </div>
       ) : // in-person. Avoid showing literal "inPerson"; show address if present
       showLocation &&
@@ -132,9 +146,17 @@ export const CalendarCardEvent = ({
 
 type CalendarTestProps = {
   bookings: Booking[];
+  hasNextPage: boolean;
+  isFetchingNextPage: boolean;
+  fetchNextPage: () => void;
 };
 
-export const CalendarTest = ({bookings}: CalendarTestProps) => {
+export const CalendarTest = ({
+  bookings,
+  hasNextPage,
+  isFetchingNextPage,
+  fetchNextPage
+}: CalendarTestProps) => {
   const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
   const [selected, setSelected] = React.useState<Booking | null>(null);
   const HOURS = React.useMemo(() => Array.from({length: 24}, (_, i) => i), []);
@@ -170,8 +192,20 @@ export const CalendarTest = ({bookings}: CalendarTestProps) => {
     [viewStart]
   );
 
-  const previousWeek = () => setViewStart((d) => addDays(d, -1));
-  const nextWeek = () => setViewStart((d) => addDays(d, 1));
+  const maybeFetchNextPage = React.useCallback(() => {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  const previousWeek = () => {
+    setViewStart((d) => addDays(d, -1));
+    maybeFetchNextPage();
+  };
+  const nextWeek = () => {
+    setViewStart((d) => addDays(d, 1));
+    maybeFetchNextPage();
+  };
 
   // helpers for event positioning
   const isSameDay = (a: Date, b: Date) =>
@@ -216,6 +250,7 @@ export const CalendarTest = ({bookings}: CalendarTestProps) => {
       type: b.type,
       status: b.status,
       location: b.location,
+      meetingUrl: b.meetingUrl,
       participants: b.participants,
       organizer: b.organizer,
       uid: b.uid,
@@ -240,7 +275,8 @@ export const CalendarTest = ({bookings}: CalendarTestProps) => {
                   type="button"
                   onClick={previousWeek}
                   aria-label="Previous week"
-                  className="flex items-center justify-center"
+                  className="flex items-center justify-center disabled:opacity-50"
+                  disabled={isFetchingNextPage}
                 >
                   <RiArrowLeftSLine className="text-text-sub-600 w-5 h-5" />
                 </button>
@@ -248,7 +284,8 @@ export const CalendarTest = ({bookings}: CalendarTestProps) => {
                   type="button"
                   onClick={nextWeek}
                   aria-label="Next week"
-                  className="flex items-center justify-center"
+                  className="flex items-center justify-center disabled:opacity-50"
+                  disabled={isFetchingNextPage}
                 >
                   <RiArrowRightSLine className="text-text-sub-600 w-5 h-5" />
                 </button>
@@ -297,7 +334,7 @@ export const CalendarTest = ({bookings}: CalendarTestProps) => {
 
             {/* week days main grid */}
             <div
-              className="h-fit flex-1 min-w-0"
+              className="z-10 h-fit flex-1 min-w-0"
               style={{minWidth: `${days.length * DAY_MIN_WIDTH}px`}}
             >
               <div className="grid w-full content-start items-start">
@@ -399,6 +436,7 @@ export const CalendarTest = ({bookings}: CalendarTestProps) => {
                                 type={e.type}
                                 status={e.status}
                                 location={e.location}
+                                meetingUrl={e.meetingUrl}
                               />
                             </div>
                           );
@@ -479,13 +517,28 @@ export const CalendarTest = ({bookings}: CalendarTestProps) => {
                         LOCAL
                       </div>
                       <div className="text-paragraph-md text-text-strong-950">
-                        {selected.type === 'online' ? 'online' : 'inPerson'}
+                        {selected.type === 'online' ? (
+                          <Button.Root
+                            variant="neutral"
+                            mode="ghost"
+                            size="small"
+                            onClick={() => {
+                              if (selected.meetingUrl) {
+                                window.open(selected.meetingUrl, '_blank');
+                              }
+                            }}
+                          >
+                            <img
+                              src="/logos/Google Meet.svg"
+                              width={20}
+                              height={20}
+                            />
+                            Entrar com Google Meet
+                          </Button.Root>
+                        ) : (
+                          selected.location || 'Endereço não definido'
+                        )}
                       </div>
-                      {selected.location && (
-                        <div className="text-paragraph-sm text-text-sub-600 truncate">
-                          {selected.location}
-                        </div>
-                      )}
                     </div>
                     <div className="flex flex-col gap-2">
                       <div className="text-subheading-xs text-text-soft-400 uppercase">

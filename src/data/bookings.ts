@@ -10,6 +10,8 @@ export type Booking = {
   participants: string[];
   status: 'confirmed' | 'canceled';
   location?: string;
+  // Optional meeting URL for online providers (e.g. Google Meet)
+  meetingUrl?: string;
 };
 
 export const bookings: Booking[] = [
