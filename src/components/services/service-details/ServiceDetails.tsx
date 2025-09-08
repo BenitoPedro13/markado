@@ -12,6 +12,7 @@ import { useServicesDetails } from '@/contexts/services/servicesDetails/Services
 import { MARKADO_DOMAIN } from '@/constants';
 import { LocationFormValues } from '@/packages/features/eventtypes/lib/types';
 import Locations from "@/packages/features/eventtypes/components/Locations";
+// Note: no in-person address preview here (moved to calendar cards)
 import { SettingsToggle } from '@/packages/ui';
 import { cn as classNames } from '@/utils/cn';
 import { useLocale } from '@/hooks/use-locale';
@@ -273,6 +274,7 @@ export default function ServiceDetails({ slug }: Props) {
           <label className="text-sm font-medium text-text-strong-950">
             Localização
           </label>
+          {/* Address preview intentionally removed per request */}
           <Controller
             name="locations"
             control={control}

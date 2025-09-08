@@ -449,3 +449,14 @@
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+
+.calendar-disabled-hour {
+  /* Use the design token directly (it's a hex color), not HSL channels */
+  background-image: repeating-linear-gradient(
+    -60deg,
+    var(--stroke-soft-200) 0 1px,
+    transparent 1px 8px
+  );
+  background-size: 200% 120px;
+  background-position: -4px 0%;
+}

@@ -11,6 +11,9 @@ import { useTRPC } from '@/utils/trpc';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { Booking } from '@/data/bookings';
 import BookingListSkeleton from '@/components/skeletons/BookingListSkeleton';
+import WeeklyCalendar from '@/components/booking/CalendarView/WeeklyCalendar';
+import { CalendarTest } from '@/components/booking/CalendarView/CalendarTest';
+import { TypeGetBookingsListing } from '~/trpc/server/handlers/bookings/get.handler';
 
 const VALID_VIEWS = ['list', 'calendar'];
 const VALID_STATUSES = ['all', 'confirmed', 'canceled'];
@@ -96,28 +99,39 @@ function mapLocalStatusToTrpcStatus(localStatus: ValidBookingStatus): 'upcoming'
 //   };
 // }
 
+type TypeGetBookingsListingItem = TypeGetBookingsListing['bookings'][number];
+
 function transformTrpcBooking(trpcBooking: any): Booking {
   // Extract the base title from trpcBooking
   const rawTitle = trpcBooking.title || trpcBooking.eventType?.title || 'Untitled';
-  
+
   // Clean the title by removing participant names after "entre" or "between"
   const cleanTitle = (title: string): string => {
     const separators = [' entre ', ' between '];
-    
+
     for (const separator of separators) {
       if (title.includes(separator)) {
         return title.split(separator)[0];
       }
     }
-    
+
     return title;
   };
 
   // Determine meeting type based on location
   const getMeetingType = (location?: string): 'online' | 'presential' => {
     if (!location) return 'presential';
-    return (location.includes('Meet') || location.includes('Teams')) ? 'online' : 'presential';
+    const loc = String(location).toLowerCase();
+    const isOnline =
+      loc.includes('integrations:google:meet') ||
+      loc.includes('google meet') ||
+      loc.includes('meet') ||
+      loc.includes('zoom') ||
+      loc.includes('teams');
+    return isOnline ? 'online' : 'presential';
   };
+
+  // no-op placeholder (if needed in future)
 
   // Extract participant names from attendees
   const getParticipants = (attendees?: any[]): string[] => {
@@ -128,6 +142,56 @@ function transformTrpcBooking(trpcBooking: any): Booking {
   const getBookingStatus = (status?: string): 'canceled' | 'confirmed' => {
     return status === 'CANCELLED' ? 'canceled' : 'confirmed';
   };
+
+  // Prefer a readable address/value for in-person bookings
+  let resolvedLocation: string | undefined = trpcBooking.location || undefined;
+  const isOnlineType = getMeetingType(resolvedLocation) === 'online';
+  if (!isOnlineType) {
+    const responsesLoc = trpcBooking?.responses?.location;
+    const candidateFromResponses =
+      (responsesLoc?.optionValue as string | undefined) ||
+      (responsesLoc?.value as string | undefined);
+    const candidateFromMetadata = trpcBooking?.metadata?.location?.address as string | undefined;
+    // Try eventType's configured address (when organizer set an address in service setup)
+    const locs = (trpcBooking?.eventType?.locations as Array<any> | undefined) || [];
+    const fromEventType = (() => {
+      const inPerson = locs.find((l) => l?.type === 'inPerson' && typeof l.address === 'string' && l.address.trim());
+      if (inPerson) return inPerson.address as string;
+      const attendee = locs.find(
+        (l) => l?.type === 'attendeeInPerson' && typeof l.attendeeAddress === 'string' && l.attendeeAddress.trim()
+      );
+      if (attendee) return attendee.attendeeAddress as string;
+      const generic = locs.find((l) => typeof l.address === 'string' && l.address.trim());
+      return generic?.address as string | undefined;
+    })();
+
+    const candidate = candidateFromResponses || candidateFromMetadata || fromEventType;
+    const isToken = (val?: string) => {
+      if (!val) return false;
+      const v = val.toLowerCase();
+      return v === 'inperson' || v === 'in_person' || v === 'in person';
+    };
+    if (candidate && !isToken(candidate)) {
+      resolvedLocation = candidate;
+    }
+  }
+
+
+  // Resolve meeting URL: metadata > references > location URL
+  const meetingUrlFromMetadata: string | undefined = trpcBooking?.metadata?.videoCallUrl;
+  const meetingUrlFromReferences: string | undefined = (() => {
+    const refs = trpcBooking?.references as Array<any> | undefined;
+    if (!Array.isArray(refs)) return undefined;
+    const googleRef = refs.find((r) => r?.type === 'google_meet_video' && typeof r?.meetingUrl === 'string');
+    if (googleRef?.meetingUrl) return googleRef.meetingUrl as string;
+    const anyRef = refs.find((r) => typeof r?.meetingUrl === 'string');
+    return anyRef?.meetingUrl as string | undefined;
+  })();
+  const meetingUrlFromLocation: string | undefined =
+    typeof trpcBooking?.location === 'string' && /^https?:\/\//i.test(trpcBooking.location)
+      ? (trpcBooking.location as string)
+      : undefined;
+  const meetingUrl = meetingUrlFromMetadata || meetingUrlFromReferences || meetingUrlFromLocation;
 
   return {
     uid: trpcBooking.uid ?? String(trpcBooking.id),
@@ -140,7 +204,8 @@ function transformTrpcBooking(trpcBooking: any): Booking {
     type: getMeetingType(trpcBooking.location),
     participants: getParticipants(trpcBooking.attendees),
     status: getBookingStatus(trpcBooking.status),
-    location: trpcBooking.location || undefined,
+    location: resolvedLocation,
+    meetingUrl,
   };
 }
 
@@ -229,19 +294,29 @@ export default function BookingListClient({ searchParams }: BookingListClientPro
         </div>
       </div>
       <div className="w-full gap-8 px-8">
-        <BookingList bookings={bookings} />
-        {hasNextPage && (
-          <div className="mt-4 text-center">
-            <button
-              onClick={() => fetchNextPage()}
-              disabled={isFetchingNextPage}
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
-            >
-              {isFetchingNextPage ? 'Loading more...' : 'Load more'}
-            </button>
-          </div>
+        {view === 'list' &&
+          (<>
+            <BookingList bookings={bookings} />
+            {hasNextPage && (
+              <div className="mt-4 text-center">
+                <button
+                  onClick={() => fetchNextPage()}
+                  disabled={isFetchingNextPage}
+                  className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
+                >
+                  {isFetchingNextPage ? 'Loading more...' : 'Load more'}
+                </button>
+              </div>
+            )}
+          </>
+
+          )
+        }
+        {view === 'calendar' && (
+          // <WeeklyCalendar bookings={bookings} />
+          <CalendarTest bookings={bookings} hasNextPage={hasNextPage} isFetchingNextPage={isFetchingNextPage} fetchNextPage={fetchNextPage} />
         )}
       </div>
     </>
-  );
+  )
 } 
