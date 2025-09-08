@@ -118,7 +118,14 @@ function transformTrpcBooking(trpcBooking: any): Booking {
   // Determine meeting type based on location
   const getMeetingType = (location?: string): 'online' | 'presential' => {
     if (!location) return 'presential';
-    return (location.includes('Meet') || location.includes('Teams')) ? 'online' : 'presential';
+    const loc = String(location).toLowerCase();
+    const isOnline =
+      loc.includes('integrations:google:meet') ||
+      loc.includes('google meet') ||
+      loc.includes('meet') ||
+      loc.includes('zoom') ||
+      loc.includes('teams');
+    return isOnline ? 'online' : 'presential';
   };
 
   // Extract participant names from attendees
@@ -131,6 +138,39 @@ function transformTrpcBooking(trpcBooking: any): Booking {
     return status === 'CANCELLED' ? 'canceled' : 'confirmed';
   };
 
+  // Prefer a readable address/value for in-person bookings
+  let resolvedLocation: string | undefined = trpcBooking.location || undefined;
+  const isOnlineType = getMeetingType(resolvedLocation) === 'online';
+  if (!isOnlineType) {
+    const responsesLoc = trpcBooking?.responses?.location;
+    const candidateFromResponses =
+      (responsesLoc?.optionValue as string | undefined) ||
+      (responsesLoc?.value as string | undefined);
+    const candidateFromMetadata = trpcBooking?.metadata?.location?.address as string | undefined;
+    // Try eventType's configured address (when organizer set an address in service setup)
+    const locs = (trpcBooking?.eventType?.locations as Array<any> | undefined) || [];
+    const fromEventType = (() => {
+      const inPerson = locs.find((l) => l?.type === 'inPerson' && typeof l.address === 'string' && l.address.trim());
+      if (inPerson) return inPerson.address as string;
+      const attendee = locs.find(
+        (l) => l?.type === 'attendeeInPerson' && typeof l.attendeeAddress === 'string' && l.attendeeAddress.trim()
+      );
+      if (attendee) return attendee.attendeeAddress as string;
+      const generic = locs.find((l) => typeof l.address === 'string' && l.address.trim());
+      return generic?.address as string | undefined;
+    })();
+
+    const candidate = candidateFromResponses || candidateFromMetadata || fromEventType;
+    const isToken = (val?: string) => {
+      if (!val) return false;
+      const v = val.toLowerCase();
+      return v === 'inperson' || v === 'in_person' || v === 'in person';
+    };
+    if (candidate && !isToken(candidate)) {
+      resolvedLocation = candidate;
+    }
+  }
+
   return {
     uid: trpcBooking.uid ?? String(trpcBooking.id),
     id: trpcBooking.id,
@@ -142,7 +182,7 @@ function transformTrpcBooking(trpcBooking: any): Booking {
     type: getMeetingType(trpcBooking.location),
     participants: getParticipants(trpcBooking.attendees),
     status: getBookingStatus(trpcBooking.status),
-    location: trpcBooking.location || undefined,
+    location: resolvedLocation,
   };
 }
 
@@ -251,7 +291,7 @@ export default function BookingListClient({ searchParams }: BookingListClientPro
         }
         {view === 'calendar' && (
           // <WeeklyCalendar bookings={bookings} />
-          <CalendarTest/>
+          <CalendarTest bookings={bookings} />
         )}
       </div>
     </>
