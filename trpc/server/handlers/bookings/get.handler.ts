@@ -42,6 +42,8 @@ export const getHandler = async ({
   };
 };
 
+export type TypeGetBookingsListing = Awaited<ReturnType<typeof getHandler>>;
+
 const set = new Set();
 const getUniqueBookings = <T extends { uid: string }>(arr: T[]) => {
   const unique = arr.filter((booking) => {

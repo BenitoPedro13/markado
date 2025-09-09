@@ -160,7 +160,7 @@ export const CalendarTest = ({
   const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
   const [selected, setSelected] = React.useState<Booking | null>(null);
   const HOURS = React.useMemo(() => Array.from({length: 24}, (_, i) => i), []);
-  const HOUR_PX = 120; // height per hour row (px)
+  const HOUR_PX = 60; // height per hour row (px)
   const HEADER_PX = 40; // header row height
   const DAY_MIN_WIDTH = 200; // min width per day for horizontal scroll
   const COLUMN_HEIGHT = 24 * HOUR_PX;

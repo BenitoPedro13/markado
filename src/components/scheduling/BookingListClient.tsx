@@ -43,8 +43,8 @@ function ValidateSearchParams(searchParams: {
     sort = undefined;
   }
 
-  if (view && !VALID_VIEWS.includes(view as ValidBookingView)) {
-    view = 'list';
+  if ((view && !VALID_VIEWS.includes(view as ValidBookingView)) || view === undefined) {
+    view = 'calendar';
   }
 
   return {
