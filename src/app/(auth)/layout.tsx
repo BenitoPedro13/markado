@@ -111,7 +111,7 @@ const Header = () => {
         </Link>
 
         {isInSignUpFlow && (
-          <HorizontalStepper.Root className="absolute left-1/2 -translate-x-1/2 gap-1 flex-grow flex justify-center">
+          <HorizontalStepper.Root className="absolute left-1/2 -translate-x-11  md:-translate-x-1/2 gap-1 flex-grow justify-center hidden min-[616px]:flex">
             {steps.map((s, index) => {
               const state = getStepState(s.path);
               return (
@@ -222,7 +222,7 @@ export default function AuthLayout({ children }: PropsWithChildren) {
             > */}
               <Button variant="neutral" mode="stroke" onClick={handleBack} className="absolute left-12 top-[114px]">
                 <RiArrowLeftSLine size={20} color="var(--text-sub-600)" />
-                <span className="text-text-sub-600">Voltar</span>
+                <span className="hidden sm:inline text-text-sub-600">Voltar</span>
               </Button>
             {/* </button> */}
           </>
