@@ -46,6 +46,7 @@ export type TimezoneSelectWithStyleProps = {
   hint?: boolean;
   variant?: 'default' | 'compact' | 'compactForInput' | 'inline';
   name?: string;
+  lockedValue?: string;
 };
 
 export function TimezoneSelectWithStyle({
@@ -60,13 +61,14 @@ export function TimezoneSelectWithStyle({
   autoDetect = true,
   defaultValue = '',
   variant = 'default',
-  name = 'timeZone'
+  name = 'timeZone',
+  lockedValue = 'America/Sao_Paulo'
 }: TimezoneSelectWithStyleProps) {
   const {options, parseTimezone} = useTimezoneSelect({labelStyle});
   const [currentTime, setCurrentTime] = useState<string>('');
   const [isDetecting, setIsDetecting] = useState(false);
   const [selectedTimezone, setSelectedTimezone] = useState<string | undefined>(
-    value || defaultValue || undefined
+    lockedValue ?? (value || defaultValue || undefined)
   );
 
   const isDetectingRef = useRef(false);
@@ -77,12 +79,11 @@ export function TimezoneSelectWithStyle({
     isDetectingRef.current = false;
     detectionAttemptedRef.current = false;
     mountedRef.current = true;
-    
+
     return () => {
       mountedRef.current = false;
     };
   }, []);
-
 
   // Memoize the formatted timezone value to prevent recalculation on every render
   const formattedValue = useMemo(() => {
@@ -101,16 +102,15 @@ export function TimezoneSelectWithStyle({
   // Handle value changes from the Select component
   const handleValueChange = useCallback(
     (newValue: string) => {
-      
       // Don't allow empty values
       if (!newValue || newValue.trim() === '') {
         return;
       }
-      
+
       if (newValue === selectedTimezone) {
         return;
       }
-      
+
       setSelectedTimezone(newValue);
       if (onChange) {
         onChange(newValue);
@@ -131,12 +131,13 @@ export function TimezoneSelectWithStyle({
     });
   }, [options]);
 
-
   useEffect(() => {
     if (value && !autoDetect) {
-      setSelectedTimezone(value);
+      lockedValue
+        ? setSelectedTimezone(lockedValue)
+        : setSelectedTimezone(value);
     }
-  }, [value, autoDetect]);
+  }, [value, autoDetect, lockedValue]);
 
   // Timezone detection - run only once on mount
   useEffect(() => {
@@ -155,17 +156,17 @@ export function TimezoneSelectWithStyle({
     // Execute detection with a small delay to ensure it runs after initialization
     setTimeout(() => {
       if (!mountedRef.current) return;
-      
+
       const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-       if (userTimezone && userTimezone.trim() !== '') {
-         setSelectedTimezone(userTimezone);
-         if (onChange) {
-           onChange(userTimezone);
-         }
-       } else {
-         console.log('❌ Invalid timezone detected, keeping current value');
-       }
+      if (userTimezone && userTimezone.trim() !== '') {
+        setSelectedTimezone(userTimezone);
+        if (onChange) {
+          onChange(userTimezone);
+        }
+      } else {
+        console.log('❌ Invalid timezone detected, keeping current value');
+      }
 
       if (mountedRef.current) {
         isDetectingRef.current = false;
@@ -203,16 +204,26 @@ export function TimezoneSelectWithStyle({
     return () => clearInterval(intervalId);
   }, [selectedTimezone]);
 
+  console.log(
+    'Rendering TimezoneSelectWithStyle:',
+    {
+      value,
+      selectedTimezone,
+      lockedValue
+    },
+    lockedValue ?? selectedTimezone
+  );
+
   return (
     <div className="flex flex-col gap-1">
-        <Select.Root
-          onValueChange={handleValueChange}
-          disabled={disabled || isLoading || isDetecting}
-          value={selectedTimezone}
-          defaultValue={defaultValue}
-          variant={variant}
-          name={name}
-        >
+      <Select.Root
+        onValueChange={handleValueChange}
+        disabled={!!lockedValue || disabled || isLoading || isDetecting}
+        value={lockedValue ?? selectedTimezone}
+        defaultValue={lockedValue ?? defaultValue}
+        variant={variant}
+        name={name}
+      >
         <Select.Trigger
           className={cn(
             'flex items-center gap-1 border-none w-full overflow-hidden',
@@ -220,7 +231,11 @@ export function TimezoneSelectWithStyle({
             className
           )}
         >
-          <RiGlobalLine size={20} color="var(--text-soft-400)" className="flex-shrink-0" />
+          <RiGlobalLine
+            size={20}
+            color="var(--text-soft-400)"
+            className="flex-shrink-0"
+          />
           <span className="text-text-sub-600 text-paragraph-sm truncate min-w-0">
             {isDetecting ? 'Detecting timezone...' : formattedValue}
           </span>

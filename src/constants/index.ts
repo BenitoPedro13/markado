@@ -1,3 +1,5 @@
+export const TIMEZONE_LOCK_VALUE = 'America/Sao_Paulo';
+
 // is production
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 

@@ -135,7 +135,7 @@ const Header = () => {
           <>
             {/** Help button */}
             <div className="flex items-center gap-3">
-              <p className="text-paragraph-sm text-text-sub-600">
+              <p className="text-paragraph-sm text-text-sub-600  hidden sm:inline">
                 {t('need_help')}
               </p>
               <Button variant="neutral" mode="stroke">
