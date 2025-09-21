@@ -6,7 +6,7 @@ import * as Textarea from '@/components/align-ui/ui/textarea';
 import * as Button from '@/components/align-ui/ui/button';
 import { Service, ServiceBadgeColor } from '@/types/service';
 import * as Divider from '@/components/align-ui/ui/divider';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import * as Select from '@/components/align-ui/ui/select';
 import { useServicesDetails } from '@/contexts/services/servicesDetails/ServicesContext';
 import { MARKADO_DOMAIN } from '@/constants';
@@ -61,6 +61,114 @@ export default function ServiceDetails({ slug }: Props) {
   const [priceVisible, setPriceVisible] = useState(
     !!getValues('price')
   );
+  const [stripeStatus, setStripeStatus] = useState<{
+    connected: boolean;
+    loading: boolean;
+    error: string | null;
+  }>({ connected: false, loading: true, error: null });
+  const [isConnectingStripe, setIsConnectingStripe] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchStripeStatus = async () => {
+      try {
+        if (isMounted) {
+          setStripeStatus((prev) => ({ ...prev, loading: true, error: null }));
+        }
+
+        const response = await fetch('/api/integrations/stripepayment/status', {
+          cache: 'no-store'
+        });
+
+        if (!isMounted) return;
+
+        if (!response.ok) {
+          if (response.status === 401) {
+            setStripeStatus({ connected: false, loading: false, error: null });
+            return;
+          }
+
+          const body = await response.json().catch(() => null);
+          const message = body?.message || `Erro ao carregar status da Stripe (${response.status})`;
+          throw new Error(message);
+        }
+
+        const data = await response.json();
+        if (!isMounted) return;
+
+        setStripeStatus({
+          connected: Boolean(data?.connected),
+          loading: false,
+          error: null
+        });
+      } catch (error) {
+        if (!isMounted) return;
+        console.error(error);
+        setStripeStatus({
+          connected: false,
+          loading: false,
+          error:
+            error instanceof Error
+              ? error.message
+              : 'Não foi possível carregar o status da Stripe.'
+        });
+      }
+    };
+
+    void fetchStripeStatus();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const handleConnectStripe = useCallback(async () => {
+    try {
+      setStripeStatus((prev) => ({ ...prev, error: null }));
+      setIsConnectingStripe(true);
+
+      const statePayload = {
+        returnTo: window.location.href,
+        onErrorReturnTo: window.location.href,
+        fromApp: false
+      };
+
+      const response = await fetch(
+        `/api/integrations/stripepayment/add?state=${encodeURIComponent(
+          JSON.stringify(statePayload)
+        )}`
+      );
+
+      if (!response.ok) {
+        const body = await response.json().catch(() => null);
+        const message = body?.message || 'Não foi possível iniciar a conexão com a Stripe.';
+        throw new Error(message);
+      }
+
+      const data = await response.json();
+      if (data?.url) {
+        window.location.href = data.url as string;
+        return;
+      }
+
+      throw new Error('Resposta inesperada ao iniciar a conexão com a Stripe.');
+    } catch (error) {
+      console.error(error);
+      setStripeStatus((prev) => ({
+        ...prev,
+        loading: false,
+        error:
+          error instanceof Error
+            ? error.message
+            : 'Não foi possível iniciar a conexão com a Stripe.'
+      }));
+    } finally {
+      setIsConnectingStripe(false);
+    }
+  }, []);
+
+  const isStripeConnected = stripeStatus.connected;
   // const service = services.find((s) => s.slug === slug);
 
   // Carrega os dados do serviço atual
@@ -199,7 +307,45 @@ export default function ServiceDetails({ slug }: Props) {
         <Divider.Root />
         <div className="text-title-h6">Dados do Serviço</div>
         <div className="grid gap-4">
-          
+          <div className="flex flex-col gap-3 rounded-lg border border-bg-soft-200 bg-bg-white-0 p-4 shadow-regular-xs">
+            <div>
+              <p className="text-sm font-medium text-text-strong-950">
+                Pagamentos com Stripe
+              </p>
+              <p className="text-paragraph-xs text-text-sub-600">
+                Conecte sua conta Stripe para habilitar a cobrança deste serviço.
+              </p>
+            </div>
+
+            {stripeStatus.error && (
+              <Hint.Root className="flex items-start gap-2 text-error-base">
+                <Hint.Icon as={RiErrorWarningFill} className="text-error-base" />
+                <span className="text-paragraph-xs">{stripeStatus.error}</span>
+              </Hint.Root>
+            )}
+
+            <div className="flex items-center gap-2">
+              <Button.Root
+                variant={isStripeConnected ? 'neutral' : 'primary'}
+                mode={isStripeConnected ? 'ghost' : 'filled'}
+                size="small"
+                disabled={isStripeConnected || stripeStatus.loading || isConnectingStripe}
+                onClick={handleConnectStripe}
+              >
+                {stripeStatus.loading
+                  ? 'Verificando...'
+                  : isStripeConnected
+                    ? 'Stripe conectada'
+                    : isConnectingStripe
+                      ? 'Conectando...'
+                      : 'Conectar Stripe'}
+              </Button.Root>
+              {isStripeConnected && (
+                <span className="text-label-xs text-green-700">Pronto para receber pagamentos</span>
+              )}
+            </div>
+          </div>
+
           <Controller
             name="price"
             render={({ field: { value, onChange } }) => (
@@ -213,10 +359,15 @@ export default function ServiceDetails({ slug }: Props) {
                   )}
                   childrenClassName="lg:ml-0"
                   title={t('service_price_title')}
-                  description={t('service_price_description')}
-                  checked={priceVisible}
-
+                  description={
+                    isStripeConnected
+                      ? t('service_price_description')
+                      : 'Conecte a Stripe para definir um valor para este serviço.'
+                  }
+                  checked={priceVisible && isStripeConnected}
+                  disabled={!isStripeConnected || stripeStatus.loading}
                   onCheckedChange={(e) => {
+                    if (!isStripeConnected) return;
                     setPriceVisible(e);
                     onChange(e ? value : '');
                   }}
@@ -229,7 +380,8 @@ export default function ServiceDetails({ slug }: Props) {
                         {...register('price')}
                         placeholder="100.00"
                         step="0.01"
-                        required={priceVisible}
+                        required={priceVisible && isStripeConnected}
+                        disabled={!isStripeConnected}
                       />
                     </Input.Root>
                     {/* <Hint.Root

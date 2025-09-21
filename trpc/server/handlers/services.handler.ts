@@ -1,7 +1,7 @@
 'use server';
 
 import { Prisma } from '~/prisma/app/generated/prisma/client';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { PrismaClientKnownRequestError } from '~/prisma/app/generated/prisma/client/runtime/library';
 import { prisma } from '@/lib/prisma';
 import { EventTypeRepository } from '@/repositories/eventType';
 import { generateHashedLink } from '@/lib/generateHashedLink';

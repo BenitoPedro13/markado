@@ -12,7 +12,14 @@ export default function getPaymentAppData(
 ) {
   const metadataApps = eventType?.metadata?.apps as unknown as EventTypeAppsList;
   if (!metadataApps) {
-    return { enabled: false, price: 0, currency: "usd", appId: null };
+    return {
+      enabled: false,
+      price: 0,
+      currency: "usd",
+      appId: null,
+      paymentOption: "ON_BOOKING" as z.infer<typeof paymentOptionEnum>,
+      credentialId: undefined,
+    };
   }
   type appId = keyof typeof metadataApps;
   // @TODO: a lot of unknowns types here can be improved later

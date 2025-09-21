@@ -7,24 +7,42 @@ import { getStripeCustomerIdFromUserId } from "../lib/customer";
 import stripe from "../lib/server";
 import { auth } from "@/auth";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== "POST" && req.method !== "GET")
-    return res.status(405).json({ message: "Method not allowed" });
+import type { StripeApiHandlerResult } from "./types";
 
-  const session = await auth()
+interface HandlePortalRequestOptions {
+  method?: string;
+  returnTo?: string | string[] | null;
+}
 
-  // if (!referer) return res.status(400).json({ message: "Missing referrer" });
+export async function handlePortalRequest({ method, returnTo }: HandlePortalRequestOptions): Promise<StripeApiHandlerResult<{ message: string }>> {
+  if (method !== "POST" && method !== "GET") {
+    return {
+      status: 405,
+      body: { message: "Method not allowed" },
+    };
+  }
 
-  if (!session?.user?.id) return res.status(401).json({ message: "Not authenticated" });
+  const session = await auth();
 
-  // If accessing a user's portal
+  if (!session?.user?.id) {
+    return {
+      status: 401,
+      body: { message: "Not authenticated" },
+    };
+  }
+
   const customerId = await getStripeCustomerIdFromUserId(session.user.id);
-  if (!customerId) return res.status(400).json({ message: "CustomerId not found in stripe" });
+  if (!customerId) {
+    return {
+      status: 400,
+      body: { message: "CustomerId not found in stripe" },
+    };
+  }
 
   let return_url = `${WEBAPP_URL}/settings/billing`;
 
-  if (typeof req.query.returnTo === "string") {
-    const safeRedirectUrl = getSafeRedirectUrl(req.query.returnTo);
+  if (typeof returnTo === "string") {
+    const safeRedirectUrl = getSafeRedirectUrl(returnTo);
     if (safeRedirectUrl) return_url = safeRedirectUrl;
   }
 
@@ -33,5 +51,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return_url,
   });
 
-  res.redirect(302, stripeSession.url);
+  return {
+    status: 302,
+    redirectUrl: stripeSession.url,
+  };
+}
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  const result = await handlePortalRequest({ method: req.method, returnTo: req.query.returnTo ?? null });
+
+  if (result.redirectUrl) {
+    res.redirect(result.status || 302, result.redirectUrl);
+    return;
+  }
+
+  res.status(result.status).json(result.body ?? {});
 }

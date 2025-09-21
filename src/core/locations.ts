@@ -6,7 +6,7 @@ import { Ensure, Optional } from "@/types/utils";
 
 import { appStoreMetadata } from "@/packages/app-store/bookerAppsMetaData";
 // import logger from "@/lib/logger";
-// import { BookingStatus } from "@/prisma/enums";
+import { BookingStatus } from "~/prisma/enums";
 // import type { Ensure, Optional } from "@/types/utils";
 
 import type { EventLocationTypeFromAppMeta } from "@/packages/types/App";
@@ -436,28 +436,28 @@ export const locationKeyToString = (location: LocationObject) => {
 //   );
 // };
 
-// export function getSuccessPageLocationMessage(
-//   location: EventLocationType["type"],
-//   t: TFunction,
-//   bookingStatus?: BookingStatus
-// ) {
-//   const eventLocationType = getEventLocationType(location);
-//   let locationToDisplay = location;
-//   if (eventLocationType && !eventLocationType.default && eventLocationType.linkType === "dynamic") {
-//     const isConfirmed = bookingStatus === BookingStatus.ACCEPTED;
+export function getSuccessPageLocationMessage(
+  location: EventLocationType["type"],
+  t: any,
+  bookingStatus?: BookingStatus
+) {
+  const eventLocationType = getEventLocationType(location);
+  let locationToDisplay = location;
+  if (eventLocationType && !eventLocationType.default && eventLocationType.linkType === "dynamic") {
+    const isConfirmed = bookingStatus === BookingStatus.ACCEPTED;
 
-//     if (bookingStatus === BookingStatus.CANCELLED || bookingStatus === BookingStatus.REJECTED) {
-//       locationToDisplay == t("web_conference");
-//     } else if (isConfirmed) {
-//       locationToDisplay = `${getHumanReadableLocationValue(location, t)}: ${t(
-//         "meeting_url_in_confirmation_email"
-//       )}`;
-//     } else {
-//       locationToDisplay = t("web_conferencing_details_to_follow");
-//     }
-//   }
-//   return locationToDisplay;
-// }
+    if (bookingStatus === BookingStatus.CANCELLED || bookingStatus === BookingStatus.REJECTED) {
+      locationToDisplay == t("web_conference");
+    } else if (isConfirmed) {
+      locationToDisplay = `${getHumanReadableLocationValue(location, t)}: ${t(
+        "meeting_url_in_confirmation_email"
+      )}`;
+    } else {
+      locationToDisplay = t("web_conferencing_details_to_follow");
+    }
+  }
+  return locationToDisplay;
+}
 
 export const getTranslatedLocation = (
   location: PrivacyFilteredLocationObject,
