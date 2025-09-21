@@ -4,6 +4,7 @@ import { stringify } from "querystring";
 
 import getInstalledAppPath from "../../_utils/getInstalledAppPath";
 import createOAuthAppCredential from "../../_utils/oauth/createOAuthAppCredential";
+import { decodeOAuthState } from "../../_utils/oauth/decodeOAuthState";
 import type { StripeData } from "../lib/server";
 import stripe from "../lib/server";
 import { auth } from "@/auth";
@@ -36,8 +37,15 @@ export async function handleCallbackRequest({ method, query }: HandleCallbackReq
   const session = await auth();
   const reqLike = { query } as unknown as NextApiRequest;
   const { code, error, error_description } = query;
+  const state = decodeOAuthState(reqLike);
 
   if (error) {
+    if (error === "access_denied") {
+      return {
+        status: 302,
+        redirectUrl: state?.onErrorReturnTo || "/apps/installed/payment",
+      };
+    }
     const queryString = stringify({ error, error_description });
     return {
       status: 302,
@@ -69,7 +77,7 @@ export async function handleCallbackRequest({ method, query }: HandleCallbackReq
     reqLike
   );
 
-  const returnTo = getReturnToValueFromQueryState(reqLike);
+  const returnTo = state?.returnTo || getReturnToValueFromQueryState(reqLike);
   return {
     status: 302,
     redirectUrl: returnTo || getInstalledAppPath({ variant: "payment", slug: "stripe" }),
