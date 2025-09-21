@@ -193,7 +193,8 @@
     "event_request_cancelled": "Event request cancelled",
     "event_cancelled_subject": "Canceled: {title} at {date}",
     "service_price_title": "Price",
-    "service_price_description": "Defina um preço para o seu serviço se quiser cobrar por ele. Você pode deixar em branco para serviços gratuitos."
+    "service_price_description": "Defina um preço para o seu serviço se quiser cobrar por ele. Você pode deixar em branco para serviços gratuitos.",
+    "acknowledge_booking_no_show_fee": "I acknowledge that if I do not attend this event that a {{amount}} no show fee will be applied to my card."
   },
   "Error": {
     "description": "<p>Unfortunately we encountered an error.</p><p>You can try to <retry>reload the page</retry> you were trying to visit.</p>",

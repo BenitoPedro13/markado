@@ -13,23 +13,30 @@ export const getEventTypeAppData = <T extends EventTypeAppsList>(
   appId: T,
   forcedGet?: boolean
 ): EventTypeApps[T] => {
+  const hasPrice = (
+    data: unknown
+  ): data is {price: number} =>
+    typeof data === 'object' && data !== null && 'price' in data;
+  const hasCurrency = (
+    data: unknown
+  ): data is {currency: string} =>
+    typeof data === 'object' && data !== null && 'currency' in data;
   const metadata = eventType.metadata;
   const appMetadata = metadata?.apps && metadata.apps[appId];
   if (appMetadata) {
     // const allowDataGet = forcedGet ? true : appMetadata.enabled;
     const allowDataGet = true;
-    return allowDataGet
-      ? {
-          ...appMetadata,
-          // We should favor eventType's price and currency over appMetadata's price and currency
-          // price: eventType.price || appMetadata.price || null,
-          price: eventType.price || null,
-          // currency: eventType.currency || appMetadata.currency || null,
-          currency: eventType.currency || null
-          // trackingId is legacy way to store value for TRACKING_ID. So, we need to support both.
-          // TRACKING_ID: appMetadata.TRACKING_ID || appMetadata.trackingId || null
-        }
-      : undefined;
+    if (allowDataGet) {
+      const data = {...appMetadata};
+      if (hasPrice(data)) {
+        data.price = eventType.price ?? data.price;
+      }
+      if (hasCurrency(data)) {
+        data.currency = eventType.currency ?? data.currency;
+      }
+      return data as EventTypeApps[T];
+    }
+    return undefined as EventTypeApps[T];
   }
   // Backward compatibility for existing event types.
   // TODO: After the new AppStore EventType App flow is stable, write a migration to migrate metadata to new format which will let us remove this compatibility code
