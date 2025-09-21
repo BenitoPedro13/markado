@@ -101,10 +101,13 @@ const EventTypeAppSettingsInterface: EventTypeAppSettingsComponent = ({
                 if (Number.isNaN(amount)) {
                   return;
                 }
-                setAppData(
-                  'price',
-                  convertToSmallestCurrencyUnit(amount, currencyCode)
-                );
+                const normalizedAmount = convertToSmallestCurrencyUnit(amount, currencyCode);
+                setAppData('price', normalizedAmount);
+                if (normalizedAmount > 0) {
+                  setAppData('enabled', true);
+                } else {
+                  setAppData('enabled', false);
+                }
               }}
               value={
                 typeof price === 'number' && price > 0

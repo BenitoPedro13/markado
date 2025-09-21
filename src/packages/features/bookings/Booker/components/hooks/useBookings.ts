@@ -3,7 +3,7 @@ import { useRouter } from "next/navigation";
 import { useRef, useState, useEffect } from "react";
 
 //TODO: implement strype on iteration 13-14
-// import { createPaymentLink } from "@/app-store/stripepayment/lib/client";
+import { createPaymentLink } from "@/packages/app-store/stripepayment/lib/client";
 import { useHandleBookEvent } from "@/packages/core/atoms/hooks/bookings/useHandleBookEvent";
 import dayjs from "@/lib/dayjs";
 // import { sdkActionManager } from "@/embed-core/embed-iframe";
@@ -237,18 +237,18 @@ export const useBookings = ({ event, hashedLink, bookingForm, metadata, teamMemb
         // );
       }
 
-      // if (paymentUid) {
-      //   router.push(
-      //     createPaymentLink({
-      //       paymentUid,
-      //       date: timeslot,
-      //       name: fullName,
-      //       email: bookingForm.getValues("responses.email"),
-      //       absolute: false,
-      //     })
-      //   );
-      //   return;
-      // }
+      if (paymentUid) {
+        router.push(
+          createPaymentLink({
+            paymentUid,
+            date: timeslot,
+            name: fullName,
+            email: bookingForm.getValues("responses.email"),
+            absolute: false,
+          })
+        );
+        return;
+      }
 
       if (!uid) {
         console.error("No uid returned from createBookingMutation");

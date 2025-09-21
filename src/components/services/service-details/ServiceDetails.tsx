@@ -119,7 +119,15 @@ export default function ServiceDetails({slug}: Props) {
       }
 
       if (key === 'enabled') {
-        return stripeMetadata.enabled ?? false;
+        if (typeof stripeMetadata.enabled === 'boolean') {
+          return stripeMetadata.enabled;
+        }
+        const formPrice = getValues('price');
+        if (typeof formPrice === 'number') {
+          return formPrice > 0;
+        }
+        const numericPrice = Number(formPrice);
+        return !Number.isNaN(numericPrice) && numericPrice > 0;
       }
 
       return undefined;
@@ -185,7 +193,7 @@ export default function ServiceDetails({slug}: Props) {
           : undefined
       };
 
-      const finalStripe: z.infer<typeof appDataSchema> = {
+      const finalStripeBase: z.infer<typeof appDataSchema> = {
         ...normalizedStripe,
         ...mergedStripe,
         currency:
@@ -196,6 +204,14 @@ export default function ServiceDetails({slug}: Props) {
           typeof mergedStripe.price === 'number'
             ? mergedStripe.price
             : normalizedStripe.price
+      };
+
+      const finalStripe: z.infer<typeof appDataSchema> = {
+        ...finalStripeBase,
+        enabled:
+          typeof finalStripeBase.price === 'number' && finalStripeBase.price > 0
+            ? true
+            : finalStripeBase.enabled ?? false,
       };
 
       const baseMetadata = (metadata && typeof metadata === 'object'
