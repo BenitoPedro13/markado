@@ -1,37 +1,49 @@
-import { useState, useEffect } from "react";
+import {useState, useEffect, type ChangeEvent} from 'react';
 
-import type { EventTypeAppSettingsComponent } from "@/packages/app-store/types";
-import { useLocale } from "@/hooks/use-locale";
-import * as Alert from "@/components/align-ui/ui/alert";
-import * as Select from "@/components/align-ui/ui/select";
-//import * as TextField from "@/components/align-ui/ui/text-field";
-
+import type {EventTypeAppSettingsComponent} from '@/packages/app-store/types';
+import {useLocale} from '@/hooks/use-locale';
+import * as Select from '@/components/align-ui/ui/select';
+import {TextField} from '@/components/align-ui/ui/text-field';
 import {
   convertToSmallestCurrencyUnit,
-  convertFromSmallestToPresentableCurrencyUnit,
-} from "../../_utils/payments/currencyConversions";
-import { paymentOptions } from "../lib/constants";
-import { currencyOptions } from "../lib/currencyOptions";
-
-type Option = { value: string; label: string };
+  convertFromSmallestToPresentableCurrencyUnit
+} from '../../_utils/payments/currencyConversions';
+import {paymentOptions} from '../lib/constants';
+import {currencyOptions} from '../lib/currencyOptions';
 
 const EventTypeAppSettingsInterface: EventTypeAppSettingsComponent = ({
   getAppData,
   setAppData,
   disabled,
-  eventType,
+  eventType
 }) => {
-  const price = getAppData("price");
-  const currency = getAppData("currency") || currencyOptions[0].value;
-  const [selectedCurrency, setSelectedCurrency] = useState(
-    currencyOptions.find((c) => c.value === currency) || {
-      label: currencyOptions[0].label,
-      value: currencyOptions[0].value,
+  const price = getAppData('price');
+
+  const resolveSelectValue = (value: unknown, fallback: string) => {
+    if (typeof value === 'string') return value;
+    if (value && typeof value === 'object' && 'value' in value) {
+      const optionValue = (value as {value?: unknown}).value;
+      if (typeof optionValue === 'string') return optionValue;
     }
-  );
-  const paymentOption = getAppData("paymentOption");
-  const paymentOptionSelectValue = paymentOptions.find((option) => paymentOption === option.value);
-  const requirePayment = getAppData("enabled");
+    return fallback;
+  };
+
+  const rawCurrency = resolveSelectValue(getAppData('currency'), currencyOptions[0].value);
+  const normalizedCurrency = rawCurrency.toLowerCase();
+  const [selectedCurrency, setSelectedCurrency] = useState(normalizedCurrency);
+  const selectedCurrencyOption =
+    currencyOptions.find((option) => option.value === selectedCurrency) ||
+    currencyOptions[0];
+  const currencyCode = selectedCurrencyOption.value.toUpperCase();
+
+  const paymentOption = resolveSelectValue(getAppData('paymentOption'), paymentOptions[0].value);
+  const [selectedPaymentOption, setSelectedPaymentOption] = useState(paymentOption);
+
+  const paymentEnabledFlag = getAppData('enabled');
+  const requirePayment =
+    typeof paymentEnabledFlag === 'boolean'
+      ? paymentEnabledFlag
+      : typeof price === 'number' && price > 0;
 
   const {t} = useLocale();
   const recurringEventDefined = eventType.recurringEvent?.count !== undefined;
@@ -39,42 +51,44 @@ const EventTypeAppSettingsInterface: EventTypeAppSettingsComponent = ({
   const getCurrencySymbol = (locale: string, currency: string) =>
     (0)
       .toLocaleString(locale, {
-        style: "currency",
+        style: 'currency',
         currency,
         minimumFractionDigits: 0,
-        maximumFractionDigits: 0,
+        maximumFractionDigits: 0
       })
-      .replace(/\d/g, "")
+      .replace(/\d/g, '')
       .trim();
 
   useEffect(() => {
     if (requirePayment) {
-      if (!getAppData("currency")) {
-        setAppData("currency", currencyOptions[0].value);
+      if (!getAppData('currency')) {
+        setAppData('currency', currencyOptions[0].value);
       }
-      if (!getAppData("paymentOption")) {
-        setAppData("paymentOption", paymentOptions[0].value);
+      if (!getAppData('paymentOption')) {
+        setAppData('paymentOption', paymentOptions[0].value);
       }
     }
   }, [requirePayment, getAppData, setAppData]);
 
+  useEffect(() => {
+    setSelectedCurrency(normalizedCurrency);
+  }, [normalizedCurrency]);
+
+  useEffect(() => {
+    setSelectedPaymentOption(paymentOption);
+  }, [paymentOption]);
+
   return (
     <>
-      {/* {recurringEventDefined && (
-        <Alert className="mt-2" severity="warning" title={t("warning_recurring_event_payment")} />
-      )} */}
       {!recurringEventDefined && requirePayment && (
         <>
-            {/*
-              <div className="mt-4 block items-center justify-start sm:flex sm:space-x-2">
-              <TextField
+          <div className="mt-4 block items-center justify-start sm:flex sm:space-x-2">
+            <TextField
               data-testid="stripe-price-input"
-              label={t("price")}
+              label={t('price')}
               className="h-[38px]"
-              addOnLeading={
-                <>{selectedCurrency.value ? getCurrencySymbol("en", selectedCurrency.value) : ""}</>
-              }
-              addOnSuffix={currency.toUpperCase()}
+              addOnLeading={<>{currencyCode ? getCurrencySymbol('en', currencyCode) : ''}</>}
+              addOnSuffix={currencyCode}
               addOnClassname="h-[38px]"
               step="0.01"
               min="0.5"
@@ -82,59 +96,86 @@ const EventTypeAppSettingsInterface: EventTypeAppSettingsComponent = ({
               required
               placeholder="Price"
               disabled={disabled}
-              onChange={(e) => {
-                setAppData("price", convertToSmallestCurrencyUnit(Number(e.target.value), currency));
-              }}
-              value={price > 0 ? convertFromSmallestToPresentableCurrencyUnit(price, currency) : undefined}
-            /> */}
-          {/* </div>
-          <div className="mt-5 w-60">
-            <label className="text-default mb-1 block text-sm font-medium" htmlFor="currency">
-              {t("currency")}
-            </label>
-            <Select
-              data-testid="stripe-currency-select"
-              variant="default"
-              options={currencyOptions}
-              innerClassNames={{
-                input: "stripe-currency-input",
-              }}
-              value={selectedCurrency}
-              className="text-black"
-              defaultValue={selectedCurrency}
-              onChange={(e) => {
-                if (e) {
-                  setSelectedCurrency(e);
-                  setAppData("currency", e.value);
+              onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                const amount = Number(event.target.value);
+                if (Number.isNaN(amount)) {
+                  return;
+                }
+                const normalizedAmount = convertToSmallestCurrencyUnit(amount, currencyCode);
+                setAppData('price', normalizedAmount);
+                if (normalizedAmount > 0) {
+                  setAppData('enabled', true);
+                } else {
+                  setAppData('enabled', false);
                 }
               }}
+              value={
+                typeof price === 'number' && price > 0
+                  ? convertFromSmallestToPresentableCurrencyUnit(
+                      price,
+                      currencyCode
+                    )
+                  : undefined
+              }
             />
           </div>
-          <div className="mt-4 w-60">
-            <label className="text-default mb-1 block text-sm font-medium" htmlFor="currency">
-              Payment option
-            </label>
-            <Select<Option>
-              data-testid="stripe-payment-option-select"
-              defaultValue={
-                paymentOptionSelectValue
-                  ? { ...paymentOptionSelectValue, label: t(paymentOptionSelectValue.label) }
-                  : { ...paymentOptions[0], label: t(paymentOptions[0].label) }
-              }
-              options={paymentOptions.map((option) => {
-                return { ...option, label: t(option.label) || option.label };
-              })}
-              onChange={(input) => {
-                if (input) setAppData("paymentOption", input.value);
-              }}
-              className="mb-1 h-[38px] w-full"
-              isDisabled={seatsEnabled || disabled}
-            />
-          </div> */}
 
-          {/* {seatsEnabled && paymentOption === "HOLD" && (
-            <Alert className="mt-2" severity="warning" title={t("seats_and_no_show_fee_error")} />
-          )} */}
+          <div className="mt-5 w-60">
+            <label
+              className="text-default mb-1 block text-sm font-medium"
+              htmlFor="currency"
+            >
+              {t('currency')}
+            </label>
+            <Select.Root
+              data-testid="stripe-currency-select"
+              value={selectedCurrency}
+              onValueChange={(value) => {
+                setSelectedCurrency(value);
+                setAppData('currency', value);
+              }}
+              disabled={disabled}
+            >
+              <Select.Trigger className="w-full">
+                <Select.Value />
+              </Select.Trigger>
+              <Select.Content>
+                {currencyOptions.map((option) => (
+                  <Select.Item key={option.value} value={option.value}>
+                    {option.label}
+                  </Select.Item>
+                ))}
+              </Select.Content>
+            </Select.Root>
+          </div>
+          <div className="mt-4 w-60">
+            <label
+              className="text-default mb-1 block text-sm font-medium"
+              htmlFor="currency"
+            >
+              {t('payment_option')}
+            </label>
+            <Select.Root
+              data-testid="stripe-payment-option-select"
+              value={selectedPaymentOption}
+              onValueChange={(value) => {
+                setSelectedPaymentOption(value);
+                setAppData('paymentOption', value);
+              }}
+              disabled={seatsEnabled || disabled}
+            >
+              <Select.Trigger className="w-full">
+                <Select.Value />
+              </Select.Trigger>
+              <Select.Content>
+                {paymentOptions.map((option) => (
+                  <Select.Item key={option.value} value={option.value}>
+                    {t(option.label) || option.label}
+                  </Select.Item>
+                ))}
+              </Select.Content>
+            </Select.Root>
+          </div>
         </>
       )}
     </>

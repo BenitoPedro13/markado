@@ -82,7 +82,7 @@ export type EventTypeAppSettingsComponentProps = {
     z.infer<typeof EventTypeModel>,
     "id" | "title" | "description" | "teamId" | "length" | "recurringEvent" | "seatsPerTimeSlot" | "team"
   > & {
-    URL: string;
+    URL?: string;
   };
   getAppData: GetAppData;
   setAppData: SetAppData;

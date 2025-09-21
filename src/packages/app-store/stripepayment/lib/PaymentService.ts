@@ -3,7 +3,7 @@ import Stripe from "stripe";
 import { v4 as uuidv4 } from "uuid";
 import z from "zod";
 
-// import { sendAwaitingPaymentEmailAndSMS } from "@/emails";
+import { sendAwaitingPaymentEmailAndSMS } from "@/packages/emails";
 import { ErrorCode } from "@/packages/lib/errorCodes";
 import { getErrorFromUnknown } from "@/packages/lib/errors";
 import logger from "@/packages/lib/logger";
@@ -347,23 +347,23 @@ export class PaymentService implements IAbstractPaymentService {
     paymentData: Payment,
     eventTypeMetadata?: EventTypeMetadata
   ): Promise<void> {
-    // await sendAwaitingPaymentEmailAndSMS(
-    //   {
-    //     ...event,
-    //     paymentInfo: {
-    //       link: createPaymentLink({
-    //         paymentUid: paymentData.uid,
-    //         name: booking.user?.name,
-    //         email: booking.user?.email,
-    //         date: booking.startTime.toISOString(),
-    //       }),
-    //       paymentOption: paymentData.paymentOption || "ON_BOOKING",
-    //       amount: paymentData.amount,
-    //       currency: paymentData.currency,
-    //     },
-    //   },
-    //   eventTypeMetadata
-    // );
+    await sendAwaitingPaymentEmailAndSMS(
+      {
+        ...event,
+        paymentInfo: {
+          link: createPaymentLink({
+            paymentUid: paymentData.uid,
+            name: booking.user?.name,
+            email: booking.user?.email,
+            date: booking.startTime.toISOString(),
+          }),
+          paymentOption: paymentData.paymentOption || "ON_BOOKING",
+          amount: paymentData.amount,
+          currency: paymentData.currency,
+        },
+      },
+      eventTypeMetadata
+    );
   }
 
   async deletePayment(paymentId: Payment["id"]): Promise<boolean> {
