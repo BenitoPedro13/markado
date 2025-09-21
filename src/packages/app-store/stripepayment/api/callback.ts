@@ -4,10 +4,11 @@ import { stringify } from "querystring";
 
 import getInstalledAppPath from "../../_utils/getInstalledAppPath";
 import createOAuthAppCredential from "../../_utils/oauth/createOAuthAppCredential";
-import { decodeOAuthState } from "../../_utils/oauth/decodeOAuthState";
 import type { StripeData } from "../lib/server";
 import stripe from "../lib/server";
 import { auth } from "@/auth";
+
+import type { StripeApiHandlerResult } from "./types";
 
 function getReturnToValueFromQueryState(req: NextApiRequest) {
   let returnTo = "";
@@ -19,28 +20,41 @@ function getReturnToValueFromQueryState(req: NextApiRequest) {
   return returnTo;
 }
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const session = await auth()
-  const { code, error, error_description } = req.query;
-  const state = decodeOAuthState(req);
+interface HandleCallbackRequestOptions {
+  method?: string;
+  query: NextApiRequest["query"];
+}
+
+export async function handleCallbackRequest({ method, query }: HandleCallbackRequestOptions): Promise<StripeApiHandlerResult<{ message: string }>> {
+  if (method !== "GET") {
+    return {
+      status: 405,
+      body: { message: "Method not allowed" },
+    };
+  }
+
+  const session = await auth();
+  const reqLike = { query } as unknown as NextApiRequest;
+  const { code, error, error_description } = query;
 
   if (error) {
-    // User cancels flow
-    if (error === "access_denied") {
-      state?.onErrorReturnTo ? res.redirect(state.onErrorReturnTo) : res.redirect("/apps/installed/payment");
-    }
-    const query = stringify({ error, error_description });
-    res.redirect(`/apps/installed?${query}`);
-    return;
+    const queryString = stringify({ error, error_description });
+    return {
+      status: 302,
+      redirectUrl: `/apps/installed?${queryString}`,
+    };
   }
 
   if (session?.user?.id) {
-    return res.status(401).json({ message: "You must be logged in to do this" });
+    return {
+      status: 401,
+      body: { message: "You must be logged in to do this" },
+    };
   }
 
   const response = await stripe.oauth.token({
     grant_type: "authorization_code",
-    code: code?.toString(),
+    code: Array.isArray(code) ? code[0] : code?.toString(),
   });
 
   const data: StripeData = { ...response, default_currency: "" };
@@ -52,9 +66,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   await createOAuthAppCredential(
     { appId: "stripe", type: "stripe_payment" },
     data as unknown as Prisma.InputJsonObject,
-    req
+    reqLike
   );
 
-  const returnTo = getReturnToValueFromQueryState(req);
-  res.redirect(returnTo || getInstalledAppPath({ variant: "payment", slug: "stripe" }));
+  const returnTo = getReturnToValueFromQueryState(reqLike);
+  return {
+    status: 302,
+    redirectUrl: returnTo || getInstalledAppPath({ variant: "payment", slug: "stripe" }),
+  };
+}
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  const result = await handleCallbackRequest({ method: req.method, query: req.query });
+
+  if (result.redirectUrl) {
+    res.redirect(result.status || 302, result.redirectUrl);
+    return;
+  }
+
+  res.status(result.status).json(result.body ?? {});
 }

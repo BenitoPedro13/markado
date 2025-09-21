@@ -20,11 +20,55 @@ import { BookingStatus } from "~/prisma/enums";
 
 const log = logger.getSubLogger({ prefix: ["[paymentWebhook]"] });
 
+export interface StripeWebhookResult {
+  statusCode: number;
+  body: Record<string, unknown>;
+}
+
 export const config = {
   api: {
     bodyParser: false,
   },
 };
+
+interface ProcessStripeWebhookOptions {
+  payload: string;
+  signature: string | null | undefined;
+}
+
+export async function processStripeWebhook({ payload, signature }: ProcessStripeWebhookOptions): Promise<StripeWebhookResult> {
+  if (!signature) {
+    throw new HttpCode({ statusCode: 400, message: "Missing stripe-signature" });
+  }
+
+  if (!process.env.STRIPE_WEBHOOK_SECRET) {
+    throw new HttpCode({ statusCode: 500, message: "Missing process.env.STRIPE_WEBHOOK_SECRET" });
+  }
+
+  const event = stripe.webhooks.constructEvent(payload, signature, process.env.STRIPE_WEBHOOK_SECRET);
+
+  // bypassing this validation for e2e tests
+  // in order to successfully confirm the payment
+  if (!event.account && !process.env.NEXT_PUBLIC_IS_E2E) {
+    throw new HttpCode({ statusCode: 202, message: "Incoming connected account" });
+  }
+
+  const handler = webhookHandlers[event.type];
+  if (handler) {
+    await handler(event);
+  } else {
+    /** Not really an error, just letting Stripe know that the webhook was received but unhandled */
+    throw new HttpCode({
+      statusCode: 202,
+      message: `Unhandled Stripe Webhook event type ${event.type}`,
+    });
+  }
+
+  return {
+    statusCode: 200,
+    body: { received: true },
+  };
+}
 
 export async function handleStripePaymentSuccess(event: Stripe.Event) {
   const paymentIntent = event.data.object as Stripe.PaymentIntent;
@@ -129,35 +173,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (req.method !== "POST") {
       throw new HttpCode({ statusCode: 405, message: "Method Not Allowed" });
     }
-    const sig = req.headers["stripe-signature"];
-    if (!sig) {
-      throw new HttpCode({ statusCode: 400, message: "Missing stripe-signature" });
-    }
-
-    if (!process.env.STRIPE_WEBHOOK_SECRET) {
-      throw new HttpCode({ statusCode: 500, message: "Missing process.env.STRIPE_WEBHOOK_SECRET" });
-    }
+    const signatureHeader = req.headers["stripe-signature"];
     const requestBuffer = await buffer(req);
     const payload = requestBuffer.toString();
 
-    const event = stripe.webhooks.constructEvent(payload, sig, process.env.STRIPE_WEBHOOK_SECRET);
+    const signature = Array.isArray(signatureHeader) ? signatureHeader[0] : signatureHeader;
 
-    // bypassing this validation for e2e tests
-    // in order to successfully confirm the payment
-    if (!event.account && !process.env.NEXT_PUBLIC_IS_E2E) {
-      throw new HttpCode({ statusCode: 202, message: "Incoming connected account" });
-    }
+    const result = await processStripeWebhook({ payload, signature });
 
-    const handler = webhookHandlers[event.type];
-    if (handler) {
-      await handler(event);
-    } else {
-      /** Not really an error, just letting Stripe know that the webhook was received but unhandled */
-      throw new HttpCode({
-        statusCode: 202,
-        message: `Unhandled Stripe Webhook event type ${event.type}`,
-      });
-    }
+    res.status(result.statusCode).json(result.body);
+    return;
   } catch (_err) {
     const err = getErrorFromUnknown(_err);
     console.error(`Webhook Error: ${err.message}`);
@@ -167,7 +192,4 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
     return;
   }
-
-  // Return a response to acknowledge receipt of the event
-  res.json({ received: true });
 }
