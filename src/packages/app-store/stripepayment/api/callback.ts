@@ -53,7 +53,7 @@ export async function handleCallbackRequest({ method, query }: HandleCallbackReq
     };
   }
 
-  if (session?.user?.id) {
+  if (!session?.user?.id) {
     return {
       status: 401,
       body: { message: "You must be logged in to do this" },
