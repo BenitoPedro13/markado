@@ -1,6 +1,6 @@
 import { stringify } from "querystring";
 
-import { WEBSITE_URL } from "@/constants";
+import { WEBAPP_URL } from "@/constants";
 
 export type Maybe<T> = T | undefined | null;
 
@@ -13,7 +13,7 @@ export function createPaymentLink(opts: {
 }): string {
   const { paymentUid, name, email, date, absolute = true } = opts;
   let link = "";
-  if (absolute) link = WEBSITE_URL;
+  if (absolute) link = WEBAPP_URL;
   const query = stringify({ date, name, email });
   return `${link}/payment/${paymentUid}?${query}`;
 }
