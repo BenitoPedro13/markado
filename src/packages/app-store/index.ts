@@ -9,6 +9,7 @@ const appStore = {
   // dailyvideo: () => import("./dailyvideo"),
   googlecalendar: () => import("./googlecalendar"),
   googlevideo: () => import("./googlevideo"),
+  stripepayment: () => import("./stripepayment"),
   // hubspot: () => import("./hubspot"),
   // huddle01video: () => import("./huddle01video"),
   // "ics-feedcalendar": () => import("./ics-feedcalendar"),
@@ -56,4 +57,3 @@ const appStore = {
 // export default exportedAppStore;
 
 export default appStore;
-

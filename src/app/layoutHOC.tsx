@@ -14,7 +14,7 @@ import { routing } from "@/i18n/routing";
 type WithLayoutParams<T extends Record<string, any>> = {
   getLayout?: ((page: React.ReactElement) => React.ReactNode) | null;
   getServerLayout?: (page: React.ReactElement) => Promise<React.ReactNode | null>;
-  Page?: (props: T) => React.ReactElement | null;
+  Page?: React.ComponentType<T>;
   ServerPage?: (props: T) => Promise<React.ReactElement> | null;
   getData?: (arg: GetServerSidePropsContext) => Promise<T | undefined>;
   isBookingPage?: boolean;

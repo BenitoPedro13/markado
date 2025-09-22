@@ -1,4 +1,4 @@
-// export { AttendeeAwaitingPaymentEmail } from "./AttendeeAwaitingPaymentEmail";
+export { AttendeeAwaitingPaymentEmail } from "./AttendeeAwaitingPaymentEmail";
 export { AttendeeCancelledEmail } from "./AttendeeCancelledEmail";
 // export { AttendeeCancelledSeatEmail } from "./AttendeeCancelledSeatEmail";
 // export { AttendeeDeclinedEmail } from "./AttendeeDeclinedEmail";
@@ -14,7 +14,7 @@ export { AttendeeScheduledEmail } from "./AttendeeScheduledEmail";
 export { OrganizerCancelledEmail } from "./OrganizerCancelledEmail";
 // export { OrganizerReassignedEmail } from "./OrganizerReassignedEmail";
 // export { OrganizerLocationChangeEmail } from "./OrganizerLocationChangeEmail";
-// export { OrganizerPaymentRefundFailedEmail } from "./OrganizerPaymentRefundFailedEmail";
+export { OrganizerPaymentRefundFailedEmail } from "./OrganizerPaymentRefundFailedEmail";
 // export { OrganizerRequestEmail } from "./OrganizerRequestEmail";
 export { OrganizerRequestEmailV2 } from "./OrganizerRequestEmailV2";
 // export { OrganizerRequestReminderEmail } from "./OrganizerRequestReminderEmail";

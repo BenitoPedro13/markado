@@ -19,7 +19,7 @@ import type {PaymentOption} from '~/prisma/enums';
 // import {Button} from '@/packages/ui';
 import {CheckboxField} from '@/packages/features/form-builder/FormBuilder';
 import {formatPrice} from '@/packages/lib/price';
-import '../../../../../apps/web/styles/globals.css';
+// import '../../../../../apps/web/styles/globals.css';
 import type {PaymentPageProps} from '../pages/payment';
 import * as Button from '@/components/align-ui/ui/button';
 export type Props = {

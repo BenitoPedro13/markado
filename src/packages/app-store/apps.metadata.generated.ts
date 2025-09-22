@@ -71,7 +71,7 @@ import { metadata as googlevideo__metadata_ts } from "./googlevideo/_metadata";
 // import signal_config_json from "./signal/config.json";
 // import sirius_video_config_json from "./sirius_video/config.json";
 // import skype_config_json from "./skype/config.json";
-// import { metadata as stripepayment__metadata_ts } from "./stripepayment/_metadata";
+import { metadata as stripepayment__metadata_ts } from "./stripepayment/_metadata";
 // import sylapsvideo_config_json from "./sylapsvideo/config.json";
 // import synthflow_config_json from "./synthflow/config.json";
 // import { metadata as tandemvideo__metadata_ts } from "./tandemvideo/_metadata";
@@ -119,7 +119,7 @@ export const appStoreMetadata = {
   // office365video: office365video_config_json,
   // qr_code: qr_code_config_json,
   // "routing-forms": routing_forms_config_json,
-  // stripepayment: stripepayment__metadata_ts,
+  stripepayment: stripepayment__metadata_ts,
   // "booking-pages-tag": booking_pages_tag_config_json,
   // whatsapp: whatsapp_config_json,
   // zoomvideo: zoomvideo__metadata_ts,
