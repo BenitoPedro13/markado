@@ -11,8 +11,6 @@ import '@/app/globals.css';
 import { getQueryClient } from './get-query-client';
 import { getMeByUserId } from '~/trpc/server/handlers/user.handler';
 
-
-
 export async function generateMetadata() {
   const locale = (await cookies()).get('NEXT_LOCALE')?.value || routing.defaultLocale;
   const t = await getTranslations({locale, namespace: 'LocaleLayout'});
