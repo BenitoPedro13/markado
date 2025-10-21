@@ -602,6 +602,12 @@ const config = {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out'
       },
+      screens: {
+        '550': '550px',
+        '850': '850px',
+        '950': '950px',
+        '1150': '1150px'
+      },
       keyframes: {
         'accordion-down': {
           from: {height: '0', opacity: '0'},

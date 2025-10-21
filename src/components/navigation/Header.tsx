@@ -411,8 +411,8 @@ function Header({
 
   return (
     <>
-      <div className="w-full px-8 py-5 relative inline-flex justify-start items-center gap-3 overflow-hidden">
-        <div className="flex-1 flex justify-center items-start gap-3.5">
+      <div className="w-full md:px-8 px-4 md:py-5 pt-5 pb-0 relative inline-flex justify-start items-center gap-3 overflow-hidden">
+        <div className="flex-1 md:flex hidden justify-center items-start gap-3.5">
           <div className="p-3 bg-bg-white-0 rounded-[999px] shadow-[0px_1px_2px_0px_rgba(10,13,20,0.03)] outline outline-1 outline-offset-[-1px] outline-stroke-soft-200 flex justify-center items-center overflow-hidden">
             {headerIcon}
           </div>
@@ -425,7 +425,7 @@ function Header({
             </div>
           </div>
         </div>
-        <div className="flex justify-start items-center gap-3">{buttons}</div>
+        <div className="w-full md:w-fit flex md:justify-start justify-end items-center gap-3">{buttons}</div>
       </div>
       {/* <CreateServiceModal 
         open={isCreateServiceModalOpen} 

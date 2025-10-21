@@ -36,7 +36,7 @@ export default function BookingListSkeleton() {
       </div>
 
       {/* Lista de agendamentos */}
-      <div className="w-full gap-8 px-8">
+      <div className="w-full gap-8 950:px-8 px-4">
         <div className="rounded-lg w-full border border-stroke-soft-200">
           {/* Item 1 */}
           <div className="flex items-center justify-between p-4 hover:bg-bg-weak-50 transition-colors duration-200 bg-bg-white-0 rounded-lg">

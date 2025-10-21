@@ -1,19 +1,19 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { trpc } from '~/trpc/client';
+import {useCallback, useEffect, useMemo, useState} from 'react';
+import {trpc} from '~/trpc/client';
 import BookingList from './BookingList';
 import BookingFilter from './BookingFilter';
 import BookingSearch from './BookingSearch';
 import BookingViewControl from './BookingViewControl';
-import { BookingSort as ValidBookingSort } from './BookingSort';
-import { useTRPC } from '@/utils/trpc';
-import { useInfiniteQuery } from '@tanstack/react-query';
-import { Booking } from '@/data/bookings';
+import {BookingSort as ValidBookingSort} from './BookingSort';
+import {useTRPC} from '@/utils/trpc';
+import {useInfiniteQuery} from '@tanstack/react-query';
+import {Booking} from '@/data/bookings';
 import BookingListSkeleton from '@/components/skeletons/BookingListSkeleton';
 import WeeklyCalendar from '@/components/booking/CalendarView/WeeklyCalendar';
-import { CalendarTest } from '@/components/booking/CalendarView/CalendarTest';
-import { TypeGetBookingsListing } from '~/trpc/server/handlers/bookings/get.handler';
+import {CalendarTest} from '@/components/booking/CalendarView/CalendarTest';
+import {TypeGetBookingsListing} from '~/trpc/server/handlers/bookings/get.handler';
 
 const VALID_VIEWS = ['list', 'calendar'];
 const VALID_STATUSES = ['all', 'confirmed', 'canceled'];
@@ -33,7 +33,7 @@ interface ValidatedSearchParams {
 function ValidateSearchParams(searchParams: {
   [key: string]: string | string[] | undefined;
 }): ValidatedSearchParams {
-  let { status, sort, search, view } = searchParams;
+  let {status, sort, search, view} = searchParams;
 
   if (!VALID_STATUSES.includes(status as ValidBookingStatus)) {
     status = 'all';
@@ -43,7 +43,10 @@ function ValidateSearchParams(searchParams: {
     sort = undefined;
   }
 
-  if ((view && !VALID_VIEWS.includes(view as ValidBookingView)) || view === undefined) {
+  if (
+    (view && !VALID_VIEWS.includes(view as ValidBookingView)) ||
+    view === undefined
+  ) {
     view = 'calendar';
   }
 
@@ -51,7 +54,7 @@ function ValidateSearchParams(searchParams: {
     view: view as ValidBookingView,
     status: status as ValidBookingStatus,
     sort: sort as ValidBookingSort | undefined,
-    search: search as string | undefined,
+    search: search as string | undefined
   };
 }
 
@@ -69,7 +72,9 @@ function mapTrpcStatusToLocalStatus(trpcStatus: string): ValidBookingStatus {
 }
 
 // Map local status to tRPC status
-function mapLocalStatusToTrpcStatus(localStatus: ValidBookingStatus): 'upcoming' | 'unconfirmed' | 'cancelled' | 'recurring' | 'past' {
+function mapLocalStatusToTrpcStatus(
+  localStatus: ValidBookingStatus
+): 'upcoming' | 'unconfirmed' | 'cancelled' | 'recurring' | 'past' {
   switch (localStatus) {
     case 'confirmed':
       return 'upcoming';
@@ -85,8 +90,8 @@ function mapLocalStatusToTrpcStatus(localStatus: ValidBookingStatus): 'upcoming'
 // function transformTrpcBooking(trpcBooking: any): Booking {
 //   return {
 //     id: trpcBooking.id,
-//     title: (trpcBooking.title || trpcBooking.eventType?.title || 'Untitled').includes(' entre ') 
-//       ? (trpcBooking.title || trpcBooking.eventType?.title || 'Untitled').split(' entre ')[0] 
+//     title: (trpcBooking.title || trpcBooking.eventType?.title || 'Untitled').includes(' entre ')
+//       ? (trpcBooking.title || trpcBooking.eventType?.title || 'Untitled').split(' entre ')[0]
 //       : (trpcBooking.title || trpcBooking.eventType?.title || 'Untitled'),
 //     duration: trpcBooking.eventType?.length || 30,
 //     startTime: new Date(trpcBooking.startTime),
@@ -103,7 +108,8 @@ type TypeGetBookingsListingItem = TypeGetBookingsListing['bookings'][number];
 
 function transformTrpcBooking(trpcBooking: any): Booking {
   // Extract the base title from trpcBooking
-  const rawTitle = trpcBooking.title || trpcBooking.eventType?.title || 'Untitled';
+  const rawTitle =
+    trpcBooking.title || trpcBooking.eventType?.title || 'Untitled';
 
   // Clean the title by removing participant names after "entre" or "between"
   const cleanTitle = (title: string): string => {
@@ -135,7 +141,9 @@ function transformTrpcBooking(trpcBooking: any): Booking {
 
   // Extract participant names from attendees
   const getParticipants = (attendees?: any[]): string[] => {
-    return attendees?.map((attendee: any) => attendee.name || attendee.email) || [];
+    return (
+      attendees?.map((attendee: any) => attendee.name || attendee.email) || []
+    );
   };
 
   // Convert booking status
@@ -151,21 +159,35 @@ function transformTrpcBooking(trpcBooking: any): Booking {
     const candidateFromResponses =
       (responsesLoc?.optionValue as string | undefined) ||
       (responsesLoc?.value as string | undefined);
-    const candidateFromMetadata = trpcBooking?.metadata?.location?.address as string | undefined;
+    const candidateFromMetadata = trpcBooking?.metadata?.location?.address as
+      | string
+      | undefined;
     // Try eventType's configured address (when organizer set an address in service setup)
-    const locs = (trpcBooking?.eventType?.locations as Array<any> | undefined) || [];
+    const locs =
+      (trpcBooking?.eventType?.locations as Array<any> | undefined) || [];
     const fromEventType = (() => {
-      const inPerson = locs.find((l) => l?.type === 'inPerson' && typeof l.address === 'string' && l.address.trim());
+      const inPerson = locs.find(
+        (l) =>
+          l?.type === 'inPerson' &&
+          typeof l.address === 'string' &&
+          l.address.trim()
+      );
       if (inPerson) return inPerson.address as string;
       const attendee = locs.find(
-        (l) => l?.type === 'attendeeInPerson' && typeof l.attendeeAddress === 'string' && l.attendeeAddress.trim()
+        (l) =>
+          l?.type === 'attendeeInPerson' &&
+          typeof l.attendeeAddress === 'string' &&
+          l.attendeeAddress.trim()
       );
       if (attendee) return attendee.attendeeAddress as string;
-      const generic = locs.find((l) => typeof l.address === 'string' && l.address.trim());
+      const generic = locs.find(
+        (l) => typeof l.address === 'string' && l.address.trim()
+      );
       return generic?.address as string | undefined;
     })();
 
-    const candidate = candidateFromResponses || candidateFromMetadata || fromEventType;
+    const candidate =
+      candidateFromResponses || candidateFromMetadata || fromEventType;
     const isToken = (val?: string) => {
       if (!val) return false;
       const v = val.toLowerCase();
@@ -176,22 +198,29 @@ function transformTrpcBooking(trpcBooking: any): Booking {
     }
   }
 
-
   // Resolve meeting URL: metadata > references > location URL
-  const meetingUrlFromMetadata: string | undefined = trpcBooking?.metadata?.videoCallUrl;
+  const meetingUrlFromMetadata: string | undefined =
+    trpcBooking?.metadata?.videoCallUrl;
   const meetingUrlFromReferences: string | undefined = (() => {
     const refs = trpcBooking?.references as Array<any> | undefined;
     if (!Array.isArray(refs)) return undefined;
-    const googleRef = refs.find((r) => r?.type === 'google_meet_video' && typeof r?.meetingUrl === 'string');
+    const googleRef = refs.find(
+      (r) =>
+        r?.type === 'google_meet_video' && typeof r?.meetingUrl === 'string'
+    );
     if (googleRef?.meetingUrl) return googleRef.meetingUrl as string;
     const anyRef = refs.find((r) => typeof r?.meetingUrl === 'string');
     return anyRef?.meetingUrl as string | undefined;
   })();
   const meetingUrlFromLocation: string | undefined =
-    typeof trpcBooking?.location === 'string' && /^https?:\/\//i.test(trpcBooking.location)
+    typeof trpcBooking?.location === 'string' &&
+    /^https?:\/\//i.test(trpcBooking.location)
       ? (trpcBooking.location as string)
       : undefined;
-  const meetingUrl = meetingUrlFromMetadata || meetingUrlFromReferences || meetingUrlFromLocation;
+  const meetingUrl =
+    meetingUrlFromMetadata ||
+    meetingUrlFromReferences ||
+    meetingUrlFromLocation;
 
   return {
     uid: trpcBooking.uid ?? String(trpcBooking.id),
@@ -205,34 +234,45 @@ function transformTrpcBooking(trpcBooking: any): Booking {
     participants: getParticipants(trpcBooking.attendees),
     status: getBookingStatus(trpcBooking.status),
     location: resolvedLocation,
-    meetingUrl,
+    meetingUrl
   };
 }
 
 interface BookingListClientProps {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: {[key: string]: string | string[] | undefined};
 }
 
-export default function BookingListClient({ searchParams }: BookingListClientProps) {
+export default function BookingListClient({
+  searchParams
+}: BookingListClientProps) {
   const trpc = useTRPC();
-  const { status, search, sort, view } = ValidateSearchParams(searchParams);
+  const {status, search, sort, view} = ValidateSearchParams(searchParams);
   const [searchTerm, setSearchTerm] = useState(search || '');
 
   // Map local status to tRPC status
   const trpcStatus = mapLocalStatusToTrpcStatus(status);
 
   // Use tRPC query
-  const { data, isLoading, error, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery(trpc.booking.get.infiniteQueryOptions(
-    {
-      limit: 10,
-      filters: {
-        status: trpcStatus,
+  const {
+    data,
+    isLoading,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage
+  } = useInfiniteQuery(
+    trpc.booking.get.infiniteQueryOptions(
+      {
+        limit: 10,
+        filters: {
+          status: trpcStatus
+        }
       },
-    },
-    {
-      getNextPageParam: (lastPage) => lastPage.nextCursor,
-    }
-  ));
+      {
+        getNextPageParam: (lastPage) => lastPage.nextCursor
+      }
+    )
+  );
 
   // Transform and filter bookings
   const bookings = useMemo(() => {
@@ -246,9 +286,10 @@ export default function BookingListClient({ searchParams }: BookingListClientPro
     let filteredBookings = allBookings;
     if (searchTerm) {
       const searchLower = searchTerm.toLowerCase();
-      filteredBookings = allBookings.filter((booking) =>
-        booking.title.toLowerCase().includes(searchLower) ||
-        booking.organizer.toLowerCase().includes(searchLower)
+      filteredBookings = allBookings.filter(
+        (booking) =>
+          booking.title.toLowerCase().includes(searchLower) ||
+          booking.organizer.toLowerCase().includes(searchLower)
       );
     }
 
@@ -260,9 +301,13 @@ export default function BookingListClient({ searchParams }: BookingListClientPro
         } else if (sort === 'za') {
           return b.title.localeCompare(a.title);
         } else if (sort === 'newest') {
-          return new Date(b.startTime).getTime() - new Date(a.startTime).getTime();
+          return (
+            new Date(b.startTime).getTime() - new Date(a.startTime).getTime()
+          );
         } else if (sort === 'oldest') {
-          return new Date(a.startTime).getTime() - new Date(b.startTime).getTime();
+          return (
+            new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
+          );
         }
         return 0;
       });
@@ -283,19 +328,21 @@ export default function BookingListClient({ searchParams }: BookingListClientPro
 
   return (
     <>
-      <div className="w-full gap-8 p-8">
-        <div className="flex justify-between">
+      <div className="w-full gap-8 950:p-8 p-4">
+        <div className="flex 950:justify-between 950:flex-row flex-col gap-4">
           <BookingFilter status={status} />
-          <div className="flex items-center justify-end gap-2">
+          <div className="gap-4 950:gap-16 flex 950:flex-row flex-col">
             <BookingSearch search={searchTerm} />
-            <ValidBookingSort sort={sort} />
-            <BookingViewControl view={view} />
+            <div className='flex 950:items-center 950:justify-end justify-between 950:gap-2 gap-4 flex-row'>
+              <ValidBookingSort sort={sort} />
+              <BookingViewControl view={view} />
+            </div>
           </div>
         </div>
       </div>
-      <div className="w-full gap-8 px-8">
-        {view === 'list' &&
-          (<>
+      <div className="w-full gap-8 950:px-8 px-4 md">
+        {view === 'list' && (
+          <>
             <BookingList bookings={bookings} />
             {hasNextPage && (
               <div className="mt-4 text-center">
@@ -309,14 +356,17 @@ export default function BookingListClient({ searchParams }: BookingListClientPro
               </div>
             )}
           </>
-
-          )
-        }
+        )}
         {view === 'calendar' && (
           // <WeeklyCalendar bookings={bookings} />
-          <CalendarTest bookings={bookings} hasNextPage={hasNextPage} isFetchingNextPage={isFetchingNextPage} fetchNextPage={fetchNextPage} />
+          <CalendarTest
+            bookings={bookings}
+            hasNextPage={hasNextPage}
+            isFetchingNextPage={isFetchingNextPage}
+            fetchNextPage={fetchNextPage}
+          />
         )}
       </div>
     </>
-  )
-} 
+  );
+}
