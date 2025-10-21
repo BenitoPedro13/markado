@@ -292,6 +292,30 @@ const Sidebar = ({children}: PropsWithChildren) => {
           </>
         )}
         {children}
+        {isMobile && (
+          <nav className="bg-bg-white-0 border-stroke-soft-200 h-16 fixed bottom-0 left-0 z-30 flex w-full border-t bg-opacity-40 px-1 shadow backdrop-blur-md">
+            <TabMenuHorizontal.Root defaultValue="Main" className="h-full">
+              <TabMenuHorizontal.List className="relative h-16 justify-evenly px-2">
+                {mainItems.map(({label, iconLine, iconFill, link}) => (
+                  <Link href={link} key={label} className="h-16 w-full">
+                    <TabMenuHorizontal.Trigger
+                      value={label}
+                      onClick={expand}
+                      className={`w-full h-full justify-center flex-col items-between rounded-10 ${isActive(link) ? 'text-text-strong-950' : 'hover:text-text-strong-950'}`}
+                    >
+                      <TabMenuHorizontal.Icon
+                        iconLine={iconLine}
+                        iconFill={iconFill}
+                        className="w-5 h-5 text-current"
+                      />
+                      {label}
+                    </TabMenuHorizontal.Trigger>
+                  </Link>
+                ))}
+              </TabMenuHorizontal.List>
+            </TabMenuHorizontal.Root>
+          </nav>
+        )}
       </div>
     </div>
   );
