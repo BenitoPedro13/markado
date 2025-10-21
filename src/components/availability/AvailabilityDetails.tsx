@@ -56,7 +56,7 @@ export default function AvailabilityDetails({
   return (
     <form className="space-y-6">
       <div className="space-y-4">
-        <div className="text-title-h6">Horários</div>
+        <div className="text-title-h6 hidden md:block">Horários</div>
 
         <FormProvider {...availabilityDetailsForm}>
           <Schedule
@@ -70,7 +70,7 @@ export default function AvailabilityDetails({
 
       <Divider.Root />
 
-      <div className="space-y-4">
+      <div className="space-y-4 md:h-auto h-[200px]">
         <div className="text-title-h6">Avançado</div>
         <div className="space-y-2">
           <div className="text-sm text-text-sub-600">Fuso Horário</div>

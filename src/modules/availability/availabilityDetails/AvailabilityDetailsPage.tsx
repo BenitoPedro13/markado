@@ -8,11 +8,11 @@ export default function AvailabilityDetailsPage() {
   return (
     <>
       <AvailabilityDetailsHeader />
-      <div className="px-8">
+      <div className="md:px-8 px-4">
         <Divider.Root />
       </div>
 
-      <div className="p-8">
+      <div className="md:p-8 px-4">
         <AvailabilityDetails />
       </div>
     </>

@@ -232,7 +232,7 @@ function AvailabilityHeader({selectedMenuItem}: HeaderProps) {
 
   return (
     <div className="w-full px-8 py-5 relative inline-flex justify-start items-center gap-3 overflow-hidden">
-      <div className="flex-1 flex justify-center items-start gap-3.5">
+      <div className="flex-1 md:flex justify-center items-start gap-3.5 hidden">
         <div className="p-3 bg-bg-white-0 rounded-[999px] shadow-[0px_1px_2px_0px_rgba(10,13,20,0.03)] outline outline-1 outline-offset-[-1px] outline-stroke-soft-200 flex justify-center items-center overflow-hidden">
           {headerIcon}
         </div>
@@ -245,7 +245,7 @@ function AvailabilityHeader({selectedMenuItem}: HeaderProps) {
           </div>
         </div>
       </div>
-      <div className="flex justify-start items-center gap-3">{buttons}</div>
+      <div className="flex md:justify-start items-center gap-3 md:w-fit w-full justify-end">{buttons}</div>
       <Modal.Root open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
         <Modal.Content className="max-w-[440px]">
           <form

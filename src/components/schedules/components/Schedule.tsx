@@ -335,7 +335,7 @@ export const ScheduleComponent = <
   return (
     <div
       className={classNames(
-        'flex flex-col gap-4 p-2 sm:p-4',
+        'flex flex-col gap-4 md:p-2 sm:p-4 px-0',
         className?.schedule
       )}
     >
