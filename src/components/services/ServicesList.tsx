@@ -11,7 +11,7 @@ interface ServicesListProps {
 
 export default function ServicesList({initialAllServices}: ServicesListProps) {
   return (
-    <div className="md:px-8 px-4">
+    <div className="md:px-8 px-4 h-full">
       <div className="rounded-lg w-full border border-stroke-soft-200">
         {initialAllServices.map((service, idx) => (
           <div key={service.slug}>

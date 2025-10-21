@@ -25,7 +25,7 @@ export default function ServicesListPage() {
       </div>
 
       <div className="md:gap-8 md:p-8 px-4 py-5 ">
-        <div className="flex md:justify-between flex-col justify-center items-between gap-4">
+        <div className="flex md:flex-row md:justify-between flex-col justify-center items-between gap-4">
           <ServicesFilter />
           <ServicesSearch />
         </div>
