@@ -243,8 +243,7 @@ export default function BookingListItem({
                   variant="neutral"
                   mode="ghost"
                   size="small"
-                  className="text-blue-400"
-                  className='850:w-fit w-full'
+                  className="text-blue-400 850:w-fit w-full"
                 >
                   <img src="/logos/Google Meet.svg" width={20} height={20} />
                   Entrar no Google Meet

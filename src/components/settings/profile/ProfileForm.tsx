@@ -26,13 +26,13 @@ const ProfileField = ({
   description,
   error
 }: ProfileFieldProps) => (
-  <div className="p-6 border-b border-stroke-soft-200">
-    <div className="flex justify-between items-start">
+  <div className="md:p-6 p-4 border-b border-stroke-soft-200">
+    <div className="flex justify-between md:items-start items-center md:flex-row flex-col md:gap-0 gap-4">
       <div className="space-y-1 w-[280px]">
         <h3 className="text-paragraph-md text-text-strong-950">{label}</h3>
         <p className="text-paragraph-sm text-text-sub-600">{description}</p>
       </div>
-      <div className="w-[400px]">
+      <div className="md:w-[400px] w-full">
         <Input.Root hasError={!!error}>
           <Input.Wrapper>
             <Input.Input defaultValue={defaultValue} name={name} />
@@ -114,7 +114,7 @@ export default function ProfileForm({me}: ProfileFormProps) {
       action={formAction}
       id="form_profile"
     >
-      <div className="flex justify-between items-center p-6">
+      <div className="flex justify-between items-center p-6 md:flex-row flex-col md:gap-0 gap-4">
         <div className="space-y-1 w-[280px]">
           <h3 className="text-paragraph-md text-text-strong-950">
             Foto do perfil
@@ -180,7 +180,7 @@ export default function ProfileForm({me}: ProfileFormProps) {
       />
 
       <div className="p-6">
-        <div className="flex justify-between items-start">
+        <div className="flex justify-between md:items-start items-center md:flex-row flex-col md:gap-0 gap-4">
           <div className="space-y-1 w-[280px]">
             <h3 className="text-paragraph-md text-text-strong-950">
               Biografia
@@ -189,7 +189,7 @@ export default function ProfileForm({me}: ProfileFormProps) {
               Um breve resumo sobre você.
             </p>
           </div>
-          <div className="w-[400px] flex flex-col gap-2">
+          <div className="md:w-[400px] w-full flex flex-col gap-2">
             <Textarea.Root
               placeholder={`Meu nome é ${me.name || 'Fulano de Tal'}, eu sou...`}
               name="biography"

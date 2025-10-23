@@ -10,14 +10,14 @@ interface SettingsLayoutProps {
 export default async function SettingsLayout({children}: SettingsLayoutProps) {
   return (
     <PageLayout title="Configurações">
-      <div className="px-8">
+      <div className="md:px-8 px-4">
         <SettingsHeader />
         <div className="">
           <Divider.Root />
         </div>
-        <div className="flex w-full py-8 gap-8 justify-center">
+        <div className="flex w-full 1290:py-8 py-4 gap-8 justify-center 1290:flex-row flex-col">
           <SettingsSelectorMenu />
-          <div className="grow">{children}</div>
+          <div className="grow h-fit">{children}</div>
         </div>
       </div>
     </PageLayout>
