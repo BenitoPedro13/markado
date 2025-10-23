@@ -1,4 +1,6 @@
-import {ServicesProps} from '@/components/services/Service';
+import { ServiceBadgeColor } from '~/prisma/enums';
+import { ServicesProps } from '@/components/services/Service';
+import { defaultLocations } from '@/core/locations';
 
 export const services: ServicesProps[] = [
   {
@@ -11,7 +13,7 @@ export const services: ServicesProps[] = [
     description: 'Aprenda a usar o Figma do zero ao avançado',
     location: 'Online via Google Meet',
     badgeColor: 'feature',
-    // username: 'rafael'
+
   },
   {
     id: 2,
@@ -23,7 +25,7 @@ export const services: ServicesProps[] = [
     description: 'Aprenda a criar protótipos interativos com Framer',
     location: 'Online via Google Meet',
     badgeColor: 'information',
-    // username: 'rafael'
+
   },
   {
     id: 3,
@@ -35,7 +37,7 @@ export const services: ServicesProps[] = [
     description: 'Domine o Photoshop para design e edição de imagens',
     location: 'Online via Google Meet',
     badgeColor: 'success',
-    // username: 'rafael'
+
   },
   {
     id: 4,
@@ -47,7 +49,7 @@ export const services: ServicesProps[] = [
     description: 'Consultoria personalizada para seu projeto de design',
     location: 'Online via Google Meet',
     badgeColor: 'verified',
-    // username: 'rafael'
+
   },
   {
     id: 5,
@@ -59,6 +61,65 @@ export const services: ServicesProps[] = [
     description: 'Bate-papo sobre design, carreira e mercado',
     location: 'Online via Google Meet',
     badgeColor: 'highlighted',
-    // username: 'rafael'
+
   }
+];
+
+export const baseServices = [
+  {
+    id: 1,
+    title: 'Reunião de 30min',
+    slug: 'reuniao-de-30min',
+    length: 30,
+    price: 150,
+    hidden: false,
+    locations: [defaultLocations[0]],
+    description: 'Reunião de 30min',
+    badgeColor: ServiceBadgeColor.feature,
+  },
+  {
+    id: 2,
+    title: 'Reuniao de 1 hora',
+    slug: 'reuniao-de-1-hora',
+    length: 60,
+    price: 150,
+    hidden: false,
+    locations: [defaultLocations[0]],
+    description: 'Reuniao de 1 hora',
+    badgeColor: ServiceBadgeColor.information,
+  },
+  {
+    id: 3,
+    title: 'Aula Teste',
+    slug: 'aula-teste',
+    length: 60,
+    price: 100,
+    hidden: false,
+    locations: [defaultLocations[0]],
+    description: 'Aula Teste',
+    badgeColor: ServiceBadgeColor.success,
+  }
+  // ,
+  // {
+  //   id: 4,
+  //   title: 'Consultoria',
+  //   slug: 'consult',
+  //   length: 60,
+  //   price: 200,
+  //   hidden: true,
+  //   locations: ['Online via Google Meet'],
+  //   description: 'Consultoria personalizada para seu projeto de design',
+  //   badgeColor: ServiceBadgeColor.verified,
+  // },
+  // {
+  //   id: 5,
+  //   title: 'Conversa de Design',
+  //   slug: 'talk',
+  //   length: 30,
+  //   price: 50,
+  //   hidden: true,
+  //   locations: ['Online via Google Meet'],
+  //   description: 'Bate-papo sobre design, carreira e mercado',
+  //   badgeColor: ServiceBadgeColor.highlighted,
+  // },
 ];

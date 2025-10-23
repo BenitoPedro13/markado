@@ -1,4 +1,5 @@
 export type Booking = {
+  uid: string;
   id: string;
   title: string;
   duration: number;
@@ -9,10 +10,13 @@ export type Booking = {
   participants: string[];
   status: 'confirmed' | 'canceled';
   location?: string;
+  // Optional meeting URL for online providers (e.g. Google Meet)
+  meetingUrl?: string;
 };
 
 export const bookings: Booking[] = [
   {
+    uid: 'uid-1',
     id: '1',
     title: 'Reunião de 30 min',
     duration: 30,
@@ -25,6 +29,7 @@ export const bookings: Booking[] = [
     location: 'Google Meet'
   },
   {
+    uid: 'uid-2',
     id: '2',
     title: 'Reunião de 15 min',
     duration: 15,
@@ -37,6 +42,7 @@ export const bookings: Booking[] = [
     location: 'Google Meet'
   },
   {
+    uid: 'uid-3',
     id: '3',
     title: 'Reunião de 15 min',
     duration: 15,
@@ -49,6 +55,7 @@ export const bookings: Booking[] = [
     location: 'Google Meet'
   },
   {
+    uid: 'uid-4',
     id: '4',
     title: 'Reunião de 15 min',
     duration: 15,
@@ -61,6 +68,7 @@ export const bookings: Booking[] = [
     location: 'Google Meet'
   },
   {
+    uid: 'uid-5',
     id: '5',
     title: 'Consulta Odontológica',
     duration: 60,
@@ -73,6 +81,7 @@ export const bookings: Booking[] = [
     location: 'Av. Rio Branco, 156 - Centro, Rio de Janeiro - RJ, 20040-007'
   },
   {
+    uid: 'uid-6',
     id: '6',
     title: 'Sessão de Fisioterapia',
     duration: 45,
@@ -85,6 +94,7 @@ export const bookings: Booking[] = [
     location: 'Rua do Ouvidor, 60 - Centro, Rio de Janeiro - RJ, 20040-030'
   },
   {
+    uid: 'uid-7',
     id: '7',
     title: 'Avaliação Nutricional',
     duration: 30,

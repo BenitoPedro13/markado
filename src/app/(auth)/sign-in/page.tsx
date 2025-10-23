@@ -30,8 +30,8 @@ type SignInFormData = z.infer<typeof signInSchema>;
 const SignInForm = () => {
   const t = useTranslations('SignInForm');
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get('redirect') || '/';
-  const errorParam = searchParams.get('error');
+  const redirectTo = searchParams?.get('redirect') || '/';
+  const errorParam = searchParams?.get('error') || '';
   const {
     signInWithEmail,
     signInWithGoogle,
@@ -49,6 +49,9 @@ const SignInForm = () => {
           break;
         case 'AccountLinkingFailed':
           setOauthError(t('account_linking_failed'));
+          break;
+        case 'CredentialsSignin':
+          setOauthError(t('invalid_credentials'));
           break;
         case 'Signin':
           // This is a general sign-in error, often caused by invalid credentials
@@ -83,7 +86,8 @@ const SignInForm = () => {
   };
 
   const onSubmit = async (data: SignInFormData) => {
-    await signInWithEmail(data.email, data.password, redirectTo);
+    const res = await signInWithEmail(data.email, data.password, redirectTo);
+    console.log("signup: res", res)
   };
 
   const handleGoogleSignIn = async () => {
@@ -172,7 +176,7 @@ const SignInForm = () => {
 
         {(authStoreError || oauthError) && (
           <div className="text-red-500 text-sm">
-            {oauthError || authStoreError}
+            {oauthError || (authStoreError ? t(authStoreError) : null)}
           </div>
         )}
       </div>

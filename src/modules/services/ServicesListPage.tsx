@@ -6,7 +6,9 @@ import ServicesHeader from '@/components/services/ServicesHeader';
 import ServicesFilter from '@/components/services/ServicesFilter';
 import ServicesSearch from '@/components/services/ServicesSearch';
 import ServicesList from '@/components/services/ServicesList';
+import ServicesEmpty from '@/components/services/ServicesEmpty';
 import { useServices } from '@/contexts/services/ServicesContext';
+
 
 export default function ServicesListPage() {
   const {
@@ -28,8 +30,11 @@ export default function ServicesListPage() {
           <ServicesSearch />
         </div>
       </div>
-
-      <ServicesList initialAllServices={optimisticServicesList} />
+      {
+        optimisticServicesList.length > 0 ? 
+          <ServicesList initialAllServices={optimisticServicesList} /> :
+          <ServicesEmpty/>
+      }
     </>
   );
 }

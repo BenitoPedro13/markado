@@ -145,7 +145,6 @@ export async function getUserByUsernameHandler(ctx: Context, username: string) {
       }
     }
   });
-
   if (!user) {
     throw new TRPCError({
       code: 'NOT_FOUND',
@@ -171,6 +170,11 @@ export async function getHostUserByUsername(username: string) {
         image: true,
         biography: true,
         timeZone: true,
+        instagram: true,
+        linkedin: true,
+        twitter: true,
+        facebook: true,
+        website: true,
         schedules: {
           include: {
             availability: true
@@ -180,15 +184,15 @@ export async function getHostUserByUsername(username: string) {
     });
 
     if (!user) {
+      console.error('[getHostUserByUsername] Usuário não encontrado para username:', username);
       throw new TRPCError({
         code: 'NOT_FOUND',
         message: 'User not found'
       });
     }
-
     return user;
   } catch (error) {
-    console.error('Error fetching user by username:', error);
+    console.error('[getHostUserByUsername] Erro ao buscar usuário:', error);
     throw new TRPCError({
       code: 'INTERNAL_SERVER_ERROR',
       message: 'Internal server error'

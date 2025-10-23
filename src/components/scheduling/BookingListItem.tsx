@@ -22,8 +22,10 @@ import {
 import * as Modal from '@/components/align-ui/ui/modal';
 import * as Notification from '@/components/align-ui/ui/notification';
 import {useState, useEffect} from 'react';
+import Link from 'next/link';
 
 type BookingProps = {
+  uid: string;
   id: string;
   title: string;
   duration: number;
@@ -44,6 +46,7 @@ type LocationType = 'online' | 'presential';
 type OnlinePlatform = 'google-meet' | 'zoom' | 'teams';
 
 export default function BookingListItem({
+  uid,
   id,
   title,
   duration,
@@ -85,6 +88,19 @@ export default function BookingListItem({
   );
   const [isRescheduleModalOpen, setIsRescheduleModalOpen] = useState(false);
   const [rescheduleMessage, setRescheduleMessage] = useState('');
+  const getRescheduleHref = () =>
+    `/reschedule/${uid}` + (status === 'canceled' ? `?allowRescheduleForCancelledBooking=true` : '');
+  const getCancelHref = () => {
+    const normalized = cancelMessage.replace(/\s+/g, ' ').trim();
+    return `/booking/${uid}?cancel=true&reason=${encodeURIComponent(normalized)}`;
+  };
+  const openRescheduleInNewTab = () => {
+    try {
+      if (typeof window !== 'undefined') {
+        window.open(getRescheduleHref(), '_blank', 'noopener,noreferrer');
+      }
+    } catch {}
+  };
 
   useEffect(() => {
     if (isLocationModalOpen) {
@@ -127,11 +143,9 @@ export default function BookingListItem({
   const startDate = formatDate(startTime);
   const endDate = formatDate(endTime);
 
-  const handleCancel = (message?: string) => {
-    updateBookingStatus(id, 'canceled');
+  const handleCancel = () => {
     setIsCancelModalOpen(false);
     setCancelMessage('');
-    setIsDrawerOpen(false);
   };
 
   const handleAddEmailInput = () => {
@@ -234,9 +248,11 @@ export default function BookingListItem({
                   Entrar no Google Meet
                 </Button.Root>
               )}
-              <Button.Root variant="neutral" mode="stroke" size="small">
-                <Button.Icon as={RiTimeLine} />
-                Reagendar
+              <Button.Root asChild variant="neutral" mode="stroke" size="small">
+                <Link href={getRescheduleHref()}>
+                  <Button.Icon as={RiTimeLine} />
+                  Reagendar
+                </Link>
               </Button.Root>
               <Dropdown.Root>
                 <Dropdown.Trigger asChild>
@@ -255,7 +271,7 @@ export default function BookingListItem({
                     <Dropdown.ItemIcon as={RiUserAddLine} />
                     Adicionar participantes
                   </Dropdown.Item>
-                  <Dropdown.Item onClick={() => setIsRescheduleModalOpen(true)}>
+                  <Dropdown.Item onClick={openRescheduleInNewTab}>
                     <Dropdown.ItemIcon as={RiSendPlane2Line} />
                     Solicitar reagendamento
                   </Dropdown.Item>
@@ -267,7 +283,7 @@ export default function BookingListItem({
               </Dropdown.Root>
             </>
           ) : (
-            <Button.Root variant="neutral" mode="stroke" size="small">
+            <Button.Root variant="neutral" mode="stroke" size="small" onClick={openRescheduleInNewTab}>
               <Button.Icon as={RiSendPlaneLine} />
               Solicitar reagendamento
             </Button.Root>
@@ -389,13 +405,8 @@ export default function BookingListItem({
                   >
                     Cancelar
                   </Button.Root>
-                  <Button.Root
-                    variant="neutral"
-                    mode="stroke"
-                    size="medium"
-                    className="w-full"
-                  >
-                    Reagendar
+                  <Button.Root asChild variant="neutral" mode="stroke" size="medium" className="w-full">
+                    <Link href={getRescheduleHref()}>Reagendar</Link>
                   </Button.Root>
                 </div>
               </div>
@@ -428,20 +439,35 @@ export default function BookingListItem({
               mode="stroke"
               size="medium"
               className="w-full"
-              onClick={() => handleCancel()}
+              onClick={handleCancel}
             >
               Não importa
             </Button.Root>
-            <Button.Root
-              variant="error"
-              mode="filled"
-              size="medium"
-              className="w-full"
-              disabled={cancelMessage.trim().length === 0}
-              onClick={() => handleCancel(cancelMessage)}
-            >
-              Cancelar este evento
-            </Button.Root>
+            {cancelMessage.trim().length === 0 ? (
+              <Button.Root
+                variant="error"
+                mode="filled"
+                size="medium"
+                className="w-full"
+                disabled
+              >
+                Cancelar este evento
+              </Button.Root>
+            ) : (
+              <Button.Root asChild variant="error" mode="filled" size="medium" className="w-full">
+                <Link
+                  href={getCancelHref()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => {
+                    setIsCancelModalOpen(false);
+                    setIsDrawerOpen(false);
+                  }}
+                >
+                  Cancelar este evento
+                </Link>
+              </Button.Root>
+            )}
           </Modal.Footer>
         </Modal.Content>
       </Modal.Root>

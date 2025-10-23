@@ -1,7 +1,6 @@
 import {z} from 'zod';
 import {SchedulingType, ServiceBadgeColor} from '~/prisma/enums';
 import * as imports from '~/prisma/zod-utils';
-// import {templateTypeEnum} from '@/features/core/cal-ai-phone/zod-utils';
 import {_DestinationCalendarModel, _EventTypeModel} from '~/prisma/zod';
 import {
   customInputSchema,
@@ -29,7 +28,8 @@ export const createEventTypeInput = z
     beforeEventBuffer: z.number().int().min(0).optional(),
     afterEventBuffer: z.number().int().min(0).optional(),
     scheduleId: z.number().int().optional(),
-    badgeColor: z.nativeEnum(ServiceBadgeColor).optional()
+    badgeColor: z.nativeEnum(ServiceBadgeColor).optional(),
+    price: z.number().optional()
   })
   .partial({hidden: true, locations: true})
   .refine((data) => (data.teamId ? data.teamId && data.schedulingType : true), {

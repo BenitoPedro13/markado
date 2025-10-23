@@ -2,6 +2,7 @@ import {router} from '../trpc';
 import {protectedProcedure} from '../middleware';
 import {z} from 'zod';
 import {getAvailableSlots} from '@/utils/slots';
+import {getTimezoneWithFallback} from '@/utils/timezone-utils';
 import { type GetScheduleResponse } from '@/components/schedules/lib/use-schedule/types';
 
 // Schema for getting schedule
@@ -50,13 +51,13 @@ export const slotsRouter = router({
         ctx,
         input: {
           ...input,
-          timeZone: input.timeZone || schedule.timeZone || ctx.session?.user.timeZone || 'America/Sao_Paulo'
+          timeZone: getTimezoneWithFallback(input.timeZone || schedule.timeZone || ctx.session?.user.timeZone)
         }
       });
 
       return {
         slots: result.slots,
-        timeZone: result.timeZone || input.timeZone || schedule.timeZone || ctx.session?.user.timeZone || 'America/Sao_Paulo'
+        timeZone: result.timeZone
       };
     }),
 

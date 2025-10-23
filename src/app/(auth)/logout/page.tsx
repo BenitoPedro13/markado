@@ -10,7 +10,7 @@ import Link from 'next/link';
 export default function LogoutPage() {
   const t = useTranslations('LogoutPage');
   const params = useParams();
-  const locale = params.locale as string;
+  const locale = (params?.locale as string) || 'pt';
 
   return (
     <div className="flex flex-col items-center gap-6 max-w-[392px] w-full">
@@ -31,7 +31,7 @@ export default function LogoutPage() {
 
       <div className="w-full h-[1px] bg-bg-soft-200" />
 
-      <Link href={`/${locale}/sign-in`} className="w-full">
+      <Link href={`/sign-in`} className="w-full">
         <Button
           className="w-full"
           variant="neutral"

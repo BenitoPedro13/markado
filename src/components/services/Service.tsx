@@ -1,6 +1,6 @@
 'use client';
 
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import * as Badge from '@/components/align-ui/ui/badge';
 import {
   RiTimeLine,
@@ -17,21 +17,21 @@ import * as Switch from '@/components/align-ui/ui/switch';
 import * as Dropdown from '@/components/align-ui/ui/dropdown';
 import * as Modal from '@/components/align-ui/ui/modal';
 import * as Button from '@/components/align-ui/ui/button';
-import {useServices} from '@/contexts/services/ServicesContext';
-import {useRouter} from 'next/navigation';
+import { useServices } from '@/contexts/services/ServicesContext';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import {useNotification} from '@/hooks/use-notification';
-import {useLocale} from '@/hooks/use-locale';
+import { useNotification } from '@/hooks/use-notification';
+import { useLocale } from '@/hooks/use-locale';
 import {
   duplicateHandler,
   submitDeleteService,
   changeServiceHiddenStatus
 } from '~/trpc/server/handlers/services.handler';
 
-import {ServiceBadgeColor} from '~/prisma/enums';
-import {TInitialServices} from '@/app/services/page';
-import {MARKADO_URL} from '@/constants';
-import {UserProfile} from '@/types/UserProfile';
+import { ServiceBadgeColor } from '~/prisma/enums';
+import { TInitialServices } from '@/app/services/page';
+import { MARKADO_URL } from '@/constants';
+import { UserProfile } from '@/types/UserProfile';
 
 export type ServicesProps = {
   id: number;
@@ -54,16 +54,16 @@ function Service({
   hidden,
   badgeColor
 }: ServicesProps) {
-  const {notification} = useNotification();
+  const { notification } = useNotification();
   // const {updateServiceStatus} = useServices();
   // const [isEnabled, setIsEnabled] = useState(status);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const router = useRouter();
   const {
-    state: {initialMe}
+    state: { initialMe }
   } = useServices();
 
-  const {t} = useLocale('Services');
+  const { t } = useLocale('Services');
 
   // Mapeia as cores do tema para as cores aceitas pelo Badge
   const getBadgeColor = () => {
@@ -112,9 +112,10 @@ function Service({
                   ? `${Math.floor(length / 60)}h ${length % 60}m`
                   : `${length}m`}
               </Badge.Root>
-              <span className="text-paragraph-md text-text-strong-950">
-                R$ {price}
-              </span>
+              {price > 0 && (
+                <span className="text-paragraph-md text-text-strong-950">
+                  R$ {price}
+                </span>)}
             </div>
           </div>
         </Link>
@@ -125,8 +126,8 @@ function Service({
             defaultChecked={!hidden}
             onCheckedChange={async (checked) => {
               try {
-                const {id: serviceId} = await changeServiceHiddenStatus({
-                  input: {id, hidden: !checked}
+                const { id: serviceId } = await changeServiceHiddenStatus({
+                  input: { id, hidden: !checked }
                 });
 
                 if (!serviceId) {
@@ -274,7 +275,7 @@ function Service({
                 variant="error"
                 size="small"
                 className="w-full"
-                // onClick={handleDeleteService}
+              // onClick={handleDeleteService}
               >
                 Apagar
               </Button.Root>

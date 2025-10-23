@@ -31,4 +31,4 @@ jobs:
             pnpm install && \
             pnpm build && \
             pm2 restart all
-          ' 
+          '          

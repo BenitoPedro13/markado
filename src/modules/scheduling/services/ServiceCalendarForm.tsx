@@ -31,7 +31,7 @@ const capitalizeFirstLetter = (str: string) => {
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
-const GoogleMeetIcon = () => (
+export const GoogleMeetIcon = () => (
   <svg
     width="20"
     height="20"
@@ -108,14 +108,13 @@ const CalendarRoot = ({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => {
   return (
-    // className="overflow-hidden h-full gap-5 md:gap-0 md:max-h-[548px] flex flex-col md:grid md:grid-cols-8 p-6 w-full max-w-[1024px] md:border md:border-bg-soft-200 md:rounded-[24px]"
     <div
-      className="overflow-hidden
-       h-full w-full gap-5 flex flex-col p-6 max-w-[1024px]
-       md:gap-0 md:max-h-[548px] md:grid md:grid-cols-8 md:border md:border-bg-soft-200 md:rounded-[24px]"
+      className="max-w-[1024px] mx-auto p-6 flex flex-col items-center md:gap-0 md:border md:border-bg-soft-200 md:rounded-[24px] overflow-hidden"
       {...props}
     >
-      {children}
+      <div className="grid w-full items-start gap-6 grid-cols-1 md:grid-cols-8">
+        {children}
+      </div>
     </div>
   );
 };
@@ -164,15 +163,15 @@ const ServiceCalendarForm = ({
   service
 }: Readonly<ServiceCalendarFormProps>) => {
   const searchParams = useSearchParams();
-  const day = searchParams.get('d');
-  const time = searchParams.get('t');
-  const encodedTimezone = searchParams.get('tz');
+  const day = searchParams?.get('d') || '';
+  const time = searchParams?.get('t') || '';
+  const encodedTimezone = searchParams?.get('tz') || '';
   const timezone = decodeURIComponent(encodedTimezone || '');
 
   const router = useRouter();
 
   const handleDaySelect = (selected: Date | undefined) => {
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(searchParams?.toString() || '');
 
     if (!selected) {
       params.delete('d');
@@ -183,14 +182,12 @@ const ServiceCalendarForm = ({
     const dayjsSelected = dayjs(selected).utc().format('YYYY-MM-DD');
 
     params.set('d', dayjsSelected);
-    console.log('dayjsSelected', dayjsSelected);
 
     window.history.replaceState(null, '', `?${params.toString()}`);
   };
 
   const handleTimeSelect = (selected: string) => {
-    console.log('selected', selected);
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(searchParams?.toString() || '');
 
     if (!day || !encodedTimezone || !selected) {
       params.delete('d');
@@ -214,7 +211,7 @@ const ServiceCalendarForm = ({
   };
 
   const handleTimezoneSelect = (selected: string) => {
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(searchParams?.toString() || '');
 
     params.set('tz', encodeURIComponent(selected));
     window.history.replaceState(null, '', `?${params.toString()}`);
@@ -223,7 +220,7 @@ const ServiceCalendarForm = ({
   return (
     <CalendarRoot>
       {/** User info */}
-      <CalendarSection className={`pr-5 col-span-2`}>
+      <CalendarSection className="flex flex-col gap-3 mb-4 w-full md:col-span-2 overflow-hidden">
         <div className="md:px-5 flex items-center gap-[5px]">
           <Avatar.Root size={'40'} fallbackText={host.name || ''}>
             <Avatar.Image src={host.image || ''} alt={host.name || 'User'} />
@@ -259,7 +256,7 @@ const ServiceCalendarForm = ({
         </div>
       </CalendarSection>
       {/* Calendar */}
-      <CalendarSection className="md:col-span-4 md:border-x md:border-x-bg-soft-200">
+      <CalendarSection className="flex flex-col gap-4 w-full items-center md:col-span-4 md:border-x md:border-x-bg-soft-200">
         <Calendar
           mode="single"
           selected={dayjs(day).toDate()}
@@ -269,7 +266,7 @@ const ServiceCalendarForm = ({
       </CalendarSection>
 
       {/* Time slots */}
-      <CalendarSection className="h-full md:pl-5 md:col-span-2">
+      <CalendarSection className="flex flex-col gap-4 w-full md:col-span-2">
         <div className="space-y-4 h-full">
           <div className="flex justify-between items-center">
             <h3 className="font-medium text-lg">

@@ -21,7 +21,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       set({ isLoading: true, error: null });
       await signInWithEmailPassword(email, password, redirectTo);
     } catch (error) {
-      set({ error: error instanceof Error ? error.message : 'An error occurred during sign in' });
+      set({ error: 'invalid_credentials' });
     } finally {
       set({ isLoading: false });
     }

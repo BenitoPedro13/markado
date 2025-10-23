@@ -17,6 +17,7 @@ export async function signInWithGoogle(redirectTo: string = '/') {
 
 // Sign in with email and password
 export async function signInWithEmailPassword(email: string, password: string, redirectTo: string = '/') {
+  // Use redirect: true so NextAuth manages redirects/cookies correctly.
   return nextAuthSignIn('credentials', {
     email,
     password,

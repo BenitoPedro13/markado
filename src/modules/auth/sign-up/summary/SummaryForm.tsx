@@ -22,6 +22,7 @@ import {setEditMode, clearNextStep, setOnboardingComplete} from '@/utils/cookie-
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTRPC } from '@/utils/trpc';
 import { useMutation, useQuery } from '@tanstack/react-query';
+import {createServicesBatch} from '~/trpc/server/handlers/services.handler';
 
 interface SummaryFormProps {
   user: Awaited<ReturnType<typeof getMeByUserId>>;
@@ -94,7 +95,7 @@ const SummaryForm = ({user, calendars}: SummaryFormProps) => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const trpc = useTRPC();
-  const redirectTo = searchParams.get('redirect') || '/services';
+  const redirectTo = searchParams?.get('redirect') || '/services';
 
   const completeOnboardingMutation = useMutation(
     trpc.profile.completeOnboarding.mutationOptions({
@@ -153,6 +154,7 @@ const SummaryForm = ({user, calendars}: SummaryFormProps) => {
 
   const submit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    await createServicesBatch();
     completeOnboardingMutation.mutate();
   };
 

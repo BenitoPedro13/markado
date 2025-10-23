@@ -35,7 +35,7 @@ const configMap: Record<FieldType, Omit<z.infer<typeof fieldTypeConfigSchema>, "
           fieldsMap: {
             fullName: {
               defaultLabel: "your_name",
-              defaultPlaceholder: "example_name",
+              defaultPlaceholder: "name_placeholder",
               canChangeRequirability: false,
             },
           },
@@ -67,6 +67,7 @@ const configMap: Record<FieldType, Omit<z.infer<typeof fieldTypeConfigSchema>, "
                 name: "fullName",
                 type: "text",
                 label: "your_name",
+                placeholder: "name_placeholder",
                 required: true,
               },
             ],

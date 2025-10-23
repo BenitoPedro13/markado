@@ -71,8 +71,6 @@ export default async function ServicesPage(props: {
   const {eventTypes: initialServices} = await getEventTypesFromGroup({input});
   const me = await getMeByUserId(userId);
 
-  console.log('initialServices:', initialServices);
-
   return (
     <PageLayout title="Home">
       <ServicesProvider initialServices={initialServices} initialMe={me}>

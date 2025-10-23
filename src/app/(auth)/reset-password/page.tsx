@@ -34,9 +34,9 @@ function ResetPasswordContent() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const token = searchParams.get('token');
-  const email = searchParams.get('email');
-  const redirectTo = searchParams.get('redirect') || '/';
+  const token = searchParams?.get('token') || '';
+  const email = searchParams?.get('email') || '';
+  const redirectTo = searchParams?.get('redirect') || '/';
 
   const form = useForm<ResetPasswordFormData>({
     resolver: zodResolver(resetPasswordSchema),

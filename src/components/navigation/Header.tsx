@@ -17,6 +17,7 @@ import {
 
 } from '@remixicon/react';
 import React, {useState} from 'react';
+import { useTranslations } from 'next-intl';
 import * as Button from '@/components/align-ui/ui/button';
 import * as FancyButton from '@/components/align-ui/ui/fancy-button';
 import * as Switch from '@/components/align-ui/ui/switch';
@@ -29,6 +30,8 @@ import { DatepickerRangeDemo } from '@/components/align-ui/daterange';
 import * as Input from '@/components/align-ui/ui/input';
 import { usePageContext } from '@/contexts/PageContext';
 import { useAvailability } from '@/contexts/availability/AvailabilityContext';
+import { useSessionStore } from '@/providers/session-store-provider';
+import Link from 'next/link';
 // import CreateServiceModal from '@/components/services/CreateServiceModal';
 
 type HeaderVariant =
@@ -61,6 +64,7 @@ function Header({
   icon,
   selectedMenuItem
 }: HeaderProps) {
+  const t = useTranslations('Header');
   const {notification} = useNotification();
   const { isCreateModalOpen, setIsCreateModalOpen } = usePageContext();
   const [open, setOpen] = useState(false);
@@ -70,6 +74,7 @@ function Header({
   const [editedTitle, setEditedTitle] = useState(title  || '');
   const [isCreateServiceModalOpen, setIsCreateServiceModalOpen] = useState(false);
   const router = useRouter();
+  const username = useSessionStore((store) => store.user?.username);
 
   const getHeaderContent = () => {
     if (selectedMenuItem) {
@@ -87,13 +92,13 @@ function Header({
       case 'settings':
         return {
           icon: icon || <RiSettings4Line className="text-bg-strong-950" />,
-          title: 'Configurações',
-          description: 'Gerencie as configurações do seu projeto.',
+          title: t('settings'),
+          description: t('settings_description'),
           buttons: (
             <div className="settings">
               <FancyButton.Root variant="neutral">
                 <FancyButton.Icon as={RiSaveFill} />
-                Salvar
+                {t('save')}
               </FancyButton.Root>
             </div>
           )
@@ -101,28 +106,29 @@ function Header({
       case 'scheduling':
         return {
           icon: <RiCalendarLine className="text-bg-strong-950" />,
-          title: 'Agendamentos',
-          description:
-            'Visualize e gerencie todos os agendamentos do seu calendário.',
+          title: t('scheduling'),
+          description: t('scheduling_description'),
           buttons: (
-            <div className="scheduling">
-              <FancyButton.Root variant="neutral">
-                <FancyButton.Icon as={RiAddLine} />
-                Novo Agendamento
-              </FancyButton.Root>
-            </div>
-          )
+             <div className="scheduling">
+               <Link href={`/${username || ''}`} target="_blank">
+                 <FancyButton.Root variant="neutral">
+                   <FancyButton.Icon as={RiAddLine} />
+                   {t('new_booking')}
+                 </FancyButton.Root>
+               </Link>
+             </div>
+           )
         };
       case 'availability':
         return {
           icon: <RiTimeLine className="text-bg-strong-950" />,
-          title: 'Disponibilidade',
-          description: 'Configure seus horários disponíveis para agendamentos.',
+          title: t('availability'),
+          description: t('availability_description'),
           buttons: (
             <div className="flex justify-start items-center gap-3 availability">
               <FancyButton.Root variant="neutral" onClick={() => setIsCreateModalOpen(true)}  >
                 <FancyButton.Icon as={RiAddLine} />
-                Criar Disponibilidade
+                {t('create_availability')}
               </FancyButton.Root>
             </div>
           )
@@ -130,18 +136,17 @@ function Header({
       case 'services':
         return {
           icon: <RiLinksLine className="text-bg-strong-950" />,
-          title: 'Serviços',
-          description:
-            'Crie serviços para os clientes agendarem',
+          title: t('services'),
+          description: t('services_description'),
           buttons: (
             <div className="services flex gap-2">
               <Button.Root variant="neutral" mode="stroke">
                 <Button.Icon as={RiLinksLine} />
-                Páginas de Serviços
+                {t('service_pages')}
               </Button.Root>
               <FancyButton.Root variant="neutral">
                 <FancyButton.Icon as={RiAddLine} />
-                Criar Serviço
+                {t('create_service')}
               </FancyButton.Root>
             </div>
           )
@@ -149,9 +154,8 @@ function Header({
       case 'reports':
         return {
           icon: <RiDashboard3Line className="text-bg-strong-950" />,
-          title: 'Relatórios',
-          description:
-            'Visualize estatísticas e relatórios sobre seus agendamentos.',
+          title: t('reports'),
+          description: t('reports_description'),
           buttons: (
             <div className="reports">
               <DatepickerRangeDemo />
@@ -161,19 +165,20 @@ function Header({
       default:
         return {
           icon: <RiCalendarLine className="text-bg-strong-950" />,
-          title: 'Agendamentos',
-          description:
-            'Visualize e gerencie todos os agendamentos do seu calendário.',
+          title: t('scheduling'),
+          description: t('scheduling_description'),
           buttons: (
             <div className="scheduling">
               <Button.Root variant="neutral" mode="stroke">
                 <Button.Icon as={RiCalendarLine} />
-                Calendário
+                {t('calendar')}
               </Button.Root>
-              <FancyButton.Root variant="neutral">
-                <FancyButton.Icon as={RiAddLine} />
-                Novo Agendamento
-              </FancyButton.Root>
+              <Link href={`/${username || ''}`} target="_blank">
+                  <FancyButton.Root variant="neutral">
+                    <FancyButton.Icon as={RiAddLine} />
+                    {t('new_booking')}
+                  </FancyButton.Root>
+              </Link>
             </div>
           )
         };
@@ -183,23 +188,23 @@ function Header({
   const getDescriptionForMenuItem = (value: string) => {
     switch (value) {
       case 'profile':
-        return 'Gerencie suas informações pessoais e preferências.';
+        return t('profile');
       case 'business':
-        return 'Configure as informações da sua página de negócio.';
+        return t('business');
       case 'general':
-        return 'Ajuste as configurações gerais do seu projeto.';
+        return t('general');
       case 'calendars':
-        return 'Gerencie seus calendários e integrações.';
+        return t('calendars');
       case 'conference':
-        return 'Configure suas opções de videoconferência.';
+        return t('conference');
       case 'privacy':
-        return 'Gerencie suas configurações de privacidade e segurança.';
+        return t('privacy');
       case 'subscription':
-        return 'Visualize e gerencie sua assinatura.';
+        return t('subscription');
       case 'payment':
-        return 'Configure seus métodos de pagamento.';
+        return t('payment');
       default:
-        return 'Gerencie suas configurações.';
+        return t('default_settings');
     }
   };
 
@@ -217,7 +222,7 @@ function Header({
           <div className="settings">
             <FancyButton.Root variant="neutral">
               <FancyButton.Icon as={RiSaveFill} />
-              Salvar
+              {t('save')}
             </FancyButton.Root>
           </div>
         );
@@ -238,7 +243,7 @@ function Header({
           >
             <Button.Icon as={RiArrowLeftSLine} />
           </Button.Root>
-          <div className="flex flex-col">
+                      <div className="flex flex-col">
             <div className="text-text-strong-950 text-lg font-medium font-sans leading-normal">
               {title ? <div className="flex items-center gap-2">
                 {isEditing ? (
@@ -250,8 +255,8 @@ function Header({
                         setIsEditing(false);
                         if (editedTitle.trim() && editedTitle !== title) {
                           notification({
-                            title: 'Título atualizado!',
-                            description: 'O título foi atualizado com sucesso.',
+                            title: t('title_updated'),
+                            description: t('title_updated_description'),
                             variant: 'stroke',
                             status: 'success'
                           });
@@ -262,8 +267,8 @@ function Header({
                           setIsEditing(false);
                           if (editedTitle.trim() && editedTitle !== title) {
                             notification({
-                              title: 'Título atualizado!',
-                              description: 'O título foi atualizado com sucesso.',
+                              title: t('title_updated'),
+                              description: t('title_updated_description'),
                               variant: 'stroke',
                               status: 'success'
                             });
@@ -286,7 +291,7 @@ function Header({
                     </Button.Root>
                   </>
                 )}
-              </div> : 'Configuração do Serviço'}
+              </div> : t('service_configuration')}
             </div>
             {subtitle && (
               <div className="text-text-sub-600 text-paragraph-xs font-normal font-sans leading-tight">
@@ -295,9 +300,9 @@ function Header({
             )}
           </div>
         </div>
-        <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 text-text-sub-600 text-paragraph-xs font-normal font-sans leading-tight w-fit">
-            {variant === 'availability' && 'Definir padrão'}
+            {variant === 'availability' && t('set_as_default')}
             <Switch.Root />
           </div>
           <div className="flex items-center gap-2">
@@ -312,7 +317,7 @@ function Header({
                       </ButtonGroup.Item>
                     </Tooltip.Trigger>
                     <Tooltip.Content size="small">
-                      Compartilhar serviço
+                      {t('share_service')}
                     </Tooltip.Content>
                   </Tooltip.Root>
                   <Tooltip.Root>
@@ -322,7 +327,7 @@ function Header({
                       </ButtonGroup.Item>
                     </Tooltip.Trigger>
                     <Tooltip.Content size="small">
-                      Copiar link do serviço
+                      {t('copy_service_link')}
                     </Tooltip.Content>
                   </Tooltip.Root>
                   <Tooltip.Root>
@@ -331,7 +336,7 @@ function Header({
                         <ButtonGroup.Icon as={RiCodeLine} />
                       </ButtonGroup.Item>
                     </Tooltip.Trigger>
-                    <Tooltip.Content size="small">Criar embed</Tooltip.Content>
+                    <Tooltip.Content size="small">{t('create_embed')}</Tooltip.Content>
                   </Tooltip.Root>
                 </ButtonGroup.Root>
               </>
@@ -344,7 +349,7 @@ function Header({
                   onClick={() => setOpen(true)}
                 >
                   <Button.Icon as={RiDeleteBinLine} />
-                  Apagar
+                  {t('delete')}
                 </Button.Root>
               </Modal.Trigger>
               <Modal.Content className="max-w-[440px]">
@@ -354,10 +359,10 @@ function Header({
                   </div>
                   <div className="space-y-1">
                     <div className="text-label-md text-text-strong-950">
-                      Apagar {title}
+                      {t('delete_title', { title: title || '' })}
                     </div>
                     <div className="text-paragraph-sm text-text-sub-600">
-                      Você não poderá recuperar a disponibilidade após apagá-lo.
+                      {t('delete_description')}
                     </div>
                   </div>
                 </Modal.Body>
@@ -369,11 +374,11 @@ function Header({
                       size="small"
                       className="w-full"
                     >
-                      Cancelar
+                      {t('cancel')}
                     </Button.Root>
                   </Modal.Close>
                   <Button.Root variant="error" size="small" className="w-full">
-                    Apagar
+                    {t('delete')}
                   </Button.Root>
                 </Modal.Footer>
               </Modal.Content>
@@ -387,15 +392,15 @@ function Header({
                 (window as any).submitServiceForm();
               }
               notification({
-                title: 'Alterações salvas!',
-                description: 'Seus updates foram salvos com sucesso.',
+                title: t('changes_saved'),
+                description: t('changes_saved_description'),
                 variant: 'stroke',
                 status: 'success'
               });
             }}
           >
             <FancyButton.Icon as={RiSaveFill} />
-            Salvar
+            {t('save')}
           </FancyButton.Root>
         </div>
       </div>

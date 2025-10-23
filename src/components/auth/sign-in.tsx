@@ -36,7 +36,7 @@ export function IconGoogle({...props}: React.SVGProps<SVGSVGElement>) {
 
 export default function SignIn() {
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get('redirect') || '/';
+  const redirectTo = searchParams?.get('redirect') || '/';
 
   const handleGoogleSignIn = async () => {
     await signInWithGoogle(redirectTo);

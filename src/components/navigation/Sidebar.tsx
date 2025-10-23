@@ -18,7 +18,7 @@ import {
   RiTimeLine,
   RiTimeFill
 } from '@remixicon/react';
-import React, {Fragment, PropsWithChildren, ReactElement} from 'react';
+import React, { PropsWithChildren, ReactElement} from 'react';
 import {usePathname} from 'next/navigation';
 
 import * as TabMenuVertical from '@/components/align-ui/ui/tab-menu-vertical';
@@ -37,6 +37,7 @@ interface sidebarItem {
   iconFill: ReactElement;
   label: string;
   link: string;
+  action?: () => void;
 }
 
 const mainItems: sidebarItem[] = [
@@ -65,28 +66,29 @@ const mainItems: sidebarItem[] = [
   }
 ];
 
-const settingsItems: sidebarItem[] = [
-  {
-    iconLine: <RiSettings2Line />,
-    iconFill: <RiSettings2Fill />,
-    label: 'Configurações',
-    link: '/settings'
-  },
-  {
-    iconLine: <RiHeadphoneLine />,
-    iconFill: <RiHeadphoneFill />,
-    label: 'Suporte',
-    link: `https://wa.me/${SUPORT_WHATSAPP_NUMBER}`
-  }
-];
 
 const Sidebar = ({children}: PropsWithChildren) => {
+  const { isCollapsed, toggleCollapse, collapse, expand } = useSidebarStore();
   const pathname = usePathname();
-  const {isCollapsed, toggleCollapse} = useSidebarStore();
-
+  
   const isActive = (link: string) => {
-    return pathname === `/${link}`;
+    return pathname === `${link}`;
   };
+  
+  const settingsItems: sidebarItem[] = [
+    {
+      iconLine: <RiSettings2Line />,
+      iconFill: <RiSettings2Fill />,
+      label: 'Configurações',
+      link: '/settings',
+    },
+    {
+      iconLine: <RiHeadphoneLine />,
+      iconFill: <RiHeadphoneFill />,
+      label: 'Suporte',
+      link: `https://wa.me/${SUPORT_WHATSAPP_NUMBER}`
+    }
+  ];
 
   return (
     <div className="flex relative">
@@ -104,7 +106,11 @@ const Sidebar = ({children}: PropsWithChildren) => {
             <div
               className={`h-10 flex justify-start items-center gap-2.5 ${isCollapsed ? 'w-[41px] h-[41px]' : 'opacity-100'} transition-all duration-300`}
             >
-              <Link href="/">
+              <Link 
+                href={process.env.NEXT_PUBLIC_LANDING_URL || 'https://markado.co'}
+                target="_blank"
+                rel="noopener"
+              >
                 <Logo isCollapsed={isCollapsed} />
               </Link>
             </div>
@@ -162,7 +168,8 @@ const Sidebar = ({children}: PropsWithChildren) => {
                       <Link href={link} key={label}>
                         <TabMenuVertical.Trigger
                           value={label}
-                          className={`${isCollapsed ? 'justify-center flex items-center' : ''} ${isActive(link) ? 'bg-primary-50 text-primary-600' : ''}`}
+                          onClick={expand}
+                          className={`${isCollapsed ? 'justify-center flex items-center' : ''} ${isActive(link) ? 'bg-primary-50 dark:bg-[#1c1c1c] text-primary-600' : 'hover:bg-gray-50 dark:hover:bg-gray-800'}`}
                         >
                           <TabMenuVertical.Icon
                             iconLine={iconLine}
@@ -176,8 +183,9 @@ const Sidebar = ({children}: PropsWithChildren) => {
                     <div
                       className={`w-full absolute ${isCollapsed ? '-bottom-4' : 'bottom-4'} items-end space-y-2`}
                     >
-                      {settingsItems.map(
-                        ({label, iconLine, iconFill, link}) => (
+                      {
+                        settingsItems.map(
+                        ({label, iconLine, iconFill, link }) => (
                           <Link
                             href={link}
                             key={label}
@@ -185,7 +193,11 @@ const Sidebar = ({children}: PropsWithChildren) => {
                           >
                             <TabMenuVertical.Trigger
                               value={label}
-                              className={`${isCollapsed ? 'justify-center flex items-center' : ''} ${isActive(link) ? 'bg-primary-50 text-primary-600' : ''}`}
+                              onClick={collapse}
+                              className={
+                                `${isCollapsed ? 'justify-center flex items-center' : ''} 
+                                ${isActive(link) ? 'bg-primary-50 text-primary-600' : 'hover:bg-gray-50 dark:hover:bg-gray-800'}`
+                              }
                             >
                               <TabMenuVertical.Icon
                                 iconLine={iconLine}

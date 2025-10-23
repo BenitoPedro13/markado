@@ -1,9 +1,14 @@
-import {useTranslations} from 'next-intl';
-import {useLocale as useNextIntlLocale} from 'next-intl';
+import {useTranslations, useLocale as useNextIntlLocale} from 'next-intl';
 
-export const useLocale = (
-  namespace: Parameters<typeof useTranslations>[0] = 'common'
-) => {
+export const useLocale: (namespace?: Parameters<typeof useTranslations>[0]) => {
+  locale: ReturnType<typeof useNextIntlLocale>;
+  t: ReturnType<typeof useTranslations>;
+  isLocaleReady: boolean;
+  i18n: {
+    language: string;
+    locale: string;
+  };
+} = (namespace = 'common') => {
   const t = useTranslations(namespace);
   const locale = useNextIntlLocale();
   const isLocaleReady = !!locale;
@@ -11,6 +16,10 @@ export const useLocale = (
   return {
     locale,
     t,
-    isLocaleReady
+    isLocaleReady,
+    i18n: {
+      language: locale || 'pt',
+      locale: locale || 'pt'
+    }
   };
 };

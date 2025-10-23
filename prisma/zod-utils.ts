@@ -12,6 +12,7 @@ import type {
   ZodTypeAny
 } from 'zod';
 
+import {appDataSchemas} from '@/packages/app-store/apps.schemas.generated';
 import dayjs from '@/lib/dayjs';
 import type {FieldType as FormBuilderFieldType} from '@/lib/form-builder/schema';
 import {fieldsSchema as formBuilderFieldsSchema} from '@/lib/form-builder/schema';
@@ -109,7 +110,7 @@ export type BookerLayoutSettings = z.infer<typeof bookerLayouts>;
 export const RequiresConfirmationThresholdUnits: z.ZodType<UnitTypeLongPlural> =
   z.enum(['hours', 'minutes']);
 
-// export const EventTypeAppMetadataSchema = z.object(appDataSchemas).partial();
+export const EventTypeAppMetadataSchema = z.object(appDataSchemas).partial();
 
 export const EventTypeMetaDataSchema = z
   .object({
@@ -117,7 +118,7 @@ export const EventTypeMetaDataSchema = z
     blockchainId: z.number().optional(),
     multipleDuration: z.number().array().optional(),
     giphyThankYouPage: z.string().optional(),
-    // apps: EventTypeAppMetadataSchema.optional(),
+    apps: EventTypeAppMetadataSchema.optional(),
     additionalNotesRequired: z.boolean().optional(),
     disableSuccessPage: z.boolean().optional(),
     disableStandardEmails: z
@@ -297,7 +298,7 @@ export const bookingCreateBodySchema = z.object({
   seatReferenceUid: z.string().optional(),
   orgSlug: z.string().optional(),
   teamMemberEmail: z.string().nullish(),
-  routedTeamMemberIds: z.array(z.number()).nullish(),
+  routedTeamMemberIds: z.array(z.string()).nullish(),
   routingFormResponseId: z.number().optional(),
   skipContactOwner: z.boolean().optional(),
 
@@ -349,7 +350,7 @@ export const extendedBookingCreateBody = bookingCreateBodySchema.merge(
         })
       )
       .optional(),
-    luckyUsers: z.array(z.number()).optional(),
+    luckyUsers: z.array(z.string()).optional(),
     customInputs: z.undefined().optional()
   })
 );
@@ -407,7 +408,7 @@ export const createdEventSchema = z
   .passthrough();
 
 const schemaDefaultConferencingApp = z.object({
-  appSlug: z.string().default('daily-video').optional(),
+  appSlug: z.string().default('googlevideo').optional(),
   appLink: z.string().optional()
 });
 

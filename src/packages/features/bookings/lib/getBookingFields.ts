@@ -75,9 +75,9 @@ export const getBookingFieldsWithSystemFields = ({
   disableGuests: boolean;
   isOrgTeamEvent?: boolean;
   disableBookingTitle?: boolean;
-  customInputs: EventTypeCustomInput[] | z.infer<typeof customInputSchema>[];
+  customInputs?: EventTypeCustomInput[] | z.infer<typeof customInputSchema>[];
   metadata: EventType['metadata'] | z.infer<typeof EventTypeMetaDataSchema>;
-  workflows: {
+  workflows?: {
     workflow: Workflow;
   }[];
 }) => {
@@ -162,6 +162,7 @@ export const ensureBookingInputsHaveSystemFields = ({
       editable: 'system',
       // This Label is used in Email only as of now.
       defaultLabel: 'your_name',
+      defaultPlaceholder: 'name_placeholder',
       required: true,
       sources: [
         {
@@ -175,6 +176,7 @@ export const ensureBookingInputsHaveSystemFields = ({
       defaultLabel: 'email_address',
       type: 'email',
       name: 'email',
+      defaultPlaceholder: 'email_placeholder',
       required: !isEmailFieldOptional,
       editable: isOrgTeamEvent ? 'system-but-optional' : 'system',
       sources: [
@@ -240,37 +242,38 @@ export const ensureBookingInputsHaveSystemFields = ({
 
   // These fields should be added after other user fields
   const systemAfterFields: typeof bookingFields = [
-    // {
-    //   defaultLabel: 'what_is_this_meeting_about',
-    //   type: 'text',
-    //   name: 'title',
-    //   editable: 'system-but-optional',
-    //   required: true,
-    //   hidden: hideBookingTitle,
-    //   defaultPlaceholder: '',
-    //   sources: [
-    //     {
-    //       label: 'Default',
-    //       id: 'default',
-    //       type: 'default'
-    //     }
-    //   ]
-    // },
-    // {
-    //   defaultLabel: 'additional_notes',
-    //   type: 'textarea',
-    //   name: 'notes',
-    //   editable: 'system-but-optional',
-    //   required: additionalNotesRequired,
-    //   defaultPlaceholder: 'share_additional_notes',
-    //   sources: [
-    //     {
-    //       label: 'Default',
-    //       id: 'default',
-    //       type: 'default'
-    //     }
-    //   ]
-    // },
+    {
+      defaultLabel: 'what_is_this_meeting_about',
+      type: 'text',
+      name: 'title',
+      editable: 'system-but-optional',
+      required: true,
+      hidden: hideBookingTitle,
+      defaultPlaceholder: '',
+      sources: [
+        {
+          label: 'Default',
+          id: 'default',
+          type: 'default'
+        }
+      ]
+    },
+    {
+      defaultLabel: 'observations',
+      type: 'textarea',
+      name: 'notes',
+      editable: 'system-but-optional',
+      required: additionalNotesRequired,
+              defaultPlaceholder: 'observations_placeholder',
+      maxLength: 200,
+      sources: [
+        {
+          label: 'Default',
+          id: 'default',
+          type: 'default'
+        }
+      ]
+    },
     {
       defaultLabel: 'additional_guests',
       type: 'multiemail',

@@ -6,9 +6,8 @@ import * as Textarea from '@/components/align-ui/ui/textarea';
 import * as Button from '@/components/align-ui/ui/button';
 import * as Select from '@/components/align-ui/ui/select';
 import * as Modal from '@/components/align-ui/ui/modal';
-import {useServices} from '@/contexts/services/ServicesContext';
+import { useServices } from '@/contexts/services/ServicesContext';
 import {Service, ServiceBadgeColor} from '@/types/service';
-import {useState} from 'react';
 import React from 'react';
 
 import * as Hint from '@/components/align-ui/ui/hint';
@@ -19,6 +18,8 @@ import {useNotification} from '@/hooks/use-notification';
 import {useLocale} from '@/hooks/use-locale';
 import slugify from '@/lib/slugify';
 import {useRouter} from 'next/navigation';
+import { TInitialServices }  from '@/app/services/page';
+
 type CreateServiceFormData = Omit<Service, 'status'>;
 
 const colorOptions = [
@@ -207,6 +208,9 @@ export default function CreateServiceModal() {
   const {t} = useLocale('Services');
   const router = useRouter();
   const {
+    optimistic: {
+      addOptimisticServicesList
+    },
     state: {
       isCreateServiceModalOpen: open,
       setIsCreateServiceModalOpen: onOpenChange
@@ -227,7 +231,7 @@ export default function CreateServiceModal() {
       title: '',
       description: '',
       slug: '',
-      duration: 0,
+      duration: 15,
       price: 0,
       location: '',
       badgeColor: 'faded'
@@ -294,6 +298,16 @@ export default function CreateServiceModal() {
               // handleBackStep();
               // console.log('serviceResult', serviceResult);
               if (eventType) {
+                addOptimisticServicesList({
+                  id: eventType.id,
+                  slug: eventType.slug,
+                  title: eventType.title,
+                  length: eventType.length,
+                  price: eventType.price,
+                  hidden: false,
+                  badgeColor: eventType.badgeColor,
+                } as TInitialServices[number]);
+
                 reset();
                 notification({
                   title: t('service_created_success'),

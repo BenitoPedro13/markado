@@ -106,7 +106,7 @@ model User {
   emailVerified       DateTime?
   biography           String?
   image               String?
-  timeZone            String                  @default("America/Sao_Paulo")
+  timeZone            String?
   completedOnboarding Boolean                 @default(false)
   availability        Availability[]
   defaultScheduleId   Int?
@@ -137,6 +137,8 @@ model User {
   destinationCalendar DestinationCalendar?
   allowDynamicBooking Boolean?                @default(true)
   allowSEOIndexing    Boolean?                @default(true)
+  /// @zod.custom(imports.userMetadata)
+  metadata            Json?
   verified            Boolean?                @default(false)
   role                UserPermissionRole      @default(USER)
   apiKeys             ApiKey[]
@@ -147,6 +149,12 @@ model User {
   verifiedNumbers     VerifiedNumber[]
   verifiedEmails      VerifiedEmail[]
   hosts               Host[]
+  //social links
+  instagram           String?
+  linkedin            String?
+  twitter             String?
+  facebook            String?
+  website             String?
   // organizationId is deprecated. Instead, rely on the Profile to search profiles by organizationId and then get user from the profile.
   organizationId      Int?
   organization        Team?                   @relation("scope", fields: [organizationId], references: [id], onDelete: SetNull)
@@ -235,6 +243,20 @@ enum FeatureType {
   KILL_SWITCH
   PERMISSION
 }
+
+model SelectedSlots {
+  id               Int      @id @default(autoincrement())
+  eventTypeId      Int
+  userId           String
+  slotUtcStartDate DateTime
+  slotUtcEndDate   DateTime
+  uid              String
+  releaseAt        DateTime
+  isSeat           Boolean  @default(false)
+
+  @@unique(fields: [userId, slotUtcStartDate, slotUtcEndDate, uid], name: "selectedSlotUnique")
+}
+
 
 model TeamFeatures {
   team       Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
@@ -1109,6 +1131,8 @@ model Booking {
   /// @zod.custom(imports.bookingMetadataSchema)
   metadata                     Json?
   isRecorded                   Boolean                        @default(false)
+  iCalUID                      String?                        @default("")
+  iCalSequence                 Int                            @default(0)
   instantMeetingToken          InstantMeetingToken?
   rating                       Int?
   ratingFeedback               String?

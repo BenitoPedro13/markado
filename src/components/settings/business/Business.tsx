@@ -86,7 +86,13 @@ export default function Business({me}: Props) {
     twitter?: string;
     facebook?: string;
     website?: string;
-  }>({});
+  }>({
+    instagram: me.instagram ?? undefined,
+    facebook: me.facebook ?? undefined,
+    twitter: me.twitter ?? undefined,
+    linkedin: me.linkedin ?? undefined,
+    website: me.website ?? undefined
+  });
 
   const setSocialLink = (
     platform: 'instagram' | 'linkedin' | 'twitter' | 'facebook' | 'website',

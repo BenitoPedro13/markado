@@ -93,6 +93,7 @@ interface CheckboxFieldProps {
   defaultChecked?: boolean;
   onCheckedChange?: (checked: boolean) => void;
   name?: string;
+  disabled?: boolean;
 }
 
 export const CheckboxField = React.forwardRef<HTMLButtonElement, CheckboxFieldProps>(
@@ -411,7 +412,7 @@ export const FormBuilder = function FormBuilder({
                       </div>
                     </div>
                     <p className="text-text-soft-400 text-paragraph-sm max-w-[280px] break-words pt-1 sm:max-w-[500px]">
-                      {fieldType.label}
+                      {t(`field_type_${field.type}`)}
                     </p>
                   </div>
                   {field.editable !== 'user-readonly' && !disabled && (
@@ -733,7 +734,7 @@ function FieldEditDialog({
                   .filter((f) => !f.systemOnly)
                   .map((opt) => (
                     <Select.Item key={opt.value} value={opt.value}>
-                      {opt.label}
+                      {t(`field_type_${opt.value}`)}
                     </Select.Item>
                   ))}
               </Select.Content>

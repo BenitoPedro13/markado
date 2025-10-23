@@ -1,111 +1,163 @@
-import { NextRequest, NextResponse } from 'next/server';
-import {auth} from '@/auth';
+import { google } from "googleapis";
+import { NextRequest, NextResponse } from "next/server";
 
-// Force dynamic rendering for this API route
-export const dynamic = 'force-dynamic';
+import { renewSelectedCalendarCredentialId } from "@/packages/lib/connectedCalendar";
+import { WEBAPP_URL, WEBAPP_URL_FOR_OAUTH } from "@/constants";
+import { getSafeRedirectUrl } from "@/packages/lib/getSafeRedirectUrl";
+import { getAllCalendars, updateProfilePhoto } from "@/packages/lib/google";
+import { HttpError } from "@/packages/lib/http-error";
+import { CredentialRepository } from "@/repositories/credential";
+import { GoogleRepository } from '@/repositories/google';
+import { Prisma } from "~/prisma/app/generated/prisma/client";
 
-import { google } from 'googleapis';
-import { encrypt } from '@/utils/encryption';
+import { decodeOAuthState } from "@/packages/app-store/_utils/oauth/decodeOAuthState";
+import { REQUIRED_SCOPES, SCOPE_USERINFO_PROFILE } from "@/packages/app-store/googlecalendar/lib/constants";
+import { getGoogleAppKeys } from "@/packages/app-store/googlecalendar/lib/getGoogleAppKeys";
+import { auth } from "@/auth";
 
-import { prisma } from '@/lib/prisma';
+export async function GET(req: NextRequest) {
+  const searchParams = req.nextUrl.searchParams;
+  const code = searchParams.get("code");
+  const session = await auth();
+  // const state = decodeOAuthState({searchParams});
+  const returnTo = `${WEBAPP_URL}/sign-up/calendar`;
+  const onErrorReturnTo = `${WEBAPP_URL}/sign-up/calendar`;
 
-const oauth2Client = new google.auth.OAuth2(
-  process.env.GOOGLE_CLIENT_ID,
-  process.env.GOOGLE_CLIENT_SECRET,
-  process.env.GOOGLE_REDIRECT_URI
-);
-
-export async function GET(request: NextRequest) {
-  try {
-
-    const session = await auth();
-    if (!session?.user) {
-      console.log('No session found, redirecting to sign-in');
-      return NextResponse.redirect(new URL('/sign-in', request.url));
-    }
-
-
-    const searchParams = request.nextUrl.searchParams;
-    const code = searchParams.get('code');
-
-    if (!code) {
+  if (typeof code !== "string") {
+    if (onErrorReturnTo || returnTo) {
       return NextResponse.redirect(
-        new URL('/sign-up/calendar?error=no_code', request.url)
+        `${WEBAPP_URL}/sign-up/calendar?error=no_code`
+      );
+    }
+    throw new HttpError({ statusCode: 400, message: "`code` must be a string" });
+  }
+
+  if (!session || !session?.user?.id) {
+    throw new HttpError({ statusCode: 401, message: "You must be logged in to do this" });
+  }
+
+  const { client_id, client_secret } = await getGoogleAppKeys();
+
+  const redirect_uri = `${WEBAPP_URL_FOR_OAUTH}/api/integrations/googlecalendar/callback`;
+
+  const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uri);
+
+  if (code) {
+    const token = await oAuth2Client.getToken(code);
+    const key = token.tokens;
+    const grantedScopes = token.tokens.scope?.split(" ") ?? [];
+    // Check if we have granted all required permissions
+    const hasMissingRequiredScopes = REQUIRED_SCOPES.some((scope) => !grantedScopes.includes(scope));
+    if (hasMissingRequiredScopes) {
+      // if (!state?.fromApp) {
+      //   throw new HttpError({
+      //     statusCode: 400,
+      //     message: "You must grant all permissions to use this integration",
+      //   });
+      // }
+      return NextResponse.redirect(
+        `${WEBAPP_URL}/sign-up/calendar?error=server_error`
       );
     }
 
-    const {tokens} = await oauth2Client.getToken(code);
+    // Set the primary calendar as the first selected calendar
 
-    if (!tokens.refresh_token) {
-      return NextResponse.redirect(
-        new URL('/sign-up/calendar?error=no_refresh_token', request.url)
-      );
-    }
+    oAuth2Client.setCredentials(key);
 
-    // Encrypt tokens before storing
-    const encryptedAccessToken = encrypt(tokens.access_token || '');
-    const encryptedRefreshToken = encrypt(tokens.refresh_token);
-
-    // Get user's calendars
-    oauth2Client.setCredentials(tokens);
-    const calendar = google.calendar({version: 'v3', auth: oauth2Client});
-    const {data: calendarList} = await calendar.calendarList.list();
-
-    // Store tokens and calendar list
-    // Then for each calendar, use upsert instead of create
-
-    await prisma.user.update({
-      where: {id: session.user.id},
-      data: {
-        googleAccessToken: encryptedAccessToken,
-        googleRefreshToken: encryptedRefreshToken,
-        googleTokenExpiry: tokens.expiry_date || 0
-      }
+    const calendar = google.calendar({
+      version: "v3",
+      auth: oAuth2Client,
     });
 
-    if (!calendarList.items) {
-      console.log('No calendars found from Google');
-      return NextResponse.redirect(new URL('/sign-up/calendar?error=no_calendars', request.url));
+    const cals = await getAllCalendars(calendar);
+
+    const primaryCal = cals.find((cal) => cal.primary) ?? cals[0];
+
+    // Only attempt to update the user's profile photo if the user has granted the required scope
+    if (grantedScopes.includes(SCOPE_USERINFO_PROFILE)) {
+      await updateProfilePhoto(oAuth2Client, session?.user?.id);
     }
 
-    for (const cal of calendarList.items) {
-      await prisma.calendar.upsert({
-        where: {
-          // Use a unique identifier or composite unique fields
-          googleId_userId: {
-            googleId: cal.id || '',
-            userId: session.user.id
-          }
-        },
-        update: {
-          name: cal.summary || '',
-          description: cal.description || null,
-          primary: cal.primary || false
-          // Any other fields to update
-        },
-        create: {
-          googleId: cal.id || '',
-          name: cal.summary || '',
-          description: cal.description || null,
-          primary: cal.primary || false,
-          userId: session.user.id
-          // Any other fields to create
-        }
+    const gcalCredential =
+      await GoogleRepository.createGoogleCalendarCredential({
+        key,
+        userId: session?.user?.id
       });
+
+    // If we still don't have a primary calendar skip creating the selected calendar.
+    // It can be toggled on later.
+    if (!primaryCal?.id) {
+      return NextResponse.redirect(
+        // getSafeRedirectUrl(state?.returnTo) ??
+        `${WEBAPP_URL}/sign-up/calendar`
+      );
     }
 
+    const selectedCalendarWhereUnique = {
+      userId: session?.user?.id,
+      externalId: primaryCal.id,
+      integration: 'google_calendar'
+    };
 
-    return NextResponse.redirect(
-      new URL('/sign-up/calendar', request.url)
-    );
-  } catch (error) {
-    console.error('Error in Google Calendar callback:', error);
-    // Log more details about the error
-    if (error instanceof Error) {
-      console.error('Error name:', error.name);
-      console.error('Error message:', error.message);
-      console.error('Error stack:', error.stack);
+    // Wrapping in a try/catch to reduce chance of race conditions-
+    // also this improves performance for most of the happy-paths.
+    try {
+      await GoogleRepository.createSelectedCalendar({
+        credentialId: gcalCredential.id,
+        externalId: selectedCalendarWhereUnique.externalId,
+        userId: selectedCalendarWhereUnique.userId,
+      });
+    } catch (error) {
+      let errorMessage = "something_went_wrong";
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+        // it is possible a selectedCalendar was orphaned, in this situation-
+        // we want to recover by connecting the existing selectedCalendar to the new Credential.
+        if (await renewSelectedCalendarCredentialId(selectedCalendarWhereUnique, gcalCredential.id)) {
+          return NextResponse.redirect(
+            // getSafeRedirectUrl(state?.returnTo) ??
+            `${WEBAPP_URL}/sign-up/calendar`
+          );
+        }
+        // else
+        errorMessage = "account_already_linked";
+      }
+      await CredentialRepository.deleteById({ id: gcalCredential.id });
+      return NextResponse.redirect(
+
+        // getSafeRedirectUrl(state?.onErrorReturnTo) ??
+        `${WEBAPP_URL}/sign-up/calendar?error=server_error`
+
+      );
     }
-    return NextResponse.redirect(new URL('/sign-up/calendar?error=server_error', request.url));
   }
-} 
+
+  // No need to install? Redirect to the returnTo URL
+  // if (!state?.installGoogleVideo) {
+  //   return NextResponse.redirect(
+  //     // getSafeRedirectUrl(state?.returnTo) ??
+  //     `${WEBAPP_URL}/sign-up/calendar`
+  //   );
+  // }
+
+  const existingGoogleMeetCredential =
+    await GoogleRepository.findGoogleMeetCredential({
+      userId: session?.user?.id
+    });
+
+  // If the user already has a google meet credential, there's nothing to do in here
+  if (existingGoogleMeetCredential) {
+    return NextResponse.redirect(
+      // getSafeRedirectUrl(`${WEBAPP_URL}/sign-up/calendar`) ??
+      `${WEBAPP_URL}/sign-up/calendar`
+    );
+  }
+
+  // Create a new google meet credential
+  await GoogleRepository.createGoogleMeetsCredential({
+    userId: session?.user?.id
+  });
+  return NextResponse.redirect(
+    // getSafeRedirectUrl(`${WEBAPP_URL}/sign-up/calendar`) ??
+    `${WEBAPP_URL}/sign-up/calendar`
+  );
+}

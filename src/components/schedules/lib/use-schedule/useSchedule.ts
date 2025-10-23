@@ -2,6 +2,7 @@ import { useSearchParams } from "next/navigation";
 import { useTRPC } from "@/utils/trpc";
 import { format, parseISO, startOfMonth, endOfMonth, addMonths } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
+import dayjs from "@/lib/dayjs";
 
 export type UseScheduleWithCacheArgs = {
   scheduleId?: number | null;
@@ -21,20 +22,25 @@ function useTimesForSchedule({
   dayCount,
   prefetchNextMonth,
   selectedDate,
+  timezone,
 }: {
   month?: string | null;
   monthCount?: number | null;
   dayCount?: number | null;
   prefetchNextMonth?: boolean;
   selectedDate?: string | null;
+  timezone?: string | null;
 }) {
   let startDate: Date;
   let endDate: Date;
 
   if (selectedDate) {
-    // If a specific date is selected, use that date
-    startDate = parseISO(selectedDate);
-    endDate = parseISO(selectedDate);
+    // If a specific date is selected, use that date with timezone consideration
+    const selectedDateInTimezone = timezone 
+      ? dayjs(selectedDate).tz(timezone).startOf('day').toDate()
+      : parseISO(selectedDate);
+    startDate = selectedDateInTimezone;
+    endDate = selectedDateInTimezone;
   } else if (month) {
     // If a month is specified, use the start and end of that month
     startDate = startOfMonth(parseISO(month));
@@ -73,6 +79,7 @@ export const useSchedule = ({
     dayCount,
     prefetchNextMonth,
     selectedDate,
+    timezone,
   });
   
   const trpc = useTRPC();

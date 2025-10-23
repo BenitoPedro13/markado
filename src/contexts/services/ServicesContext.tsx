@@ -53,9 +53,9 @@ export function ServicesProvider({
   const searchParams = useSearchParams();
 
   // Read from URL
-  const searchValue = searchParams.get('search') || '';
+  const searchValue = searchParams?.get('search') || '';
   const currentFilter =
-    (searchParams.get('filter') as FilterType) || FilterType.ALL;
+    (searchParams?.get('filter') as FilterType) || FilterType.ALL;
 
   const [optimisticServicesList, addOptimisticServicesList] = useOptimistic(
     initialServices,
@@ -68,7 +68,7 @@ export function ServicesProvider({
 
   // Update filter in URL
   const setFilter = (filter: FilterType) => {
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(searchParams?.toString() || '');
     if (filter === FilterType.ALL) {
       params.delete('filter');
     } else {
@@ -79,7 +79,7 @@ export function ServicesProvider({
 
   // Update search in URL
   const setSearch = (search: string) => {
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(searchParams?.toString() || '');
     if (!search) {
       params.delete('search');
     } else {

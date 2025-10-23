@@ -25,7 +25,7 @@ export function BookingSort({sort = 'az'}: BookingSortProps) {
   const router = useRouter();
 
   const handleSort = (value: string) => {
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(searchParams?.toString() || '');
     params.set('sort', value);
     const newUrl = `${window.location.pathname}?${params.toString()}`;
     router.push(newUrl);

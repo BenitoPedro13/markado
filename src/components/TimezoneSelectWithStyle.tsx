@@ -8,30 +8,30 @@ import * as Hint from '@/components/align-ui/ui/hint';
 import {cn} from '@/utils/cn';
 
 import type {Timezones} from '@/lib/timezone';
-import {useTRPC} from '@/utils/trpc';
-import {useQuery} from '@tanstack/react-query';
+// import {useTRPC} from '@/utils/trpc';
+// import {useQuery} from '@tanstack/react-query';
 
-const SELECT_SEARCH_DATA: Timezones = [
-  {label: 'San Francisco', timezone: 'America/Los_Angeles'},
-  {label: 'Sao Francisco do Sul', timezone: 'America/Sao_Paulo'},
-  {label: 'San Francisco de Macoris', timezone: 'America/Santo_Domingo'},
-  {label: 'San Francisco Gotera', timezone: 'America/El_Salvador'},
-  {label: 'Eastern Time - US & Canada', timezone: 'America/New_York'},
-  {label: 'Pacific Time - US & Canada', timezone: 'America/Los_Angeles'},
-  {label: 'Central Time - US & Canada', timezone: 'America/Chicago'},
-  {label: 'Mountain Time - US & Canada', timezone: 'America/Denver'},
-  {label: 'Atlantic Time - Canada', timezone: 'America/Halifax'},
-  {label: 'Eastern European Time', timezone: 'Europe/Bucharest'},
-  {label: 'Central European Time', timezone: 'Europe/Berlin'},
-  {label: 'Western European Time', timezone: 'Europe/London'},
-  {label: 'Australian Eastern Time', timezone: 'Australia/Sydney'},
-  {label: 'Japan Standard Time', timezone: 'Asia/Tokyo'},
-  {label: 'India Standard Time', timezone: 'Asia/Kolkata'},
-  {label: 'Gulf Standard Time', timezone: 'Asia/Dubai'},
-  {label: 'South Africa Standard Time', timezone: 'Africa/Johannesburg'},
-  {label: 'Brazil Time', timezone: 'America/Sao_Paulo'},
-  {label: 'Hawaii-Aleutian Standard Time', timezone: 'Pacific/Honolulu'}
-];
+// const SELECT_SEARCH_DATA: Timezones = [
+//   {label: 'San Francisco', timezone: 'America/Los_Angeles'},
+//   {label: 'Sao Francisco do Sul', timezone: 'America/Sao_Paulo'},
+//   {label: 'San Francisco de Macoris', timezone: 'America/Santo_Domingo'},
+//   {label: 'San Francisco Gotera', timezone: 'America/El_Salvador'},
+//   {label: 'Eastern Time - US & Canada', timezone: 'America/New_York'},
+//   {label: 'Pacific Time - US & Canada', timezone: 'America/Los_Angeles'},
+//   {label: 'Central Time - US & Canada', timezone: 'America/Chicago'},
+//   {label: 'Mountain Time - US & Canada', timezone: 'America/Denver'},
+//   {label: 'Atlantic Time - Canada', timezone: 'America/Halifax'},
+//   {label: 'Eastern European Time', timezone: 'Europe/Bucharest'},
+//   {label: 'Central European Time', timezone: 'Europe/Berlin'},
+//   {label: 'Western European Time', timezone: 'Europe/London'},
+//   {label: 'Australian Eastern Time', timezone: 'Australia/Sydney'},
+//   {label: 'Japan Standard Time', timezone: 'Asia/Tokyo'},
+//   {label: 'India Standard Time', timezone: 'Asia/Kolkata'},
+//   {label: 'Gulf Standard Time', timezone: 'Asia/Dubai'},
+//   {label: 'South Africa Standard Time', timezone: 'Africa/Johannesburg'},
+//   {label: 'Brazil Time', timezone: 'America/Sao_Paulo'},
+//   {label: 'Hawaii-Aleutian Standard Time', timezone: 'Pacific/Honolulu'}
+// ];
 
 export type TimezoneSelectWithStyleProps = {
   value?: string;
@@ -45,6 +45,8 @@ export type TimezoneSelectWithStyleProps = {
   autoDetect?: boolean;
   hint?: boolean;
   variant?: 'default' | 'compact' | 'compactForInput' | 'inline';
+  name?: string;
+  lockedValue?: string;
 };
 
 export function TimezoneSelectWithStyle({
@@ -58,19 +60,30 @@ export function TimezoneSelectWithStyle({
   isLoading = false,
   autoDetect = true,
   defaultValue = '',
-  variant = 'default'
+  variant = 'default',
+  name = 'timeZone',
+  lockedValue = 'America/Sao_Paulo'
 }: TimezoneSelectWithStyleProps) {
   const {options, parseTimezone} = useTimezoneSelect({labelStyle});
   const [currentTime, setCurrentTime] = useState<string>('');
   const [isDetecting, setIsDetecting] = useState(false);
   const [selectedTimezone, setSelectedTimezone] = useState<string | undefined>(
-    value
+    lockedValue ?? (value || defaultValue || undefined)
   );
 
-  // Use refs to track state without triggering renders
   const isDetectingRef = useRef(false);
   const detectionAttemptedRef = useRef(false);
   const mountedRef = useRef(true);
+
+  useEffect(() => {
+    isDetectingRef.current = false;
+    detectionAttemptedRef.current = false;
+    mountedRef.current = true;
+
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
 
   // Memoize the formatted timezone value to prevent recalculation on every render
   const formattedValue = useMemo(() => {
@@ -89,12 +102,21 @@ export function TimezoneSelectWithStyle({
   // Handle value changes from the Select component
   const handleValueChange = useCallback(
     (newValue: string) => {
+      // Don't allow empty values
+      if (!newValue || newValue.trim() === '') {
+        return;
+      }
+
+      if (newValue === selectedTimezone) {
+        return;
+      }
+
       setSelectedTimezone(newValue);
       if (onChange) {
         onChange(newValue);
       }
     },
-    [onChange]
+    [onChange, selectedTimezone]
   );
 
   // Create a map to track unique timezone values to prevent duplicates
@@ -109,87 +131,53 @@ export function TimezoneSelectWithStyle({
     });
   }, [options]);
 
-  // Initialize with the provided value
   useEffect(() => {
-    if (value) {
-      setSelectedTimezone(value);
-      // If we have a value, don't attempt auto-detection
-      detectionAttemptedRef.current = true;
+    if (value && !autoDetect) {
+      lockedValue
+        ? setSelectedTimezone(lockedValue)
+        : setSelectedTimezone(value);
     }
-  }, [value]);
+  }, [value, autoDetect, lockedValue]);
 
-  // Handle component unmount
+  // Timezone detection - run only once on mount
   useEffect(() => {
-    return () => {
-      mountedRef.current = false;
-    };
-  }, []);
-
-  // One-time timezone detection
-  useEffect(() => {
-    // Only run once and only if auto-detection is enabled and no timezone is selected
-    if (
-      detectionAttemptedRef.current ||
-      !autoDetect ||
-      selectedTimezone ||
-      isDetectingRef.current
-    ) {
+    if (isDetectingRef.current || detectionAttemptedRef.current) {
       return;
     }
 
-    // Mark that we've attempted detection to prevent re-runs
-    detectionAttemptedRef.current = true;
+    if (!autoDetect) {
+      return;
+    }
+
     isDetectingRef.current = true;
+    detectionAttemptedRef.current = true;
     setIsDetecting(true);
 
-    // Set up the timeout first
-    const timeoutId = setTimeout(() => {
+    // Execute detection with a small delay to ensure it runs after initialization
+    setTimeout(() => {
       if (!mountedRef.current) return;
 
-      // If we're still detecting, force completion
-      if (isDetectingRef.current) {
-        console.log('Timezone detection timed out');
+      const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+      if (userTimezone && userTimezone.trim() !== '') {
+        setSelectedTimezone(userTimezone);
+        if (onChange) {
+          onChange(userTimezone);
+        }
+      } else {
+        console.log('❌ Invalid timezone detected, keeping current value');
+      }
+
+      if (mountedRef.current) {
         isDetectingRef.current = false;
         setIsDetecting(false);
       }
-    }, 1500);
-
-    // Function to detect timezone - defined outside to avoid closure issues
-    const detectTimezone = () => {
-      try {
-        const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-        if (mountedRef.current) {
-          setSelectedTimezone(userTimezone);
-
-          if (onChange) {
-            onChange(userTimezone);
-          }
-        }
-      } catch (error) {
-        console.error('Error detecting timezone:', error);
-      } finally {
-        // Ensure we always clean up regardless of success/failure
-        if (mountedRef.current) {
-          isDetectingRef.current = false;
-          setIsDetecting(false);
-        }
-      }
-    };
-
-    // Execute detection
-    detectTimezone();
-
-    // Clean up function
-    return () => {
-      clearTimeout(timeoutId);
-    };
-  }, []); // Empty dependency array - this effect runs exactly once on mount
+    }, 100);
+  }, []); // Empty dependency array - run only once on mount
 
   // Update the current time every second
   useEffect(() => {
     if (!selectedTimezone) return;
-
     const updateTime = () => {
       try {
         const now = new Date();
@@ -209,31 +197,46 @@ export function TimezoneSelectWithStyle({
     // Update immediately
     updateTime();
 
-    // Then update every second
+    // Then update every minute
     const intervalId = setInterval(updateTime, 1000);
 
     // Clean up interval on unmount
     return () => clearInterval(intervalId);
   }, [selectedTimezone]);
 
+  console.log(
+    'Rendering TimezoneSelectWithStyle:',
+    {
+      value,
+      selectedTimezone,
+      lockedValue
+    },
+    lockedValue ?? selectedTimezone
+  );
+
   return (
     <div className="flex flex-col gap-1">
       <Select.Root
         onValueChange={handleValueChange}
-        disabled={disabled || isLoading || isDetecting}
-        value={selectedTimezone}
-        defaultValue={defaultValue}
+        disabled={!!lockedValue || disabled || isLoading || isDetecting}
+        value={lockedValue ?? selectedTimezone}
+        defaultValue={lockedValue ?? defaultValue}
         variant={variant}
+        name={name}
       >
         <Select.Trigger
           className={cn(
-            'flex items-center gap-1 border-none w-full',
+            'flex items-center gap-1 border-none w-full overflow-hidden',
             (disabled || isDetecting) && 'opacity-50 cursor-not-allowed',
             className
           )}
         >
-          <RiGlobalLine size={20} color="var(--text-soft-400)" />
-          <span className="text-text-sub-600 text-paragraph-sm">
+          <RiGlobalLine
+            size={20}
+            color="var(--text-soft-400)"
+            className="flex-shrink-0"
+          />
+          <span className="text-text-sub-600 text-paragraph-sm truncate min-w-0">
             {isDetecting ? 'Detecting timezone...' : formattedValue}
           </span>
         </Select.Trigger>

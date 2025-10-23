@@ -6,6 +6,8 @@ import {ZUpdateProfileInputSchema} from '../schemas/profile.schema';
 import {auth} from '@/auth';
 import {FormActionState} from '@/types/formTypes';
 import {revalidatePath} from 'next/cache';
+import {prisma} from "@/lib/prisma"
+
 
 export async function updateProfileHandler(
   ctx: Context,

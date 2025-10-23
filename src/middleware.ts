@@ -4,6 +4,7 @@ import {NextRequest} from 'next/server';
 import {routing} from '@/i18n/routing';
 import {match} from '@formatjs/intl-localematcher';
 import Negotiator from 'negotiator';
+import { prisma } from '@/lib/prisma';
 
 // Define public routes that don't require authentication
 const publicRoutes = [
@@ -17,6 +18,8 @@ const publicRoutes = [
   '/api',
   '/sign-up',
   '/sign-up/email',
+  '/booking',
+  '/reschedule',
   '/api/trpc',
   '/api/auth',
   '/_next',
@@ -37,6 +40,8 @@ const noOnboardingRoutes = [
   '/logout',
   '/api',
   '/sign-up',
+  '/booking',
+  '/reschedule',
   '/api/trpc',
   '/api/auth',
   '/_next',
@@ -85,12 +90,28 @@ export async function middleware(request: NextRequest) {
     response.headers.set('x-pathname', pathname);
 
     // Check if the route is public
-    const isPublicRoute = publicRoutes.some((route) =>
-      pathname.startsWith(route)
-    );
+    const isPublicRoute = publicRoutes.some((route) => pathname.startsWith(route));
 
-    // If the route is public, allow access
-    if (isPublicRoute) {
+    // Treat /:username (and subpaths) as public unless the first segment is a reserved prefix
+    const segments = pathname.split('/').filter(Boolean);
+    const reserved = new Set(
+      publicRoutes
+        .map((r) => r.split('/').filter(Boolean)[0])
+        .filter(Boolean)
+        .concat([
+          'services',
+          'availability',
+          'settings',
+          'bookings',
+          'booking',
+          'reschedule',
+          'sitemap.xml',
+        ])
+    );
+    const isUsernameNamespace = segments.length >= 1 && !reserved.has(segments[0]);
+
+    // If the route is public or within a username namespace, allow access
+    if (isPublicRoute || isUsernameNamespace) {
       return response;
     }
 
@@ -129,12 +150,28 @@ export async function middleware(request: NextRequest) {
       return response;
     }
     
+
+    if (session?.user?.id) {
+      // Server-side middleware checks onboarding status via direct DB query
+      const user = await prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: { completedOnboarding: true },
+      });
+
+      if (!user?.completedOnboarding) {
+        const personalUrl = new URL('/sign-up/personal', request.url);
+        if (!pathname.includes('redirect=')) {
+          personalUrl.searchParams.set('redirect', pathname);
+        }
+        return NextResponse.redirect(personalUrl);
+      }
+    }
+    
     // Only check onboarding status for routes that require it and not in onboarding flow
     if (requiresOnboarding) {
       // Get the onboarding status from the cookie
       const onboardingComplete =
         request.cookies.get('onboarding_complete')?.value === 'true';
-
       console.log(`[Middleware] User: ${session.user.email}, Path: ${pathname}, Onboarding complete: ${onboardingComplete}`);
 
       if (!onboardingComplete) {

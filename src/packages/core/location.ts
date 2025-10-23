@@ -1,4 +1,4 @@
-// import type {TFunction} from 'next-i18next';
+import type {TFunction} from 'next-i18next';
 import {z} from 'zod';
 
 // import logger from '@/lib/logger';
@@ -28,7 +28,7 @@ export type DefaultEventLocationType = {
   label: string;
   messageForOrganizer: string;
   category: 'in person' | 'conferencing' | 'other' | 'phone';
-  linkType: 'static';
+  linkType: 'static' | 'dynamic';
 
   iconUrl: string;
   urlRegExp?: string;
@@ -72,6 +72,8 @@ export type EventLocationTypeFromApp = Ensure<
 export type EventLocationType =
   | DefaultEventLocationType
   | EventLocationTypeFromApp;
+
+export const DailyLocationType = "integrations:daily";
 
 export const MeetLocationType = 'integrations:google:meet';
 
@@ -129,7 +131,7 @@ export const defaultLocations: DefaultEventLocationType[] = [
     variable: 'address',
     organizerInputType: null,
     messageForOrganizer:
-      'Cal will ask your invitee to enter an address before scheduling.',
+      'Markado will ask your invitee to enter an address before scheduling.',
     attendeeInputType: 'attendeeAddress',
     attendeeInputPlaceholder: 'enter_address',
     defaultValueVariable: 'attendeeAddress',
@@ -144,7 +146,7 @@ export const defaultLocations: DefaultEventLocationType[] = [
     variable: 'address',
     organizerInputType: null,
     messageForOrganizer:
-      'Cal will ask your invitee to enter any location before scheduling.',
+      'Markado  will ask your invitee to enter any location before scheduling.',
     attendeeInputType: 'somewhereElse',
     attendeeInputPlaceholder: 'any_location',
     defaultValueVariable: 'somewhereElse',
@@ -199,7 +201,7 @@ export const defaultLocations: DefaultEventLocationType[] = [
     attendeeInputPlaceholder: `enter_phone_number`,
     defaultValueVariable: 'phone',
     messageForOrganizer:
-      'Cal will ask your invitee to enter a phone number before scheduling.',
+      'Markado  will ask your invitee to enter a phone number before scheduling.',
     // This isn't inputType phone because organizer doesn't need to provide it.
     // inputType: "phone"
     iconUrl: '/phone.svg',
@@ -246,18 +248,57 @@ type PrivacyFilteredLocationObject = Optional<
 export const getTranslatedLocation = (
   location: PrivacyFilteredLocationObject,
   eventLocationType: ReturnType<typeof getEventLocationType>,
-  // t: TFunction
+  t: TFunction
 ) => {
   if (!eventLocationType) return null;
   const locationKey = z
     .string()
     .default('')
     .parse(locationKeyToString(location));
+    // console.log('getTranslatedLocation',locationKey, translateAbleKeys.includes(locationKey));
   const translatedLocation = location.type.startsWith('integrations:')
     ? eventLocationType.label
     : translateAbleKeys.includes(locationKey)
-      ? locationKey
+      ? t(locationKey)
       : locationKey;
 
+  // console.log('getTranslatedLocation', t(locationKey), locationKey);
+
   return translatedLocation;
+};
+
+/**
+ * It converts a static link based video location type(e.g. integrations:campfire_video) to it's value (e.g. https://campfire.to/my_link) set in the eventType.
+ * If the type provided is already a value(when displayLocationPublicly is on), it would just return that.
+ * For, dynamic link based video location apps, it doesn't do anything.
+ */
+export const getLocationValueForDB = (
+  bookingLocationTypeOrValue: EventLocationType["type"],
+  eventLocations: LocationObject[]
+) => {
+  let bookingLocation = bookingLocationTypeOrValue;
+  let conferenceCredentialId = undefined;
+
+  eventLocations.forEach((location) => {
+    if (location.type === bookingLocationTypeOrValue) {
+      const eventLocationType = getEventLocationType(bookingLocationTypeOrValue);
+      conferenceCredentialId = location.credentialId;
+      if (!eventLocationType) {
+        return;
+      }
+      if (!eventLocationType.default && eventLocationType.linkType === "dynamic") {
+        // Dynamic link based locations should still be saved as type. The beyond logic generates meeting URL based on the type.
+        // This difference can be avoided when we start storing both type and value of a location
+        return;
+      }
+
+      bookingLocation = location[eventLocationType.defaultValueVariable] || bookingLocation;
+    }
+  });
+
+  if (bookingLocation.trim().length === 0) {
+    bookingLocation = DailyLocationType;
+  }
+
+  return { bookingLocation, conferenceCredentialId };
 };

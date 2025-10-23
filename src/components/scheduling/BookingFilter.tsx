@@ -13,7 +13,7 @@ export default function BookingFilter({status}: BookingFilterProps) {
   const pathname = usePathname();
 
   function handleFilterChange(value: string) {
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(searchParams?.toString() || '');
     params.set('status', value);
     const newUrl = `${pathname}?${params.toString()}`;
     router.push(newUrl);
