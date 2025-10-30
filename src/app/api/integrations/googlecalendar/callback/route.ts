@@ -36,7 +36,10 @@ export async function GET(req: NextRequest) {
     throw new HttpError({ statusCode: 401, message: "You must be logged in to do this" });
   }
 
-  const { client_id, client_secret } = await getGoogleAppKeys();
+  const googleAppKeys = await getGoogleAppKeys();
+  await GoogleRepository.ensureGoogleApps(googleAppKeys);
+
+  const { client_id, client_secret } = googleAppKeys;
 
   const redirect_uri = `${WEBAPP_URL_FOR_OAUTH}/api/integrations/googlecalendar/callback`;
 
@@ -78,11 +81,10 @@ export async function GET(req: NextRequest) {
       await updateProfilePhoto(oAuth2Client, session?.user?.id);
     }
 
-    const gcalCredential =
-      await GoogleRepository.createGoogleCalendarCredential({
-        key,
-        userId: session?.user?.id
-      });
+    const gcalCredential = await GoogleRepository.createGoogleCalendarCredential({
+      key,
+      userId: session?.user?.id
+    });
 
     // If we still don't have a primary calendar skip creating the selected calendar.
     // It can be toggled on later.
@@ -139,10 +141,9 @@ export async function GET(req: NextRequest) {
   //   );
   // }
 
-  const existingGoogleMeetCredential =
-    await GoogleRepository.findGoogleMeetCredential({
-      userId: session?.user?.id
-    });
+  const existingGoogleMeetCredential = await GoogleRepository.findGoogleMeetCredential({
+    userId: session?.user?.id
+  });
 
   // If the user already has a google meet credential, there's nothing to do in here
   if (existingGoogleMeetCredential) {
