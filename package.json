@@ -27,7 +27,7 @@
     "setup:full": "pnpm setup && pnpm setup:db",
     "dev:db": "pnpm db:start && pnpm dev",
     "reset:all": "pnpm db:stop && docker compose down -v && pnpm setup:full",
-    "postinstall": "pnpm db:start && pnpm db:push && pnpm db:generate",
+    "postinstall": "node -e \"process.exit(process.env.CI || process.env.VERCEL ? 0 : 1)\" || (pnpm db:start && pnpm db:push && pnpm db:generate)",
     "test": "node node_modules/jest/bin/jest.js",
     "test:watch": "node node_modules/jest/bin/jest.js --watch",
     "test:coverage": "node node_modules/jest/bin/jest.js --coverage"
