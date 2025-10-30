@@ -292,13 +292,13 @@ export const FormBuilder = function FormBuilder({
     <>
       <div className="space-y-6 max-w-2xl">
         <div className="space-y-4">
-          <div className="flex flex-col">
+          <div className="md:flex flex-col hidden">
             <div className="text-title-h6">Formulário da Reserva</div>
             <div className="text-paragraph-sm text-text-sub-600">
               Personalize as perguntas feitas na página de reservas
             </div>
           </div>
-          <ul ref={parent} className="flex flex-col">
+          <ul ref={parent} className="flex flex-col mt-0 md:mt-4">
             {fields.map((field, index) => {
               let options = field.options ?? null;
               const sources = [...(field.sources || [])];

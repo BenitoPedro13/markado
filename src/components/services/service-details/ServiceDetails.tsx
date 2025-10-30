@@ -424,7 +424,7 @@ export default function ServiceDetails({slug}: Props) {
       className="space-y-6"
     >
       <div className="space-y-4">
-        <div className="text-title-h6">Geral</div>
+        <div className="text-title-h6 hidden md:block">Geral</div>
         <div className="flex flex-col gap-2">
           <label className="text-sm font-medium text-text-strong-950">
             Título do Serviço

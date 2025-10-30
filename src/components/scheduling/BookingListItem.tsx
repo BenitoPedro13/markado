@@ -89,7 +89,8 @@ export default function BookingListItem({
   const [isRescheduleModalOpen, setIsRescheduleModalOpen] = useState(false);
   const [rescheduleMessage, setRescheduleMessage] = useState('');
   const getRescheduleHref = () =>
-    `/reschedule/${uid}` + (status === 'canceled' ? `?allowRescheduleForCancelledBooking=true` : '');
+    `/reschedule/${uid}` +
+    (status === 'canceled' ? `?allowRescheduleForCancelledBooking=true` : '');
   const getCancelHref = () => {
     const normalized = cancelMessage.replace(/\s+/g, ' ').trim();
     return `/booking/${uid}?cancel=true&reason=${encodeURIComponent(normalized)}`;
@@ -181,14 +182,14 @@ export default function BookingListItem({
   return (
     <Drawer.Root open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
       {/* Componente Principal */}
-      <div className="flex items-center justify-between p-4 hover:bg-bg-weak-50 transition-colors duration-200 bg-bg-white-0 rounded-lg shadow">
+      <div className="flex items-center justify-between p-4 hover:bg-bg-weak-50 transition-colors duration-200 bg-bg-white-0 rounded-lg shadow 850:flex-row flex-col gap-4">
         <Drawer.Trigger asChild>
-          <div className="flex gap-8 cursor-pointer w-full">
-            <div className="w-[250px]">
-              <h3 className="text-paragraph-lg font-medium text-text-strong-950">
+          <div className="flex md:gap-8 gap-4 cursor-pointer w-full 550:flex-row flex-col items-center md:items-start">
+            <div className="md:w-[250px] w-full">
+              <h3 className="text-paragraph-lg font-medium text-text-strong-950 text-center 550:text-start">
                 {title}
               </h3>
-              <div className="flex items-center gap-2 mt-2">
+              <div className="flex items-center gap-2 mt-2 justify-center 550:justify-start">
                 <Badge.Root
                   className="text-label-sm"
                   size="medium"
@@ -206,12 +207,12 @@ export default function BookingListItem({
               </div>
             </div>
 
-            <div className="items-start">
-              <div className="flex items-center gap-2 text-text-strong-950">
+            <div className="md:w-fit w-full md:items-start items-center justify-center md:justify-end">
+              <div className="flex items-center gap-2 text-text-strong-950 w-full 550:w-fit justify-center 550:justify-start">
                 <span className="font-medium">{startDate.date}</span>
                 <span>{startDate.weekDay}</span>
               </div>
-              <div className="flex items-center gap-2 mt-2">
+              <div className="flex items-center gap-2 mt-2 justify-center 550:justify-start">
                 {status === 'confirmed' ? (
                   <StatusBadge.Root
                     className="text-label-sm"
@@ -234,7 +235,7 @@ export default function BookingListItem({
           </div>
         </Drawer.Trigger>
 
-        <div className="flex items-center gap-3">
+        <div className="850:w-fit w-full justify-center 850:justify-normal flex items-center gap-3">
           {status === 'confirmed' ? (
             <>
               {type === 'online' && (
@@ -242,17 +243,23 @@ export default function BookingListItem({
                   variant="neutral"
                   mode="ghost"
                   size="small"
-                  className="text-blue-400"
+                  className="text-blue-400 850:w-fit w-full"
                 >
                   <img src="/logos/Google Meet.svg" width={20} height={20} />
                   Entrar no Google Meet
                 </Button.Root>
               )}
-              <Button.Root asChild variant="neutral" mode="stroke" size="small">
-                <Link href={getRescheduleHref()}>
-                  <Button.Icon as={RiTimeLine} />
-                  Reagendar
-                </Link>
+              <Button.Root
+                asChild
+                variant="neutral"
+                mode="stroke"
+                size="small"
+                className='850:w-fit w-full'
+              >
+                  <Link href={getRescheduleHref()} className="">
+                    <Button.Icon as={RiTimeLine} />
+                    Reagendar
+                  </Link>
               </Button.Root>
               <Dropdown.Root>
                 <Dropdown.Trigger asChild>
@@ -283,7 +290,13 @@ export default function BookingListItem({
               </Dropdown.Root>
             </>
           ) : (
-            <Button.Root variant="neutral" mode="stroke" size="small" onClick={openRescheduleInNewTab}>
+            <Button.Root
+              variant="neutral"
+              mode="stroke"
+              size="small"
+              onClick={openRescheduleInNewTab}
+              className='850:w-fit w-full'
+            >
               <Button.Icon as={RiSendPlaneLine} />
               Solicitar reagendamento
             </Button.Root>
@@ -405,7 +418,13 @@ export default function BookingListItem({
                   >
                     Cancelar
                   </Button.Root>
-                  <Button.Root asChild variant="neutral" mode="stroke" size="medium" className="w-full">
+                  <Button.Root
+                    asChild
+                    variant="neutral"
+                    mode="stroke"
+                    size="medium"
+                    className="w-full"
+                  >
                     <Link href={getRescheduleHref()}>Reagendar</Link>
                   </Button.Root>
                 </div>
@@ -454,7 +473,13 @@ export default function BookingListItem({
                 Cancelar este evento
               </Button.Root>
             ) : (
-              <Button.Root asChild variant="error" mode="filled" size="medium" className="w-full">
+              <Button.Root
+                asChild
+                variant="error"
+                mode="filled"
+                size="medium"
+                className="w-full"
+              >
                 <Link
                   href={getCancelHref()}
                   target="_blank"

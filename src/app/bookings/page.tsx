@@ -13,7 +13,7 @@ export default async function BookingPage(props: BookingPageProps) {
   return (
     <PageLayout title="Home">
       <Header variant="scheduling" />
-      <div className="px-8">
+      <div className="950:px-8 px-4 hidden 950:block">
         <Divider.Root />
       </div>
       <BookingListClient searchParams={searchParams} />

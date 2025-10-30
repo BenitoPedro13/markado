@@ -65,7 +65,7 @@ export default function Availability({
             </div>
             <div className="flex gap-2 items-center">
               {schedule && (
-                <Badge.Root variant="light" color="blue" size="medium">
+                <Badge.Root variant="light" color="blue" size="medium" className="hidden md:inline-flex">
                   <Badge.Icon as={RiTimeLine} />
                   {schedule}
                 </Badge.Root>

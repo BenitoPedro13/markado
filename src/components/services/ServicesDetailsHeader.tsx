@@ -46,61 +46,61 @@ function ServicesDetailsHeader({}: ServicesDetailsHeaderProps) {
   // const isDefault = watch('isDefault');
 
   return (
-    <div className="w-full h-[88px] px-8 py-5 relative bg-bg-white-0 inline-flex justify-between items-center overflow-hidden">
-      <div className="flex items-center gap-3">
-        <Button.Root
-          variant="neutral"
-          mode="stroke"
-          size="small"
-          onClick={() => router.push('/services')}
-        >
-          <Button.Icon as={RiArrowLeftSLine} />
-        </Button.Root>
-        <div className="flex flex-col">
-          <div className="text-text-strong-950 text-lg font-medium font-sans leading-normal">
-            {name ? (
-              <div className="flex items-center gap-2">
-                {isEditing ? (
-                  <Input.Root>
-                    <Input.Input
-                      {...register('name')}
-                      onBlur={() => {
-                        setIsEditing(false);
-                      }}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
+    <div className="w-full md:h-[88px] flex h-36 px-4 md:px-8 md:py-5 py-8 relative bg-bg-white-0 md:gap-3 gap-4 flex-col md:flex-row justify-between items-center overflow-hidden">
+      <div className="flex items-center gap-3 justify-between w-full">
+        <div className="flex items-center gap-3">
+          <Button.Root
+            variant="neutral"
+            mode="stroke"
+            size="small"
+            onClick={() => router.push('/services')}
+          >
+            <Button.Icon as={RiArrowLeftSLine} />
+          </Button.Root>
+          <div className="flex flex-col">
+            <div className="text-text-strong-950 text-lg font-medium font-sans leading-normal">
+              {name ? (
+                <div className="flex items-center gap-2">
+                  {isEditing ? (
+                    <Input.Root>
+                      <Input.Input
+                        {...register('name')}
+                        onBlur={() => {
                           setIsEditing(false);
-                        }
-                      }}
-                      autoFocus
-                    />
-                  </Input.Root>
-                ) : (
-                  <>
-                    <span>{name}</span>
-                    <Button.Root
-                      variant="neutral"
-                      mode="ghost"
-                      size="small"
-                      onClick={() => setIsEditing(true)}
-                    >
-                      <Button.Icon as={RiPencilLine} />
-                    </Button.Root>
-                  </>
-                )}
-              </div>
-            ) : (
-              'Configuração do Serviço'
-            )}
-          </div>
-          {/* {subtitle && (
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            setIsEditing(false);
+                          }
+                        }}
+                        autoFocus
+                      />
+                    </Input.Root>
+                  ) : (
+                    <>
+                      <span>{name}</span>
+                      <Button.Root
+                        variant="neutral"
+                        mode="ghost"
+                        size="small"
+                        onClick={() => setIsEditing(true)}
+                      >
+                        <Button.Icon as={RiPencilLine} />
+                      </Button.Root>
+                    </>
+                  )}
+                </div>
+              ) : (
+                'Configuração do Serviço'
+              )}
+            </div>
+            {/* {subtitle && (
             <div className="text-text-sub-600 text-paragraph-xs font-normal font-sans leading-tight">
               {subtitle}
             </div>
           )} */}
+          </div>
         </div>
-      </div>
-      <div className="flex items-center gap-3">
         <div className="flex items-center gap-2">
           <ButtonGroup.Root>
             <Tooltip.Root>
@@ -132,7 +132,11 @@ function ServicesDetailsHeader({}: ServicesDetailsHeaderProps) {
               <Tooltip.Content size="small">Criar embed</Tooltip.Content>
             </Tooltip.Root> */}
           </ButtonGroup.Root>
+        </div>
+      </div>
 
+      <div className="flex items-center gap-3 w-full md:w-fit">
+        <div className="flex items-center gap-2 w-full md:w-fit justify-between md:justify-center ">
           <Modal.Root
             open={isDeleteModalOpen}
             onOpenChange={setIsDeleteModalOpen}
@@ -206,77 +210,77 @@ function ServicesDetailsHeader({}: ServicesDetailsHeaderProps) {
               </form>
             </Modal.Content>
           </Modal.Root>
-        </div>
-        <form
-          action={async (formData) => {
-            try {
-              // Get form values from the Schedule component
-              const {id, ...rest} = getValues();
+          <form
+            action={async (formData) => {
+              try {
+                // Get form values from the Schedule component
+                const {id, ...rest} = getValues();
 
-              const serviceInputValues: TUpdateInputSchema = {
-                id,
-                slug: rest.slug,
-                badgeColor: rest.badgeColor,
-                length: parseInt(`${rest.duration}`) || 0,
-                price: parseFloat(`${rest.price}`) || 0,
-                title: rest.name,
-                description: rest.description || '',
-                locations: rest.locations,
-                hidden: rest.isHidden,
-                schedule: rest.schedule,
-                bookingFields: rest.bookingFields,
-                // seatsPerTimeSlotEnabled:
-                //   !initialServiceDetails?.seatsPerTimeSlot ? false : true,
-                seatsPerTimeSlot: rest?.seatsPerTimeSlot,
-                requiresConfirmation: rest?.requiresConfirmation,
-                requiresConfirmationWillBlockSlot:
-                  rest?.requiresConfirmationWillBlockSlot,
-                metadata: rest?.metadata,
-                lockTimeZoneToggleOnBookingPage:
-                  rest?.lockTimeZoneToggleOnBookingPage,
-                successRedirectUrl: rest?.successRedirectUrl
-              };
+                const serviceInputValues: TUpdateInputSchema = {
+                  id,
+                  slug: rest.slug,
+                  badgeColor: rest.badgeColor,
+                  length: parseInt(`${rest.duration}`) || 0,
+                  price: parseFloat(`${rest.price}`) || 0,
+                  title: rest.name,
+                  description: rest.description || '',
+                  locations: rest.locations,
+                  hidden: rest.isHidden,
+                  schedule: rest.schedule,
+                  bookingFields: rest.bookingFields,
+                  // seatsPerTimeSlotEnabled:
+                  //   !initialServiceDetails?.seatsPerTimeSlot ? false : true,
+                  seatsPerTimeSlot: rest?.seatsPerTimeSlot,
+                  requiresConfirmation: rest?.requiresConfirmation,
+                  requiresConfirmationWillBlockSlot:
+                    rest?.requiresConfirmationWillBlockSlot,
+                  metadata: rest?.metadata,
+                  lockTimeZoneToggleOnBookingPage:
+                    rest?.lockTimeZoneToggleOnBookingPage,
+                  successRedirectUrl: rest?.successRedirectUrl
+                };
 
-              const serviceResult = await updateServiceHandler({
-                input: serviceInputValues
-              });
+                const serviceResult = await updateServiceHandler({
+                  input: serviceInputValues
+                });
 
-              if (!serviceResult) return;
+                if (!serviceResult) return;
 
-              notification({
-                title: 'Alterações salvas!',
-                description: 'Seus updates foram salvos com sucesso.',
-                variant: 'stroke',
-                status: 'success'
-              });
+                notification({
+                  title: 'Alterações salvas!',
+                  description: 'Seus updates foram salvos com sucesso.',
+                  variant: 'stroke',
+                  status: 'success'
+                });
 
-              router.push(`/services`);
-            } catch (error: any) {
-              console.error('Error submitting service details form:', error);
-              notification({
-                title: t('schedule_updated_error'),
-                description: error.message,
-                variant: 'stroke',
-                id: 'schedule_updated_error',
-                status: 'error'
-              });
-            }
-          }}
-        >
-          <FancyButton.Root
-            variant="neutral"
-            size="small"
-            onClick={(e) => {
-              // if ((window as any).submitServiceForm) {
-              //   (window as any).submitServiceForm();
-              // }
-              // submitUpdateSchedule();
+                router.push(`/services`);
+              } catch (error: any) {
+                console.error('Error submitting service details form:', error);
+                notification({
+                  title: t('schedule_updated_error'),
+                  description: error.message,
+                  variant: 'stroke',
+                  id: 'schedule_updated_error',
+                  status: 'error'
+                });
+              }
             }}
           >
-            <FancyButton.Icon as={RiSaveFill} />
-            Salvar
-          </FancyButton.Root>
-        </form>
+            <FancyButton.Root
+              variant="neutral"
+              size="small"
+              onClick={(e) => {
+                // if ((window as any).submitServiceForm) {
+                //   (window as any).submitServiceForm();
+                // }
+                // submitUpdateSchedule();
+              }}
+            >
+              <FancyButton.Icon as={RiSaveFill} />
+              Salvar
+            </FancyButton.Root>
+          </form>
+        </div>
       </div>
     </div>
   );

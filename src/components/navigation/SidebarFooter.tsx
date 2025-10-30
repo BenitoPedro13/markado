@@ -8,7 +8,7 @@ import * as Avatar from '@/components/align-ui/ui/avatar';
 import { useQuery } from '@tanstack/react-query';
 import { useTRPC } from '@/utils/trpc';
 
-export default function SidebarFooter() {
+export default function SidebarFooter({isMobile}: {isMobile?: boolean}) {
   const user = useSessionStore((state) => state.user);
   const isLoading = useSessionStore((state) => state.isLoading);
   const {isCollapsed, toggleCollapse} = useSidebarStore();
@@ -22,12 +22,12 @@ export default function SidebarFooter() {
   }
 
   return (
-    <div className="p-4 w-full overflow-hidden">
+    <div className={`${isMobile ? 'p-0' : 'p-4'} w-full overflow-hidden`}>
       <div
-        className={`flex items-center gap-3 ${isCollapsed ? 'justify-center' : ''}`}
+        className={`flex items-center gap-3 ${isMobile? '' : isCollapsed ? 'justify-center' : ''}`}
       >
         <Avatar.Root
-          size={isCollapsed ? '48' : '40'}
+          size={isMobile ? '32' : isCollapsed ? '48' : '40'}
           fallbackText={user.name || ''}
         >
           <Avatar.Image
@@ -37,7 +37,7 @@ export default function SidebarFooter() {
           />
         </Avatar.Root>
         <div
-          className={`flex flex-col items-start ${isCollapsed ? 'hidden' : ''}`}
+          className={`flex flex-col items-start ${ isCollapsed || isMobile ? 'hidden' : ''}`}
         >
           <p className="text-text-strong-950 text-label-sm">
             {user.name}

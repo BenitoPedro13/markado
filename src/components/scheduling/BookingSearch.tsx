@@ -29,7 +29,7 @@ export default function BookingSearch({search = ''}: BookingSearchProps) {
   const debouncedHandleSearch = debounce(handleSearch, 200);
 
   return (
-    <div className="w-full min-w-[250px]">
+    <div className="w-full min-[950px]:w-[250px]">
       <Input.Root>
         <Input.Wrapper>
           <Input.Icon as={RiSearch2Line} />

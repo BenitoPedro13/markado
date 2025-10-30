@@ -30,7 +30,7 @@ export default function ServicesSearch() {
   const handleInputChange = debounce(setSearch, 300);
 
   return (
-    <div className="w-full max-w-[300px]">
+    <div className="w-full md:max-w-[300px]">
       <Input.Root>
         <Input.Wrapper>
           <Input.Icon as={RiSearch2Line} />
