@@ -38,7 +38,10 @@ async function getHandler(req: NextApiRequest, res: NextApiResponse) {
     throw new HttpError({ statusCode: 401, message: "You must be logged in to do this" });
   }
 
-  const { client_id, client_secret } = await getGoogleAppKeys();
+  const googleAppKeys = await getGoogleAppKeys();
+  await GoogleRepository.ensureGoogleApps(googleAppKeys);
+
+  const { client_id, client_secret } = googleAppKeys;
 
   const redirect_uri = `${WEBAPP_URL_FOR_OAUTH}/api/integrations/googlecalendar/callback`;
 
