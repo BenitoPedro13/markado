@@ -18,16 +18,19 @@ import {
   RiTimeLine,
   RiTimeFill
 } from '@remixicon/react';
-import React, { PropsWithChildren, ReactElement} from 'react';
+import React, {PropsWithChildren, ReactElement, useEffect} from 'react';
 import {usePathname} from 'next/navigation';
 
 import * as TabMenuVertical from '@/components/align-ui/ui/tab-menu-vertical';
+import * as TabMenuHorizontal from '@/components/align-ui/ui/tab-menu-horizontal';
 import * as CompactButton from '@/components/align-ui/ui/compact-button';
 import * as Divider from '@/components/align-ui/ui/divider';
 import SidebarFooter from './SidebarFooter';
 import Link from 'next/link';
 import {ProfileDropdown} from '@/components/navigation/ProfileDropdown';
 import {useSidebarStore} from '@/stores/sidebar-store';
+import useMediaQuery from '@/packages/lib/hooks/useMediaQuery';
+
 import Logo from './Logo';
 
 import {SUPORT_WHATSAPP_NUMBER} from '@/constants';
@@ -66,21 +69,21 @@ const mainItems: sidebarItem[] = [
   }
 ];
 
-
 const Sidebar = ({children}: PropsWithChildren) => {
-  const { isCollapsed, toggleCollapse, collapse, expand } = useSidebarStore();
+  const {isCollapsed, toggleCollapse, collapse, expand} = useSidebarStore();
   const pathname = usePathname();
-  
+  const isTablet = useMediaQuery('(max-width: 1024px)');
+  const isMobile = useMediaQuery('(max-width: 768px)');
   const isActive = (link: string) => {
     return pathname === `${link}`;
   };
-  
+
   const settingsItems: sidebarItem[] = [
     {
       iconLine: <RiSettings2Line />,
       iconFill: <RiSettings2Fill />,
       label: 'Configurações',
-      link: '/settings',
+      link: '/settings'
     },
     {
       iconLine: <RiHeadphoneLine />,
@@ -90,11 +93,19 @@ const Sidebar = ({children}: PropsWithChildren) => {
     }
   ];
 
+  useEffect(() => {
+    if (isTablet) {
+      collapse();
+    } else {
+      expand();
+    }
+  }, [isTablet, isMobile, collapse, expand]);
+
   return (
     <div className="flex relative">
       {/* Sidebar */}
       <div
-        className={`${isCollapsed ? 'w-[80px]' : 'w-[280px]'} fixed  h-screen bg-bg-white-0 border-r border-stroke-soft-200 inline-flex flex-col justify-start items-start transition-all duration-300 z-10`}
+        className={`${isMobile ? 'hidden' : isCollapsed ? 'w-[80px]' : 'w-[280px]'} fixed  h-screen bg-bg-white-0 border-r border-stroke-soft-200 inline-flex flex-col justify-start items-start transition-all duration-300 z-10`}
       >
         {/* Sidebar Header */}
         <div
@@ -106,8 +117,10 @@ const Sidebar = ({children}: PropsWithChildren) => {
             <div
               className={`h-10 flex justify-start items-center gap-2.5 ${isCollapsed ? 'w-[41px] h-[41px]' : 'opacity-100'} transition-all duration-300`}
             >
-              <Link 
-                href={process.env.NEXT_PUBLIC_LANDING_URL || 'https://markado.co'}
+              <Link
+                href={
+                  process.env.NEXT_PUBLIC_LANDING_URL || 'https://markado.co'
+                }
                 target="_blank"
                 rel="noopener"
               >
@@ -183,9 +196,8 @@ const Sidebar = ({children}: PropsWithChildren) => {
                     <div
                       className={`w-full absolute ${isCollapsed ? '-bottom-4' : 'bottom-4'} items-end space-y-2`}
                     >
-                      {
-                        settingsItems.map(
-                        ({label, iconLine, iconFill, link }) => (
+                      {settingsItems.map(
+                        ({label, iconLine, iconFill, link}) => (
                           <Link
                             href={link}
                             key={label}
@@ -194,10 +206,8 @@ const Sidebar = ({children}: PropsWithChildren) => {
                             <TabMenuVertical.Trigger
                               value={label}
                               onClick={collapse}
-                              className={
-                                `${isCollapsed ? 'justify-center flex items-center' : ''} 
-                                ${isActive(link) ? 'bg-primary-50 text-primary-600' : 'hover:bg-gray-50 dark:hover:bg-gray-800'}`
-                              }
+                              className={`${isCollapsed ? 'justify-center flex items-center' : ''} 
+                                ${isActive(link) ? 'bg-primary-50 text-primary-600' : 'hover:bg-gray-50 dark:hover:bg-gray-800'}`}
                             >
                               <TabMenuVertical.Icon
                                 iconLine={iconLine}
@@ -227,9 +237,85 @@ const Sidebar = ({children}: PropsWithChildren) => {
       </div>
       {/* Main Content */}
       <div
-        className={`${isCollapsed ? 'w-[calc(100vw-80px)] left-[80px]' : 'w-[calc(100vw-280px)] left-[280px]'} relative transition-all duration-300`}
+        className={`${isMobile ? 'w-full' : isCollapsed ? 'w-[calc(100vw-80px)] left-[80px]' : 'w-[calc(100vw-280px)] left-[280px]'} relative transition-all duration-300`}
       >
+        {isMobile && (
+          <>
+            <header className="w-full h-16 bg-bg-white-0 border-b border-stroke-soft-200 flex items-center px-4 sticky top-0 z-40 justify-between bg-opacity-50 py-1.5 backdrop-blur-lg sm:p-4 md:hidden">
+              <div
+                className={`w-full h-10 flex justify-between items-center gap-2.5 ${false ? 'w-[41px] h-[41px]' : 'opacity-100'} transition-all duration-300`}
+              >
+                <Link
+                  href={
+                    process.env.NEXT_PUBLIC_LANDING_URL || 'https://markado.co'
+                  }
+                  target="_blank"
+                  rel="noopener"
+                >
+                  <Logo isCollapsed={false} />
+                </Link>
+
+                <div className={`w-fit items-end space-y-2`}>
+                  <TabMenuHorizontal.Root defaultValue="Main" className="h-fit">
+                    <TabMenuHorizontal.List className="relative flex  h-fit border-none gap-2">
+                      {settingsItems.map(
+                        ({label, iconLine, iconFill, link}) => (
+                          <Link
+                            href={link}
+                            key={label}
+                            target={label === 'Suporte' ? '_blank' : '_self'}
+                          >
+                            <TabMenuHorizontal.Trigger
+                              value={label}
+                              onClick={collapse}
+                              className={` h-8 w-8 rounded-10
+                                ${isActive(link) ? 'bg-primary-50 text-primary-600' : 'hover:bg-gray-50 dark:hover:bg-gray-800'}`}
+                            >
+                              <TabMenuHorizontal.Icon
+                                iconLine={iconLine}
+                                iconFill={iconFill}
+                                className="w-5 h-5"
+                              />
+                              {/* {label} */}
+                            </TabMenuHorizontal.Trigger>
+                          </Link>
+                        )
+                      )}
+                      <ProfileDropdown>
+                        <SidebarFooter isMobile={isMobile} />
+                      </ProfileDropdown>
+                    </TabMenuHorizontal.List>
+                  </TabMenuHorizontal.Root>
+                </div>
+              </div>
+            </header>
+          </>
+        )}
         {children}
+        {isMobile && (
+          <nav className="bg-bg-white-0 border-stroke-soft-200 h-16 fixed bottom-0 left-0 z-30 flex w-full border-t bg-opacity-40 px-1 shadow backdrop-blur-md">
+            <TabMenuHorizontal.Root defaultValue="Main" className="h-full">
+              <TabMenuHorizontal.List className="relative h-16 justify-evenly px-2">
+                {mainItems.map(({label, iconLine, iconFill, link}) => (
+                  <Link href={link} key={label} className="h-16 w-full">
+                    <TabMenuHorizontal.Trigger
+                      value={label}
+                      onClick={expand}
+                      className={`w-full h-full justify-center flex-col items-between rounded-10 ${isActive(link) ? 'text-text-strong-950' : 'hover:text-text-strong-950'}`}
+                    >
+                      <TabMenuHorizontal.Icon
+                        iconLine={iconLine}
+                        iconFill={iconFill}
+                        className="w-5 h-5 text-current"
+                      />
+                      {label}
+                    </TabMenuHorizontal.Trigger>
+                  </Link>
+                ))}
+              </TabMenuHorizontal.List>
+            </TabMenuHorizontal.Root>
+          </nav>
+        )}
       </div>
     </div>
   );

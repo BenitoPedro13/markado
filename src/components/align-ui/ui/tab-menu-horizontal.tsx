@@ -2,10 +2,10 @@
 
 'use client';
 
-import { useTabObserver } from '@/hooks/use-tab-observer';
-import { cn } from '@/utils/cn';
-import type { PolymorphicComponentProps } from '@/utils/polymorphic';
-import { Slottable } from '@radix-ui/react-slot';
+import {useTabObserver} from '@/hooks/use-tab-observer';
+import {cn} from '@/utils/cn';
+import type {PolymorphicComponentProps} from '@/utils/polymorphic';
+import {Slottable} from '@radix-ui/react-slot';
 import * as TabsPrimitive from '@radix-ui/react-tabs';
 import mergeRefs from 'merge-refs';
 import * as React from 'react';
@@ -16,11 +16,11 @@ TabMenuHorizontalContent.displayName = 'TabMenuHorizontalContent';
 const TabMenuHorizontalRoot = React.forwardRef<
   React.ComponentRef<typeof TabsPrimitive.Root>,
   Omit<React.ComponentPropsWithoutRef<typeof TabsPrimitive.Root>, 'orientation'>
->(({ className, ...rest }, forwardedRef) => {
+>(({className, ...rest}, forwardedRef) => {
   return (
     <TabsPrimitive.Root
       ref={forwardedRef}
-      orientation='horizontal'
+      orientation="horizontal"
       className={cn('w-full', className)}
       {...rest}
     />
@@ -33,14 +33,14 @@ const TabMenuHorizontalList = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof TabsPrimitive.List> & {
     wrapperClassName?: string;
   }
->(({ children, className, wrapperClassName, ...rest }, forwardedRef) => {
-  const [lineStyle, setLineStyle] = React.useState({ width: 0, left: 0 });
+>(({children, className, wrapperClassName, ...rest}, forwardedRef) => {
+  const [lineStyle, setLineStyle] = React.useState({width: 0, left: 0});
   const listWrapperRef = React.useRef<HTMLDivElement>(null);
 
-  const { mounted, listRef } = useTabObserver({
+  const {mounted, listRef} = useTabObserver({
     onActiveTabChange: (_, activeTab) => {
-      const { offsetWidth: width, offsetLeft: left } = activeTab;
-      setLineStyle({ width, left });
+      const {offsetWidth: width, offsetLeft: left} = activeTab;
+      setLineStyle({width, left});
 
       const listWrapper = listWrapperRef.current;
       if (listWrapper) {
@@ -49,10 +49,10 @@ const TabMenuHorizontalList = React.forwardRef<
 
         listWrapper.scrollTo({
           left: scrollPosition,
-          behavior: 'smooth',
+          behavior: 'smooth'
         });
       }
-    },
+    }
   });
 
   return (
@@ -60,14 +60,14 @@ const TabMenuHorizontalList = React.forwardRef<
       ref={listWrapperRef}
       className={cn(
         'relative grid overflow-x-auto overflow-y-hidden overscroll-contain',
-        wrapperClassName,
+        wrapperClassName
       )}
     >
       <TabsPrimitive.List
         ref={mergeRefs(forwardedRef, listRef)}
         className={cn(
           'group/tab-list relative flex h-12 items-center gap-6 whitespace-nowrap border-y border-stroke-soft-200',
-          className,
+          className
         )}
         {...rest}
       >
@@ -78,15 +78,15 @@ const TabMenuHorizontalList = React.forwardRef<
           className={cn(
             'absolute -bottom-px left-0 h-0.5 bg-primary-base opacity-0 transition-all duration-300 group-has-[[data-state=active]]/tab-list:opacity-100',
             {
-              hidden: !mounted,
-            },
+              hidden: !mounted
+            }
           )}
           style={{
             transform: `translate3d(${lineStyle.left}px, 0, 0)`,
             width: `${lineStyle.width}px`,
-            transitionTimingFunction: 'cubic-bezier(0.65, 0, 0.35, 1)',
+            transitionTimingFunction: 'cubic-bezier(0.65, 0, 0.35, 1)'
           }}
-          aria-hidden='true'
+          aria-hidden="true"
         />
       </TabsPrimitive.List>
     </div>
@@ -97,7 +97,7 @@ TabMenuHorizontalList.displayName = 'TabMenuHorizontalList';
 const TabMenuHorizontalTrigger = React.forwardRef<
   React.ComponentRef<typeof TabsPrimitive.Trigger>,
   React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>
->(({ className, ...rest }, forwardedRef) => {
+>(({className, ...rest}, forwardedRef) => {
   return (
     <TabsPrimitive.Trigger
       ref={forwardedRef}
@@ -110,7 +110,7 @@ const TabMenuHorizontalTrigger = React.forwardRef<
         'focus:outline-none',
         // active
         'data-[state=active]:text-text-strong-950',
-        className,
+        className
       )}
       {...rest}
     />
@@ -118,25 +118,49 @@ const TabMenuHorizontalTrigger = React.forwardRef<
 });
 TabMenuHorizontalTrigger.displayName = 'TabMenuHorizontalTrigger';
 
+interface TabMenuHorizontalIconProps
+  extends React.HTMLAttributes<HTMLDivElement> {
+  iconLine: React.ReactElement<any>;
+  iconFill: React.ReactElement<any>;
+}
+
 function TabMenuHorizontalIcon<T extends React.ElementType>({
   className,
-  as,
+  iconLine,
+  iconFill,
   ...rest
-}: PolymorphicComponentProps<T>) {
-  const Component = as || 'div';
+}: TabMenuHorizontalIconProps) {
+  // const Component = as || 'div';
 
   return (
-    <Component
+    <div
       className={cn(
         // base
         'size-5 text-text-sub-600',
         'transition duration-200 ease-out',
         // active
         'group-data-[state=active]/tab-item:text-primary-base',
-        className,
+        className
       )}
       {...rest}
-    />
+    >
+      <div className="hidden group-data-[state=active]/tab-item:block">
+        {React.cloneElement(iconFill, {
+          className: cn(
+            'w-full h-full',
+            (iconFill.props as {className?: string}).className
+          )
+        })}
+      </div>
+      <div className="block group-data-[state=active]/tab-item:hidden">
+        {React.cloneElement(iconLine, {
+          className: cn(
+            'w-full h-full',
+            (iconLine.props as {className?: string}).className
+          )
+        })}
+      </div>
+    </div>
   );
 }
 TabMenuHorizontalIcon.displayName = 'TabsHorizontalIcon';
@@ -159,6 +183,9 @@ TabMenuHorizontalArrowIcon.displayName = 'TabsHorizontalArrow';
 
 export {
   TabMenuHorizontalArrowIcon as ArrowIcon,
-  TabMenuHorizontalContent as Content, TabMenuHorizontalIcon as Icon, TabMenuHorizontalList as List, TabMenuHorizontalRoot as Root, TabMenuHorizontalTrigger as Trigger
+  TabMenuHorizontalContent as Content,
+  TabMenuHorizontalIcon as Icon,
+  TabMenuHorizontalList as List,
+  TabMenuHorizontalRoot as Root,
+  TabMenuHorizontalTrigger as Trigger
 };
-

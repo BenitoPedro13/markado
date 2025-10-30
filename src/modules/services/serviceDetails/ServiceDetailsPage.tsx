@@ -7,7 +7,7 @@ function ServiceDetailsPage({slug}: {slug: string}) {
   return (
     <>
       <ServicesDetailsHeader />
-      <div className="px-8">
+      <div className="md:px-8 px-4">
         <Divider.Root />
       </div>
       <ServicesDetailsSidebar slug={slug} />

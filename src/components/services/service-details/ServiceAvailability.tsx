@@ -323,7 +323,7 @@ const EventTypeSchedule = ({
   return (
     <div className="space-y-6 flex flex-col gap-4 max-w-2xl">
       <div className="space-y-4 ">
-        <div className="text-title-h6">Geral</div>
+        <div className="text-title-h6 hidden md:block">Geral</div>
         <div className="grid grid-cols-[1fr,auto,auto] gap-4 items-end">
           <div className="flex flex-col gap-2">
             <label

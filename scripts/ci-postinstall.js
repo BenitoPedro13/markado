@@ -8,26 +8,25 @@
 const { spawnSync } = require('node:child_process');
 const path = require('node:path');
 
-if (process.env.CI || process.env.VERCEL) {
-  console.log('Skipping postinstall database setup in CI environment.');
-  process.exit(0);
-}
-
-const pnpmBin =
-  process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm';
+const pnpmBin = process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm';
 
 const run = (args) => {
   const result = spawnSync(pnpmBin, args, {
     stdio: 'inherit',
     cwd: process.cwd(),
     env: process.env,
-    shell: false,
   });
 
   if (result.status !== 0) {
     process.exit(result.status ?? 1);
   }
 };
+
+if (process.env.CI || process.env.VERCEL) {
+  console.log('CI environment detected. Running prisma generate only.');
+  run(['db:generate']);
+  process.exit(0);
+}
 
 run(['db:start']);
 run(['db:push']);

@@ -100,62 +100,62 @@ function AvailabilityDetailsHeader(
   if (!availability) return null;
 
   return (
-    <div className="w-full h-[88px] px-8 py-5 relative bg-bg-white-0 inline-flex justify-between items-center overflow-hidden">
-      <div className="flex items-center gap-3">
-        <Button.Root
-          variant="neutral"
-          mode="stroke"
-          size="small"
-          onClick={() => router.push('/availability')}
-        >
-          <Button.Icon as={RiArrowLeftSLine} />
-        </Button.Root>
-        <div className="flex flex-col">
-          <div className="text-text-strong-950 text-lg font-medium font-sans leading-normal">
-            {availability?.name ? (
-              <div className="flex items-center gap-2">
-                {isEditing ? (
-                  <Input.Root>
-                    <Input.Input
-                      {...register('name')}
-                      onBlur={() => {
-                        setIsEditing(false);
-                      }}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
+    <div className="w-full md:h-[88px] flex min-[475px]:h-32 h-36 px-4 md:px-8 md:py-5 py-8 relative bg-bg-white-0 md:inline-flex md:justify-between items-center overflow-hidden flex-col justify-center md:flex-row gap-4">
+      <div className="w-full md:w-fit flex items-center gap-3 justify-between md:justify-start">
+        <div className='flex items-center gap-3'>
+          <Button.Root
+            variant="neutral"
+            mode="stroke"
+            size="small"
+            onClick={() => router.push('/availability')}
+          >
+            <Button.Icon as={RiArrowLeftSLine} />
+          </Button.Root>
+          <div className="flex flex-col">
+            <div className="text-text-strong-950 text-lg font-medium font-sans leading-normal">
+              {availability?.name ? (
+                <div className="flex items-center gap-2">
+                  {isEditing ? (
+                    <Input.Root>
+                      <Input.Input
+                        {...register('name')}
+                        onBlur={() => {
                           setIsEditing(false);
-                        }
-                      }}
-                      autoFocus
-                    />
-                  </Input.Root>
-                ) : (
-                  <>
-                    <span>{name}</span>
-                    <Button.Root
-                      variant="neutral"
-                      mode="ghost"
-                      size="small"
-                      onClick={() => setIsEditing(true)}
-                    >
-                      <Button.Icon as={RiPencilLine} />
-                    </Button.Root>
-                  </>
-                )}
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            setIsEditing(false);
+                          }
+                        }}
+                        autoFocus
+                      />
+                    </Input.Root>
+                  ) : (
+                    <>
+                      <span>{name}</span>
+                      <Button.Root
+                        variant="neutral"
+                        mode="ghost"
+                        size="small"
+                        onClick={() => setIsEditing(true)}
+                      >
+                        <Button.Icon as={RiPencilLine} />
+                      </Button.Root>
+                    </>
+                  )}
+                </div>
+              ) : (
+                'Configuração do Serviço'
+              )}
+            </div>
+            {availability?.schedule && (
+              <div className="text-text-sub-600 text-paragraph-xs font-normal font-sans leading-tight hidden md:block">
+                {formatScheduleFromDetailed(availability)}
               </div>
-            ) : (
-              'Configuração do Serviço'
             )}
           </div>
-          {availability?.schedule && (
-            <div className="text-text-sub-600 text-paragraph-xs font-normal font-sans leading-tight">
-              {formatScheduleFromDetailed(availability)}
-            </div>
-          )}
         </div>
-      </div>
-      <div className="flex items-center gap-3">
-        <div className="flex items-center gap-2 text-text-sub-600 text-paragraph-xs font-normal font-sans leading-tight w-fit">
+        <div className="flex items-center gap-2 text-text-sub-600 text-paragraph-xs font-normal font-sans leading-tight w-fit md:hidden">
           Definir padrão
           <Switch.Root
             defaultChecked={isDefault}
@@ -164,136 +164,152 @@ function AvailabilityDetailsHeader(
             }}
           />
         </div>
-        <div className="flex items-center gap-2">
-          <Modal.Root
-            open={isDeleteModalOpen}
-            onOpenChange={setIsDeleteModalOpen}
-          >
-            <Modal.Trigger asChild>
-              <Button.Root
-                variant="neutral"
-                mode="stroke"
-                onClick={() => setIsDeleteModalOpen(true)}
-              >
-                <Button.Icon as={RiDeleteBinLine} />
-                Apagar
-              </Button.Root>
-            </Modal.Trigger>
-            <Modal.Content className="max-w-[440px]">
-              <form
-                action={async (formData) => {
-                  try {
+      </div>
+      <div className="w-full md:w-fit flex items-center gap-3 justify-between md:justify-end">
+        <div className="md:flex items-center gap-2 text-text-sub-600 text-paragraph-xs font-normal font-sans leading-tight w-fit hidden">
+          Definir padrão
+          <Switch.Root
+            defaultChecked={isDefault}
+            onCheckedChange={(checked) => {
+              setValue('isDefault', checked);
+            }}
+          />
+        </div>
+        <div className="w-full md:w-fit flex gap-3 justify-between md:justify-end">
+          <div className="flex items-center gap-2">
+            <Modal.Root
+              open={isDeleteModalOpen}
+              onOpenChange={setIsDeleteModalOpen}
+            >
+              <Modal.Trigger asChild>
+                <Button.Root
+                  variant="neutral"
+                  mode="stroke"
+                  onClick={() => setIsDeleteModalOpen(true)}
+                >
+                  <Button.Icon as={RiDeleteBinLine} />
+                  Apagar
+                </Button.Root>
+              </Modal.Trigger>
+              <Modal.Content className="max-w-[440px]">
+                <form
+                  action={async (formData) => {
+                    try {
+                      console.log('availability.id', availability.id);
+                      await submitDeleteSchedule(availability.id);
 
-                    console.log("availability.id", availability.id);
-                    await submitDeleteSchedule(availability.id);
+                      notification({
+                        title: 'Alterações salvas!',
+                        description: 'Seus updates foram salvos com sucesso.',
+                        variant: 'stroke',
+                        status: 'success'
+                      });
 
-                    notification({
-                      title: 'Alterações salvas!',
-                      description: 'Seus updates foram salvos com sucesso.',
-                      variant: 'stroke',
-                      status: 'success'
-                    });
-
-                    router.push(`/availability`);
-                  } catch (error: any) {
-                    console.error('Error submitting availability form:', error);
-                    notification({
-                      title: t('schedule_updated_error'),
-                      description: error.message,
-                      variant: 'stroke',
-                      id: 'schedule_updated_error',
-                      status: 'error'
-                    });
-                  }
-                }}
-              >
-                <Modal.Body className="flex items-start gap-4">
-                  <div className="rounded-10 bg-error-lighter flex size-10 shrink-0 items-center justify-center">
-                    <RiDeleteBinLine className="text-error-base size-6" />
-                  </div>
-                  <div className="space-y-1">
-                    <div className="text-label-md text-text-strong-950">
-                      Apagar {availability?.name}
+                      router.push(`/availability`);
+                    } catch (error: any) {
+                      console.error(
+                        'Error submitting availability form:',
+                        error
+                      );
+                      notification({
+                        title: t('schedule_updated_error'),
+                        description: error.message,
+                        variant: 'stroke',
+                        id: 'schedule_updated_error',
+                        status: 'error'
+                      });
+                    }
+                  }}
+                >
+                  <Modal.Body className="flex items-start gap-4">
+                    <div className="rounded-10 bg-error-lighter flex size-10 shrink-0 items-center justify-center">
+                      <RiDeleteBinLine className="text-error-base size-6" />
                     </div>
-                    <div className="text-paragraph-sm text-text-sub-600">
-                      Você não poderá recuperar a disponibilidade após apagá-lo.
+                    <div className="space-y-1">
+                      <div className="text-label-md text-text-strong-950">
+                        Apagar {availability?.name}
+                      </div>
+                      <div className="text-paragraph-sm text-text-sub-600">
+                        Você não poderá recuperar a disponibilidade após
+                        apagá-lo.
+                      </div>
                     </div>
-                  </div>
-                </Modal.Body>
-                <Modal.Footer>
-                  <Modal.Close asChild>
+                  </Modal.Body>
+                  <Modal.Footer>
+                    <Modal.Close asChild>
+                      <Button.Root
+                        variant="neutral"
+                        mode="stroke"
+                        size="small"
+                        className="w-full"
+                      >
+                        Cancelar
+                      </Button.Root>
+                    </Modal.Close>
                     <Button.Root
-                      variant="neutral"
-                      mode="stroke"
+                      variant="error"
                       size="small"
                       className="w-full"
+                      // onClick={() => submitDeleteSchedule(availability.id)}
                     >
-                      Cancelar
+                      Apagar
                     </Button.Root>
-                  </Modal.Close>
-                  <Button.Root
-                    variant="error"
-                    size="small"
-                    className="w-full"
-                    // onClick={() => submitDeleteSchedule(availability.id)}
-                  >
-                    Apagar
-                  </Button.Root>
-                </Modal.Footer>
-              </form>
-            </Modal.Content>
-          </Modal.Root>
-        </div>
-        <form
-          action={async (formData) => {
-            try {
-              // Get form values from the Schedule component
-              const {id, ...rest} = getValues();
+                  </Modal.Footer>
+                </form>
+              </Modal.Content>
+            </Modal.Root>
+          </div>
+          <form
+            action={async (formData) => {
+              try {
+                // Get form values from the Schedule component
+                const {id, ...rest} = getValues();
 
-              const scheduleInputValues = {
-                ...rest,
-                scheduleId: id
-              };
+                const scheduleInputValues = {
+                  ...rest,
+                  scheduleId: id
+                };
 
-              const scheduleResult =
-                await submitUpdateSchedule(scheduleInputValues);
+                const scheduleResult =
+                  await submitUpdateSchedule(scheduleInputValues);
 
-              if (!scheduleResult) return;
+                if (!scheduleResult) return;
 
-              notification({
-                title: 'Alterações salvas!',
-                description: 'Seus updates foram salvos com sucesso.',
-                variant: 'stroke',
-                status: 'success'
-              });
+                notification({
+                  title: 'Alterações salvas!',
+                  description: 'Seus updates foram salvos com sucesso.',
+                  variant: 'stroke',
+                  status: 'success'
+                });
 
-              router.push(`/availability`);
-            } catch (error: any) {
-              console.error('Error submitting availability form:', error);
-              notification({
-                title: t('schedule_updated_error'),
-                description: error.message,
-                variant: 'stroke',
-                id: 'schedule_updated_error',
-                status: 'error'
-              });
-            }
-          }}
-        >
-          <FancyButton.Root
-            variant="neutral"
-            size="small"
-            onClick={(e) => {
-              // if ((window as any).submitServiceForm) {
-              //   (window as any).submitServiceForm();
-              // }
-              // submitUpdateSchedule();
+                router.push(`/availability`);
+              } catch (error: any) {
+                console.error('Error submitting availability form:', error);
+                notification({
+                  title: t('schedule_updated_error'),
+                  description: error.message,
+                  variant: 'stroke',
+                  id: 'schedule_updated_error',
+                  status: 'error'
+                });
+              }
             }}
           >
-            <FancyButton.Icon as={RiSaveFill} />
-            Salvar
-          </FancyButton.Root>
-        </form>
+            <FancyButton.Root
+              variant="neutral"
+              size="small"
+              onClick={(e) => {
+                // if ((window as any).submitServiceForm) {
+                //   (window as any).submitServiceForm();
+                // }
+                // submitUpdateSchedule();
+              }}
+            >
+              <FancyButton.Icon as={RiSaveFill} />
+              Salvar
+            </FancyButton.Root>
+          </form>
+        </div>
       </div>
     </div>
   );

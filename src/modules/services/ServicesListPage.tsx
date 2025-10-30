@@ -20,12 +20,12 @@ export default function ServicesListPage() {
   return (
     <>
       <ServicesHeader />
-      <div className="px-8">
+      <div className="px-8 hidden md:block">
         <Divider.Root />
       </div>
 
-      <div className="gap-8 p-8 ">
-        <div className="flex justify-between">
+      <div className="md:gap-8 md:p-8 px-4 py-5 ">
+        <div className="flex md:flex-row md:justify-between flex-col justify-center items-between gap-4">
           <ServicesFilter />
           <ServicesSearch />
         </div>
